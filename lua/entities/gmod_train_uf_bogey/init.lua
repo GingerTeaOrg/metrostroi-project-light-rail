@@ -38,9 +38,23 @@ ENT.Types = {
         nil,
         Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
     },
+	u2joint={
+        "models/lilly/uf/u2/u2joint.mdl",
+        Vector(0,0.0,0),Angle(0,0,0),nil,
+        Vector(0,-61,-14),Vector(0,61,-14),
+        nil,
+        Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
+    },
+	u2={
+    "models/lilly/uf/bogey.mdl",
+    Vector(0,0.0,0),Angle(0,0,0),nil,
+    Vector(0,-61,-14),Vector(0,61,-14),
+    nil,
+    Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
+    },
     def={
         "models/lilly/uf/bogey.mdl",
-        Vector(0,0.0,-10),Angle(0,90,0),nil,
+        Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
         nil,
         Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
@@ -62,7 +76,7 @@ ENT.Types = {
             self.Wheels:SetAngles(self:GetAngles() + Angle(0,0,0))
         else
             self.Wheels:SetPos(self:LocalToWorld(Vector(0,0.0,-10)))
-            self.Wheels:SetAngles(self:GetAngles() + Angle(0,90,0))
+            self.Wheels:SetAngles(self:GetAngles() + Angle(0,0,0))
         end
         self.Wheels.WheelType = self.BogeyType
         self.Wheels.NoPhysics = BogeyDupe.NoPhysics
@@ -102,7 +116,7 @@ function ENT:Initialize()
 
     -- Set proper parameters for the bogey
     if IsValid(self:GetPhysicsObject()) then
-        self:GetPhysicsObject():SetMass(5000)
+        self:GetPhysicsObject():SetMass(500)
     end
 
     -- Store coupling point offset

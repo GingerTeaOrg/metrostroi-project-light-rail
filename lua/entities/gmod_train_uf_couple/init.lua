@@ -16,13 +16,13 @@ ENT.Types = {
     ["717"] = {"models/metrostroi_train/bogey/metro_couple_717.mdl",Vector(65,0,0),Vector(65.1,1,-4.9),Angle(0,-90,0)},
     ["702"] = {"models/metrostroi_train/bogey/metro_couple_ezh.mdl",Vector(65,0,0),Vector(65.1,1,-4.9),Angle(0,-90,0)},
     ["722"] = {"models/metrostroi_train/bogey/metro_couple_noekk.mdl",Vector(65,0,0),Vector(65.1,1,-4.9),Angle(0,-90,0)},
-    def={"models/metrostroi_train/bogey/metro_couple_717.mdl",Vector(65,0,0),Vector(65.25,0,6.5),Angle(0,90,0)},
+    def={"models/lilly/uf/coupler.mdl",Vector(0,0,-60),Vector(0,0,-60),Angle(0,90,0)},
 }
 
 function ENT:SetParameters()
     local typ = self.Types[self.CoupleType or "def"]
-    self:SetModel(typ and typ[1] or "models/metrostroi_train/bogey/metro_couple.mdl")
-    self.CouplingPointOffset = typ and typ[2] or Vector(65,0,0)
+    self:SetModel(typ and typ[1] or "models/lilly/uf/coupler.mdl")
+    self.CouplingPointOffset = typ and typ[2] or Vector(0,0,-60)
     self.SnakePos = typ and typ[3] or Vector(65,0,0)
     self.SnakeAng = typ and typ[4] or Angle(180,90,0)
 end
