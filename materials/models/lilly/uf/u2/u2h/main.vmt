@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u2/u2h/main"
+	"$surfaceprop" "Metal"
+	"$model"	1
+}

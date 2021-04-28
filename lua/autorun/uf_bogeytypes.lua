@@ -12,7 +12,7 @@ if SERVER then
 		
 		ENT.Types.u2joint=
 			{
-				"models/lilly/uf/u2/u2joint.mdl",
+				"models/lilly/uf/u2/jointbogey.mdl",
 				Vector(0,0.0,0),Angle(0,0,0), "models/lilly/uf/wheelset.mdl",
 				Vector(0,-61,-14),Vector(0,61,-14),
 				nil,

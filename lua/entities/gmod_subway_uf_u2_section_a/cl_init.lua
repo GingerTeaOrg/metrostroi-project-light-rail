@@ -12,46 +12,15 @@ ENT.Lights = {
 	[1] = { "headlight",		Vector(370,0,-40), Angle(0,0,90), Color(216,161,92), hfov=80, vfov=80,farz=5144,brightness = 4}, --216,161,92
 }
 
-local function GetDoorPosition(i,k,j)
-	if j == 0 
-	then return Vector(184 - 35.0*k     - 338*i,-67.5*(1-2*k),4.3)
-	else return Vector(184 - 35.0*(1-k) - 338*i,-66*(1-2*k),4.25)
-	end
-end
+--local function GetDoorPosition(i,k,j)
+--	if j == 0 
+--	then return Vector(184 - 35.0*k     - 338*i,-67.5*(1-2*k),4.3)
+--	else return Vector(184 - 35.0*(1-k) - 338*i,-66*(1-2*k),4.25)
+--	end
+--end
 
-for i=0,1 do
-	for k=0,1 do
-		ENT.ClientProps["door"..i.."x"..k.."a"] = {
-			model = "models/81-740_leftdoor2.mdl",
-			pos = GetDoorPosition(i,k,0),
-			ang = Angle(0,90 +180*k,0)
-		}
 
-		ENT.ClientProps["door"..i.."x"..k.."b"] = {
-			model = "models/81-740_leftdoor1.mdl",
-			pos = GetDoorPosition(i,k,1),
-			ang = Angle(0,90 +180*k,0)
-		}
-	end 
-end
 
-ENT.ClientProps["door_cab_l"] = {
-	model = "models/kid/door_cab_left.mdl",
-	pos = Vector(297.0,62.29,0),
-	ang = Angle(0,-89.7,0.25)
-}
-ENT.ClientProps["door_cab_r"] = {
-	model = "models/kid/cabin_right.mdl",
-	pos = Vector(297.8,-66.30,0.09),
-	ang = Angle(0,90.3,0.25)
-}
-
-ENT.ClientProps["pilesos"] = {
-	model = "Models/polisas/vihrj_8a.mdl",
-	pos = Vector(340,-44,-20),
-	ang = Angle(0,30,0),
-	scale = 0.5
-}
 /*
 for i=1,3 do
 	ENT.ClientProps["route_number"..i] = {
@@ -85,24 +54,26 @@ ENT.ButtonMap["RouteNumberSet"] = {
 	}
 }*/
 
-ENT.ClientProps["mini715"] = {
-	model = "models/prop_715/prop_715.mdl",
-	pos = Vector(330,-46,-17),
-	ang = Angle(0,90,0), -- 94
-	scale = 0.2/9
-}
 
-ENT.ClientProps["mini715_kek"] = {
-	model = "models/prop_715_2/prop_715_2.mdl",
-	pos = Vector(330,-56.32,-17.13),
+
+
+ENT.ClientProps["Microphone"] = {
+	model = "models/lilly/uf/u2/microphone.mdl",
+	pos = Vector(537,-3.5,65.9),
 	ang = Angle(0,0,0),
-	scale = 0.2/9
+	scale = 1,
+}
+
+ENT.ClientProps["IBIS"] = {
+	model = "models/lilly/uf/u2/IBIS.mdl",
+	pos = Vector(537,-4,65.9),
+	ang = Angle(0,0,0),
+	scale = 1,
 }
 
 
 
-
-ENT.ButtonMap["CabinDoorL"] = {
+ENT.ButtonMap["CabinDoor"] = {
 	pos = Vector(280.5,64,56.7),
 	ang = Angle(0,0,90),
     width = 642,
@@ -111,20 +82,6 @@ ENT.ButtonMap["CabinDoorL"] = {
     buttons = {
         {ID = "CabinDoorLeft",x=0,y=0,w=642,h=2000, tooltip="Дверь в кабину машиниста\nCabin door", model = {
             var="CabinDoorLeft",sndid="door_cab_l",
-            sndvol = 1, snd = function(_,val) return val == 1 and "door_cab_open" or val == 2 and "door_cab_roll" or val == 0 and "door_cab_close" end,
-            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
-        }},
-    }
-}
-ENT.ButtonMap["CabinDoorR"] = {
-	pos = Vector(315.5,-64,56.7),
-	ang = Angle(0,180,90),
-    width = 642,
-    height = 2000,
-    scale = 0.1/2,
-    buttons = {
-        {ID = "CabinDoorRight",x=0,y=0,w=642,h=2000, tooltip="Дверь в кабину машиниста\nCabin door", model = {
-            var="CabinDoorRight",sndid="door_cab_r",
             sndvol = 1, snd = function(_,val) return val == 1 and "door_cab_open" or val == 2 and "door_cab_roll" or val == 0 and "door_cab_close" end,
             sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
         }},
@@ -145,69 +102,6 @@ ENT.ButtonMap["RearDoor"] = {
         }},
     }
 }
-
-ENT.ButtonMap["RearDoor1"] = {
-    pos = Vector(340,40,42),
-    ang = Angle(0,-90,90),
-    width = 642,
-    height = 2000,
-    scale = 0.1/2,
-    buttons = {
-        {ID = "RearDoor",x=0,y=0,w=300,h=1500, tooltip="Открытие левых дверей\nLeft door open",},
-    }
-}
-
-ENT.ButtonMap["RearDoor2"] = {
-    pos = Vector(340,-20,42),
-    ang = Angle(0,-90,90),
-    width = 642,
-    height = 2000,
-    scale = 0.1/2,
-    buttons = {
-        {ID = "RearDoor2",x=0,y=0,w=300,h=1500, tooltip="Открытие правых дверей\nRight door open",},
-    }
-}
-
-ENT.ClientProps["speedo1"] = {
-	model = "models/metrostroi_train/81-720/digits/digit.mdl",
-	pos = Vector(344.8,16.65,-1),
-	ang = Angle(140,0,0),
-	color = Color(93,222,211),
-} 
-ENT.ClientProps["speedo2"] = {
-	model = "models/metrostroi_train/81-720/digits/digit.mdl",
-	pos = Vector(344.8,16.65+0.44,-1),
-	ang = Angle(140,0,0),
-	color = Color(255,170,60),
-} 
-
-for i=1,5 do
-    ENT.ClientProps["speedfact"..i] = {
-        model = "models/metrostroi_train/81-720/segments/speed_green.mdl",
-        pos = Vector(-132.6,-1.305*(i-1)+1.5,20.9),
-        ang = Angle(0,0,0),
-        skin = 0,
-        color = Color(93,222,211) --90,255,80
-    }
-end
-for i=1,5 do
-    ENT.ClientProps["speeddop"..i] = {
-        model = "models/metrostroi_train/81-720/segments/speed_red.mdl",
-        pos = Vector(-132.5,1.305*(i-1)+1.7,21),
-        ang = Angle(0,0,0),
-        skin = 0,
-        color = Color(255,55,55)
-    }
-end
-for i=1,5 do
-    ENT.ClientProps["speedrek"..i] = {
-        model = "models/metrostroi_train/81-720/segments/speed_yellow.mdl",
-        pos = Vector(-132.7,1.305*(i-1)+1.7,20.8),
-        ang = Angle(0,0,0),
-        skin = 0,
-        color = Color(124,252,0)
-    }
-end
 
 function ENT:Think()
 	self.BaseClass.Think(self)

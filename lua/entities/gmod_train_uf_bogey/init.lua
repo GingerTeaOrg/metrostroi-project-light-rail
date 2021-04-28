@@ -39,7 +39,7 @@ ENT.Types = {
         Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
     },
 	u2joint={
-        "models/lilly/uf/u2/u2joint.mdl",
+        "models/lilly/uf/u2/jointbogey.mdl",
         Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
         nil,
@@ -116,7 +116,7 @@ function ENT:Initialize()
 
     -- Set proper parameters for the bogey
     if IsValid(self:GetPhysicsObject()) then
-        self:GetPhysicsObject():SetMass(500)
+        self:GetPhysicsObject():SetMass(2500)
     end
 
     -- Store coupling point offset
@@ -168,7 +168,7 @@ function ENT:Initialize()
     end
 end
 
-function ENT:InitializeWheels()
+function ENT:InitializeWheelsUF()
     -- Create missing wheels
     if not IsValid(self.Wheels) then
         --print(1)
@@ -548,7 +548,7 @@ function ENT:Think()
     if (not self.Wheels) or
         (not self.Wheels:IsValid()) or
         (self.Wheels:GetNW2Entity("TrainBogey") ~= self) then
-        self:InitializeWheels()
+        self:InitializeWheelsUF()
 
         if IsValid(self:GetNW2Entity("TrainEntity")) then
             constraint.NoCollide(self.Wheels,self:GetNW2Entity("TrainEntity"),0,0)

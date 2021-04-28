@@ -26,21 +26,21 @@ ENT.SubwayTrain = {
 function ENT:Initialize()
 
 	-- Set model and initialize
-	self:SetModel("models/lilly/uf/u2/body_u2ha.mdl")
+	self:SetModel("models/lilly/uf/u2/u2hb.mdl")
 	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,140))
+	self:SetPos(self:GetPos() + Vector(0,0,100))
 
 	self.Bogeys = {}
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogey(Vector(-200,0,-76),Angle(0,0,0),true,"u2")--103,0,-80
+	self.FrontBogey = self:CreateBogey(Vector( 0,0,0),Angle(0,0,0),true,"u2")--103,0,-80
 	table.insert(self.Bogeys,self.FrontBogey)	
-	self.RearBogey  = self:CreateBogey(Vector( -0,0,-80),Angle(0,0,0),false,"u2")
+	self.RearBogey  = self:CreateBogey(Vector( -425,0,0),Angle(0,0,0),false,"u2")
 	
-	self.RearCouple = self:CreateCouple(Vector( -288,0,-59),Angle(0,180,0),true,"u2")	
-    self.FrontCouple = self:CreateCouple(Vector( 0,0,-59),Angle(0,180,0),true,"u2")	
+	--self.RearCouple = self:CreateCouple(Vector( -288,0,-59),Angle(0,180,0),true,"u2")	
+    --self.FrontCouple = self:CreateCouple(Vector( 0,0,-59),Angle(0,180,0),true,"u2")	
 	
-    self.RearBogey:SetRenderMode(RENDERMODE_TRANSALPHA)
-    self.RearBogey:SetColor(Color(0,0,0,0))		
+    --self.RearBogey:SetRenderMode(RENDERMODE_TRANSALPHA)
+    --self.RearBogey:SetColor(Color(0,0,0,0))		
 
 	self.Timer = CurTime()	
 	self.Timer2 = CurTime()
@@ -77,13 +77,13 @@ end
 function ENT:Think()
 	self.BaseClass.Think(self)
 	if self.Timer and CurTime()-self.Timer > 0.1 then
-		self.RearBogey.Wheels:SetRenderMode(RENDERMODE_TRANSALPHA)
-		self.RearBogey.Wheels:SetColor(Color(0,0,0,0))		
+		--self.RearBogey.Wheels:SetRenderMode(RENDERMODE_TRANSALPHA)
+		--self.RearBogey.Wheels:SetColor(Color(0,0,0,0))		
 		
 		if CurTime()-self.Timer > 1 then
-			self.RearBogey:Remove()
-			self.FrontCouple:Remove()		
-			self.FrontBogey.Wheels:GetPhysicsObject():SetMass(6000)
+			self.FrontBogey:Remove()
+			--self.RearCouple:Remove()		
+			--self.FrontBogey.Wheels:GetPhysicsObject():SetMass(6000)
 			self.Timer = nil
 		end
 	end

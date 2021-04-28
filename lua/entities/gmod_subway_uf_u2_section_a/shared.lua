@@ -13,7 +13,7 @@ ENT.AdminSpawnable  = false
 
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
-	self.SoundNames["horn1"] = {loop=0.6,"subway_trains/common/pneumatic/horn/horn1_start.wav","subway_trains/common/pneumatic/horn/horn1_loop.wav", "subway_trains/common/pneumatic/horn/horn1_end.mp3"}
+	self.SoundNames["horn1"] = {loop=0.6,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}
 	self.SoundPositions["horn1"] = {1100,1e9,Vector(100,0,0),1}
 	self.SoundNames["igbt7"]   = {"subway_trains/740/tisu1.wav",loop = true}
 	self.SoundPositions["igbt7"] = {800,1e9,Vector(100,0,0),0.035}

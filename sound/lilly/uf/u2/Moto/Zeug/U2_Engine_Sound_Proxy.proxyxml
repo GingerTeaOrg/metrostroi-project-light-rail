@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kLoud-cProxyControlLoader xmlns:d="http://www.kuju.com/TnT/2003/Delta" d:version="1.0">
+	<ProxyControl>
+		<cElectricAudioControl xmlns:d="http://www.kuju.com/TnT/2003/Delta" d:version="1.0">
+			<ProxyControlRevision d:type="cDeltaString">eVersion2</ProxyControlRevision>
+			<ActivationDistance d:type="sFloat32">250</ActivationDistance>
+			<Sound>
+				<kLoud-cSingleSampleSound d:id="545638">
+					<Name d:type="cDeltaString">Engine Loop</Name>
+					<IsLooped d:type="bool">1</IsLooped>
+					<Priority d:type="sUInt32">60</Priority>
+					<BaseVolume d:type="sFloat32">0.5</BaseVolume>
+					<VolumeVariation d:type="sFloat32">0</VolumeVariation>
+					<BasePitchShift d:type="sFloat32">1.1</BasePitchShift>
+					<PitchShiftVariation d:type="sFloat32">0</PitchShiftVariation>
+					<AttenuationStartDist d:type="sFloat32">5</AttenuationStartDist>
+					<NoFutherAttenuationDist d:type="sFloat32">80</NoFutherAttenuationDist>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+					<Sample>
+						<kLoud-cSampleID>
+							<Filename d:type="cDeltaString">Railtraction\Duewag_u2\U2h\sound\Moto\engine_loop.dav</Filename>
+						</kLoud-cSampleID>
+					</Sample>
+				</kLoud-cSingleSampleSound>
+				<kLoud-cSingleSampleSound d:id="545816">
+					<Name d:type="cDeltaString">Engine idle</Name>
+					<IsLooped d:type="bool">1</IsLooped>
+					<Priority d:type="sUInt32">60</Priority>
+					<BaseVolume d:type="sFloat32">0.4</BaseVolume>
+					<VolumeVariation d:type="sFloat32">0</VolumeVariation>
+					<BasePitchShift d:type="sFloat32">1</BasePitchShift>
+					<PitchShiftVariation d:type="sFloat32">0</PitchShiftVariation>
+					<AttenuationStartDist d:type="sFloat32">5</AttenuationStartDist>
+					<NoFutherAttenuationDist d:type="sFloat32">80</NoFutherAttenuationDist>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+					<Sample>
+						<kLoud-cSampleID>
+							<Filename d:type="cDeltaString">Railtraction\Duewag_u2\U2h\sound\Moto\Duewag idle.dav</Filename>
+						</kLoud-cSampleID>
+					</Sample>
+				</kLoud-cSingleSampleSound>
+				<kLoud-cSingleSampleSound d:id="545845">
+					<Name d:type="cDeltaString">Idle drive</Name>
+					<IsLooped d:type="bool">1</IsLooped>
+					<Priority d:type="sUInt32">60</Priority>
+					<BaseVolume d:type="sFloat32">0.7</BaseVolume>
+					<VolumeVariation d:type="sFloat32">0</VolumeVariation>
+					<BasePitchShift d:type="sFloat32">1</BasePitchShift>
+					<PitchShiftVariation d:type="sFloat32">0</PitchShiftVariation>
+					<AttenuationStartDist d:type="sFloat32">5</AttenuationStartDist>
+					<NoFutherAttenuationDist d:type="sFloat32">80</NoFutherAttenuationDist>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+					<Sample>
+						<kLoud-cSampleID>
+							<Filename d:type="cDeltaString">Railtraction\Duewag_u2\U2h\sound\Moto\engine_loop start.dav</Filename>
+						</kLoud-cSampleID>
+					</Sample>
+				</kLoud-cSingleSampleSound>
+				<kLoud-cSingleSampleSound d:id="545869">
+					<Name d:type="cDeltaString">Engine Loop Start</Name>
+					<IsLooped d:type="bool">1</IsLooped>
+					<Priority d:type="sUInt32">60</Priority>
+					<BaseVolume d:type="sFloat32">0.5</BaseVolume>
+					<VolumeVariation d:type="sFloat32">0</VolumeVariation>
+					<BasePitchShift d:type="sFloat32">1.5</BasePitchShift>
+					<PitchShiftVariation d:type="sFloat32">0</PitchShiftVariation>
+					<AttenuationStartDist d:type="sFloat32">5</AttenuationStartDist>
+					<NoFutherAttenuationDist d:type="sFloat32">80</NoFutherAttenuationDist>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+					<Sample>
+						<kLoud-cSampleID>
+							<Filename d:type="cDeltaString">Railtraction\Duewag_u2\U2h\sound\Moto\engine_loop start.dav</Filename>
+						</kLoud-cSampleID>
+					</Sample>
+				</kLoud-cSingleSampleSound>
+				<kLoud-cSingleSampleSound d:id="545887">
+					<Name d:type="cDeltaString">DoorOpen</Name>
+					<IsLooped d:type="bool">0</IsLooped>
+					<Priority d:type="sUInt32">50</Priority>
+					<BaseVolume d:type="sFloat32">0.3</BaseVolume>
+					<VolumeVariation d:type="sFloat32">0.05</VolumeVariation>
+					<BasePitchShift d:type="sFloat32">1</BasePitchShift>
+					<PitchShiftVariation d:type="sFloat32">0.05</PitchShiftVariation>
+					<AttenuationStartDist d:type="sFloat32">2</AttenuationStartDist>
+					<NoFutherAttenuationDist d:type="sFloat32">5</NoFutherAttenuationDist>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+					<Sample>
+						<kLoud-cSampleID>
+							<Filename d:type="cDeltaString">Railtraction\Duewag_u2\U2h\sound\Door_open.dav</Filename>
+						</kLoud-cSampleID>
+					</Sample>
+				</kLoud-cSingleSampleSound>
+				<kLoud-cSingleSampleSound d:id="545918">
+					<Name d:type="cDeltaString">DoorClose</Name>
+					<IsLooped d:type="bool">0</IsLooped>
+					<Priority d:type="sUInt32">50</Priority>
+					<BaseVolume d:type="sFloat32">0.3</BaseVolume>
+					<VolumeVariation d:type="sFloat32">0.05</VolumeVariation>
+					<BasePitchShift d:type="sFloat32">1</BasePitchShift>
+					<PitchShiftVariation d:type="sFloat32">0.05</PitchShiftVariation>
+					<AttenuationStartDist d:type="sFloat32">2</AttenuationStartDist>
+					<NoFutherAttenuationDist d:type="sFloat32">5</NoFutherAttenuationDist>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+					<Sample>
+						<kLoud-cSampleID>
+							<Filename d:type="cDeltaString">Railtraction\Duewag_u2\U2h\sound\Door_close.dav</Filename>
+						</kLoud-cSampleID>
+					</Sample>
+				</kLoud-cSingleSampleSound>
+			</Sound>
+			<Curve>
+				<kLoud-cCurve d:id="545940">
+					<Name d:type="cDeltaString">Engine pitch from speed start</Name>
+					<CurvePoint>
+						<kLoud-cRVector2 d:id="545944">
+							<X d:type="sFloat32">0</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="545948">
+							<X d:type="sFloat32">1.5</X>
+							<Y d:type="sFloat32">0.7</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="545953">
+							<X d:type="sFloat32">6</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="545959">
+							<X d:type="sFloat32">22.22</X>
+							<Y d:type="sFloat32">2</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="545964">
+							<X d:type="sFloat32">150</X>
+							<Y d:type="sFloat32">0.55</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="545970">
+							<X d:type="sFloat32">300</X>
+							<Y d:type="sFloat32">0.8</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="545976">
+							<X d:type="sFloat32">600</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="545983">
+							<X d:type="sFloat32">900</X>
+							<Y d:type="sFloat32">1.1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="545988">
+							<X d:type="sFloat32">1600</X>
+							<Y d:type="sFloat32">1.4</Y>
+						</kLoud-cRVector2>
+					</CurvePoint>
+				</kLoud-cCurve>
+				<kLoud-cCurve d:id="545995">
+					<Name d:type="cDeltaString">Engine volume from speed start</Name>
+					<CurvePoint>
+						<kLoud-cRVector2 d:id="545998">
+							<X d:type="sFloat32">0</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546003">
+							<X d:type="sFloat32">0.1</X>
+							<Y d:type="sFloat32">0.8</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546008">
+							<X d:type="sFloat32">3</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546013">
+							<X d:type="sFloat32">10</X>
+							<Y d:type="sFloat32">0.5</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546024">
+							<X d:type="sFloat32">20</X>
+							<Y d:type="sFloat32">0.1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546030">
+							<X d:type="sFloat32">200</X>
+							<Y d:type="sFloat32">0.8</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546036">
+							<X d:type="sFloat32">500</X>
+							<Y d:type="sFloat32">0.7</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546042">
+							<X d:type="sFloat32">800</X>
+							<Y d:type="sFloat32">0.55</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546049">
+							<X d:type="sFloat32">1600</X>
+							<Y d:type="sFloat32">0.3</Y>
+						</kLoud-cRVector2>
+					</CurvePoint>
+				</kLoud-cCurve>
+				<kLoud-cCurve d:id="546056">
+					<Name d:type="cDeltaString">Engine pitch fs idle</Name>
+					<CurvePoint>
+						<kLoud-cRVector2 d:id="546061">
+							<X d:type="sFloat32">0</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546067">
+							<X d:type="sFloat32">300</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546072">
+							<X d:type="sFloat32">600</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546077">
+							<X d:type="sFloat32">900</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546083">
+							<X d:type="sFloat32">1600</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+					</CurvePoint>
+				</kLoud-cCurve>
+				<kLoud-cCurve d:id="546089">
+					<Name d:type="cDeltaString">Engine volume fs idle</Name>
+					<CurvePoint>
+						<kLoud-cRVector2 d:id="546094">
+							<X d:type="sFloat32">0</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546100">
+							<X d:type="sFloat32">200</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546106">
+							<X d:type="sFloat32">500</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546111">
+							<X d:type="sFloat32">800</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546116">
+							<X d:type="sFloat32">1600</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+					</CurvePoint>
+				</kLoud-cCurve>
+				<kLoud-cCurve d:id="546120">
+					<Name d:type="cDeltaString">Engine volume fs drive</Name>
+					<CurvePoint>
+						<kLoud-cRVector2 d:id="546127">
+							<X d:type="sFloat32">0</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546133">
+							<X d:type="sFloat32">0.1</X>
+							<Y d:type="sFloat32">0.7</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546138">
+							<X d:type="sFloat32">20</X>
+							<Y d:type="sFloat32">2</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546148">
+							<X d:type="sFloat32">200</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546154">
+							<X d:type="sFloat32">500</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546160">
+							<X d:type="sFloat32">800</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546167">
+							<X d:type="sFloat32">1600</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+					</CurvePoint>
+				</kLoud-cCurve>
+				<kLoud-cCurve d:id="546175">
+					<Name d:type="cDeltaString">Engine pitch fs drive</Name>
+					<CurvePoint>
+						<kLoud-cRVector2 d:id="546181">
+							<X d:type="sFloat32">0</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546187">
+							<X d:type="sFloat32">1</X>
+							<Y d:type="sFloat32">0.05</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546193">
+							<X d:type="sFloat32">10</X>
+							<Y d:type="sFloat32">0.7</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546198">
+							<X d:type="sFloat32">300</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546204">
+							<X d:type="sFloat32">600</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546210">
+							<X d:type="sFloat32">900</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546215">
+							<X d:type="sFloat32">1600</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+					</CurvePoint>
+				</kLoud-cCurve>
+				<kLoud-cCurve d:id="546221">
+					<Name d:type="cDeltaString">Engine volume from speed</Name>
+					<CurvePoint>
+						<kLoud-cRVector2 d:id="546226">
+							<X d:type="sFloat32">0</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546231">
+							<X d:type="sFloat32">0</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546236">
+							<X d:type="sFloat32">3</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546239">
+							<X d:type="sFloat32">8</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546243">
+							<X d:type="sFloat32">200</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546248">
+							<X d:type="sFloat32">500</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546254">
+							<X d:type="sFloat32">800</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546259">
+							<X d:type="sFloat32">1600</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+					</CurvePoint>
+				</kLoud-cCurve>
+				<kLoud-cCurve d:id="546263">
+					<Name d:type="cDeltaString">Engine pitch from speed</Name>
+					<CurvePoint>
+						<kLoud-cRVector2 d:id="546276">
+							<X d:type="sFloat32">5</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546282">
+							<X d:type="sFloat32">30</X>
+							<Y d:type="sFloat32">2</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546286">
+							<X d:type="sFloat32">150</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546293">
+							<X d:type="sFloat32">300</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546298">
+							<X d:type="sFloat32">600</X>
+							<Y d:type="sFloat32">1</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546304">
+							<X d:type="sFloat32">900</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+						<kLoud-cRVector2 d:id="546309">
+							<X d:type="sFloat32">1600</X>
+							<Y d:type="sFloat32">0</Y>
+						</kLoud-cRVector2>
+					</CurvePoint>
+				</kLoud-cCurve>
+			</Curve>
+			<ModifierChain>
+				<kLoud-cModifierChain d:id="546319">
+					<Name d:type="cDeltaString">Engine loop modifer</Name>
+					<Modifier>
+						<kLoud-cVolumeCurveModifier d:id="546325">
+							<ControllerIsGlobal d:type="bool">0</ControllerIsGlobal>
+							<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+							<Curve d:type="ref">546221</Curve>
+						</kLoud-cVolumeCurveModifier>
+						<kLoud-cPitchCurveModifier d:id="546333">
+							<ControllerIsGlobal d:type="bool">0</ControllerIsGlobal>
+							<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+							<Curve d:type="ref">546263</Curve>
+						</kLoud-cPitchCurveModifier>
+					</Modifier>
+				</kLoud-cModifierChain>
+				<kLoud-cModifierChain d:id="546342">
+					<Name d:type="cDeltaString">Engine loop modifer idle</Name>
+					<Modifier>
+						<kLoud-cVolumeCurveModifier d:id="546348">
+							<ControllerIsGlobal d:type="bool">0</ControllerIsGlobal>
+							<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+							<Curve d:type="ref">546089</Curve>
+						</kLoud-cVolumeCurveModifier>
+						<kLoud-cPitchCurveModifier d:id="546352">
+							<ControllerIsGlobal d:type="bool">0</ControllerIsGlobal>
+							<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+							<Curve d:type="ref">546056</Curve>
+						</kLoud-cPitchCurveModifier>
+					</Modifier>
+				</kLoud-cModifierChain>
+				<kLoud-cModifierChain d:id="546360">
+					<Name d:type="cDeltaString">Engine loop modifer drive</Name>
+					<Modifier>
+						<kLoud-cVolumeCurveModifier d:id="546367">
+							<ControllerIsGlobal d:type="bool">0</ControllerIsGlobal>
+							<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+							<Curve d:type="ref">546120</Curve>
+						</kLoud-cVolumeCurveModifier>
+						<kLoud-cPitchCurveModifier d:id="546374">
+							<ControllerIsGlobal d:type="bool">0</ControllerIsGlobal>
+							<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+							<Curve d:type="ref">546175</Curve>
+						</kLoud-cPitchCurveModifier>
+					</Modifier>
+				</kLoud-cModifierChain>
+				<kLoud-cModifierChain d:id="546382">
+					<Name d:type="cDeltaString">Engine loop modifer start</Name>
+					<Modifier>
+						<kLoud-cVolumeCurveModifier d:id="546388">
+							<ControllerIsGlobal d:type="bool">0</ControllerIsGlobal>
+							<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+							<Curve d:type="ref">545995</Curve>
+						</kLoud-cVolumeCurveModifier>
+						<kLoud-cPitchCurveModifier d:id="546405">
+							<ControllerIsGlobal d:type="bool">0</ControllerIsGlobal>
+							<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+							<Curve d:type="ref">545940</Curve>
+						</kLoud-cPitchCurveModifier>
+					</Modifier>
+				</kLoud-cModifierChain>
+			</ModifierChain>
+			<InstanceGroup />
+			<Loop>
+				<kLoud-cControlledLoop d:id="546420">
+					<PlayState d:type="cDeltaString">BOTH</PlayState>
+					<Name d:type="cDeltaString">Engine</Name>
+					<Sound d:type="ref">545638</Sound>
+					<ModifierChain d:type="ref">546319</ModifierChain>
+					<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+					<LoopCondition d:type="cDeltaString">ValueInRange</LoopCondition>
+					<ActiveRangeStartValue d:type="sFloat32">0</ActiveRangeStartValue>
+					<ActiveRangeEndValue d:type="sFloat32">33</ActiveRangeEndValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cControlledLoop>
+				<kLoud-cControlledLoop d:id="546439">
+					<PlayState d:type="cDeltaString">BOTH</PlayState>
+					<Name d:type="cDeltaString">Engine immer</Name>
+					<Sound d:type="ref">545816</Sound>
+					<ModifierChain d:type="ref">546342</ModifierChain>
+					<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+					<LoopCondition d:type="cDeltaString">ValueInRange</LoopCondition>
+					<ActiveRangeStartValue d:type="sFloat32">0</ActiveRangeStartValue>
+					<ActiveRangeEndValue d:type="sFloat32">33</ActiveRangeEndValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cControlledLoop>
+				<kLoud-cControlledLoop d:id="546461">
+					<PlayState d:type="cDeltaString">BOTH</PlayState>
+					<Name d:type="cDeltaString">Drive idle</Name>
+					<Sound d:type="ref">545845</Sound>
+					<ModifierChain d:type="ref">546360</ModifierChain>
+					<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+					<LoopCondition d:type="cDeltaString">ValueInRange</LoopCondition>
+					<ActiveRangeStartValue d:type="sFloat32">0</ActiveRangeStartValue>
+					<ActiveRangeEndValue d:type="sFloat32">33</ActiveRangeEndValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cControlledLoop>
+				<kLoud-cControlledLoop d:id="546476">
+					<PlayState d:type="cDeltaString">BOTH</PlayState>
+					<Name d:type="cDeltaString">Engine Start</Name>
+					<Sound d:type="ref">545869</Sound>
+					<ModifierChain d:type="ref">546382</ModifierChain>
+					<ControllerName d:type="cDeltaString">AbsoluteSpeed</ControllerName>
+					<LoopCondition d:type="cDeltaString">ValueInRange</LoopCondition>
+					<ActiveRangeStartValue d:type="sFloat32">0</ActiveRangeStartValue>
+					<ActiveRangeEndValue d:type="sFloat32">33</ActiveRangeEndValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cControlledLoop>
+			</Loop>
+			<Oneshot>
+				<kLoud-cTriggeredOneshot d:id="546500">
+					<PlayState d:type="cDeltaString">OUTSIDE</PlayState>
+					<Name d:type="cDeltaString"></Name>
+					<Sound d:type="ref">545887</Sound>
+					<ModifierChain d:type="ref">0</ModifierChain>
+					<ControllerName d:type="cDeltaString">DoorrightanimFront</ControllerName>
+					<TriggerType d:type="cDeltaString">ValueIncreasePast</TriggerType>
+					<TriggerValue d:type="sFloat32">0.05</TriggerValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cTriggeredOneshot>
+				<kLoud-cTriggeredOneshot d:id="546521">
+					<PlayState d:type="cDeltaString">OUTSIDE</PlayState>
+					<Name d:type="cDeltaString"></Name>
+					<Sound d:type="ref">545918</Sound>
+					<ModifierChain d:type="ref">0</ModifierChain>
+					<ControllerName d:type="cDeltaString">DoorrightanimFront</ControllerName>
+					<TriggerType d:type="cDeltaString">ValueDecreasePast</TriggerType>
+					<TriggerValue d:type="sFloat32">0.95</TriggerValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cTriggeredOneshot>
+				<kLoud-cTriggeredOneshot d:id="546541">
+					<PlayState d:type="cDeltaString">OUTSIDE</PlayState>
+					<Name d:type="cDeltaString"></Name>
+					<Sound d:type="ref">545887</Sound>
+					<ModifierChain d:type="ref">0</ModifierChain>
+					<ControllerName d:type="cDeltaString">DoorleftanimFront</ControllerName>
+					<TriggerType d:type="cDeltaString">ValueIncreasePast</TriggerType>
+					<TriggerValue d:type="sFloat32">0.06</TriggerValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cTriggeredOneshot>
+				<kLoud-cTriggeredOneshot d:id="546555">
+					<PlayState d:type="cDeltaString">OUTSIDE</PlayState>
+					<Name d:type="cDeltaString"></Name>
+					<Sound d:type="ref">545918</Sound>
+					<ModifierChain d:type="ref">0</ModifierChain>
+					<ControllerName d:type="cDeltaString">DoorleftanimFront</ControllerName>
+					<TriggerType d:type="cDeltaString">ValueDecreasePast</TriggerType>
+					<TriggerValue d:type="sFloat32">0.94</TriggerValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cTriggeredOneshot>
+				<kLoud-cTriggeredOneshot d:id="546565">
+					<PlayState d:type="cDeltaString">OUTSIDE</PlayState>
+					<Name d:type="cDeltaString"></Name>
+					<Sound d:type="ref">545887</Sound>
+					<ModifierChain d:type="ref">0</ModifierChain>
+					<ControllerName d:type="cDeltaString">DoorleftanimBack</ControllerName>
+					<TriggerType d:type="cDeltaString">ValueIncreasePast</TriggerType>
+					<TriggerValue d:type="sFloat32">0.03</TriggerValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cTriggeredOneshot>
+				<kLoud-cTriggeredOneshot d:id="546575">
+					<PlayState d:type="cDeltaString">OUTSIDE</PlayState>
+					<Name d:type="cDeltaString"></Name>
+					<Sound d:type="ref">545918</Sound>
+					<ModifierChain d:type="ref">0</ModifierChain>
+					<ControllerName d:type="cDeltaString">DoorleftanimBack</ControllerName>
+					<TriggerType d:type="cDeltaString">ValueDecreasePast</TriggerType>
+					<TriggerValue d:type="sFloat32">0.98</TriggerValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cTriggeredOneshot>
+				<kLoud-cTriggeredOneshot d:id="546585">
+					<PlayState d:type="cDeltaString">OUTSIDE</PlayState>
+					<Name d:type="cDeltaString"></Name>
+					<Sound d:type="ref">545887</Sound>
+					<ModifierChain d:type="ref">0</ModifierChain>
+					<ControllerName d:type="cDeltaString">DoorrightanimBack</ControllerName>
+					<TriggerType d:type="cDeltaString">ValueIncreasePast</TriggerType>
+					<TriggerValue d:type="sFloat32">0.08</TriggerValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cTriggeredOneshot>
+				<kLoud-cTriggeredOneshot d:id="546595">
+					<PlayState d:type="cDeltaString">OUTSIDE</PlayState>
+					<Name d:type="cDeltaString"></Name>
+					<Sound d:type="ref">545918</Sound>
+					<ModifierChain d:type="ref">0</ModifierChain>
+					<ControllerName d:type="cDeltaString">DoorrightanimBack</ControllerName>
+					<TriggerType d:type="cDeltaString">ValueDecreasePast</TriggerType>
+					<TriggerValue d:type="sFloat32">0.9</TriggerValue>
+					<ValueIsChangingGateTime d:type="sFloat32">0</ValueIsChangingGateTime>
+					<InstanceGroup d:type="ref">0</InstanceGroup>
+				</kLoud-cTriggeredOneshot>
+			</Oneshot>
+		</cElectricAudioControl>
+	</ProxyControl>
+</kLoud-cProxyControlLoader>

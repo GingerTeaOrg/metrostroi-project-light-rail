@@ -19,29 +19,142 @@ ENT.SubwayTrain = {
 	Manufacturer = "Duewag",
 }
 
+
+---- LOCAL FUNCTIONS FOR GETTING OUR OWN ENTITY SPAWNS
+
+
+function ENT:CreateBogeyUF(pos,ang,forward,typ)
+    -- Create bogey entity
+    local bogeyUF = ents.Create("gmod_train_uf_bogeyUF")
+    bogeyUF:SetPos(self:LocalToWorld(pos))
+    bogeyUF:SetAngles(self:GetAngles() + ang)
+    bogeyUF.BogeyType = typ
+    bogeyUF.NoPhysics = self.NoPhysics
+    bogeyUF:Spawn()
+
+    -- Assign ownership
+    if CPPI and IsValid(self:CPPIGetOwner()) then bogeyUF:CPPISetOwner(self:CPPIGetOwner()) end
+
+    -- Some shared general information about the bogey
+    self.SquealSound = self.SquealSound or math.floor(4*math.random())
+    self.SquealSensitivity = self.SquealSensitivity or math.random()
+    bogeyUF.SquealSensitivity = self.SquealSensitivity
+    bogeyUF:SetNW2Int("SquealSound",self.SquealSound)
+    bogeyUF:SetNW2Bool("IsForwardBogey", forward)
+    bogeyUF:SetNW2Entity("TrainEntity", self)
+    bogeyUF.SpawnPos = pos
+    bogeyUF.SpawnAng = ang
+    local index=1
+    for i,v in ipairs(self.JointPositions) do
+        if v>pos.x then index=i+1 else break end
+    end
+    table.insert(self.JointPositions,index,pos.x+53.6)
+    table.insert(self.JointPositions,index+1,pos.x-53.6)
+    -- Constraint bogey to the train
+    if self.NoPhysics then
+        bogeyUF:SetParent(self)
+    else
+        constraint.Axis(bogeyUF,self,0,0,
+            Vector(0,0,0),Vector(0,0,0),
+            0,0,0,1,Vector(0,0,1),false)
+        if forward and IsValid(self.FrontCouple) then
+            constraint.NoCollide(bogeyUF,self.FrontCouple,0,0)
+        elseif not forward and IsValid(self.RearCouple) then
+            constraint.NoCollide(bogeyUF,self.RearCouple,0,0)
+        end
+    end
+end
+	
+	
+	
+	function ENT:CreateCoupleUF(pos,ang,forward,typ)
+    -- Create bogey entity
+    local couplerUF = ents.Create("gmod_train_uf_couple")
+    couplerUF:SetPos(self:LocalToWorld(pos))
+    couplerUF:SetAngles(self:GetAngles() + ang)
+    couplerUF.CoupleType = typ
+    coupler:Spawn()
+
+    -- Assign ownership
+    if CPPI and IsValid(self:CPPIGetOwner()) then coupler:CPPISetOwner(self:CPPIGetOwner()) end
+
+    -- Some shared general information about the bogey
+    couplerUF:SetNW2Bool("IsForwardCoupler", forward)
+    couplerUF:SetNW2Entity("TrainEntity", self)
+    couplerUF.SpawnPos = pos
+    couplerUF.SpawnAng = ang
+    local index=1
+    local x = self:WorldToLocal(coupler:LocalToWorld(coupler.CouplingPointOffset)).x
+    for i,v in ipairs(self.JointPositions) do
+        if v>pos.x then index=i+1 else break end
+    end
+    table.insert(self.JointPositions,index,x)
+    -- Constraint bogey to the train
+    if self.NoPhysics then
+        bogeyUF:SetParent(couplerUF)
+    else
+        constraint.AdvBallsocket(
+            self,
+            coupler,
+            0, --bone
+            0, --bone
+            pos,
+            Vector(0,0,0),
+            1, --forcelimit
+            1, --torquelimit
+            -2, --xmin
+            -2, --ymin
+            -15, --zmin
+            2, --xmax
+            2, --ymax
+            15, --zmax
+            0.1, --xfric
+            0.1, --yfric
+            1, --zfric
+            0, --rotonly
+            1 --nocollide
+        )
+
+        if forward and IsValid(self.FrontBogey) then
+            constraint.NoCollide(self.FrontBogey,coupler,0,0)
+        elseif not forward and IsValid(self.RearBogey) then
+            constraint.NoCollide(self.RearBogey,coupler,0,0)
+        end
+        --[[
+        constraint.Axis(coupler,self,0,0,
+            Vector(0,0,0),Vector(0,0,0),
+            0,0,0,1,Vector(0,0,1),false)]]
+    end
+
+    -- Add to cleanup list
+    table.insert(self.TrainEntities,couplerUF)
+    return couplerUF
+end
+
+
 function ENT:Initialize()
 
 	-- Set model and initialize
-	self:SetModel("models/lilly/uf/u2/body_u2ha.mdl")
+	self:SetModel("models/lilly/uf/u2/u2h.mdl")
 	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,140))
+	self:SetPos(self:GetPos() + Vector(0,0,50))
 	
 	-- Create seat entities
-    self.DriverSeat = self:CreateSeat("driver",Vector(315,19,-27))
-	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
-    self.DriverSeat:SetColor(Color(0,0,0,0))
+    self.DriverSeat = self:CreateSeat("driver",Vector(540,11,60))
+	--self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
+    --self.DriverSeat:SetColor(Color(0,0,0,0))
 	
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogey(Vector( 190,0,-75),Angle(0,180,0),true,"u2")
-    self.RearBogey  = self:CreateBogey(Vector(-335,0,-75),Angle(0,0,0),false,"u2")
+	self.FrontBogey = self:CreateBogey(Vector( 425,0,-1),Angle(0,180,0),true,"u2")
+    self.RearBogey  = self:CreateBogey(Vector(0,0,-1),Angle(0,0,0),false,"u2joint")
     self.FrontBogey:SetNWBool("Async",true)
     self.RearBogey:SetNWBool("Async",true)
 	-- Create couples
-    self.FrontCouple = self:CreateCouple(Vector( 0,0,-59),Angle(0,180,0),true,"u2")	
-    self.RearCouple = self:CreateCouple(Vector( 320,0,-59),Angle(0,0,0),true,"u2")	
+    --self.FrontCouple = self:CreateCouple(Vector( 460,-3,0),Angle(0,180,0),true,"u2")	
+    --self.RearCouple = self:CreateCoupleUF(Vector( 320,0,-59),Angle(0,0,0),true,"u2")	
 	self.Async = true
-	-- Create 741
-	self.Vagon741 = self:Create741(Vector(-660,0,-140))
+	-- Create U2 Section B
+	self.u2sectionb = self:CreateSectionB(Vector(-660,0,-140))
 	
 	
 	-- Initialize key mapping
@@ -52,55 +165,25 @@ function ENT:Initialize()
 		[KEY_L] = "Horn",
 	}
 	
-    self.Lights = {
-        -- Headlight glow
-        --[1] = { "headlight",      Vector(465,0,-20), Angle(0,0,0), Color(216,161,92), fov = 100, farz=6144,brightness = 4},
-
-        -- Head (type 1)
-        [2] = { "glow",             Vector(365,-40,-20), Angle(0,0,0), Color(255,220,180), brightness = 1, scale = 1.0 },
-		[3] = { "glow",             Vector(365,-30,-25), Angle(0,0,0), Color(255,220,180), brightness = 1, scale = 1.0 },
-		[4] = { "glow",             Vector(365,30,-25), Angle(0,0,0), Color(255,220,180), brightness = 1, scale = 1.0 },
-		[5] = { "glow",             Vector(365,40,-20), Angle(0,0,0), Color(255,220,180), brightness = 1, scale = 1.0 },
-		[6] = { "glow",             Vector(335,40,56), Angle(0,0,0), Color(199,0,0), brightness = 0.5, scale = 0.7 },
-		[7] = { "glow",             Vector(335,-40,56), Angle(0,0,0), Color(199,0,0), brightness = 0.5, scale = 0.7 },
-		[8] = { "glow",             Vector(365,40,-60), Angle(0,0,0), Color(199,0,0), brightness = 0.5, scale = 0.7 },
-		[9] = { "glow",             Vector(365,-40,-60), Angle(0,0,0), Color(199,0,0), brightness = 0.5, scale = 0.7 },
-        -- Cabin
-        [10] = { "dynamiclight",        Vector( 300, 0, 60), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 0.3},
-		--Salon
-		[11] = { "dynamiclight",        Vector( 0, 0, 60), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
-		[12] = { "dynamiclight",        Vector( 200, 0, 60), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
-		[13] = { "dynamiclight",        Vector( -200, 0, 60), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
-	}
-	
-	
-	for k,v in pairs(self.Lights) do
-		self:SetLightPower(k,false)
-	end
-
 end
+
+
+
+
+
+	
+	
+
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-	self:SetLightPower(10,true)
-	self:SetLightPower(11,true)
-	self:SetLightPower(12,true)
-	self:SetLightPower(13,true)
-	self:SetLightPower(2,true)
-	self:SetLightPower(3,true)
-	self:SetLightPower(4,true)
-	self:SetLightPower(5,true)
-	self:SetLightPower(6,true)
-	self:SetLightPower(7,true)
-	self:SetLightPower(8,true)
-	self:SetLightPower(9,true)
     self:SetPackedBool("CabinDoorLeft",self.CabinDoorLeft)
     self:SetPackedBool("CabinDoorRight",self.CabinDoorRight)
-	self:SetPackedBool(44,self.RearDoor2)
-	self:SetPackedBool(40,self.RearDoor)
+	--self:SetPackedBool(44,self.RearDoor2)
+	--self:SetPackedBool(40,self.RearDoor)
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
-	self:SetNW2Int("Speed",self.Speed*100)
-   -- self.vag_741(self)
+	self:SetNW2Int("Speed",self.Speed*150)
+   --self.u2sectionb(self)
 
 end
 
@@ -113,9 +196,9 @@ end
 
 function ENT:CreateSectionB(pos)
 	local ang = Angle(0,0,0)
-	local u2sectionb = ents.Create("gmod_subway_u2_section_b")
-	--self.Vagon741 = vag741
-	u2sectionb:SetPos(self:LocalToWorld(pos))
+	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
+	-- self.u2sectionb = u2b
+	u2sectionb:SetPos(self:LocalToWorld(Vector(-1,0,-100)))
 	u2sectionb:SetAngles(self:GetAngles() + ang)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())
@@ -128,8 +211,8 @@ function ENT:CreateSectionB(pos)
 		self,
 		0, --bone
 		0, --bone
-		Vector(310,0,0),
-		pos,
+		Vector(0,0,0),
+		Vector(0,0,0),
 		0, --forcelimit
 		0, --torquelimit
 		xmin, --xmin
@@ -153,8 +236,6 @@ end
 
 
 function ENT:OnButtonPress(button,ply)
-    if button == "CabinDoorLeft" then self.CabinDoorLeft = not self.CabinDoorLeft end
-    if button == "CabinDoorRight" then self.CabinDoorRight = not self.CabinDoorRight end
 	if button == "RearDoor" then self.RearDoor = not self.RearDoor end
 	if button == "RearDoor2" then self.RearDoor2 = not self.RearDoor2 end
 	/*if button == "RouteNumber1Set" then 
