@@ -1,0 +1,3 @@
+Primary=station02.tga
+Alpha=station02.tga
+Tile=st

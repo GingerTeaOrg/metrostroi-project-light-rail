@@ -15,7 +15,7 @@ COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
 ENT.Types = {
     ["717"] = {"models/metrostroi_train/bogey/metro_couple_717.mdl",Vector(65,0,0),Vector(65.1,1,-4.9),Angle(0,-90,0)},
     ["702"] = {"models/metrostroi_train/bogey/metro_couple_ezh.mdl",Vector(65,0,0),Vector(65.1,1,-4.9),Angle(0,-90,0)},
-    ["722"] = {"models/metrostroi_train/bogey/metro_couple_noekk.mdl",Vector(65,0,0),Vector(65.1,1,-4.9),Angle(0,-90,0)},
+    ["u2"] = {"models/lilly/uf/coupler.mdl",Vector(65,0,0),Vector(65.1,1,-4.9),Angle(0,-90,0)},
     def={"models/lilly/uf/coupler.mdl",Vector(0,0,-60),Vector(0,0,-60),Angle(0,90,0)},
 }
 

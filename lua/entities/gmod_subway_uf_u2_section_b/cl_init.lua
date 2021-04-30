@@ -33,7 +33,7 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-
+	self:SetSoundState("horn1",self:GetPackedBool("Bell",false) and 1 or 0,1)
 	local speed = self:GetNW2Int("Speed")/100
 	local door_l = self:GetPackedBool("CabinDoorLeft")
     local door_4 = self:Animate("door4",door_l and (self.Door3 or 0.99) or 0,0,0.55, 64, 1)	

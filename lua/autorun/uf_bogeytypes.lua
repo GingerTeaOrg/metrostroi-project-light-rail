@@ -5,7 +5,7 @@ if SERVER then
         OldENT = ENT
         local ent = scripted_ents.GetStored("gmod_train_bogey")
         if not ent then
-            error("Injecting bogey types Failed!(")
+            error("Injecting bogey types Failed!")
         else
             ENT = ent.t
         end

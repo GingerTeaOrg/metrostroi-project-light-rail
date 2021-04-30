@@ -9,15 +9,8 @@ ENT.ButtonMap = {}
 
 ENT.Lights = {
 	-- Headlight glow
-	[1] = { "headlight",		Vector(370,0,-40), Angle(0,0,90), Color(216,161,92), hfov=80, vfov=80,farz=5144,brightness = 4}, --216,161,92
+	[1] = { "headlight",		Vector(570,0,80), Angle(0,0,0), Color(216,161,92), hfov=80, vfov=80,farz=5144,brightness = 4}, --216,161,92
 }
-
---local function GetDoorPosition(i,k,j)
---	if j == 0 
---	then return Vector(184 - 35.0*k     - 338*i,-67.5*(1-2*k),4.3)
---	else return Vector(184 - 35.0*(1-k) - 338*i,-66*(1-2*k),4.25)
---	end
---end
 
 
 
@@ -59,14 +52,21 @@ ENT.ButtonMap["RouteNumberSet"] = {
 
 ENT.ClientProps["Microphone"] = {
 	model = "models/lilly/uf/u2/microphone.mdl",
-	pos = Vector(537,-3.5,65.9),
+	pos = Vector(518,-3.5,63),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
 
 ENT.ClientProps["IBIS"] = {
 	model = "models/lilly/uf/u2/IBIS.mdl",
-	pos = Vector(537,-4,65.9),
+	pos = Vector(518,-2.5,63),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Dest"] = {
+	model = "models/lilly/uf/u2/dest_a.mdl",
+	pos = Vector(-9.7,0,-0.75),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
@@ -88,24 +88,23 @@ ENT.ButtonMap["CabinDoor"] = {
     }
 }
 
-ENT.ButtonMap["RearDoor"] = {
-    pos = Vector(-465,16,42),
-    ang = Angle(0,-90,90),
+ENT.ButtonMap["Cab"] = {
+    pos = Vector(450,0,42),
+    ang = Angle(0,0,90),
     width = 642,
     height = 2000,
-    scale = 0.1/2,
+    scale = 1,
+	
     buttons = {
-        {ID = "RearDoor",x=0,y=0,w=642,h=2000, tooltip="Передняя дверь\nFront door", model = {
-            var="RearDoor",sndid="door_cab_t",
-            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
-            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
-        }},
+
     }
 }
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-	self:SetSoundState("horn1",self:GetPackedBool("Horn",false) and 1 or 0,1)
+	self:SetSoundState("horn1",self:GetPackedBool("Bell",false) and 1 or 0,1)
+	self:SetSoundState("horn2",self:GetPackedBool("Horn",false) and 1 or 0,1)
+	self:SetSoundState("Bitte_Zuruecktreten",self:GetPackedBool("BitteZuruecktreten",false) and 1 or 0,1)
 	self:SetSoundState("igbt7",self:GetPackedBool("igbt74",false) and 1 or 0,1)		
 		self:SetLightPower(1,true,1)
 	if IsValid(self.GlowingLights[1]) then

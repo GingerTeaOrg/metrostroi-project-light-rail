@@ -28,7 +28,7 @@ function ENT:Initialize()
 	-- Set model and initialize
 	self:SetModel("models/lilly/uf/u2/u2hb.mdl")
 	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,100))
+	self:SetPos(self:GetPos() + Vector(0,0,0))
 
 	self.Bogeys = {}
 	-- Create bogeys
@@ -36,6 +36,14 @@ function ENT:Initialize()
 	table.insert(self.Bogeys,self.FrontBogey)	
 	self.RearBogey  = self:CreateBogey(Vector( -425,0,0),Angle(0,0,0),false,"u2")
 	
+	
+	self.DriverSeat = self:CreateSeat("driver",Vector(-520,-13,62), Angle(0,180,0))
+	self.KeyMap = {
+		[KEY_A] = "Drive",
+		[KEY_D] = "Brake",
+		[KEY_R] = "Reverse",
+		[KEY_L] = "Bell",
+	}
 	--self.RearCouple = self:CreateCouple(Vector( -288,0,-59),Angle(0,180,0),true,"u2")	
     --self.FrontCouple = self:CreateCouple(Vector( 0,0,-59),Angle(0,180,0),true,"u2")	
 	

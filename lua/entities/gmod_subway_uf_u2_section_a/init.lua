@@ -13,24 +13,66 @@ include("shared.lua")
 -- 2 = Only intherim                                
 ---------------------------------------------------
 ENT.SubwayTrain = {
-	Type = "U2",
-	Name = "U2h",
+	Type = "U2 ",
+	Name = "U2h ",
 	WagType = 0,
 	Manufacturer = "Duewag",
 }
 
 
----- LOCAL FUNCTIONS FOR GETTING OUR OWN ENTITY SPAWNS
+
+
+
+function ENT:Initialize()
+
+	-- Set model and initialize
+	self:SetModel("models/lilly/uf/u2/u2h.mdl")
+	self.BaseClass.Initialize(self)
+	self:SetPos(self:GetPos() + Vector(0,0,0))
+	
+	-- Create seat entities
+    self.DriverSeat = self:CreateSeat("driver",Vector(523,14,55))
+	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
+    self.DriverSeat:SetColor(Color(0,0,0,0))
+	
+	-- Create bogeys
+	self.FrontBogey = self:CreateBogeyUF(Vector( 425,0.8,0),Angle(0,180,0),true,"u2")
+    self.RearBogey  = self:CreateBogeyUF(Vector(1.6,0,0),Angle(0,0,0),false,"u2joint")
+    self.FrontBogey:SetNWBool("Async",true)
+    self.RearBogey:SetNWBool("Async",true)
+	-- Create couples
+    self.FrontCouple = self:CreateCoupleUF(Vector( 460,-3,0),Angle(0,180,0),true,"u2")	
+    --self.RearCouple = self:CreateCoupleUF(Vector( 320,0,-59),Angle(0,0,0),true,"u2")	
+	self.Async = true
+	-- Create U2 Section B
+	self.u2sectionb = self:CreateSectionB(Vector(-660,0,-140))
+	
+	
+	-- Initialize key mapping
+	self.KeyMap = {
+		[KEY_A] = "Drive",
+		[KEY_D] = "Brake",
+		[KEY_R] = "Reverse",
+		[KEY_L] = "Bell",
+	}
+	
+end
+
+
+
+
+
+-- LOCAL FUNCTIONS FOR GETTING OUR OWN ENTITY SPAWNS
 
 
 function ENT:CreateBogeyUF(pos,ang,forward,typ)
     -- Create bogey entity
-    local bogeyUF = ents.Create("gmod_train_uf_bogeyUF")
-    bogeyUF:SetPos(self:LocalToWorld(pos))
-    bogeyUF:SetAngles(self:GetAngles() + ang)
-    bogeyUF.BogeyType = typ
-    bogeyUF.NoPhysics = self.NoPhysics
-    bogeyUF:Spawn()
+    local bogey = ents.Create("gmod_train_uf_bogey")
+    bogey:SetPos(self:LocalToWorld(pos))
+    bogey:SetAngles(self:GetAngles() + ang)
+    bogey.BogeyType = typ
+    bogey.NoPhysics = self.NoPhysics
+    bogey:Spawn()
 
     -- Assign ownership
     if CPPI and IsValid(self:CPPIGetOwner()) then bogeyUF:CPPISetOwner(self:CPPIGetOwner()) end
@@ -38,12 +80,12 @@ function ENT:CreateBogeyUF(pos,ang,forward,typ)
     -- Some shared general information about the bogey
     self.SquealSound = self.SquealSound or math.floor(4*math.random())
     self.SquealSensitivity = self.SquealSensitivity or math.random()
-    bogeyUF.SquealSensitivity = self.SquealSensitivity
-    bogeyUF:SetNW2Int("SquealSound",self.SquealSound)
-    bogeyUF:SetNW2Bool("IsForwardBogey", forward)
-    bogeyUF:SetNW2Entity("TrainEntity", self)
-    bogeyUF.SpawnPos = pos
-    bogeyUF.SpawnAng = ang
+    bogey.SquealSensitivity = self.SquealSensitivity
+    bogey:SetNW2Int("SquealSound",self.SquealSound)
+    bogey:SetNW2Bool("IsForwardBogey", forward)
+    bogey:SetNW2Entity("TrainEntity", self)
+    bogey.SpawnPos = pos
+    bogey.SpawnAng = ang
     local index=1
     for i,v in ipairs(self.JointPositions) do
         if v>pos.x then index=i+1 else break end
@@ -52,37 +94,40 @@ function ENT:CreateBogeyUF(pos,ang,forward,typ)
     table.insert(self.JointPositions,index+1,pos.x-53.6)
     -- Constraint bogey to the train
     if self.NoPhysics then
-        bogeyUF:SetParent(self)
+        bogey:SetParent(self)
     else
-        constraint.Axis(bogeyUF,self,0,0,
+        constraint.Axis(bogey,self,0,0,
             Vector(0,0,0),Vector(0,0,0),
             0,0,0,1,Vector(0,0,1),false)
         if forward and IsValid(self.FrontCouple) then
-            constraint.NoCollide(bogeyUF,self.FrontCouple,0,0)
+            constraint.NoCollide(bogey,self.FrontCouple,0,0)
         elseif not forward and IsValid(self.RearCouple) then
-            constraint.NoCollide(bogeyUF,self.RearCouple,0,0)
+            constraint.NoCollide(bogey,self.RearCouple,0,0)
         end
     end
+	    -- Add to cleanup list
+    table.insert(self.TrainEntities,bogey)
+    return bogey
 end
 	
 	
-	
+
 	function ENT:CreateCoupleUF(pos,ang,forward,typ)
     -- Create bogey entity
-    local couplerUF = ents.Create("gmod_train_uf_couple")
-    couplerUF:SetPos(self:LocalToWorld(pos))
-    couplerUF:SetAngles(self:GetAngles() + ang)
-    couplerUF.CoupleType = typ
+    local coupler = ents.Create("gmod_train_uf_couple")
+    coupler:SetPos(self:LocalToWorld(pos))
+    coupler:SetAngles(self:GetAngles() + ang)
+    coupler.CoupleType = typ
     coupler:Spawn()
 
     -- Assign ownership
     if CPPI and IsValid(self:CPPIGetOwner()) then coupler:CPPISetOwner(self:CPPIGetOwner()) end
 
     -- Some shared general information about the bogey
-    couplerUF:SetNW2Bool("IsForwardCoupler", forward)
-    couplerUF:SetNW2Entity("TrainEntity", self)
-    couplerUF.SpawnPos = pos
-    couplerUF.SpawnAng = ang
+    coupler:SetNW2Bool("IsForwardCoupler", forward)
+    coupler:SetNW2Entity("TrainEntity", self)
+    coupler.SpawnPos = pos
+    coupler.SpawnAng = ang
     local index=1
     local x = self:WorldToLocal(coupler:LocalToWorld(coupler.CouplingPointOffset)).x
     for i,v in ipairs(self.JointPositions) do
@@ -91,7 +136,7 @@ end
     table.insert(self.JointPositions,index,x)
     -- Constraint bogey to the train
     if self.NoPhysics then
-        bogeyUF:SetParent(couplerUF)
+        bogey:SetParent(coupler)
     else
         constraint.AdvBallsocket(
             self,
@@ -120,59 +165,17 @@ end
         elseif not forward and IsValid(self.RearBogey) then
             constraint.NoCollide(self.RearBogey,coupler,0,0)
         end
-        --[[
+        
         constraint.Axis(coupler,self,0,0,
             Vector(0,0,0),Vector(0,0,0),
-            0,0,0,1,Vector(0,0,1),false)]]
+            0,0,0,1,Vector(0,0,1),false)
     end
 
     -- Add to cleanup list
-    table.insert(self.TrainEntities,couplerUF)
-    return couplerUF
-end
+    table.insert(self.TrainEntities,coupler)
+    return coupler
+end	
 
-
-function ENT:Initialize()
-
-	-- Set model and initialize
-	self:SetModel("models/lilly/uf/u2/u2h.mdl")
-	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,50))
-	
-	-- Create seat entities
-    self.DriverSeat = self:CreateSeat("driver",Vector(540,11,60))
-	--self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
-    --self.DriverSeat:SetColor(Color(0,0,0,0))
-	
-	-- Create bogeys
-	self.FrontBogey = self:CreateBogey(Vector( 425,0,-1),Angle(0,180,0),true,"u2")
-    self.RearBogey  = self:CreateBogey(Vector(0,0,-1),Angle(0,0,0),false,"u2joint")
-    self.FrontBogey:SetNWBool("Async",true)
-    self.RearBogey:SetNWBool("Async",true)
-	-- Create couples
-    --self.FrontCouple = self:CreateCouple(Vector( 460,-3,0),Angle(0,180,0),true,"u2")	
-    --self.RearCouple = self:CreateCoupleUF(Vector( 320,0,-59),Angle(0,0,0),true,"u2")	
-	self.Async = true
-	-- Create U2 Section B
-	self.u2sectionb = self:CreateSectionB(Vector(-660,0,-140))
-	
-	
-	-- Initialize key mapping
-	self.KeyMap = {
-		[KEY_A] = "Drive",
-		[KEY_D] = "Brake",
-		[KEY_R] = "Reverse",
-		[KEY_L] = "Horn",
-	}
-	
-end
-
-
-
-
-
-	
-	
 
 
 function ENT:Think()
@@ -198,7 +201,7 @@ function ENT:CreateSectionB(pos)
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
 	-- self.u2sectionb = u2b
-	u2sectionb:SetPos(self:LocalToWorld(Vector(-1,0,-100)))
+	u2sectionb:SetPos(self:LocalToWorld(Vector(1.7,0,-0.5)))
 	u2sectionb:SetAngles(self:GetAngles() + ang)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())
@@ -212,15 +215,15 @@ function ENT:CreateSectionB(pos)
 		0, --bone
 		0, --bone
 		Vector(0,0,0),
-		Vector(0,0,0),
+		Vector(0,0,1),
 		0, --forcelimit
 		0, --torquelimit
 		xmin, --xmin
 		0, --ymin
-		-40, --zmin
+		-50, --zmin
 		xmax, --xmax
 		0, --ymax
-		40, --zmax
+		50, --zmax
 		0, --xfric
 		0, --yfric
 		0, --zfric

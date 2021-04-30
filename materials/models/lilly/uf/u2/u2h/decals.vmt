@@ -1,6 +1,6 @@
-"LightmappedGeneric"
+"VertexLitGeneric"
 {
 	"$basetexture" "models/lilly/uf/u2/u2h/decals"
 	"$surfaceprop" "Glass"
-	"$translucent" "1"
+
 }
