@@ -1,5 +1,3 @@
--- ПЕРЕПИСАННАЯ СИСТЕМА ТАТРЫ 
--- +НЕМНОГО ТОМАСА 
 
 Metrostroi.DefineSystem("Duewag_U2_Systems")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
@@ -12,14 +10,21 @@ function TRAIN_SYSTEM:Initialize()
 	self.Bell = 0
 	self.BitteZuruecktreten = 0
 	self.Horn = 0
+	self.PantoState = 0
+	self.PantoUp = 0
+	self.BatteryOn = 0
+	
 
 end
 
 
 function TRAIN_SYSTEM:Inputs()
-	return {"Drive", "Brake","Reverse","Bell","Horn","BitteZuruecktreten"}
+	return {"Drive", "Brake","Reverse","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOn", "KeyTurnOn", "BlinkerState"}
 end
 
+function TRAIN_SYSTEM:Outputs()
+	return { "PantoState", "BlinkerState", "DoorSelectState", "BatteryOnState", "PantoState", "KeyTurnOn", "BlinkerState"}
+end
 function TRAIN_SYSTEM:TriggerInput(name,value)
 	if self[name] then self[name] = value end
 end
@@ -35,10 +40,10 @@ function TRAIN_SYSTEM:Think()
 	-- спасибо glebqip за следующую строчку thx glebqip for this 
 	--self.Igbt74 = math.min(1,self.Drive+self.Brake)
 
-	self.Train.FrontBogey.MotorForce = 50000
+	self.Train.FrontBogey.MotorForce = 45000
 	self.Train.FrontBogey.MotorPower = self.Drive - self.Brake
 	self.Train.FrontBogey.Reversed = (self.Reverse > 0.5)
-	self.Train.RearBogey.MotorForce  = 50000
+	self.Train.RearBogey.MotorForce  = 45000
 	self.Train.RearBogey.MotorPower = self.Drive - self.Brake
 	self.Train.RearBogey.Reversed = not (self.Reverse > 0.5)
 end

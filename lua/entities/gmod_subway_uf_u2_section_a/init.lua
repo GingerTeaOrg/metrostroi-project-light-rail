@@ -28,24 +28,32 @@ function ENT:Initialize()
 	-- Set model and initialize
 	self:SetModel("models/lilly/uf/u2/u2h.mdl")
 	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,0))
+	self:SetPos(self:GetPos() + Vector(0,0,000))  --set to 200 if one unit spawns in ground
 	
 	-- Create seat entities
-    self.DriverSeat = self:CreateSeat("driver",Vector(523,14,55))
+    self.DriverSeat = self:CreateSeat("driver",Vector(500,14,55))
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.DriverSeat:SetColor(Color(0,0,0,0))
 	
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 425,0.8,0),Angle(0,180,0),true,"u2")
-    self.RearBogey  = self:CreateBogeyUF(Vector(1.6,0,0),Angle(0,0,0),false,"u2joint")
+	self.FrontBogey = self:CreateBogeyUF(Vector( 346,0,0),Angle(0,180,0),true,"u2")
+    self.RearBogey  = self:CreateBogeyUF(Vector(-1,0,0),Angle(0,0,0),false,"u2joint")
     self.FrontBogey:SetNWBool("Async",true)
     self.RearBogey:SetNWBool("Async",true)
 	-- Create couples
-    self.FrontCouple = self:CreateCoupleUF(Vector( 460,-3,0),Angle(0,180,0),true,"u2")	
-    --self.RearCouple = self:CreateCoupleUF(Vector( 320,0,-59),Angle(0,0,0),true,"u2")	
+    self.FrontCouple = self:CreateCoupleUF(Vector( 525,0,15),Angle(0,0,0),true,"u2")	
+    self.RearCouple = self:CreateCoupleUF(Vector( 100,0,100),Angle(0,0,0),true,"u2")	
 	self.Async = true
 	-- Create U2 Section B
-	self.u2sectionb = self:CreateSectionB(Vector(-660,0,-140))
+	self.u2sectionb = self:CreateSectionB(Vector(-800,0,0))
+	
+	
+	
+	
+	
+	
+	
+	--self.PantoState = 0
 	
 	
 	-- Initialize key mapping
@@ -53,9 +61,27 @@ function ENT:Initialize()
 		[KEY_A] = "Drive",
 		[KEY_D] = "Brake",
 		[KEY_R] = "Reverse",
-		[KEY_L] = "Bell",
+		[KEY_H] = "BellEngage",
+		[Key_X] = "BitteZuruecktreten",
+		[Key_W] = "ReverserUp",
+		[Key_S] = "ReverserDown",
+		[Key_P] = "PantoUp",
+		[Key_O] = "DoorUnlock",
+		[Key_I] = "DoorLock",
+		[Key_K] = "DoorConfirm",
+		[Key_PAD_4] = "BlinkerLeft",
+		[Key_PAD_5] = "BlinkerNeutral",
+		[Key_PAD_6] = "BlinkerRight",
+		[Key_PAD_8] = "BlinkerWarn",
+		[Key_J] = "DoorSelectLeft",
+		[Key_L] = "DoorSelectRight",
+		[Key_B] = "BatteryOn",
+		[Key_N] = "BatteryOff",
+		[Key_0] = "KeyTurnOn",
+		
 	}
 	
+
 end
 
 
@@ -75,7 +101,7 @@ function ENT:CreateBogeyUF(pos,ang,forward,typ)
     bogey:Spawn()
 
     -- Assign ownership
-    if CPPI and IsValid(self:CPPIGetOwner()) then bogeyUF:CPPISetOwner(self:CPPIGetOwner()) end
+    if CPPI and IsValid(self:CPPIGetOwner()) then bogey:CPPISetOwner(self:CPPIGetOwner()) end
 
     -- Some shared general information about the bogey
     self.SquealSound = self.SquealSound or math.floor(4*math.random())
@@ -180,28 +206,56 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-    self:SetPackedBool("CabinDoorLeft",self.CabinDoorLeft)
-    self:SetPackedBool("CabinDoorRight",self.CabinDoorRight)
-	--self:SetPackedBool(44,self.RearDoor2)
-	--self:SetPackedBool(40,self.RearDoor)
+    self:SetPackedBool("BellEngage",self.BellEngage)
+
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*150)
    --self.u2sectionb(self)
 
+	--self.RearCouple:Remove()
+
+	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
+	self:SetNW2Int("Speed",self.Speed*100)
+	
+	self:SetPackedBool("Headlights1")
+	
+	
+	
 end
 
 
-function ENT:OnButtonRelease(button,ply)
-    if button == "DoorLeft" then
-        self.DoorLeft:TriggerInput("Set",0)
+function ENT:OnButtonPress(button,ply)
+		
+		if button == "BellEngage" then
+			self.BellEngage = 1 
+		end
+	if button == "DoorUnlock" then
+		if self.DoorSelectState.Value == 1 then
+		self.DoorSelectL:TriggerInput("DoorSelectState",1)
+		else
+        self.DoorSelectR:TriggerInput("DoorSelectState",0)
+		end
     end
+end
+
+function ENT:OnButtonRelease(button,ply)
+		
+		if button == "BellEngage" then
+			self.BellEngage = 0 
+			end
+			
+		if button == "PantoUp" then
+			if self.PantoState = 0 then 
+			self.TriggerInput("PantoUp",1)
+			end 
+
 end
 
 function ENT:CreateSectionB(pos)
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
 	-- self.u2sectionb = u2b
-	u2sectionb:SetPos(self:LocalToWorld(Vector(1.7,0,-0.5)))
+	u2sectionb:SetPos(self:LocalToWorld(Vector(-10,0,0)))
 	u2sectionb:SetAngles(self:GetAngles() + ang)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())
@@ -215,7 +269,7 @@ function ENT:CreateSectionB(pos)
 		0, --bone
 		0, --bone
 		Vector(0,0,0),
-		Vector(0,0,1),
+		Vector(0,0,0),
 		0, --forcelimit
 		0, --torquelimit
 		xmin, --xmin
@@ -230,7 +284,7 @@ function ENT:CreateSectionB(pos)
 		0, --rotonly
 		1 --nocollide
 	)
---	if button == "RearDoor" then vag741.RearDoor = not vag741.RearDoor end	
+	
 	
 	-- Add to cleanup list
 	table.insert(self.TrainEntities,u2sectionb)
@@ -238,11 +292,4 @@ function ENT:CreateSectionB(pos)
 end
 
 
-function ENT:OnButtonPress(button,ply)
-	if button == "RearDoor" then self.RearDoor = not self.RearDoor end
-	if button == "RearDoor2" then self.RearDoor2 = not self.RearDoor2 end
-	/*if button == "RouteNumber1Set" then 
-	self.RouteNumber1Set + 1
-	end*/
-	--if button == "RearDoor" then Vagon741.RearDoor = not Vagon741.RearDoor end	
-end
+

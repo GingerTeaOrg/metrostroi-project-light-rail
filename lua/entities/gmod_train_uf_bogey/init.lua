@@ -31,9 +31,9 @@ end
 duplicator.RegisterEntityModifier( "BogeyDupe" , function() end)
 --Model,WheelPos,WheelAng,WheelModel,PantLPos,PantRPos,BogeyOffset,{ConnectorPositions}--]]
 ENT.Types = {
-    tatra={
-        "models/metrostroi/tatra_t3/tatra_bogey.mdl",
-        Vector(0,0.0,-3),Angle(0,90,0),nil,
+	u5={
+        "models/lilly/uf/u5/bogey.mdl",
+        Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
         nil,
         Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
@@ -43,7 +43,7 @@ ENT.Types = {
         Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
         nil,
-        Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
+        Vector(4.3,-63,0),Vector(4.3,63,0),
     },
 	u2={
     "models/lilly/uf/bogey.mdl",
@@ -56,7 +56,7 @@ ENT.Types = {
         "models/lilly/uf/bogey.mdl",
         Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
-        nil,
+         nil,
         Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
     },
 }
@@ -71,13 +71,8 @@ ENT.Types = {
     local typ = self.Types[self.BogeyType or "def"]
     self:SetModel(typ and typ[1] or "models/lilly/uf/bogey.mdl")
     if IsValid(self.Wheels) then
-        if self.BogeyType == "tatra" then
-            self.Wheels:SetPos(self:LocalToWorld(Vector(0,0.0,-3)))
-            self.Wheels:SetAngles(self:GetAngles() + Angle(0,0,0))
-        else
             self.Wheels:SetPos(self:LocalToWorld(Vector(0,0.0,-10)))
             self.Wheels:SetAngles(self:GetAngles() + Angle(0,0,0))
-        end
         self.Wheels.WheelType = self.BogeyType
         self.Wheels.NoPhysics = BogeyDupe.NoPhysics
 
