@@ -235,15 +235,33 @@ function ENT:Think()
 	self:SetPackedBool("Headlights1")
 	
 	
-	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
-	local N = self.ThrottleState
+		local N = self.ThrottleState
 	
-	self.FrontBogey.MotorForce = 366.7*(N) ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
-	self.FrontBogey.MotorPower = 100
-	self.FrontBogey.Reversed = (self.ReverserState > 0)
-	self.RearBogey.MotorForce  = 366.7*(N)
-	self.RearBogey.MotorPower = 100 ----------- maximum kW of one bogey 36.67
-	self.RearBogey.Reversed = not (self.ReverserState > 0.5)
+		local P = math.max(0,0.04449 + 1.06879*math.abs(N) - 0.465729*N^2)
+        if math.abs(N) > 0.4 then P = math.abs(N) end
+        if self.Speed < 10 and N > 0 then P = P*(1.0 + 2.5*(10.0-self.Speed)/10.0) end
+        self.RearBogey.MotorPower  = P*0.5*((N > 0) and 1 or -1)
+        self.FrontBogey.MotorPower = P*0.5*((N > 0) and 1 or -1)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
+
+	
+	self.FrontBogey.MotorForce = 3667.9--*(N) ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
+	self.FrontBogey.MotorPower = P*1.9
+	self.FrontBogey.Reversed = (self.ReverserState < 0)
+	self.RearBogey.MotorForce  = 3667.9--*(N)
+	self.RearBogey.MotorPower = P*1.9 --100 ----------- maximum kW of one bogey 36.67
+	self.RearBogey.Reversed = (self.ReverserState > 0)
 	end
 	
 	
@@ -263,7 +281,7 @@ function ENT:OnButtonPress(button,ply)
 	----THROTTLE CODE
 	if button == "ThrottleUp"
 			then
-			self.ThrottleState = self.ThrottleState + 1
+			self.ThrottleState = self.ThrottleState + 4
 			
 			self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
 			self.Duewag_U2:TriggerInput("ThrottleState",self.ThrottleState)
@@ -274,7 +292,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "ThrottleDown"
 			then
-			self.ThrottleState = self.ThrottleState - 1
+			self.ThrottleState = self.ThrottleState - 4
 			self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
 			self.Duewag_U2:TriggerInput("ThrottleState",self.ThrottleState)
 			print(tostring(self.ThrottleState))
