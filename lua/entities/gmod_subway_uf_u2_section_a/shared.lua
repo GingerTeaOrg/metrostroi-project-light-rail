@@ -48,7 +48,7 @@ end
 
 
 function ENT:InitializeSystems()
-	self:LoadSystem("Duewag_U2_Systems")
+	self:LoadSystem("Duewag_U2")
 	--self:LoadSystem("uf_bell")
 	--self:LoadSystem("duewag_electric")
 end

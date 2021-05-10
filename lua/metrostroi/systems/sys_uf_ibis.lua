@@ -512,16 +512,16 @@ function TRAIN_SYSTEM:Trigger(name,value)
 			if self.LineNum1 = nil then
 				self.LineNum1 = 0
 				else
-					if self.LineNum2 = nil then
+					if self.LineNum2 == nil then
 						self.LineNum2 = 0
 						else
-						if self.LineNum3 = nil then
+						if self.LineNum3 == nil then
 							self.LineNum3 = 0
 							else 
-							if self.LineNum4 = nil then
+							if self.LineNum4 == nil then
 								self.LineNum = 0
 								else
-								if self.LineNum5 = nil then
+								if self.LineNum5 == nil then
 									self.LineNum5 = 0
 								end
 							end
@@ -532,19 +532,19 @@ function TRAIN_SYSTEM:Trigger(name,value)
 		end
 		
 		if (name == "1") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 0
 				else
-					if self.LineNum2 = nil then
+					if self.LineNum2 == nil then
 						self.LineNum2 = 1
 						else
-						if self.LineNum3 = nil then
+						if self.LineNum3 == nil then
 							self.LineNum3 = 1
 							else 
-							if self.LineNum4 = nil then
+							if self.LineNum4 == nil then
 								self.LineNum = 1
 								else
-								if self.LineNum5 = nil then
+								if self.LineNum5 == nil then
 									self.LineNum5 = 1
 								end
 							end
@@ -554,19 +554,19 @@ function TRAIN_SYSTEM:Trigger(name,value)
 			end
 		end
 		if (name == "2") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 2
 				else
-					if self.LineNum2 = nil then
+					if self.LineNum2 == nil then
 						self.LineNum2 = 2
 						else
-						if self.LineNum3 = nil then
+						if self.LineNum3 == nil then
 							self.LineNum3 = 2
 							else 
-							if self.LineNum4 = nil then
+							if self.LineNum4 == nil then
 								self.LineNum = 2
 								else
-								if self.LineNum5 = nil then
+								if self.LineNum5 == nil then
 									self.LineNum5 = 2
 								end
 							end
@@ -576,16 +576,16 @@ function TRAIN_SYSTEM:Trigger(name,value)
 			end
 		end
 		if (name == "3") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 3
-				elseif self.LineNum2 = nil then
+				elseif self.LineNum2 == nil then
 						self.LineNum2 = 3
 						
-						elseif self.LineNum3 = nil then
+						elseif self.LineNum3 == nil then
 							self.LineNum3 = 3
-							elseif self.LineNum4 = nil then
+							elseif self.LineNum4 == nil then
 								self.LineNum = 3
-								elseif self.LineNum5 = nil then
+								elseif self.LineNum5 == nil then
 									self.LineNum5 = 3
 								end
 							end
@@ -596,16 +596,16 @@ function TRAIN_SYSTEM:Trigger(name,value)
 		end
 		
 		if (name == "4") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 4
-				elseif self.LineNum2 = nil then
+				elseif self.LineNum2 == nil then
 						self.LineNum2 = 4
 						
-						elseif self.LineNum3 = nil then
+						elseif self.LineNum3 == nil then
 							self.LineNum3 = 4
-							elseif self.LineNum4 = nil then
+							elseif self.LineNum4 == nil then
 								self.LineNum = 4
-								elseif self.LineNum5 = nil then
+								elseif self.LineNum5 == nil then
 									self.LineNum5 = 4
 								end
 							end
@@ -615,16 +615,16 @@ function TRAIN_SYSTEM:Trigger(name,value)
 			end
 		end
 		if (name == "5") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 5
-				elseif self.LineNum2 = nil then
+				elseif self.LineNum2 == nil then
 						self.LineNum2 = 5
 						
-						elseif self.LineNum3 = nil then
+						elseif self.LineNum3 == nil then
 							self.LineNum3 = 5
-							elseif self.LineNum4 = nil then
+							elseif self.LineNum4 == nil then
 								self.LineNum = 5
-								elseif self.LineNum5 = nil then
+								elseif self.LineNum5 == nil then
 									self.LineNum5 = 5
 								end
 							end
@@ -634,68 +634,68 @@ function TRAIN_SYSTEM:Trigger(name,value)
 			end
 		end
 		if (name == "6") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 6
-				elseif self.LineNum2 = nil then
+				elseif self.LineNum2 == nil then
 						self.LineNum2 = 6
 						
-						elseif self.LineNum3 = nil then
+						elseif self.LineNum3 == nil then
 							self.LineNum3 = 6
-							elseif self.LineNum4 = nil then
+							elseif self.LineNum4 == nil then
 								self.LineNum = 6
-								elseif self.LineNum5 = nil then
+								elseif self.LineNum5 == nil then
 									self.LineNum5 = 6
 		if (name == "7") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 7
-				elseif self.LineNum2 = nil then
+				elseif self.LineNum2 == nil then
 						self.LineNum2 = 7
 						
-						elseif self.LineNum3 = nil then
+						elseif self.LineNum3 == nil then
 							self.LineNum3 = 7
-							elseif self.LineNum4 = nil then
+							elseif self.LineNum4 == nil then
 								self.LineNum = 7
-								elseif self.LineNum5 = nil then
+								elseif self.LineNum5 == nil then
 									self.LineNum5 = 7
 		if (name == "8") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 8
-				elseif self.LineNum2 = nil then
+				elseif self.LineNum2 == nil then
 						self.LineNum2 = 8
 						
-						elseif self.LineNum3 = nil then
+						elseif self.LineNum3 == nil then
 							self.LineNum3 = 8
-							elseif self.LineNum4 = nil then
+							elseif self.LineNum4 == nil then
 								self.LineNum = 8
-								elseif self.LineNum5 = nil then
+								elseif self.LineNum5 == nil then
 									self.LineNum5 = 8
 									
 		if (name == "9") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 9
-				elseif self.LineNum2 = nil then
+				elseif self.LineNum2 == nil then
 						self.LineNum2 = 9
 						
-						elseif self.LineNum3 = nil then
+						elseif self.LineNum3 == nil then
 							self.LineNum3 = 9
-							elseif self.LineNum4 = nil then
+							elseif self.LineNum4 == nil then
 								self.LineNum = 9
-								elseif self.LineNum5 = nil then
+								elseif self.LineNum5 == nil then
 									self.LineNum5 = 9
 									
 
 		if (name == "Delete") then
-			if not self.LineNum1 = nil then
+			if not self.LineNum1 == nil then
 				self.LineNum1 = nil
-				elseif not self.LineNum2 = nil then
+				elseif not self.LineNum2 == nil then
 						self.LineNum2 = nil
 						
-						elseif not self.LineNum3 = nil then
+						elseif not self.LineNum3 == nil then
 							self.LineNum3 = nil
-							elseif self.LineNum4 = nil then
+							elseif not self.LineNum4 == nil then
 								self.LineNum = nil
-								elseif self.LineNum5 = nil then
-									self.LineNum5 = nil
+								elseif not self.LineNum5 == nil then
+									self.LineNum5 = nil ----BOOKMARK
 									
 
 							

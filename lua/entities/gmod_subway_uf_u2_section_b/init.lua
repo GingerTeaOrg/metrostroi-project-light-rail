@@ -226,8 +226,8 @@ function ENT:Think()
 	end
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*100)
-	if self.Speed > 1 or self.Duewag_U2_Systems.Drive == 1 then
-		local Active = self.Duewag_U2_Systems.Drive == 1 and 0.1 or 0.25
+	if self.Speed > 1 or self.Duewag_U2.Drive == 1 then
+		local Active = self.Duewag_U2.Drive == 1 and 0.1 or 0.25
 	end
 	
 	self:SetLightPower(111,true)

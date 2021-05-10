@@ -41,7 +41,7 @@ ENT.ButtonMap["Cab"] = {
     scale = 1,
 	
     buttons = {
-	{ID = "HornButton",x=26, y=196, radius=15, tooltip = "Сигнал",model = {
+	{ID = "BellButton",x=26, y=196, radius=15, tooltip = "Сигнал",model = {
             model = "models/metrostroi_train/81-720/button_circle1.mdl",z=-2, ang=0,
             var="HornB",speed=12, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),

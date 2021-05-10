@@ -23,74 +23,6 @@ ENT.SubwayTrain = {
 
 
 
-function ENT:Initialize()
-
-	-- Set model and initialize
-	self:SetModel("models/lilly/uf/u2/u2h.mdl")
-	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,000))  --set to 200 if one unit spawns in ground
-	
-	-- Create seat entities
-    self.DriverSeat = self:CreateSeat("driver",Vector(500,14,55))
-	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
-    self.DriverSeat:SetColor(Color(0,0,0,0))
-	
-	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 346,0,0),Angle(0,180,0),true,"u2")
-    self.RearBogey  = self:CreateBogeyUF(Vector(-1,0,0),Angle(0,0,0),false,"u2joint")
-    self.FrontBogey:SetNWBool("Async",true)
-    self.RearBogey:SetNWBool("Async",true)
-	-- Create couples
-    self.FrontCouple = self:CreateCoupleUF(Vector( 525,0,15),Angle(0,0,0),true,"u2")	
-    self.RearCouple = self:CreateCoupleUF(Vector( 100,0,100),Angle(0,0,0),true,"u2")	
-	self.Async = true
-	-- Create U2 Section B
-	self.u2sectionb = self:CreateSectionB(Vector(-800,0,0))
-	
-	
-	
-	
-	
-	
-	
-	--self.PantoState = 0
-	
-	
-	-- Initialize key mapping
-	self.KeyMap = {
-		[KEY_A] = "Drive",
-		[KEY_D] = "Brake",
-		[KEY_R] = "Reverse",
-		[KEY_H] = "BellEngage",
-		[Key_X] = "BitteZuruecktreten",
-		[Key_W] = "ReverserUp",
-		[Key_S] = "ReverserDown",
-		[Key_P] = "PantoUp",
-		[Key_O] = "DoorUnlock",
-		[Key_I] = "DoorLock",
-		[Key_K] = "DoorConfirm",
-		[Key_PAD_4] = "BlinkerLeft",
-		[Key_PAD_5] = "BlinkerNeutral",
-		[Key_PAD_6] = "BlinkerRight",
-		[Key_PAD_8] = "BlinkerWarn",
-		[Key_J] = "DoorSelectLeft",
-		[Key_L] = "DoorSelectRight",
-		[Key_B] = "BatteryOn",
-		[Key_N] = "BatteryOff",
-		[Key_0] = "KeyTurnOn",
-		
-	}
-	
-
-end
-
-
-
-
-
--- LOCAL FUNCTIONS FOR GETTING OUR OWN ENTITY SPAWNS
-
-
 function ENT:CreateBogeyUF(pos,ang,forward,typ)
     -- Create bogey entity
     local bogey = ents.Create("gmod_train_uf_bogey")
@@ -135,8 +67,6 @@ function ENT:CreateBogeyUF(pos,ang,forward,typ)
     table.insert(self.TrainEntities,bogey)
     return bogey
 end
-	
-	
 
 	function ENT:CreateCoupleUF(pos,ang,forward,typ)
     -- Create bogey entity
@@ -200,13 +130,98 @@ end
     -- Add to cleanup list
     table.insert(self.TrainEntities,coupler)
     return coupler
-end	
+end
+
+
+ENT.SyncTable = { "speed", "ThrottleState", "Drive", "Brake","Reverse","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOn", "KeyTurnOn", "BlinkerState", "StationBrakeOn", "StationBrakeOff"}
+
+
+function ENT:Initialize()
+
+	-- Set model and initialize
+	self:SetModel("models/lilly/uf/u2/u2h.mdl")
+	self.BaseClass.Initialize(self)
+	self:SetPos(self:GetPos() + Vector(0,0,000))  --set to 200 if one unit spawns in ground
+	
+	-- Create seat entities
+    self.DriverSeat = self:CreateSeat("driver",Vector(500,14,55))
+	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
+    self.DriverSeat:SetColor(Color(0,0,0,0))
+	
+	self.ThrottleState = 0
+	self.ThrottleEngaged = false
+	self.ReverserState = 0
+	self.ReverserEnaged = 0
+	-- Create bogeys
+	self.FrontBogey = self:CreateBogeyUF(Vector( 346,0,0),Angle(0,180,0),true,"u2")
+    self.RearBogey  = self:CreateBogeyUF(Vector(-10,0,5),Angle(0,0,0),false,"u2joint")
+    self.FrontBogey:SetNWBool("Async",true)
+    self.RearBogey:SetNWBool("Async",true)
+	-- Create couples
+    self.FrontCouple = self:CreateCoupleUF(Vector( 525,0,15),Angle(0,0,0),true,"u2")	
+    self.RearCouple = self:CreateCoupleUF(Vector( 100,0,100),Angle(0,0,0),false,"u2")	
+	self.Async = true
+	-- Create U2 Section B
+	self.u2sectionb = self:CreateSectionB(Vector(-800,0,0))
+	
+	
+	self.PantoState = 0
+	
+	self.ReverserState = 0
+	
+	
+	
+	
+	--self.PantoState = 0
+	
+	
+	-- Initialize key mapping
+	self.KeyMap = {
+		[KEY_A] = "ThrottleUp",
+		[KEY_D] = "ThrottleDown",
+		[KEY_H] = "BellEngage",
+		
+		[KEY_W] = "ReverserUp",
+		[KEY_S] = "ReverserDown",
+		[KEY_P] = "PantoUp",
+		[KEY_O] = "DoorUnlock",
+		[KEY_I] = "DoorLock",
+		[KEY_K] = "DoorConfirm",
+		[KEY_PAD_4] = "BlinkerLeft",
+		[KEY_PAD_5] = "BlinkerNeutral",
+		[KEY_PAD_6] = "BlinkerRight",
+		[KEY_PAD_8] = "BlinkerWarn",
+		[KEY_J] = "DoorSelectLeft",
+		[KEY_L] = "DoorSelectRight",
+		[KEY_B] = "BatteryOn",
+		[KEY_N] = "BatteryOff",
+		[KEY_0] = "KeyTurnOn",
+		
+	}
+	
+
+end
+
+
+
+
+
+-- LOCAL FUNCTIONS FOR GETTING OUR OWN ENTITY SPAWNS
+
+
+
+	
+	
+
+	
 
 
 
 function ENT:Think()
 	self.BaseClass.Think(self)
     self:SetPackedBool("BellEngage",self.BellEngage)
+	
+	
 
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*150)
@@ -220,36 +235,94 @@ function ENT:Think()
 	self:SetPackedBool("Headlights1")
 	
 	
+	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
+	local N = self.ThrottleState
+	
+	self.FrontBogey.MotorForce = 366.7*(N) ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
+	self.FrontBogey.MotorPower = 100
+	self.FrontBogey.Reversed = (self.ReverserState > 0)
+	self.RearBogey.MotorForce  = 366.7*(N)
+	self.RearBogey.MotorPower = 100 ----------- maximum kW of one bogey 36.67
+	self.RearBogey.Reversed = not (self.ReverserState > 0.5)
+	end
+	
+	
 	
 end
 
 
 function ENT:OnButtonPress(button,ply)
-		
-		if button == "BellEngage" then
-			self.BellEngage = 1 
-		end
-	if button == "DoorUnlock" then
-		if self.DoorSelectState.Value == 1 then
-		self.DoorSelectL:TriggerInput("DoorSelectState",1)
-		else
-        self.DoorSelectR:TriggerInput("DoorSelectState",0)
-		end
-    end
+	--if button == "DoorUnlock" then
+	--	if self.DoorSelectState.Value == 1 then
+	--	self.DoorSelectL:TriggerInput("DoorSelectState",1)
+	--	else
+    --    self.DoorSelectR:TriggerInput("DoorSelectState",0)
+	--	end
+    --end
+	
+	----THROTTLE CODE
+	if button == "ThrottleUp"
+			then
+			self.ThrottleState = self.ThrottleState + 1
+			
+			self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
+			self.Duewag_U2:TriggerInput("ThrottleState",self.ThrottleState)
+			print(tostring(self.ThrottleState))
+	
+	end
+	
+	
+	if button == "ThrottleDown"
+			then
+			self.ThrottleState = self.ThrottleState - 1
+			self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
+			self.Duewag_U2:TriggerInput("ThrottleState",self.ThrottleState)
+			print(tostring(self.ThrottleState))
+	
+	end
+	
+	if button == "ReverserUp"
+			then
+			if 
+				not self.ThrottleEngaged == true then
+			self.ReverserState = self.ReverserState + 1
+			self.ReverserState = math.Clamp(self.ReverserState,-1,1)
+			self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
+			print(tostring(self.ReverserState))
+			
+			else 
+			end
+	end
+	if button == "ReverserDown"
+			then
+			self.ReverserState = self.ReverserState - 1
+			self.ReverserState = math.Clamp(self.ReverserState,-1,1)
+			self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
+			print(tostring(self.ReverserState))
+	end
 end
 
 function ENT:OnButtonRelease(button,ply)
 		
-		if button == "BellEngage" then
-			self.BellEngage = 0 
-			end
-			
 		if button == "PantoUp" then
-			if self.PantoState = 0 then 
-			self.TriggerInput("PantoUp",1)
+			if self.PantoState == 0
+				then self.Duewag_U2:TriggerInput("PantoUp",1)
 			end 
+		end	
+			
+			----THROTTLE CODE --Black Phoenix: Make sure it snaps to zero when next to zero
+		if button == "ThrottleUp" then
+			self.Duewag_U2:TriggerInput("ThrottleState", self.ThrottleState)
+			
+		end
+		if button == "ThrottleDown" then
+			self.Duewag_U2:TriggerInput("ThrottleState", self.ThrottleState)
+			
+		end
+	
 
 end
+
 
 function ENT:CreateSectionB(pos)
 	local ang = Angle(0,0,0)
