@@ -37,6 +37,10 @@ function ENT:Initialize()
 	self.RearBogey  = self:CreateBogeyUF(Vector( -400,0,0),Angle(0,0,0),false,"u2")
 	
 	
+	self.ThrottleState = 0
+	self.ReverserState = 0
+	self.ChopperJump = 0
+	
 	self.DriverSeat = self:CreateSeat("driver",Vector(-500,-13,62), Angle(0,180,0))
 	self.KeyMap = {
 		[KEY_A] = "Drive",
@@ -193,9 +197,7 @@ end
 
 
 function ENT:OnButtonPress(button,ply)
-    if button == "CabinDoorLeft" then self.CabinDoorLeft = not self.CabinDoorLeft end
-	if button == "RearDoor" then self.RearDoor = not self.RearDoor end
-	if button == "RearDoor2" then self.RearDoor2 = not self.RearDoor2 end
+
 end
 
 
@@ -214,6 +216,37 @@ function ENT:Think()
 			self.Timer = nil
 		end
 	end
+	
+	
+	
+		local N = self.ThrottleState
+	
+		local P = math.max(0,0.04449 + 1.06879*math.abs(N) - 0.465729*N^2)
+        if math.abs(N) > 0.4 then P = math.abs(N) end
+        if self.Speed < 10 and N > 0 then P = P*(1.0 + 2.5*(10.0-self.Speed)/10.0) end
+        self.RearBogey.MotorPower  = P*50*((N > 0) and 1 or -1)
+        self.FrontBogey.MotorPower = P*50*((N > 0) and 1 or -1)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
+	
+	self.RearBogey.MotorForce  = 15000--*(N)
+	self.RearBogey.MotorPower = P*6 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
+	self.RearBogey.Reversed = (self.ReverserState > 0)
+	end
+	
+	print(tostring, self.RearBogey.MotorPower)
+	
+	
 	
 	if self.Timer2 and CurTime()-self.Timer2 < 1 then
 		for k,v in pairs(self.Bogeys) do

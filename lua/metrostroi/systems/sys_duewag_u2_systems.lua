@@ -35,6 +35,9 @@ function TRAIN_SYSTEM:TriggerInput(name,value)
 	if self[name] then self[name] = value end
 end
 
+function TRAIN_SYSTEM:TriggerOutput(name,value)
+
+end
 
 
 function TRAIN_SYSTEM:Throttle()

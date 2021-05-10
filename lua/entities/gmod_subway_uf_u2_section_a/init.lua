@@ -152,17 +152,19 @@ function ENT:Initialize()
 	self.ThrottleEngaged = false
 	self.ReverserState = 0
 	self.ReverserEnaged = 0
+	self.ChopperJump = 0
 	-- Create bogeys
 	self.FrontBogey = self:CreateBogeyUF(Vector( 346,0,0),Angle(0,180,0),true,"u2")
-    self.RearBogey  = self:CreateBogeyUF(Vector(-10,0,5),Angle(0,0,0),false,"u2joint")
+    self.RearBogey  = self:CreateBogeyUF(Vector(4,1,0),Angle(0,0,0),false,"u2joint")
     self.FrontBogey:SetNWBool("Async",true)
     self.RearBogey:SetNWBool("Async",true)
 	-- Create couples
     self.FrontCouple = self:CreateCoupleUF(Vector( 525,0,15),Angle(0,0,0),true,"u2")	
     self.RearCouple = self:CreateCoupleUF(Vector( 100,0,100),Angle(0,0,0),false,"u2")	
+
 	self.Async = true
 	-- Create U2 Section B
-	self.u2sectionb = self:CreateSectionB(Vector(-800,0,0))
+	self.u2sectionb = self:CreateSectionB(Vector(-785,0,0))
 	
 	
 	self.PantoState = 0
@@ -196,6 +198,11 @@ function ENT:Initialize()
 		[KEY_B] = "BatteryOn",
 		[KEY_N] = "BatteryOff",
 		[KEY_0] = "KeyTurnOn",
+		[KEY_1] = "Throttle10",
+		[KEY_2] = "Throttle20",
+		[KEY_3] = "Throttle30",
+		[KEY_4] = "Throttle40",
+		[KEY_5] = "Throttle50",
 		
 	}
 	
@@ -240,12 +247,12 @@ function ENT:Think()
 		local P = math.max(0,0.04449 + 1.06879*math.abs(N) - 0.465729*N^2)
         if math.abs(N) > 0.4 then P = math.abs(N) end
         if self.Speed < 10 and N > 0 then P = P*(1.0 + 2.5*(10.0-self.Speed)/10.0) end
-        self.RearBogey.MotorPower  = P*0.5*((N > 0) and 1 or -1)
-        self.FrontBogey.MotorPower = P*0.5*((N > 0) and 1 or -1)
+        self.RearBogey.MotorPower  = P*50*((N > 0) and 1 or -1)
+        self.FrontBogey.MotorPower = P*50*((N > 0) and 1 or -1)
 	
 	
 	
-	
+	self:SetNW2Int("ThrottleState", self.ThrottleState)
 	
 	
 	
@@ -256,11 +263,11 @@ function ENT:Think()
 	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
 
 	
-	self.FrontBogey.MotorForce = 3667.9--*(N) ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
-	self.FrontBogey.MotorPower = P*1.9
+	self.FrontBogey.MotorForce = 18000*(N / 20 ) ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
+	--self.FrontBogey.MotorPower = (N *100) + (self.ChopperJump)
 	self.FrontBogey.Reversed = (self.ReverserState < 0)
-	self.RearBogey.MotorForce  = 3667.9--*(N)
-	self.RearBogey.MotorPower = P*1.9 --100 ----------- maximum kW of one bogey 36.67
+	self.RearBogey.MotorForce  = 18000*(N / 20)
+	--self.RearBogey.MotorPower = N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
 	self.RearBogey.Reversed = (self.ReverserState > 0)
 	end
 	
@@ -307,6 +314,7 @@ function ENT:OnButtonPress(button,ply)
 			self.ReverserState = math.Clamp(self.ReverserState,-1,1)
 			self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
 			print(tostring(self.ReverserState))
+			print("Reverser")
 			
 			else 
 			end
@@ -346,13 +354,12 @@ function ENT:CreateSectionB(pos)
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
 	-- self.u2sectionb = u2b
-	u2sectionb:SetPos(self:LocalToWorld(Vector(-10,0,0)))
+	u2sectionb:SetPos(self:LocalToWorld(Vector(-5,0,0)))
 	u2sectionb:SetAngles(self:GetAngles() + ang)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())
 	local xmin = 5
 	local xmax = 5
-	--if button == "RearDoor" then u2sectionb.RearDoor = not u2sectionb.RearDoor end	
 	
 	constraint.AdvBallsocket(
 		u2sectionb,
