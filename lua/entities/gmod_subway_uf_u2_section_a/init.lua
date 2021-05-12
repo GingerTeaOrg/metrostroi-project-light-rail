@@ -148,11 +148,14 @@ function ENT:Initialize()
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.DriverSeat:SetColor(Color(0,0,0,0))
 	
+	self.speed = 0
 	self.ThrottleState = 0
 	self.ThrottleEngaged = false
 	self.ReverserState = 0
 	self.ReverserEnaged = 0
 	self.ChopperJump = 0
+	
+	self.AlarmSound = 0
 	-- Create bogeys
 	self.FrontBogey = self:CreateBogeyUF(Vector( 346,0,0),Angle(0,180,0),true,"u2")
     self.RearBogey  = self:CreateBogeyUF(Vector(4,1,0),Angle(0,0,0),false,"u2joint")
@@ -182,7 +185,7 @@ function ENT:Initialize()
 		[KEY_A] = "ThrottleUp",
 		[KEY_D] = "ThrottleDown",
 		[KEY_H] = "BellEngage",
-		
+		[KEY_SPACE] = "Deadman",
 		[KEY_W] = "ReverserUp",
 		[KEY_S] = "ReverserDown",
 		[KEY_P] = "PantoUp",
@@ -242,13 +245,14 @@ function ENT:Think()
 	self:SetPackedBool("Headlights1")
 	
 	
-		local N = self.ThrottleState
+		local N = math.Clamp(self.ThrottleState, 0, 100)
 	
-		local P = math.max(0,0.04449 + 1.06879*math.abs(N) - 0.465729*N^2)
-        if math.abs(N) > 0.4 then P = math.abs(N) end
-        if self.Speed < 10 and N > 0 then P = P*(1.0 + 2.5*(10.0-self.Speed)/10.0) end
-        self.RearBogey.MotorPower  = P*50*((N > 0) and 1 or -1)
-        self.FrontBogey.MotorPower = P*50*((N > 0) and 1 or -1)
+		local R = self.ReverserState
+		local P = math.max(0,0.04449 + 1.06879*math.abs(R) - 0.465729*R^2)
+        if math.abs(R) > 0.4 then P = math.abs(R) end
+        if self.Speed < 10 and R > 0 then P = P*(1.0 + 2.5*(10.0-self.Speed)/10.0) end
+        self.RearBogey.MotorPower  = P*0.5*((R > 0) and 1 or -1)
+        self.FrontBogey.MotorPower = P*0.5*((R > 0) and 1 or -1)
 	
 	
 	
@@ -263,12 +267,12 @@ function ENT:Think()
 	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
 
 	
-	self.FrontBogey.MotorForce = 18000*(N / 20 ) ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
+	self.FrontBogey.MotorForce = 18000*N / 20 ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
 	--self.FrontBogey.MotorPower = (N *100) + (self.ChopperJump)
 	self.FrontBogey.Reversed = (self.ReverserState < 0)
-	self.RearBogey.MotorForce  = 18000*(N / 20)
+	self.RearBogey.MotorForce  = 18000*N / 20
 	--self.RearBogey.MotorPower = N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
-	self.RearBogey.Reversed = (self.ReverserState > 0)
+	self.RearBogey.Reversed = (self.ReverserState < 0)
 	end
 	
 	
@@ -326,6 +330,13 @@ function ENT:OnButtonPress(button,ply)
 			self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
 			print(tostring(self.ReverserState))
 	end
+	
+	
+	
+	if button == "Deadman" then
+			self.Duewag_Deadman:TriggerInput("IsPressed", 1)
+			print("DeadmanPressedYes")
+	end
 end
 
 function ENT:OnButtonRelease(button,ply)
@@ -344,6 +355,11 @@ function ENT:OnButtonRelease(button,ply)
 		if button == "ThrottleDown" then
 			self.Duewag_U2:TriggerInput("ThrottleState", self.ThrottleState)
 			
+		end
+		
+		if button == "Deadman" then
+			self.Duewag_Deadman:TriggerInput("IsPressed", 0)
+			print("DeadmanPressedNo")
 		end
 	
 

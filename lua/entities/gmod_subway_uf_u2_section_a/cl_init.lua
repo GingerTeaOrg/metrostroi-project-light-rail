@@ -62,6 +62,29 @@ function ENT:Think()
 		--self.GlowingLights[1]:SetFarZ(5144)--5144
 	--end	
 	
+	
+	
+	if self.Duewag_Deadman.AlarmSound == 1 then
+		self.SetSoundState("Deadman",1)
+	end
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	local speed = self:GetNW2Int("Speed")/100
 	local limit = 80

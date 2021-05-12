@@ -36,6 +36,8 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Door_open"] = {800,1e9,Vector(300,14,14),1}
 
 	self.SoundNames["Door_close"] = {"lilly/uf/u2/Door_close.mp3"}
+	self.SoundNames["Deadman"] = {"lilly/uf/common/Duwag_Totmann.wav"}
+	self.SoundPositions["Deadman"] = {800,1e9,Vector(450,0,42),1}
 	self.SoundPositions["Door_close"] = {800,1e9,Vector(300,14,14),1}
 
 	self.SoundNames["rolling_10"] = {loop=true,"subway_trains/717/rolling/10_rolling.wav"}
@@ -49,6 +51,7 @@ end
 
 function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
+	self:LoadSystem("Duewag_Deadman")
 	--self:LoadSystem("uf_bell")
 	--self:LoadSystem("duewag_electric")
 end
