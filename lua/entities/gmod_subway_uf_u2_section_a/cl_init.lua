@@ -89,16 +89,9 @@ function ENT:Think()
 	local speed = self:GetNW2Int("Speed")/100
 	local limit = 80
 	local nxt = 35
+
 	
-	if IsValid(self.ClientEnts["speedo1"])then
-		self.ClientEnts["speedo1"]:SetSkin(speed%10)
-	end
-	
-	if IsValid(self.ClientEnts["speedo2"])then
-		self.ClientEnts["speedo2"]:SetSkin(speed/10)
-	end
-	
-	if speed ~= -1 then
+	--[[if speed ~= -1 then
 		for i=1,5 do
 			if IsValid(self.ClientEnts["speedfact"..i])then
 				--self.ClientEnts["speeddop"..i]:SetSkin(math.Clamp(50-limit/2-(i-1)*10,0,10))
@@ -117,7 +110,7 @@ function ENT:Think()
 			end
 	
 		end
-	end
+	end]]
 	
 	--door anim
 	for i=0,3 do
@@ -128,7 +121,7 @@ function ENT:Think()
 		end
 	end
 	
-    local rol10 = math.Clamp(speed/5,0,1)*(1-math.Clamp((speed-50)/8,0,1))
+    local rol10 = math.Clamp((speed-50)/8,0,1) --math.Clamp(speed/5,0,1)*(1-math.Clamp((speed-50)/8,0,1))
     local rol70 = math.Clamp((speed-50)/8,0,1)
     self:SetSoundState("rolling_10",rol10,1)
     self:SetSoundState("rolling_70",rol70,1)

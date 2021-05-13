@@ -157,11 +157,11 @@ function ENT:Initialize()
 	self.ReverserState = 0
 	self.ReverserEnaged = 0
 	self.ChopperJump = 0
-	self.BrakePressure = 100
+	self.BrakePressure = 0
 	
 	self.AlarmSound = 0
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 346,0,0),Angle(0,180,0),true,"u2")
+	self.FrontBogey = self:CreateBogeyUF(Vector( 400,0,0),Angle(0,180,0),true,"u2")
     self.RearBogey  = self:CreateBogeyUF(Vector(4,1,0),Angle(0,0,0),false,"u2joint")
     self.FrontBogey:SetNWBool("Async",true)
     self.RearBogey:SetNWBool("Async",true)
@@ -178,7 +178,8 @@ function ENT:Initialize()
 	
 	self.ReverserState = 0
 	
-	
+	self.FrontBogey:SetNWInt("MotorSoundType",0)
+    self.RearBogey:SetNWInt("MotorSoundType",0)
 	
 	
 	--self.PantoState = 0
@@ -212,7 +213,8 @@ function ENT:Initialize()
 		[KEY_5] = "Throttle50",
 		
 			[KEY_LSHIFT] = {
-							[KEY_0] = "KeyToggle",},
+							[KEY_0] = "KeyToggle",
+							[KEY_9] = "ReverserInsert" },
 		}
 	
 
@@ -253,21 +255,31 @@ function ENT:Think()
 	
 	if self.ThrottleState > 0 then
 		self.ThrottleEngaged = true
+	else
+		self.ThrottleEngaged = false
 	end
 	
-	--self.BrakePressure = math.Clamp(self.ThrottleState, 0, -100) * -1
+	self.BrakePressure = math.Clamp(self.ThrottleState, -100, 0)--* -0.01 * 2.7 -- 0.0 full released, 2.7 full service
+	print(tostring(self.BrakePressure))
+	self.BrakePressure = self.BrakePressure  * -0.01 * 2.7
+	print(tostring(self.BrakePressure))
 	
+	--if self.Duewag_Deadman:Alarm == 1 then
+	--	self.BrakePressure = 2.7
+	--end
 	
-		local N = math.Clamp(self.ThrottleState, 0, 100)
-	
-
+	local N = math.Clamp(self.ThrottleState, 0, 100)
 	
 	
 	
 	self:SetNW2Int("ThrottleState", self.ThrottleState)
 	
 	
-	
+	if self.Speed < 15 then
+		self.ChopperJump = 15
+		else
+		self.ChopperJump = 0
+	end
 	
 	
 	
@@ -275,8 +287,10 @@ function ENT:Think()
 	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
 	
 	
-	self.FrontBogey.PneumaticBrakeForce = (50000.0) 
-    --self.FrontBogey.BrakeCylinderPressure = self.BrakePressure  
+	self.FrontBogey.PneumaticBrakeForce = (80000.0) 
+	self.RearBogey.PneumaticBrakeForce = (80000.0) 
+    self.FrontBogey.BrakeCylinderPressure = self.BrakePressure  
+	self.RearBogey.BrakeCylinderPressure = self.BrakePressure  
 
 	
 	self.FrontBogey.MotorForce = 20000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW

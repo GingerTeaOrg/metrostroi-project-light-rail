@@ -41,10 +41,13 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Deadman"] = {800,1e9,Vector(300,14,14),1}
 	
 
-	self.SoundNames["rolling_10"] = {loop=true,"subway_trains/717/rolling/10_rolling.wav"}
-	self.SoundNames["rolling_70"] = {loop=true,"subway_trains/717/rolling/70_rolling.wav"}
-	self.SoundPositions["rolling_10"] = {1200,1e9,Vector(0,0,0),0.3}
+	self.SoundNames["rolling_10"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}
+	self.SoundNames["rolling_70"] = {loop=true,"lilly/uf/u2/rumb1.wav"}
+	self.SoundPositions["rolling_10"] = {1200,1e9,Vector(0,0,0),1}
 	self.SoundPositions["rolling_70"] = self.SoundPositions["rolling_10"]
+	
+	self.SoundNames["rolling_motors"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}
+	self.SoundPositions["rolling_motors"] = {480,1e12,Vector(0,0,0),.4}
 end
 
 

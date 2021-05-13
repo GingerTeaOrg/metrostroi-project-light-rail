@@ -667,6 +667,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
 								self.LineNum = 8
 								elseif self.LineNum5 == nil then
 									self.LineNum5 = 8
+		end
 									
 		if (name == "9") then
 			if self.LineNum1 == nil then
@@ -680,6 +681,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
 								self.LineNum = 9
 								elseif self.LineNum5 == nil then
 									self.LineNum5 = 9
+		end
 									
 
 		if (name == "Delete") then
@@ -694,6 +696,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
 								self.LineNum = nil
 								elseif not self.LineNum5 == nil then
 									self.LineNum5 = nil ----BOOKMARK
+		end
 									
 
 							

@@ -1,2 +1,0 @@
-Primary=astation-info.jpg
-Tile=st
