@@ -35,12 +35,9 @@ self.Triggers = {}
 
     self.Route = 0
 
-    self.Line = 1
+    self.Line = 0
 
     if not self.Train.R_IBISOn then
-        self.Train:LoadSystem("R_IBISMenu","Relay","Switch",{bass = true })
-        self.Train:LoadSystem("R_IBISUp","Relay","Switch",{bass = true })
-        self.Train:LoadSystem("R_IBISDown","Relay","Switch",{bass = true })
 		self.Train:LoadSystem("1","Relay","Switch",{bass = true })
 		self.Train:LoadSystem("2","Relay","Switch",{bass = true })
 		self.Train:LoadSystem("3","Relay","Switch",{bass = true })
@@ -59,7 +56,7 @@ self.Triggers = {}
     self.K2 = 0
     --self.Train:LoadSystem("R_Program1","Relay","Switch",{bass = true })
     --self.Train:LoadSystem("R_Program2","Relay","Switch",{bass = true })
-end
+
 
 
 function TRAIN_SYSTEM:Outputs()
@@ -509,7 +506,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
 	end
 	
 		if (name == "0") then
-			if self.LineNum1 = nil then
+			if self.LineNum1 == nil then
 				self.LineNum1 = 0
 				else
 					if self.LineNum2 == nil then
@@ -657,6 +654,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
 								self.LineNum = 7
 								elseif self.LineNum5 == nil then
 									self.LineNum5 = 7
+		end
 		if (name == "8") then
 			if self.LineNum1 == nil then
 				self.LineNum1 = 8

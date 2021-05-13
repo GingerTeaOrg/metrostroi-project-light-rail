@@ -148,12 +148,16 @@ function ENT:Initialize()
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.DriverSeat:SetColor(Color(0,0,0,0))
 	
+	self.Debug = 1
+	self.CabEnabled = 1
+	
 	self.speed = 0
 	self.ThrottleState = 0
 	self.ThrottleEngaged = false
 	self.ReverserState = 0
 	self.ReverserEnaged = 0
 	self.ChopperJump = 0
+	self.BrakePressure = 100
 	
 	self.AlarmSound = 0
 	-- Create bogeys
@@ -167,7 +171,7 @@ function ENT:Initialize()
 
 	self.Async = true
 	-- Create U2 Section B
-	self.u2sectionb = self:CreateSectionB(Vector(-785,0,0))
+	self.u2sectionb = self:CreateSectionB(Vector(-770,0,0))
 	
 	
 	self.PantoState = 0
@@ -207,7 +211,9 @@ function ENT:Initialize()
 		[KEY_4] = "Throttle40",
 		[KEY_5] = "Throttle50",
 		
-	}
+			[KEY_LSHIFT] = {
+							[KEY_0] = "KeyToggle",},
+		}
 	
 
 end
@@ -242,17 +248,19 @@ function ENT:Think()
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*100)
 	
-	self:SetPackedBool("Headlights1")
+	self:SetPackedBool("Headlights1",true)
+	
+	
+	if self.ThrottleState > 0 then
+		self.ThrottleEngaged = true
+	end
+	
+	--self.BrakePressure = math.Clamp(self.ThrottleState, 0, -100) * -1
 	
 	
 		local N = math.Clamp(self.ThrottleState, 0, 100)
 	
-		local R = self.ReverserState
-		local P = math.max(0,0.04449 + 1.06879*math.abs(R) - 0.465729*R^2)
-        if math.abs(R) > 0.4 then P = math.abs(R) end
-        if self.Speed < 10 and R > 0 then P = P*(1.0 + 2.5*(10.0-self.Speed)/10.0) end
-        self.RearBogey.MotorPower  = P*0.5*((R > 0) and 1 or -1)
-        self.FrontBogey.MotorPower = P*0.5*((R > 0) and 1 or -1)
+
 	
 	
 	
@@ -265,17 +273,25 @@ function ENT:Think()
 	
 	
 	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
+	
+	
+	self.FrontBogey.PneumaticBrakeForce = (50000.0) 
+    --self.FrontBogey.BrakeCylinderPressure = self.BrakePressure  
 
 	
-	self.FrontBogey.MotorForce = 18000*N / 20 ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
-	--self.FrontBogey.MotorPower = (N *100) + (self.ChopperJump)
-	self.FrontBogey.Reversed = (self.ReverserState < 0)
-	self.RearBogey.MotorForce  = 18000*N / 20
-	--self.RearBogey.MotorPower = N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
-	self.RearBogey.Reversed = (self.ReverserState < 0)
+	self.FrontBogey.MotorForce = 20000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
+	self.FrontBogey.MotorPower = 600--(N *100) + (self.ChopperJump)
+	self.FrontBogey.Reversed = self.ReverserState < 0
+	self.RearBogey.MotorForce  = 20000*N / 20 --18000*N
+	self.RearBogey.MotorPower = 600--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
+	self.RearBogey.Reversed = self.ReverserState > 0
 	end
 	
-	
+	if self.Debug == 1 then
+		print("Front MotorForce and MotorPower")
+		print(tostring(self.FrontBogey.MotorForce))
+		print(tostring(self.FrontBogey.MotorPower))
+	end
 	
 end
 
@@ -319,16 +335,17 @@ function ENT:OnButtonPress(button,ply)
 			self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
 			print(tostring(self.ReverserState))
 			print("Reverser")
-			
-			else 
 			end
 	end
 	if button == "ReverserDown"
 			then
+			if 
+				not self.ThrottleEngaged == true then
 			self.ReverserState = self.ReverserState - 1
 			self.ReverserState = math.Clamp(self.ReverserState,-1,1)
 			self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
 			print(tostring(self.ReverserState))
+			end
 	end
 	
 	
@@ -336,6 +353,15 @@ function ENT:OnButtonPress(button,ply)
 	if button == "Deadman" then
 			self.Duewag_Deadman:TriggerInput("IsPressed", 1)
 			print("DeadmanPressedYes")
+	end
+	
+	if button == "KeyToggle" then
+			self.Duewag_U2:TriggerInput("KeyInsert", 1)
+			print("Key is insterted")
+	end
+	if button == "KeyTurnOn" then
+			self.Duewag_U2:TriggerInput("KeyTurnOn", 1)
+			print("Key is enabled")
 	end
 end
 
@@ -370,7 +396,7 @@ function ENT:CreateSectionB(pos)
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
 	-- self.u2sectionb = u2b
-	u2sectionb:SetPos(self:LocalToWorld(Vector(-5,0,0)))
+	u2sectionb:SetPos(self:LocalToWorld(Vector(0,0,0)))
 	u2sectionb:SetAngles(self:GetAngles() + ang)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())

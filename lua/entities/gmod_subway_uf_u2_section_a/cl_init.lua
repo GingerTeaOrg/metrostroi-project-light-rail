@@ -64,8 +64,8 @@ function ENT:Think()
 	
 	
 	
-	if self.Duewag_Deadman.AlarmSound == 1 then
-		self.SetSoundState("Deadman",1)
+	if self.Duewag_Deadman.AlarmSound ~= 0 then
+		--self.SetSoundState("Deadman",1)
 	end
 	
 	

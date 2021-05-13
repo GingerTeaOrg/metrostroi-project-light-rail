@@ -31,8 +31,10 @@ function TRAIN_SYSTEM:Think()
 		local train = self.Train
 		
 		 if self.IsPressed ~= 1 then
-		 self.AlarmSound = 1
-		 print("DEADMAN ALARM SOUNDING")
-		 timer.Create("Countdown", 3, 0, function() self.Alarm = 1 end )
+		 --if self.speed > 0
+			self.AlarmSound = 1
+			print("DEADMAN ALARM SOUNDING")
+			timer.Create("Countdown", 3, 0, function() self.Alarm = 1 end )
+		-- end
 		 end
 end

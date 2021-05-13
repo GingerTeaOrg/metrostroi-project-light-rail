@@ -29,16 +29,17 @@ function ENT:InitializeSounds()
 	self.SoundPositions["horn2"] = {1100,1e9,Vector(100,0,0),1}
 	self.SoundNames["BitteZuruecktreten"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
 	self.SoundPositions["BitteZuruecktreten"] = {1100,1e9,Vector(100,0,0),1}
-	self.SoundNames["igbt7"]   = {"lilly/uf/u2/Moto/Duewag_idle.mp3",loop = 1}
-	self.SoundPositions["igbt7"] = {800,1e9,Vector(100,0,0),0.035}
+	self.SoundNames["idle"]   = {"lilly/uf/u2/Moto/Duewag_idle.mp3",loop = 1}
+	self.SoundPositions["idle"] = {800,1e9,Vector(100,0,0),0.035}
 	
 	self.SoundNames["Door_open"] = {"lilly/uf/u2/Door_open.mp3"}
 	self.SoundPositions["Door_open"] = {800,1e9,Vector(300,14,14),1}
 
 	self.SoundNames["Door_close"] = {"lilly/uf/u2/Door_close.mp3"}
-	self.SoundNames["Deadman"] = {"lilly/uf/common/Duwag_Totmann.wav"}
-	self.SoundPositions["Deadman"] = {800,1e9,Vector(450,0,42),1}
 	self.SoundPositions["Door_close"] = {800,1e9,Vector(300,14,14),1}
+	self.SoundNames["Deadman"] = {"lilly/uf/common/Duwag_Totmann.wav"}
+	self.SoundPositions["Deadman"] = {800,1e9,Vector(300,14,14),1}
+	
 
 	self.SoundNames["rolling_10"] = {loop=true,"subway_trains/717/rolling/10_rolling.wav"}
 	self.SoundNames["rolling_70"] = {loop=true,"subway_trains/717/rolling/70_rolling.wav"}

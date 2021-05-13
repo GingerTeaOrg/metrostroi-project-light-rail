@@ -16,16 +16,17 @@ function TRAIN_SYSTEM:Initialize()
 	self.Bell = 0
 	self.BitteZuruecktreten = 0
 	self.Horn = 0
-	self.PantoState = 0
 	self.PantoUp = 0
 	self.BatteryOn = 0
+	self.KeyInsert = 0
+	self.KeyTurnOn = 0
 	
 
 end
 
 
 function TRAIN_SYSTEM:Inputs()
-	return {"speed", "ThrottleState", "Drive", "Brake","Reverse","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOn", "KeyTurnOn", "BlinkerState", "StationBrakeOn", "StationBrakeOff"}
+	return {"speed", "ThrottleState", "Brake","Reverse","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOn", "KeyInsert", "KeyTurnOn", "BlinkerState", "StationBrakeOn", "StationBrakeOff"}
 end
 
 function TRAIN_SYSTEM:Outputs()
@@ -40,6 +41,10 @@ function TRAIN_SYSTEM:TriggerOutput(name,value)
 end
 
 
+function TRAIN_SYSTEM:BlinkerState(direction,on)
+
+end
+
 function TRAIN_SYSTEM:Throttle()
 
 		
@@ -49,10 +54,19 @@ end
 function TRAIN_SYSTEM:Think()
 	local train = self.Train 
 	self.Train:SetPackedBool("Bell",self.Bell == 1)
-	self.Train:SetPackedBool("igbt74",self.Igbt74 == 1)
 	self.Train:SetPackedBool("BitteZuruecktreten",self.BitteZuruecktreten == 1)
 	self.Train:SetPackedBool("Horn",self.Horn == 1)
 	
+	
+	
+	--[[if self.KeyInsert == 1 then
+		if self.KeyTurnOn == 1 then
+			if self.BatteryOn = 1 then
+			
+			end	
+		end
+	
+	end]]
 
 
 
