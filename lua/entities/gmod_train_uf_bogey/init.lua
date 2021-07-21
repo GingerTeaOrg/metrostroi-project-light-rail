@@ -477,11 +477,11 @@ function ENT:CheckVoltage(dT)
     -- Voltage spikes
     self.VoltageDrop = math.max(-30,math.min(30,self.VoltageDrop + (0 - self.VoltageDrop)*10*dT))
 
-    local feeder = self.Feeder and Metrostroi.Voltages[self.Feeder]
-    local volt = feeder or Metrostroi.Voltage or 750
+    local feeder = self.Feeder and UF.Voltages[self.Feeder]
+    local volt = feeder or UF.Voltage or 750
     -- Non-metrostroi maps
     if ((GetConVarNumber("metrostroi_train_requirethirdrail") <= 0)) then-- or
-       --(not Metrostroi.MapHasFullSupport()) then
+       --(not UF.MapHasFullSupport()) then
         self.Voltage = volt + self.VoltageDrop
         return
     end
@@ -491,12 +491,12 @@ function ENT:CheckVoltage(dT)
     for i=1,2 do
         if self.ContactStates[i] then self.Voltage = volt + self.VoltageDrop
         elseif IsValid(self.Connectors[i]) and self.Connectors[i].Coupled == (i >  2 and self.Train.RearBogey or self) then
-            self.Voltage = self.Connectors[i].Power and Metrostroi.Voltage or 0
+            self.Voltage = self.Connectors[i].Power and UF.Voltage or 0
         else self.Connectors[i] = nil end
     end
     if self.VoltageDropByTouch > 0 then
         local Rperson = 0.613
-        local Iperson = Metrostroi.Voltage / (Rperson/(self.VoltageDropByTouch + 1e-9))
+        local Iperson = UF.Voltage / (Rperson/(self.VoltageDropByTouch + 1e-9))
         self.DropByPeople = Iperson
     end
 end
@@ -521,7 +521,7 @@ function ENT:Think()
     self.Angle = self.Wheels.Angle
 
     self:SetNW2Entity("TrainWheels",self.Wheels)
-    self:CheckVoltage(self.DeltaTime)
+    --self:CheckVoltage(self.DeltaTime)
 
     -- Skip physics related stuff
     if not IsValid(self.Wheels) or not self.Wheels:GetPhysicsObject():IsValid() or self.NoPhysics then
@@ -711,16 +711,16 @@ function ENT:SpawnFunction(ply, tr)
     ent:Spawn()
     ent:Activate()
 
-    if not inhibitrerail then Metrostroi.RerailBogey(ent) end
+    if not inhibitrerail then UF.RerailBogey(ent) end
     return ent
 end
 
 function ENT:AcceptInput(inputName, activator, called, data)
     if inputName == "OnFeederIn" then
         self.Feeder = tonumber(data)
-        if self.Feeder and not Metrostroi.Voltages[self.Feeder] then
-            Metrostroi.Voltages[self.Feeder] = 0
-            Metrostroi.Currents[self.Feeder] = 0
+        if self.Feeder and not UF.Voltages[self.Feeder] then
+            UF.Voltages[self.Feeder] = 0
+            UF.Currents[self.Feeder] = 0
         end
     elseif inputName == "OnFeederOut" then
         self.Feeder = nil

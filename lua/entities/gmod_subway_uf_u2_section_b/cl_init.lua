@@ -1,8 +1,6 @@
 include("shared.lua")
 
---------------------------------------------------------------------------------
--- переписанная татра + немного приколов от томаса | переписал Lindy 
---------------------------------------------------------------------------------
+
 
 ENT.ClientProps = {}
 ENT.AutoAnims = {}
@@ -33,9 +31,9 @@ end
 
 
 ENT.ClientProps["Dest"] = {
-	model = "models/lilly/uf/u2/dest_a.mdl",
+	model = "models/lilly/uf/u2/dest_b.mdl",
 	pos = Vector(0,0,0),
-	ang = Angle(0,0,180),
+	ang = Angle(0,0,0),
 	scale = 1,
 }
 
@@ -62,4 +60,4 @@ function ENT:Think()
 	
 end
 
-Metrostroi.GenerateClientProps()
+UF.GenerateClientProps()

@@ -1,13 +1,13 @@
 
 Metrostroi.DefineSystem("Duewag_U2")
-TRAIN_SYSTEM.DontAccelerateSimulation = true
+TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 function TRAIN_SYSTEM:Initialize()
 
 	self.speed = 0
 	self.ThrottleState = 0
 	
-	
+	self.Traction = 0
 	
 	self.Drive = 0
 	self.Brake = 0
@@ -16,57 +16,107 @@ function TRAIN_SYSTEM:Initialize()
 	self.Bell = 0
 	self.BitteZuruecktreten = 0
 	self.Horn = 0
-	self.PantoUp = 0
-	self.BatteryOn = 0
-	self.KeyInsert = 0
-	self.KeyTurnOn = 0
+	self.PantoUp = false
+	self.BatteryOn = false
+	self.KeyInsert = false
+	self.KeyTurnOn = false
+	self.CabLights = 0
+	self.HeadLights = 0
+	self.StopLights = 0
 	
+	self.ReverserInserted = false
+	
+	self.BlinkerOnL = 0
+	self.BlinkerOnR = 0
+	self.BlinkerOnWarn = 0
+	self.ThrottleRate = 0
+	self.TractionConditionFulfilled = false
+	
+
+end
+
+
+function TRAIN_SYSTEM:Wait(seconds)
+
+	local time = seconds or 1
+    local start = os.time()
+    repeat until os.time() == start + time
+
 
 end
 
 
 function TRAIN_SYSTEM:Inputs()
-	return {"speed", "ThrottleState", "Brake","Reverse","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOn", "KeyInsert", "KeyTurnOn", "BlinkerState", "StationBrakeOn", "StationBrakeOff"}
+	return {"speed", "ThrottleRate", "ThrottleState", "BrakePressure","ReverserState", "ReverserInserted","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOn", "KeyInsert", "KeyTurnOn", "BlinkerState", "StationBrakeOn"}
 end
 
 function TRAIN_SYSTEM:Outputs()
-	return { "ThrottleState", "PantoState", "BlinkerState", "DoorSelectState", "BatteryOnState", "PantoState", "KeyTurnOn", "BlinkerState", "speed"}
+	return { "ThrottleState", "ThrottleRate", "ThrottleEngaged", "Traction", "BrakePressure", "PantoState", "BlinkerState", "DoorSelectState", "BatteryOnState", "PantoState", "KeyTurnOn", "BlinkerState", "speed", "CabLight", "SpringBrake", "TractionConditionFulfilled"}
 end
 function TRAIN_SYSTEM:TriggerInput(name,value)
 	if self[name] then self[name] = value end
+
+	--[[if name == "KeyInsert" then self.KeyInsert = value end
+	if name == "KeyTurnOn" then self.KeyTurnOn = value end
+	if name == "BatteryOn" then self.BatteryOn = value end
+	if name == "PantoUp" then self.PantoUp = value end]]
 end
 
 function TRAIN_SYSTEM:TriggerOutput(name,value)
-
+	if self[name] then self[name] = value end
 end
 
 
-function TRAIN_SYSTEM:BlinkerState(direction,on)
-
+function TRAIN_SYSTEM:BlinkerHandler()
 end
 
-function TRAIN_SYSTEM:Throttle()
-
-		
-
-end
 --------------------------------------------------------------------------------
-function TRAIN_SYSTEM:Think()
+function TRAIN_SYSTEM:Think(dT)
 	local train = self.Train 
-	self.Train:SetPackedBool("Bell",self.Bell == 1)
-	self.Train:SetPackedBool("BitteZuruecktreten",self.BitteZuruecktreten == 1)
-	self.Train:SetPackedBool("Horn",self.Horn == 1)
+
+	
+	
+
+	
+	self.ThrottleState = self.ThrottleState +  self.ThrottleRate
+	
+	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
 	
 	
 	
-	--[[if self.KeyInsert == 1 then
-		if self.KeyTurnOn == 1 then
-			if self.BatteryOn = 1 then
-			
-			end	
-		end
+	self.KeyInsert = self.Train:GetNW2Bool("KeyInsert")
+	self.KeyTurnOn = self.Train:GetNW2Bool("KeyTurnOn")
+	self.BatteryOn = self.Train:GetNW2Bool("BatteryOn")
+	self.PantoUp = self.Train:GetNW2Bool("PantoUp")
+	self.ReverserInserted = self.Train:GetNW2Bool("ReverserInserted")
+	--PrintMessage(HUD_PRINTTALK, "Duewag System: Reverser Inserted:")
+	--PrintMessage(HUD_PRINTTALK, self.ReverserInserted)
 	
-	end]]
+	
+	
+	
+	if self.KeyInsert == true and self.KeyTurnOn == true and self.BatteryOn == true and self.ReverserInserted == true and self.PantoUp == true then
+		self.TractionConditionFulfilled = true
+	end
+		
+		
+	--if self.TractionConditionFulfilled == true then
+		self.Traction = self.ThrottleState
+
+	--else
+	--	self.Traction = 0
+	--end				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+	
 
 
 

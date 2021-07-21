@@ -24,8 +24,8 @@ end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.1,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["horn1"] = {1100,1e9,Vector(100,0,0),1}
-	--self.SoundNames["horn2"] = {loop=0.5,"lilly/uf/u2/U3_Hupe_start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_end.mp3"}
+	self.SoundPositions["bell"] = {1100,1e9,Vector(100,0,0),1}
+	self.SoundNames["horn2"] = {loop=0.5,"lilly/uf/u2/U3_Hupe_start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_end.mp3"}
 	self.SoundPositions["horn2"] = {1100,1e9,Vector(100,0,0),1}
 	self.SoundNames["BitteZuruecktreten"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
 	self.SoundPositions["BitteZuruecktreten"] = {1100,1e9,Vector(100,0,0),1}
@@ -53,9 +53,23 @@ end
 
 
 
+ENT.Cameras = {
+    {Vector(480.5+17,-40,110),Angle(0,-90,0),"Train.UF_U2.Destinations"},
+    {Vector(407.5+17,32,3),Angle(0,180-7,0),"Train.720.CameraPPZ"},
+    {Vector(407.5+17,32,-19.5),Angle(0,180-7,0),"Train.720.CameraPV"},
+    {Vector(407.5+10,6,100),Angle(0,180+5,0),"Train.UF_U2.PassengerStanding"},
+    {Vector(407.5+50,-14,-15),Angle(90-46,0,0),"Train.720.CameraVityaz"},
+    {Vector(407.5+40,-35,-30),Angle(60,90,0),"Train.720.CameraKRMH"},
+    {Vector(380,35,-5),Angle(0,60,0),"Train.720.CameraPVZ"},
+    {Vector(490.5+90,0,150),Angle(0,180,0),"Train.Common.RouteNumber"},
+    {Vector(570,0,70),Angle(80,0,0),"Train.Common.CouplerCamera"},
+}
+
+
 function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
 	self:LoadSystem("Duewag_Deadman")
+	--self:LoadSystem("81_71_LastStation","destination")
 	--self:LoadSystem("uf_bell")
 	--self:LoadSystem("duewag_electric")
 end
@@ -67,7 +81,10 @@ ENT.SubwayTrain = {
 	Manufacturer = "Duewag",
 }
 
-
+ENT.MirrorCams = {
+    Vector(441,72,200),Angle(1,180,0),15,
+    Vector(441,-72,200),Angle(1,180,0),15,
+}
 
 
 --ENT.NumberRanges = {{807,1000},{2001,2468}}

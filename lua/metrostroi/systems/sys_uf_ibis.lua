@@ -139,7 +139,7 @@ if CLIENT then
             return
         end
 		
-        if State > 1 and not Metrostroi.IBISSetup then
+        if State > 1 and not UF.IBISSetup then
             self:PrintText(0,0,"Client error")
             self:PrintText(0,1,"No announcer at client")
             return
@@ -158,7 +158,7 @@ if CLIENT then
             if sel~=1 or RealTime()%1 > 0.5 then self:PrintText(1,1,Route[2]) end
         end
 
-        local stbl = Metrostroi.IBISSetup and Metrostroi.IBISSetup[Train:GetNW2Int("Announcer",1)]
+        local stbl = UF.IBISSetup and UF.IBISSetup[Train:GetNW2Int("Announcer",1)]
         if State > 2 and not stbl then
             self:PrintText(0,0,"Client error")
             self:PrintText(0,1,"No line at client")
@@ -324,7 +324,7 @@ function TRAIN_SYSTEM:Zero()
 end
 
 function TRAIN_SYSTEM:Next()
-    local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+    local tbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
     if tbl.Loop then
         if self.Arrived then
             if self.Path then
@@ -360,7 +360,7 @@ function TRAIN_SYSTEM:Next()
     self:UpdateBoards()
 end
 function TRAIN_SYSTEM:Prev()
-    local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+    local tbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
     if tbl.Loop then
         if not self.Arrived then
             if self.Path then
@@ -402,7 +402,7 @@ function TRAIN_SYSTEM:AnnQueue(msg)
 end
 function TRAIN_SYSTEM:Play(dep,not_last)
     local message
-    local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+    local tbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
     local stbl = tbl[self.Station]
     local last,lastst
     local path = self.Path and 2 or 1
@@ -427,7 +427,7 @@ function TRAIN_SYSTEM:Play(dep,not_last)
 
 
     self:AnnQueue(message)
-    --local stbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line][self.Station]
+    --local stbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line][self.Station]
     if self.LastStation > 0 and not dep and self.Station ~= last and tbl[last].not_last and (stbl.have_inrerchange or math.abs(last-self.Station) <= 3) then
         local ltbl = tbl[last]
         if stbl.not_last_c then
@@ -448,7 +448,7 @@ function TRAIN_SYSTEM:CANReceive(source,sourceid,target,targetid,textdata,numdat
     if textdata == "FirstStation" then self.FirstStation = numdata end
     if textdata == "LastStation" then self.LastStation = numdata end
     if textdata == "Activate" then
-        local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+        local tbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
         self.Station = tbl.Loop and 1 or self.Path and self.LastStation or self.FirstStation
         self.Arrived = true
         self.State = 7
@@ -459,7 +459,7 @@ function TRAIN_SYSTEM:CANReceive(source,sourceid,target,targetid,textdata,numdat
     end
 end
 function TRAIN_SYSTEM:SyncIBIS()
-    --[[ local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+    --[[ local tbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
     local last = self.Path and self.FirstStation or self.LastStation
     local lastst = tbl[last] and tbl[last][1]
     if lastst then self.Train:SetNW2Int("LastStation",lastst) end
@@ -473,7 +473,7 @@ function TRAIN_SYSTEM:SyncIBIS()
 end
 function TRAIN_SYSTEM:UpdateBoards()
     if not self.PassSchemeWork then return end
-    local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+    local tbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
     local stbl = tbl.LED
     local last = self.Path and self.FirstStation or self.LastStation
 
@@ -500,7 +500,7 @@ function TRAIN_SYSTEM:UpdateBoards()
 end
 
 function TRAIN_SYSTEM:Trigger(name,value)
-    local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)]
+    local tbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)]
     if (name == "Line") then
         self.State = 2
 	end
@@ -707,7 +707,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
             self:AnnQueue(tbl[self.Line].spec_last)
             self:AnnQueue{"buzz_end","click2"}
         elseif self.State == 7 then
-            local ltbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+            local ltbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
             local stbl = ltbl[self.Station]
             local last,lastst
             if self.Arrived then
@@ -761,7 +761,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
         end
         if (name == "R_IBISUp" or name == "R_IBISDown") and self.Selected == 2 then self.Selected = 0 end
     elseif self.State == 3 and value then
-        local stbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)]
+        local stbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)]
         if name == "R_IBISDown" and value then
             self.Line =self.Line + 1
             if self.Line > #tbl then self.Line = 1 end
@@ -777,7 +777,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
             self.State = 4
         end
     elseif self.State == 4 and value and not tbl[self.Line].Loop then --Не кольцевой
-        local stbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+        local stbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
         if name == "R_IBISDown" then
             local found = false
             for i=self.FirstStation+1,#stbl do
@@ -818,7 +818,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
             self.State = 5
         end
     elseif self.State == 5 and value and not tbl[self.Line].Loop then --Не кольцевой
-        local stbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+        local stbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
         if name == "R_IBISDown" then
             local found = false
             for i=self.LastStation+1,#stbl do
@@ -853,7 +853,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
             self.State = 6
         end
     elseif self.State == 5 and value and tbl[self.Line].Loop then --Кольцевой
-        local stbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+        local stbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
         if name == "R_IBISDown" then
             local found = false
             for i=self.LastStation+1,#stbl do
@@ -884,7 +884,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
             self.Arrived = true
         end
     elseif self.State == 6 and value then
-        local stbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+        local stbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
         if name == "R_IBISDown" or name == "R_IBISUp" then
             self.State = 2
             self.Selected = 0
@@ -904,7 +904,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
             self.StopMessage = false
         end
     elseif self.State == 7 then
-        local stbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+        local stbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
         if name == "R_IBISMenu" and value then self.ReturnTimer = CurTime() end
         if name == "R_IBISMenu" and not value and self.ReturnTimer and self.ReturnTimer - CurTime() < 0.7 then
             self.ReturnTimer = nil
@@ -948,7 +948,7 @@ function TRAIN_SYSTEM:Think()
         self.IBISTimer = CurTime()-math.Rand(-0.3,0.3)
     end
     if self.State == -1 and self.IBISTimer and CurTime()-self.IBISTimer > 1 then
-        self.State = Metrostroi.IBISSetup and 1 or -2
+        self.State = UF.IBISSetup and 1 or -2
     end
     if Power and self.State > -1  then
         for k,v in pairs(self.TriggerNames) do
@@ -958,7 +958,7 @@ function TRAIN_SYSTEM:Think()
             end
         end
     end
-    if not Metrostroi.IBISSetup and self.State > 0 then
+    if not UF.IBISSetup and self.State > 0 then
         self.State = -2
     end
     local PSWork = Train.Panel.PassSchemeControl and Train.Panel.PassSchemeControl>0 and self.State==7
@@ -1002,7 +1002,7 @@ function TRAIN_SYSTEM:Think()
             if self.StopTimer and CurTime()-self.StopTimer >= 10 then
                 self.StopTimer = false
             end
-            local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)]
+            local tbl = UF.IBISSetup[self.Train:GetNW2Int("Announcer",1)]
             local stbl = tbl[self.Line] and tbl[self.Line][self.Station]
             if not stbl or not tbl[self.Line].BlockDoors or self.Arrived and self.Station == (self.Path and self.FirstStation or self.LastStation) then
                 self.K1 = 1

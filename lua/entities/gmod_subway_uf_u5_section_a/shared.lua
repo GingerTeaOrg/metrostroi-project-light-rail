@@ -51,6 +51,6 @@ ENT.Ssttings = Settings
 ENT.Spawner = {
 head = "gmod_subway_uf_u5_section_a",
     interim = "gmod_subway_uf_u5_section_a",
-    Metrostroi.Skins.GetTable("Texture","Texture",false,"train"),
+    UF.Skins.GetTable("Texture","Texture",false,"train"),
 
 }

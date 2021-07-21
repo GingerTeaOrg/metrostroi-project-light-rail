@@ -53,4 +53,4 @@ function ENT:Think()
 	
 end
 
-Metrostroi.GenerateClientProps()
+UF.GenerateClientProps()

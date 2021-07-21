@@ -22,7 +22,7 @@ local function addButton(parent,stext,state,scolor,btext,benabled,callback)
     if benabled then
         local button = vgui.Create("DButton",panel)
         button:Dock(RIGHT)
-        button:SetText(Metrostroi.GetPhrase(btext))
+        button:SetText(UF.GetPhrase(btext))
         button:DockPadding( 5, 5, 5, 5 )
         button:SizeToContents()
         button:SetContentAlignment(5)
@@ -30,9 +30,9 @@ local function addButton(parent,stext,state,scolor,btext,benabled,callback)
         button.DoClick = callback
     end
 
-    --DrawCutText(panel,Metrostroi.GetPhrase("Workshop.Warning"),false,"DermaDefaultBold")
-    vgui.MetrostroiDrawCutText(panel,Metrostroi.GetPhrase(stext),false,"DermaDefaultBold")
-    vgui.MetrostroiDrawCutText(panel,Metrostroi.GetPhrase(state),scolor,"DermaDefaultBold")
+    --DrawCutText(panel,UF.GetPhrase("Workshop.Warning"),false,"DermaDefaultBold")
+    vgui.MetrostroiDrawCutText(panel,UF.GetPhrase(stext),false,"DermaDefaultBold")
+    vgui.MetrostroiDrawCutText(panel,UF.GetPhrase(state),scolor,"DermaDefaultBold")
 
     panel:InvalidateLayout( true )
     panel:SizeToChildren(true,true )
@@ -43,7 +43,7 @@ function ENT:DrawGUI(tbl)
     if IsValid(c_gui) then  c_gui:Close() end
      local c_gui = vgui.Create("DFrame")
         c_gui:SetDeleteOnClose(true)
-        c_gui:SetTitle(Metrostroi.GetPhrase("Common.Couple.Title"))
+        c_gui:SetTitle(UF.GetPhrase("Common.Couple.Title"))
         c_gui:SetSize(0, 0)
         c_gui:SetDraggable(true)
         c_gui:SetSizable(false)
@@ -95,7 +95,7 @@ function ENT:DrawGUIHTML(tbl)
     if IsValid(c_gui) then  c_gui:Close() end
         c_gui = vgui.Create("DFrame")
         c_gui:SetDeleteOnClose(true)
-        c_gui:SetTitle(Metrostroi.GetPhrase("Common.Couple.Title"))
+        c_gui:SetTitle(UF.GetPhrase("Common.Couple.Title"))
         c_gui:SetSize(640, 400)
         c_gui:SetDraggable(true)
         c_gui:SetSizable(false)
@@ -116,7 +116,7 @@ function ENT:DrawGUIHTML(tbl)
       #red_header {color: red;}
     </style>
 
-    <link rel="stylesheet" href="https://test.metrostroi.net/tpl/semantic/semantic.css" type="text/css">
+    <link rel="stylesheet" href="https://test.UF.net/tpl/semantic/semantic.css" type="text/css">
   </head>
 
   <body style="display: flex; min-height: 100vh; flex-direction: column;">
@@ -157,7 +157,7 @@ function ENT:DrawGUIHTML(tbl)
         ]] )
     html:SetAllowLua( true )
     html:ConsoleMessage( print)
-    html:AddFunction( "metrostroi", "getText", Metrostroi.GetPhrase)
+    html:AddFunction( "metrostroi", "getText", UF.GetPhrase)
 
     c_gui:MakePopup()
 

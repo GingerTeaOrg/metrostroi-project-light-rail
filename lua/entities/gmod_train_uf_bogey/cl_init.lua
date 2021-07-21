@@ -6,17 +6,17 @@ function ENT:ReinitializeSounds()
     self.SoundNames = {}
     self.EngineSNDConfig = {}
 
-    self.SoundNames["ted1_703"]  = "subway_trains/bogey/engines/703/speed_8.wav"
-    self.SoundNames["ted2_703"]  = "subway_trains/bogey/engines/703/speed_16.wav"
-    self.SoundNames["ted3_703"]  = "subway_trains/bogey/engines/703/speed_24.wav"
-    self.SoundNames["ted4_703"]  = "subway_trains/bogey/engines/703/speed_32.wav"
-    self.SoundNames["ted5_703"]  = "subway_trains/bogey/engines/703/speed_40.wav"
-    self.SoundNames["ted6_703"]  = "subway_trains/bogey/engines/703/speed_48.wav"
-    self.SoundNames["ted7_703"]  = "subway_trains/bogey/engines/703/speed_56.wav"
-    self.SoundNames["ted8_703"]  = "subway_trains/bogey/engines/703/speed_64.wav"
-    self.SoundNames["ted9_703"]  = "subway_trains/bogey/engines/703/speed_72.wav"
-    self.SoundNames["ted10_703"] = "subway_trains/bogey/engines/703/speed_80.wav"
-    self.SoundNames["ted11_703"] = "subway_trains/bogey/engines/703/speed_88.wav"
+    self.SoundNames["ted1_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted2_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted3_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted4_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted5_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted6_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted7_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted8_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted9_703"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted10_703"] = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted11_703"] = "lilly/uf//u2/moto/engine_loop_start.wav"
     --self.SoundNames["tedm_703"]  = "subway_trains/bogey/engines/703/engines_medium.wav"
 
     self.SoundNames["ted1_717"]  = "subway_trains/bogey/engines/717/engines_8.wav"
@@ -30,23 +30,23 @@ function ENT:ReinitializeSounds()
     self.SoundNames["ted9_717"]  = "subway_trains/bogey/engines/717/engines_72.wav"
     self.SoundNames["ted10_717"] = "subway_trains/bogey/engines/717/engines_80.wav"
 
-    self.SoundNames["ted11_720"] = "subway_trains/bogey/engines/720/speed_88.wav"
-    self.SoundNames["ted1_720"]  = "subway_trains/bogey/engines/720/speed_8.wav"
-    self.SoundNames["ted2_720"]  = "subway_trains/bogey/engines/720/speed_16.wav"
-    self.SoundNames["ted3_720"]  = "subway_trains/bogey/engines/720/speed_24.wav"
-    self.SoundNames["ted4_720"]  = "subway_trains/bogey/engines/720/speed_32.wav"
-    self.SoundNames["ted5_720"]  = "subway_trains/bogey/engines/720/speed_40.wav"
-    self.SoundNames["ted6_720"]  = "subway_trains/bogey/engines/720/speed_48.wav"
-    self.SoundNames["ted7_720"]  = "subway_trains/bogey/engines/720/speed_56.wav"
-    self.SoundNames["ted8_720"]  = "subway_trains/bogey/engines/720/speed_64.wav"
-    self.SoundNames["ted9_720"]  = "subway_trains/bogey/engines/720/speed_72.wav"
-    self.SoundNames["ted10_720"] = "subway_trains/bogey/engines/720/speed_80.wav"
+    self.SoundNames["ted11_720"] = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted1_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted2_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted3_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted4_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted5_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted6_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted7_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted8_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted9_720"]  = "lilly/uf//u2/moto/engine_loop_start.wav"
+    self.SoundNames["ted10_720"] = "lilly/uf//u2/moto/engine_loop_start.wav"
     --*0.975
     --*1.025
-    self.SoundNames["flangea"]      = "subway_trains/bogey/skrip1.wav"
-    self.SoundNames["flangeb"]      = "subway_trains/bogey/skrip2.wav"
-    self.SoundNames["flange1"]      = "subway_trains/bogey/flange_9.wav"
-    self.SoundNames["flange2"]      = "subway_trains/bogey/flange_10.wav"
+    self.SoundNames["flangea"]      = "lilly/uf/bogeys/u2/curvehighspeed.wav"
+    self.SoundNames["flangeb"]      = "lilly/uf/bogeys/u2/curvesqueal2.wav"
+    self.SoundNames["flange1"]      = "lilly/uf/bogeys/u2/curvehighspeed.wav"
+    self.SoundNames["flange2"]      = "lilly/uf/bogeys/u2/curvesqueal2.wav"
     self.SoundNames["brakea_loop1"]       = "subway_trains/bogey/braking_async1.wav"
     self.SoundNames["brakea_loop2"]       = "subway_trains/bogey/braking_async2.wav"
     self.SoundNames["brake_loop1"]       = "subway_trains/bogey/brake_rattle3.wav"
@@ -100,7 +100,7 @@ function ENT:SetSoundState(sound,volume,pitch,name,level )
         end
         return
     end
-    local pch = math.floor(math.max(0,math.min(255,100*pitch)) + math.random())
+    local pch = math.floor(math.max(0,math.min(255,100*pitch)) )
     local vol = math.max(0,math.min(255,2.55*volume)) + (0.001/2.55) + (0.001/2.55)*math.random()
     if name~=false and not snd:IsPlaying() or name==false and snd:GetVolume()==0 then
     --if not self.Playing[sound] or name~=false and not snd:IsPlaying() or name==false and snd:GetVolume()==0 then
@@ -157,7 +157,7 @@ function ENT:Think()
         for k,v in pairs(self.EngineSNDConfig) do self:SetSoundState(v[1],0,0) end
         self.EngineSNDConfig = {}
         if self.MotorSoundType==2 then
-            table.insert(self.EngineSNDConfig,{"ted1_720" ,08,00,16,1*0.4})
+            table.insert(self.EngineSNDConfig,{"ted1_720" ,08,00,-4,1*0.4})
             table.insert(self.EngineSNDConfig,{"ted2_720" ,16,08-4,24,1*0.43})
             table.insert(self.EngineSNDConfig,{"ted3_720" ,24,16-4,32,1*0.46})
             table.insert(self.EngineSNDConfig,{"ted4_720" ,32,24-4,40,1*0.49})
@@ -198,8 +198,8 @@ function ENT:Think()
     if not self:GetNWBool("DisableEngines") then
         self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1,1)
         local t = RealTime()*2.5
-        local modulation = (0.2 + 1.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp(speed/4,0,1)
-        local mod2 = 1.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
+        local modulation = 1 --(0.2 + 1.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp(speed/4,0,1)
+        local mod2 = 1 --1.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
         if (speed > -1.0) and (math.abs(self.MotorPowerSound)+modulation) >= 0.0 then
             --local startVolRamp = 0.2 + 0.8*math.max(0.0,math.min(1.0,(speed - 1.0)*0.5))
             local powerVolRamp
@@ -238,11 +238,6 @@ function ENT:Think()
                     --self:SetSoundState(snd[1].."2",((motorsnd + powerVolRamp)*volume)*(snd.vol or 1)*volumemul,pitch*1.025,snd[1],true)
                 end
             end
-            --[[ if self.MotorSoundType==0 then
-                self:SetSoundState("tedm_703",math.min(1,(soundsmul^0.3)*motorsnd*2)*math.Clamp((speed-20)/10,0,1)*(1-math.Clamp((speed-38)/20,0,1))*0.18,math.max(0,speed/35.4)+0.06*streetC)
-            else
-                self:SetSoundState("tedm_703",0,0)
-            end--]]
         else
             for k,v in pairs(self.EngineSNDConfig) do
                 self:SetSoundState(v[1].."1",0,0,v[1],false)
@@ -373,85 +368,4 @@ function ENT:Draw()
 end
 
 
-local c_gui
-if IsValid(c_gui) then c_gui:Close() end
 
-local function addButton(parent,stext,state,scolor,btext,benabled,callback)
-    --local a = v[1]
-    local panel = vgui.Create("DPanel")
-    panel:Dock( TOP )
-    panel:DockMargin( 5, 0, 5, 5 )
-    panel:DockPadding( 5, 5, 5, 5 )
-    if benabled then
-        local button = vgui.Create("DButton",panel)
-        button:Dock(RIGHT)
-        button:SetText(Metrostroi.GetPhrase(btext))
-        button:DockPadding( 5, 5, 5, 5 )
-        button:SizeToContents()
-        button:SetContentAlignment(5)
-        button:SetEnabled(benabled)
-        button.DoClick = callback
-    end
-
-    --DrawCutText(panel,Metrostroi.GetPhrase("Workshop.Warning"),false,"DermaDefaultBold")
-    vgui.MetrostroiDrawCutText(panel,Metrostroi.GetPhrase(stext),false,"DermaDefaultBold")
-    vgui.MetrostroiDrawCutText(panel,Metrostroi.GetPhrase(state),scolor,"DermaDefaultBold")
-
-    panel:InvalidateLayout( true )
-    panel:SizeToChildren(true,true )
-    parent:AddItem(panel)
-end
-
-function ENT:DrawGUI(tbl)
-    if IsValid(c_gui) then  c_gui:Close() end
-     local c_gui = vgui.Create("DFrame")
-        c_gui:SetDeleteOnClose(true)
-        c_gui:SetTitle(Metrostroi.GetPhrase("Common.Bogey.Title"))
-        c_gui:SetSize(0, 0)
-        c_gui:SetDraggable(true)
-        c_gui:SetSizable(false)
-        c_gui:MakePopup()
-    local scrollPanel = vgui.Create( "DScrollPanel", c_gui )
-    addButton(scrollPanel,"Common.Bogey.ContactState",tbl.relcontact and "Common.Bogey.CReleased" or "Common.Bogey.CPressed",tbl.relcontact and Color(150,50,0) or Color(0,150,0),tbl.relcontact and "Common.Bogey.CPress" or "Common.Bogey.CRelease",tbl.access,function(button)
-        net.Start("metrostroi-bogey-menu")
-            net.WriteEntity(self)
-            net.WriteUInt(0,8)
-        net.SendToServer()
-        c_gui:Close()
-    end)
-    if tbl.havepb then
-        addButton(scrollPanel,"Common.Bogey.ParkingBrakeState",tbl.pbdisabled and "Common.Bogey.PBDisabled" or "Common.Bogey.PBEnabled", Color(0,150,0),tbl.pbdisabled and "Common.Bogey.PBEnable" or "Common.Bogey.PBDisable",tbl.access,function(button)
-            net.Start("metrostroi-bogey-menu")
-                net.WriteEntity(self)
-                net.WriteUInt(1,8)
-            net.SendToServer()
-            c_gui:Close()
-        end)
-    end
-
-    scrollPanel:Dock( FILL )
-    scrollPanel:InvalidateLayout( true )
-    scrollPanel:SizeToChildren(false,true)
-    local spPefromLayout = scrollPanel.PerformLayout
-    function scrollPanel:PerformLayout()
-        spPefromLayout(self)
-        if not self.First then self.First = true return end
-        local x,y = scrollPanel:ChildrenSize()
-        if self.Centered then return end
-        self.Centered = true
-        c_gui:SetSize(512,math.min(350,y)+35)
-        c_gui:Center()
-    end
-end
-
-
-net.Receive("metrostroi-bogey-menu",function()
-    local ent = net.ReadEntity()
-    if not IsValid(ent) or IsValid(c_gui) and c_gui.Entity ~= ent then return end
-    ent:DrawGUI{
-        access = net.ReadBool(),
-        relcontact=net.ReadBool(),
-        havepb=net.ReadBool(),
-        pbdisabled=net.ReadBool(),
-    }
-end)

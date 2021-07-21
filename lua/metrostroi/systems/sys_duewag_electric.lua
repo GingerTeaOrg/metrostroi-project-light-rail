@@ -1,4 +1,4 @@
-Metrostroi.DefineSystem("duewag_electric")
+UF.DefineSystem("duewag_electric")
 TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 local function Clamp(val,min,max)
