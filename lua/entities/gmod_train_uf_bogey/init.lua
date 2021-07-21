@@ -31,9 +31,9 @@ end
 duplicator.RegisterEntityModifier( "BogeyDupe" , function() end)
 --Model,WheelPos,WheelAng,WheelModel,PantLPos,PantRPos,BogeyOffset,{ConnectorPositions}--]]
 ENT.Types = {
-    tatra={
-        "models/metrostroi/tatra_t3/tatra_bogey.mdl",
-        Vector(0,0.0,-3),Angle(0,90,0),nil,
+	u5={
+        "models/lilly/uf/u5/bogey.mdl",
+        Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
         nil,
         Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
@@ -43,7 +43,7 @@ ENT.Types = {
         Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
         nil,
-        Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
+        Vector(4.3,-63,0),Vector(4.3,63,0),
     },
 	u2={
     "models/lilly/uf/bogey.mdl",
@@ -56,7 +56,7 @@ ENT.Types = {
         "models/lilly/uf/bogey.mdl",
         Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
-        nil,
+         nil,
         Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
     },
 }
@@ -68,16 +68,11 @@ ENT.Types = {
     end
     self.Wheels = createdEntities[BogeyDupe.Wheels]
     self.BogeyType = BogeyDupe.BogeyType
-    local typ = self.Types[self.BogeyType or "def"]
+    local typ = self.Types[self.BogeyType or "u2"]
     self:SetModel(typ and typ[1] or "models/lilly/uf/bogey.mdl")
     if IsValid(self.Wheels) then
-        if self.BogeyType == "tatra" then
-            self.Wheels:SetPos(self:LocalToWorld(Vector(0,0.0,-3)))
-            self.Wheels:SetAngles(self:GetAngles() + Angle(0,0,0))
-        else
             self.Wheels:SetPos(self:LocalToWorld(Vector(0,0.0,-10)))
             self.Wheels:SetAngles(self:GetAngles() + Angle(0,0,0))
-        end
         self.Wheels.WheelType = self.BogeyType
         self.Wheels.NoPhysics = BogeyDupe.NoPhysics
 
@@ -446,21 +441,9 @@ function ENT:CheckContact(pos,dir,id,cpos)
                 end)
             end
         end
-        return false
-    elseif traceEnt:GetClass() == "player" then
-        --self.T:WorldToLocal(Entity(3208):GetPos())
-        if self.Voltage < 40 then return end
-        local pos = traceEnt:GetPos()
-        self.VoltageDropByTouch = (self.VoltageDropByTouch or 0) + 1
-        util.BlastDamage(traceEnt,traceEnt,pos,64,3.0*self.Voltage)
-
-        local effectdata = EffectData()
-        effectdata:SetOrigin(pos + Vector(0,0,-16+math.random()*(40+0)))
-        util.Effect("cball_explode",effectdata,true,true)
-        sound.Play("ambient/energy/zap"..math.random(1,3)..".wav",pos,75,math.random(100,150),1.0)
-        return
-    end
+        
     return result.Hit
+	end
 end
 
 function ENT:CheckVoltage(dT)
@@ -486,31 +469,6 @@ function ENT:CheckVoltage(dT)
                     if dt < 1.0 then volume = 0.43 end
                     if i == 1 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".wav",self:LocalToWorld(self.PantLPos),65,math.random(90,120),volume) end
                     if i == 2 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".wav",self:LocalToWorld(self.PantRPos),65,math.random(90,120),volume) end
-
-                    -- Sparking probability
-                    local probability = math.Clamp(1-(self.MotorPower/2),0,1)
-                    if state and (math.random() > probability) then
-                        local effectdata = EffectData()
-                        if i == 1 then effectdata:SetOrigin(self:LocalToWorld(self.PantLPos)) end
-                        if i == 2 then effectdata:SetOrigin(self:LocalToWorld(self.PantRPos)) end
-                        effectdata:SetNormal(Vector(0,0,-1))
-                        util.Effect("stunstickimpact", effectdata, true, true)
-
-                        local light = ents.Create("light_dynamic")
-                        light:SetPos(effectdata:GetOrigin())
-                        light:SetKeyValue("_light","100 220 255")
-                        light:SetKeyValue("style", 0)
-                        light:SetKeyValue("distance", 256)
-                        light:SetKeyValue("brightness", 5)
-                        light:Spawn()
-                        light:Fire("TurnOn","","0")
-                        light.Time = CurTime()
-                        hook.Add("Think",light,function(self)
-                            if CurTime()-self.Time > 0.1 then self:Remove() end
-                        end)
-                        sound.Play("subway_trains/bogey/spark.mp3",effectdata:GetOrigin(),75,math.random(100,150),volume)
-                        --self.Train:PlayOnce("zap",sound_source,0.7*volume,50+math.random(90,120))
-                    end
                 end
             end
         end
@@ -519,11 +477,11 @@ function ENT:CheckVoltage(dT)
     -- Voltage spikes
     self.VoltageDrop = math.max(-30,math.min(30,self.VoltageDrop + (0 - self.VoltageDrop)*10*dT))
 
-    local feeder = self.Feeder and Metrostroi.Voltages[self.Feeder]
-    local volt = feeder or Metrostroi.Voltage or 750
+    local feeder = self.Feeder and UF.Voltages[self.Feeder]
+    local volt = feeder or UF.Voltage or 750
     -- Non-metrostroi maps
     if ((GetConVarNumber("metrostroi_train_requirethirdrail") <= 0)) then-- or
-       --(not Metrostroi.MapHasFullSupport()) then
+       --(not UF.MapHasFullSupport()) then
         self.Voltage = volt + self.VoltageDrop
         return
     end
@@ -533,12 +491,12 @@ function ENT:CheckVoltage(dT)
     for i=1,2 do
         if self.ContactStates[i] then self.Voltage = volt + self.VoltageDrop
         elseif IsValid(self.Connectors[i]) and self.Connectors[i].Coupled == (i >  2 and self.Train.RearBogey or self) then
-            self.Voltage = self.Connectors[i].Power and Metrostroi.Voltage or 0
+            self.Voltage = self.Connectors[i].Power and UF.Voltage or 0
         else self.Connectors[i] = nil end
     end
     if self.VoltageDropByTouch > 0 then
         local Rperson = 0.613
-        local Iperson = Metrostroi.Voltage / (Rperson/(self.VoltageDropByTouch + 1e-9))
+        local Iperson = UF.Voltage / (Rperson/(self.VoltageDropByTouch + 1e-9))
         self.DropByPeople = Iperson
     end
 end
@@ -563,7 +521,7 @@ function ENT:Think()
     self.Angle = self.Wheels.Angle
 
     self:SetNW2Entity("TrainWheels",self.Wheels)
-    self:CheckVoltage(self.DeltaTime)
+    --self:CheckVoltage(self.DeltaTime)
 
     -- Skip physics related stuff
     if not IsValid(self.Wheels) or not self.Wheels:GetPhysicsObject():IsValid() or self.NoPhysics then
@@ -753,16 +711,16 @@ function ENT:SpawnFunction(ply, tr)
     ent:Spawn()
     ent:Activate()
 
-    if not inhibitrerail then Metrostroi.RerailBogey(ent) end
+    if not inhibitrerail then UF.RerailBogey(ent) end
     return ent
 end
 
 function ENT:AcceptInput(inputName, activator, called, data)
     if inputName == "OnFeederIn" then
         self.Feeder = tonumber(data)
-        if self.Feeder and not Metrostroi.Voltages[self.Feeder] then
-            Metrostroi.Voltages[self.Feeder] = 0
-            Metrostroi.Currents[self.Feeder] = 0
+        if self.Feeder and not UF.Voltages[self.Feeder] then
+            UF.Voltages[self.Feeder] = 0
+            UF.Currents[self.Feeder] = 0
         end
     elseif inputName == "OnFeederOut" then
         self.Feeder = nil

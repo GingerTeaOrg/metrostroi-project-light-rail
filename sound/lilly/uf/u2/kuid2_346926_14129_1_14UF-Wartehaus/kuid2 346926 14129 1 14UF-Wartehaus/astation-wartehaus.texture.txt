@@ -1,2 +1,0 @@
-Primary=astation-wartehaus.jpg
-Tile=st

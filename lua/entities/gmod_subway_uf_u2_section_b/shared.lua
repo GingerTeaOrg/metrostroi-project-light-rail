@@ -13,5 +13,5 @@ ENT.AdminSpawnable  = false
 
 
 function ENT:InitializeSystems()
-	self:LoadSystem("Duewag_U2_Systems")
+	self:LoadSystem("Duewag_U2")
 end

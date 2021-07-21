@@ -3,4 +3,12 @@
 	"$basetexture" "models/lilly/uf/u2/u2h/main"
 	"$surfaceprop" "Metal"
 	"$model"	1
+	"$phong"	1
+	"$phongexponenttexture"		"models/lilly/uf/u2/u2h/main-env"
+	
+	"$phongboost"				1
+	"$phongfresnelranges"		"[1 1 1]"
+	$envmap			env_cubemap
+	$normalmapalphaenvmapmask 1
+	$envmaptint "[0.001 0.001 0.001]"
 }

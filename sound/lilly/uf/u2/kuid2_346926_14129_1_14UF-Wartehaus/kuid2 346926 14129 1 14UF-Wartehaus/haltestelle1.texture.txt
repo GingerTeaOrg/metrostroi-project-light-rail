@@ -1,2 +1,0 @@
-Primary=haltestelle1.jpg
-Tile=st
