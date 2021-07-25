@@ -274,7 +274,7 @@ end
 
 
 
-function ENT:Think()
+function ENT:Think(dT)
 	self.BaseClass.Think(self)
     self:SetPackedBool("BellEngage",self.Duewag_U2.BellEngage)
 	
@@ -357,10 +357,10 @@ function ENT:Think()
 	self.RearBogey.BrakeCylinderPressure = self.BrakePressure  
 
 	
-	self.FrontBogey.MotorForce = 18000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
+	self.FrontBogey.MotorForce = 15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
 	self.FrontBogey.MotorPower = 600--(N *100) + (self.ChopperJump)
 	self.FrontBogey.Reversed = self.ReverserState < 0
-	self.RearBogey.MotorForce  = 18000*N / 20 --18000*N
+	self.RearBogey.MotorForce  = 15000*N / 20 --18000*N
 	self.RearBogey.MotorPower = 600--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
 	self.RearBogey.Reversed = self.ReverserState > 0
 	end
@@ -370,7 +370,7 @@ function ENT:Think()
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
 	self.Duewag_U2:TriggerInput("ThrottleRate", self.ThrottleRate)
 	PrintMessage(HUD_PRINTTALK, self.Duewag_U2.ThrottleState)
-	
+	--Train:WriteTrainWire(1,self.FrontBogey.MotorForce)
 
 	
 end
@@ -515,6 +515,10 @@ function ENT:OnButtonPress(button,ply)
 						PrintMessage(HUD_PRINTTALK, "Key is turned off")
 					end
 			end
+	end
+
+	if button == "BitteZuruecktreten" then
+		self:SetNW2Bool("BitteZuruecktreten", true)
 	end
 end
 

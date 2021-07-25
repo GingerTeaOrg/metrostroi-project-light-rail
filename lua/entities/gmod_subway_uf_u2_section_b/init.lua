@@ -68,9 +68,9 @@ function ENT:Initialize()
 	self.Wheels = self.FrontBogey.Wheels
    
 	self.Lights = {
-		[111] = { "dynamiclight",        Vector( 0, 0, 60), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
-		[112] = { "dynamiclight",        Vector( 200, 0, 60), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
-		[113] = { "dynamiclight",        Vector( -200, 0, 60), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
+		[111] = { "dynamiclight",        Vector( 0, 0, 100), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
+		[112] = { "dynamiclight",        Vector( 200, 0, 100), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
+		[113] = { "dynamiclight",        Vector( 100, 0, 100), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
 	}
 	for k,v in pairs(self.Lights) do
 		self:SetLightPower(k,false)

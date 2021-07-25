@@ -5,16 +5,18 @@ ENT.ClientProps = {}
 ENT.ButtonMap = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
---------------------------------------------------------------------------------
--- переписал Lindy2017 + немного скриптов томаса
---------------------------------------------------------------------------------
+
 
 ENT.Lights = {
 	-- Headlight glow
-	[1] = { "headlights",		Vector(580,0,50), Angle(0,0,180), Color(169,130,88), brightness = 3 ,fov = 90, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-	[2] = { "taillights",		Vector(560,0,50), Angle(0,0,0), Color(169,130,88), brightness = 3 ,fov = 90, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-	[3] = { "blinkerfrontl",		Vector(569,0,60), Angle(0,0,0), Color(169,130,88), brightness = 3 ,fov = 90, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=false},
-	[3] = { "blinkerfrontr",		Vector(560,0,60), Angle(0,0,0), Color(169,130,88), brightness = 3 ,fov = 90, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=false},
+	[1] = { "headlight",        Vector(545,50,30), Angle(0,0,0), Color(216,161,92), fov=80,farz=450,brightness = 3, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
+    [2] = { "headlight",        Vector(545,-50,30), Angle(0,0,0), Color(216,161,92), fov=80,farz=450,brightness = 3, texture = "models/metrostroi_train/equipment/headlight2",shadows = 1,headlight=true},
+    [101] = { "light",        Vector(540,50,30), Angle(0,0,0), Color(216,161,92), fov=160,farz=450,brightness = 1, texture = "models/metrostroi_train/equipment/headlight",shadows = 1},
+    [201] = { "light",        Vector(540,-50,30), Angle(0,0,0), Color(216,161,92), fov=160,farz=450,brightness = 1, texture = "models/metrostroi_train/equipment/headlight",shadows = 1},
+    [3] = { "light",        Vector(545,0,600), Angle(0,0,0), Color(216,161,92), fov=40,farz=450,brightness = 3, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
+    [4] = { "headlight",        Vector(545,50,30), Angle(-20,0,0), Color(255,0,0), fov=160 ,brightness = 0.3, farz=450,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
+	[5] = { "dynamiclight",		Vector(569,0,60), Angle(0,0,0), Color(255,132,0), brightness = 3 ,fov = 90, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=false},
+	[6] = { "dynamiclight",		Vector(560,0,60), Angle(0,0,0), Color(255,132,0), brightness = 3 ,fov = 90, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=false},
 }
 
 
@@ -27,24 +29,16 @@ ENT.Lights = {
 
 ENT.ClientProps["IBIS"] = {
 	model = "models/lilly/uf/u2/IBIS.mdl",
-	pos = Vector(533,-19,82),
+	pos = Vector(2,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
 
 ENT.ClientProps["Dest"] = {
 	model = "models/lilly/uf/u2/dest_a.mdl",
-	pos = Vector(0,0,0),
+	pos = Vector(0.5,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
-}
-
-
-ENT.ClientProps["brake_cylinder"] = {
-    model = "models/metrostroi_train/Equipment/arrow_nm.mdl",
-    pos = Vector(526.535736,-22.815704,-3.113149+5.35),
-    ang = Angle(-62.299999,-33.400002,0.000000),
-    hideseat = 0.2,
 }
 
 ENT.ClientProps["Throttle"] = {
@@ -55,7 +49,7 @@ ENT.ClientProps["Throttle"] = {
 }
 
 ENT.ButtonMap["Cab"] = {
-    pos = Vector(540,50,80),
+    pos = Vector(540,50,78.5),
     ang = Angle(0,-90,0),
     width = 690,
     height = 300,
@@ -63,12 +57,18 @@ ENT.ButtonMap["Cab"] = {
 	
     buttons = {
 		
-	{ID = "ThrottleUp", x=146, y=143.5, radius=15, tooltip = "Combined Throttle", model = {
+	{ID = "ThrottleUp", x=150, y=110.5, radius=20, tooltip = "Combined Throttle Up", model = {
 			model = "models/lilly/uf/u2/cab/kombihebel.mdl", z=0, ang=0,
 			var="main",speed=1, vmin=0, vmax=1,
 			sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-
-    }},
+            }
+    },
+    {ID = "ThrottleDown", x=150, y=110.5, radius=20, tooltip = "Combined Throttle Down", model = {
+        model = "models/lilly/uf/u2/cab/kombihebel.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
 }
 }
 
@@ -142,42 +142,21 @@ function ENT:Think()
 	self:Animate("Throttle",self:GetPackedRatio("ThrottleState"),1, 3,4,false)
 	
 	
-	local BitteZuruecktreten = 0
+
 	
 	
-	if self.Duewag_U2.BitteZuruecktreten == 1 then
+	if self:GetNW2Bool("BitteZuruecktreten") == true then
         
-       self:PlayOnce("BitteZuruecktreten","cabin",1,1)
-		self:SetNW2Int("BitteZuruecktreten", 0)
+        self:PlayOnce("BitteZuruecktreten","cabin",1,1)
+	    self:SetNW2Bool("BitteZuruecktreten", false)
 	end
 	
 	
 	
-	
-	
-		self:SetLightPower(1,true,1)
-	if IsValid(self.GlowingLights[1]) then
-		self.GlowingLights[1]:SetEnableShadows(true)
-		self.GlowingLights[1]:SetFarZ(5144)--5144
-	end	
-	
-	
-	local HL1 = self:Animate("Headlights",self:GetPackedBool("Headlights1") and 1 or 0,0,1,6,false)
-    local RL = self:Animate("RedLights_a",self:GetPackedBool("RedLights") and 1 or 0,0,1,6,false)
-    self:ShowHideSmooth("Headlights_1",HL1)
-    
-    local bright = HL1*0.5
-    --self:SetLightPower(30,bright > 0,bright)
-    --self:SetLightPower(31,bright > 0,bright)
-
-    self:ShowHideSmooth("taillights",RL)
- --   self:SetLightPower(8,RL > 0,RL)
-  --  self:SetLightPower(9,RL > 0,RL)
-
-    local headlight = HL1*0.6
+	local HL1 = self:Animate("Headlights1",self:GetPackedBool("Headlights1") and 1 or 0,0,1,6,false)
+    local HL2 = self:Animate("Headlights2",self:GetPackedBool("Headlights2") and 1 or 0,0,1,6,false)
+	local headlight = HL1*0.6+HL2*0.4
     self:SetLightPower(1,headlight>0,headlight)
-    self:SetLightPower(2,self:GetPackedBool("taillights"),RL)
-
     if IsValid(self.GlowingLights[1]) then
         if self:GetPackedRatio("Headlight") < 0.5 and self.GlowingLights[1]:GetFarZ() ~= 3144 then
             self.GlowingLights[1]:SetFarZ(3144)
@@ -188,6 +167,22 @@ function ENT:Think()
     end
 
 	
+	
+
+    --self:SetLightPower(30,bright > 0,bright)
+    --self:SetLightPower(31,bright > 0,bright)
+
+ 
+ --   self:SetLightPower(8,RL > 0,RL)
+  --  self:SetLightPower(9,RL > 0,RL)
+
+
+
+	self:SetLightPower(1,true)
+    self:SetLightPower(2,true)
+    self:SetLightPower(101,true)
+    self:SetLightPower(201,true)
+
 	
 	
 	
