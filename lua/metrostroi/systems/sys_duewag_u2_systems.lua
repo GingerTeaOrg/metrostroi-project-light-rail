@@ -4,6 +4,8 @@ TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 function TRAIN_SYSTEM:Initialize()
 
+	self.PrevTime = 0
+	self.DeltaTime = 0
 	self.speed = 0
 	self.ThrottleState = 0
 	
@@ -47,7 +49,7 @@ end
 
 
 function TRAIN_SYSTEM:Inputs()
-	return {"speed", "ThrottleRate", "ThrottleState", "BrakePressure","ReverserState", "ReverserInserted","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOn", "KeyInsert", "KeyTurnOn", "BlinkerState", "StationBrakeOn"}
+	return {"speed", "ThrottleRate", "ThrottleState", "BrakePressure","ReverserState", "ReverserInserted","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOnA", "BatteryOnB", "KeyInsertA", "KeyInsertB", "KeyTurnOnA", "KeyTurnOnB", "BlinkerState", "StationBrakeOn"}
 end
 
 function TRAIN_SYSTEM:Outputs()
@@ -74,8 +76,10 @@ end
 function TRAIN_SYSTEM:Think(dT)
 	local train = self.Train 
 
-	
-	
+	self.PrevTime = self.PrevTime or RealTime()-0.33
+    self.DeltaTime = (RealTime() - self.PrevTime)
+    self.PrevTime = RealTime()
+	local dT = self.DeltaTime
 
 	
 	self.ThrottleState = self.ThrottleState +  self.ThrottleRate
@@ -95,7 +99,7 @@ function TRAIN_SYSTEM:Think(dT)
 	
 	
 	
-	if self.KeyInsert == true and self.KeyTurnOn == true and self.BatteryOn == true and self.ReverserInserted == true and self.PantoUp == true then
+	if self.KeyInsert == true and self.KeyTurnOnA == true and self.BatteryOnA == true and self.ReverserInserted == true and self.PantoUp == true then
 		self.TractionConditionFulfilled = true
 	end
 		
