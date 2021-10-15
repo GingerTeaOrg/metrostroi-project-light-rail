@@ -301,7 +301,7 @@ function ENT:StartTouch(ent)
 end
 
 
-util.AddNetworkString("metrostroi-bogey-menu")
+
 -- Used to decouple
 function ENT:Use(ply)
     net.Start("metrostroi-bogey-menu")
@@ -313,18 +313,7 @@ function ENT:Use(ply)
     net.Send(ply)
 end
 
-net.Receive("metrostroi-bogey-menu",function(_,ply)
-    local bogey = net.ReadEntity()
 
-    if not game.SinglePlayer() and bogey.CPPICanUse and not bogey:CPPICanUse(ply) then return end
-    local id = net.ReadUInt(8)
-    if id==0 then
-        bogey.DisableContactsManual = not bogey.DisableContactsManual
-    end
-    if id==1 then
-        bogey.DisableParking = not bogey.DisableParking
-    end
-end)
 
 function ENT:ConnectDisconnect(status)
     local isfront = self:GetNW2Bool("IsForwardBogey")
@@ -407,44 +396,7 @@ function ENT:OnDecouple()
     end
 end
 
-function ENT:CheckContact(pos,dir,id,cpos)
-    local result = util.TraceHull({
-        start = self:LocalToWorld(pos),
-        endpos = self:LocalToWorld(pos + dir*10),
-        mask = -1,
-        filter = { self:GetNW2Entity("TrainEntity"), self },
-        mins = Vector( -2, -2, -2 ),
-        maxs = Vector( 2, 2, 2 )
-    })
 
-    if not result.Hit then return end
-    if result.HitWorld then return true end
-    local traceEnt = result.Entity
-    if result.Entity:GetClass() == "gmod_track_udochka" then
-        if not traceEnt.Timer and traceEnt.CoupledWith ~= self then
-            --local vec = Vector(pos.y < 0 and 1 or 1.1,pos.y < 0 and -1 or 1.05, 1)
-            traceEnt:SetPos(self:LocalToWorld(cpos))
-            traceEnt:SetAngles(self:GetAngles())
-            if IsValid(constraint.Weld(self,traceEnt,0,0,33000,true,false)) then
-                traceEnt:SetPos(self:LocalToWorld(cpos))
-                traceEnt:SetAngles(self:GetAngles())
-                traceEnt.Coupled = self
-                sound.Play("udochka_connect.wav",traceEnt:GetPos())
-                self.Connectors[id] = traceEnt
-                timer.Simple(0,function()
-                    if IsValid(traceEnt) and traceEnt:IsPlayerHolding()  then
-                        traceEnt:ForcePlayerDrop()
-                        if traceEnt.LastPickup and traceEnt.LastPickup:IsPlayer()  then
-                            traceEnt.LastPickup:DropObject()
-                        end
-                    end
-                end)
-            end
-        end
-        
-    return result.Hit
-	end
-end
 
 function ENT:CheckVoltage(dT)
     -- Check contact states

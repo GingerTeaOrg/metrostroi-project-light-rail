@@ -82,7 +82,7 @@ ENT.SubwayTrain = {
 }
 
 ENT.MirrorCams = {
-    Vector(441,72,200),Angle(1,180,0),15,
+    Vector(441,72,60),Angle(1,180,0),15,
     Vector(441,-72,200),Angle(1,180,0),15,
 }
 

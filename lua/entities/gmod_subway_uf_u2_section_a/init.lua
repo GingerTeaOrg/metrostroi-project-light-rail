@@ -165,7 +165,7 @@ function ENT:Initialize()
 	self.ThrottleRate = 0
 
 	
-	self.SpringBrake = 0
+	self.Haltebremse = 0
 	
 	self.AlarmSound = 0
 	-- Create bogeys
@@ -295,8 +295,8 @@ function ENT:Think(dT)
 	
 
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
-	self:SetNW2Int("Speed",self.Speed*150)
-	self.Duewag_U2:TriggerInput("Speed",self.Speed)
+	--self:SetNW2Int("Speed",self.Speed*150)
+	self.Duewag_U2:TriggerInput("Speed",self.Speed*150)
  
 
 	--self.RearCouple:Remove()
@@ -304,37 +304,18 @@ function ENT:Think(dT)
 	--self:SetPackedBool("Headlights1",true)
 	
 	
-	if self.ThrottleState > 0 then
-		self.ThrottleEngaged = true
-	else
-		self.ThrottleEngaged = false
-	end
+
 	
 	
-	if self.Speed < 1 then
-		if ThrottleEngaged == false then
-		timer.Create("ThrottleLastEngaged", 2.5, 0, function() self.SpringBrake = 1 end)
-		end
-	end
-	
-	if ThrottleEngaged == true then
-		self.SpringBrake = 0
-	end
+
 		
 	
 	
-	self.BrakePressure = math.Clamp(self.Duewag_U2.ThrottleState, -100, 0) --set according to throttle state. throttle only gives values in minus on brake mode
-	if self.SpringBrake == 1 then --try to implement the brake on stopped train
-		self.BrakePressure = -100
-	end--* -0.01 * 2.7 -- 0.0 full released, 2.7 full service
-	--print(tostring(self.BrakePressure))
-	self.BrakePressure = self.BrakePressure  * -0.01 * 2.7 --convert to positive value and put in percentage relation of maximum brake value
-	--print(tostring(self.BrakePressure))
+
+
 	
-	if self.Duewag_Deadman.Alarm == 1 then
-		self.BrakePressure = 2.7
-	end
-	
+
+
 	
 	
 	
@@ -342,7 +323,9 @@ function ENT:Think(dT)
 	
 	
 	
-	
+	if self.Duewag_Deadman.Alarm == 1 then
+		self.Duewag_U2.BrakePressure = -100
+	end
  
 	
 	
@@ -353,8 +336,8 @@ function ENT:Think(dT)
 	
 	self.FrontBogey.PneumaticBrakeForce = (80000.0) 
 	self.RearBogey.PneumaticBrakeForce = (80000.0) 
-    self.FrontBogey.BrakeCylinderPressure = self.BrakePressure  
-	self.RearBogey.BrakeCylinderPressure = self.BrakePressure  
+    self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure  
+	self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure  
 
 	
 	self.FrontBogey.MotorForce = 15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
@@ -384,7 +367,6 @@ function ENT:Wait(seconds)
 	local time = seconds or 1
     local start = os.time()
     repeat until os.time() == start + time
-
 
 end
 
