@@ -165,7 +165,7 @@ function ENT:Initialize()
 	self.ThrottleRate = 0
 
 	
-	self.SpringBrake = 0
+	self.Haltebremse = 0
 	
 	self.AlarmSound = 0
 	-- Create bogeys
@@ -174,8 +174,8 @@ function ENT:Initialize()
     self.FrontBogey:SetNWBool("Async",true)
     self.RearBogey:SetNWBool("Async",true)
 	-- Create couples
-    self.FrontCouple = self:CreateCoupleUF(Vector( 525,0,15),Angle(0,0,0),true,"u2")	
-    self.RearCouple = self:CreateCoupleUF(Vector( 100,0,100),Angle(0,0,0),false,"u2")	
+    self.FrontCouple = self:CreateCoupleUF(Vector( 530,0,8),Angle(0,0,0),true,"u2")	
+    self.RearCouple = self:CreateCoupleUF(Vector( 100,50,50),Angle(0,0,0),false,"dummy")	
 
 	self.Async = true
 	-- Create U2 Section B
@@ -220,7 +220,9 @@ function ENT:Initialize()
 		
 			[KEY_LSHIFT] = {
 							[KEY_0] = "KeyInsert",
-							[KEY_9] = "ReverserInsert" },
+							[KEY_9] = "ReverserInsert",
+							[KEY_A] = "ThrottleUpFast",
+							[KEY_D] = "ThrottleDownFast"},
 		}
 	
 
@@ -295,8 +297,8 @@ function ENT:Think(dT)
 	
 
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
-	self:SetNW2Int("Speed",self.Speed*150)
-	self.Duewag_U2:TriggerInput("Speed",self.Speed)
+	--self:SetNW2Int("Speed",self.Speed*150)
+	self.Duewag_U2:TriggerInput("Speed",self.Speed*150)
  
 
 	--self.RearCouple:Remove()
@@ -304,37 +306,18 @@ function ENT:Think(dT)
 	--self:SetPackedBool("Headlights1",true)
 	
 	
-	if self.ThrottleState > 0 then
-		self.ThrottleEngaged = true
-	else
-		self.ThrottleEngaged = false
-	end
+
 	
 	
-	if self.Speed < 1 then
-		if ThrottleEngaged == false then
-		timer.Create("ThrottleLastEngaged", 2.5, 0, function() self.SpringBrake = 1 end)
-		end
-	end
-	
-	if ThrottleEngaged == true then
-		self.SpringBrake = 0
-	end
+
 		
 	
 	
-	self.BrakePressure = math.Clamp(self.Duewag_U2.ThrottleState, -100, 0) --set according to throttle state. throttle only gives values in minus on brake mode
-	if self.SpringBrake == 1 then --try to implement the brake on stopped train
-		self.BrakePressure = -100
-	end--* -0.01 * 2.7 -- 0.0 full released, 2.7 full service
-	--print(tostring(self.BrakePressure))
-	self.BrakePressure = self.BrakePressure  * -0.01 * 2.7 --convert to positive value and put in percentage relation of maximum brake value
-	--print(tostring(self.BrakePressure))
+
+
 	
-	if self.Duewag_Deadman.Alarm == 1 then
-		self.BrakePressure = 2.7
-	end
-	
+
+
 	
 	
 	
@@ -342,7 +325,9 @@ function ENT:Think(dT)
 	
 	
 	
-	
+	if self.Duewag_Deadman.Alarm == 1 then
+		self.Duewag_U2:TriggerInput("BrakePressure", -100)
+	end
  
 	
 	
@@ -351,27 +336,32 @@ function ENT:Think(dT)
 	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
 	
 	
-	self.FrontBogey.PneumaticBrakeForce = (80000.0) 
-	self.RearBogey.PneumaticBrakeForce = (80000.0) 
-    self.FrontBogey.BrakeCylinderPressure = self.BrakePressure  
-	self.RearBogey.BrakeCylinderPressure = self.BrakePressure  
+	self.FrontBogey.PneumaticBrakeForce = (60000.0) 
+	self.RearBogey.PneumaticBrakeForce = (60000.0) 
+    self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure  
+	self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure  
 
 	
-	self.FrontBogey.MotorForce = 15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
-	self.FrontBogey.MotorPower = 600--(N *100) + (self.ChopperJump)
+	self.FrontBogey.MotorForce = self.Duewag_U2.Traction --15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
+	self.FrontBogey.MotorPower = 100--(N *100) + (self.ChopperJump)
 	self.FrontBogey.Reversed = self.ReverserState < 0
-	self.RearBogey.MotorForce  = 15000*N / 20 --18000*N
-	self.RearBogey.MotorPower = 600--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
-	self.RearBogey.Reversed = self.ReverserState > 0
+	self.RearBogey.MotorForce  = self.Duewag_U2.Traction --15000*N / 20 --18000*N
+	self.RearBogey.MotorPower = 100--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
+	self.RearBogey.Reversed = self.Duewag_U2.ReverserState > 0
 	end
 	
 	--PrintMessage(HUD_PRINTTALK, self.FrontBogey.MotorForce)
 
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
+	--self:SetNWFloat("ThrottleState",self.ThrottleState)
 	self.Duewag_U2:TriggerInput("ThrottleRate", self.ThrottleRate)
-	PrintMessage(HUD_PRINTTALK, self.Duewag_U2.ThrottleState)
+	--PrintMessage(HUD_PRINTTALK, self.Duewag_U2.ThrottleState)
 	--Train:WriteTrainWire(1,self.FrontBogey.MotorForce)
-
+	--PrintMessage(HUD_PRINTTALK, "Calculated Traction")
+	--PrintMessage(HUD_PRINTTALK, self.Duewag_U2.Traction)
+	self:SetNWInt("ThrottleState", self.ThrottleState)
+	--PrintMessage(HUD_PRINTTALK, self:GetNWInt("ThrottleState", fallback = 0))
+	
 	
 end
 
@@ -385,7 +375,6 @@ function ENT:Wait(seconds)
     local start = os.time()
     repeat until os.time() == start + time
 
-
 end
 
 function ENT:OnButtonPress(button,ply)
@@ -395,6 +384,11 @@ function ENT:OnButtonPress(button,ply)
 	if self.ThrottleRate == 0 then
 		if button == "ThrottleUp" then self.ThrottleRate = 1.5 end
 		if button == "ThrottleDown" then self.ThrottleRate = -1.5 end
+	end
+
+	if self.ThrottleRate == 0 then
+		if button == "ThrottleUpFast" then self.ThrottleRate = 5.5 end
+		if button == "ThrottleDownFast" then self.ThrottleRate = -5.5 end
 	end
 
 
@@ -529,6 +523,9 @@ function ENT:OnButtonRelease(button,ply)
 			
 			----THROTTLE CODE --Black Phoenix: Make sure it snaps to zero when next to zero
 			if (button == "ThrottleUp" and self.ThrottleRate > 0) or (button == "ThrottleDown" and self.ThrottleRate < 0) then
+				self.ThrottleRate = 0
+			end
+			if (button == "ThrottleUpFast" and self.ThrottleRate > 0) or (button == "ThrottleDownFast" and self.ThrottleRate < 0) then
 				self.ThrottleRate = 0
 			end
 		

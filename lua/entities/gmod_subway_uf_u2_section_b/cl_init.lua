@@ -42,22 +42,13 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 	self:SetSoundState("horn1",self:GetPackedBool("Bell",false) and 1 or 0,1)
 	local speed = self:GetNW2Int("Speed")/100
-	local door_l = self:GetPackedBool("CabinDoorLeft")
-    local door_4 = self:Animate("door4",door_l and (self.Door3 or 0.99) or 0,0,0.55, 64, 1)	
+	
 	self:SetSoundState("horn1",self:GetPackedBool("Horn",false) and 1 or 0,1)
 	
 	
 	
-	for i=0,3 do
-		for k=0,1 do
-			local n_l = "door"..i.."x"..k.."a"
-			local n_r = "door"..i.."x"..k.."b"
-			local rand = math.random(0.3,1.2)
-			local door_cab_t =	self:Animate(n_l,self:GetPackedBool(40+(1-k)*4) and 1 or 0,0,1,rand,0) --			self:Animate(n_l,self:GetPackedBool(21+(1-k)*4) and 1 or 0,0,1,rand,0)
-			local door_cab_n =	self:Animate(n_r,self:GetPackedBool(40+(1-k)*4) and 1 or 0,0,1,rand,0)--self:Animate(n_r,self:GetPackedBool(21+(1-k)*4) and 1 or 0,0,1,rand,0)
-		end
-	end
+
 	
 end
 
-UF.GenerateClientProps()
+--UF.GenerateClientProps()

@@ -9,12 +9,12 @@ ENT.AutoAnimNames = {}
 
 ENT.Lights = {
 	-- Headlight glow
-	[1] = { "headlight",        Vector(545,50,30), Angle(0,0,0), Color(216,161,92), fov=80,farz=450,brightness = 3, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-    [2] = { "headlight",        Vector(545,-50,30), Angle(0,0,0), Color(216,161,92), fov=80,farz=450,brightness = 3, texture = "models/metrostroi_train/equipment/headlight2",shadows = 1,headlight=true},
-    [101] = { "light",        Vector(540,50,30), Angle(0,0,0), Color(216,161,92), fov=160,farz=450,brightness = 1, texture = "models/metrostroi_train/equipment/headlight",shadows = 1},
-    [201] = { "light",        Vector(540,-50,30), Angle(0,0,0), Color(216,161,92), fov=160,farz=450,brightness = 1, texture = "models/metrostroi_train/equipment/headlight",shadows = 1},
+	[1] = { "headlight",        Vector(542,50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=420,brightness = 2.5, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
+    [2] = { "headlight",        Vector(542,-50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=420,brightness = 2.5, texture = "models/metrostroi_train/equipment/headlight2",shadows = 1,headlight=true},
+    [101] = { "light",        Vector(542,50,43), Angle(0,0,0), Color(216,161,92), fov=160,farz=450,brightness = 1, texture = "models/metrostroi_train/equipment/headlight",shadows = 1},
+    [201] = { "light",        Vector(542,-50,43), Angle(0,0,0), Color(216,161,92), fov=160,farz=450,brightness = 1, texture = "models/metrostroi_train/equipment/headlight",shadows = 1},
     [3] = { "light",        Vector(545,0,600), Angle(0,0,0), Color(216,161,92), fov=40,farz=450,brightness = 3, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-    [4] = { "headlight",        Vector(545,50,30), Angle(-20,0,0), Color(255,0,0), fov=160 ,brightness = 0.3, farz=450,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
+    [4] = { "headlight",        Vector(544,40,40), Angle(-20,0,0), Color(255,0,0), fov=160 ,brightness = 0.3, farz=450,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
 	[5] = { "dynamiclight",		Vector(569,0,60), Angle(0,0,0), Color(255,132,0), brightness = 3 ,fov = 90, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=false},
 	[6] = { "dynamiclight",		Vector(560,0,60), Angle(0,0,0), Color(255,132,0), brightness = 3 ,fov = 90, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=false},
 }
@@ -24,26 +24,65 @@ ENT.Lights = {
 
 
 
-
-
-
-ENT.ClientProps["IBIS"] = {
-	model = "models/lilly/uf/u2/IBIS.mdl",
-	pos = Vector(2,0,0),
+ENT.ClientProps["headlights_on"] = {
+	model = "models/lilly/uf/u2/headlight_on.mdl",
+	pos = Vector(541.35,0,43),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
 
+ENT.ClientProps["Door_fl"] = {
+	model = "models/lilly/uf/u2/u2h/doors.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_fr"] = {
+	model = "models/lilly/uf/u2/u2h/doors.mdl",
+	pos = Vector(924,0,0),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+ENT.ClientProps["Door_br"] = {
+	model = "models/lilly/uf/u2/u2h/doors.mdl",
+	pos = Vector(615,0,0),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+ENT.ClientProps["Door_bl"] = {
+	model = "models/lilly/uf/u2/u2h/doors.mdl",
+	pos = Vector(-309,0,0),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
+ENT.ClientProps["IBIS"] = {
+	model = "models/lilly/uf/u2/IBIS.mdl",
+	pos = Vector(533.3,-19.5,82.5),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Pantograph"] = {
+	model = "models/lilly/uf/common/pantograph.mdl",
+	pos = Vector(43,0,155),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
+
+
 ENT.ClientProps["Dest"] = {
 	model = "models/lilly/uf/u2/dest_a.mdl",
-	pos = Vector(0.5,0,0),
+	pos = Vector(-0.5,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
 
 ENT.ClientProps["Throttle"] = {
-    model = "models/lilly/uf/u2/cab/kombihebel.mdl",
-    pos = Vector(527.70,35.5,77),
+    model = "models/lilly/uf/common/cab/throttle.mdl",
+    pos = Vector(527.70,32.5,77),
     ang = Angle(0,90,0),
     hideseat = 0.2,
 }
@@ -127,7 +166,7 @@ function ENT:Initialize()
 	self.Ventilation = 0
 	
 	
-	self.LeftMirror = self:CreateRT("LeftMirror",128,256)
+	self.LeftMirror = self:CreateRT("LeftMirror",512,256)
     self.RightMirror = self:CreateRT("RightMirror",128,256)
 end
 
@@ -138,15 +177,15 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 
 	
-	
-	self:Animate("Throttle",self:GetPackedRatio("ThrottleState"),1, 3,4,false)
+	self:Animate("Throttle",self:GetNWInt("ThrottleState", 0),-45,45,1,True)
 	
 	
 
 	
 	
 	if self:GetNW2Bool("BitteZuruecktreten") == true then
-        
+
+        self:SetNW2Bool("BitteZuruecktreten", false)
         self:PlayOnce("BitteZuruecktreten","cabin",1,1)
 	    self:SetNW2Bool("BitteZuruecktreten", false)
 	end
@@ -213,15 +252,15 @@ function ENT:Think()
     local rollings = math.max(self.TunnelCoeff*1,self.StreetCoeff)
 	
 	
-	local rol5 = math.Clamp(speed/1,0,1)*(1-math.Clamp((speed-3)/8,0,1))
-    local rol10 = math.Clamp(speed/12,0,1)*(1-math.Clamp((speed-25)/8,0,1))
-    local rol40p = Lerp((speed-25)/12,0.6,1)
-    local rol40 = math.Clamp((speed-23)/8,0,1)*(1-math.Clamp((speed-55)/8,0,1))
-    local rol40p = Lerp((speed-23)/50,0.6,1)
-    local rol70 = math.Clamp((speed-50)/8,0,1)*(1-math.Clamp((speed-72)/5,0,1))
-    local rol70p = Lerp(0.8+(speed-65)/25*0.2,0.8,1.2)
-    local rol80 = math.Clamp((speed-70)/5,0,1)
-    local rol80p = Lerp(0.8+(speed-72)/15*0.2,0.8,1.2)
+	local rol5 = math.Clamp(speed/1,0,1)*(1-math.Clamp((speed)/8,0,1))
+    local rol10 = math.Clamp(speed/12,0,1)*(1-math.Clamp((speed)/8,0,1))
+    local rol40p = Lerp((speed)/12,0.6,1)
+    local rol40 = math.Clamp((speed)/8,0,1)*(1-math.Clamp((speed)/8,0,1))
+    local rol40p = Lerp((speed)/50,0.6,1)
+    local rol70 = math.Clamp((speed)/8,0,1)*(1-math.Clamp((speed)/5,0,1))
+    local rol70p = Lerp(0.8+(speed)/25*0.2,0.8,1.2)
+    local rol80 = math.Clamp((speed)/5,0,1)
+    local rol80p = Lerp(0.8+(speed)/15*0.2,0.8,1.2)
 	
 	
 	
@@ -231,15 +270,15 @@ function ENT:Think()
     --self:SetSoundState("rolling_70",rollingi*rol70,rol70p)
     --self:SetSoundState("rolling_80",rollingi*rol80,rol80p)
 
-	--local rol_motors = math.Clamp((speed-20)/40,0,1)
-    --self:SetSoundState("rolling_motors",math.max(rollingi,rollings*0.3)*rol_motors,speed/56)
+	local rol_motors = math.Clamp((speed-20)/40,0,1)
+    self:SetSoundState("rolling_motors",math.max(rollingi,rollings*0.3)*rol_motors,speed/56)
 
-    local rol10 = math.Clamp(speed/15,0,1)*(1-math.Clamp((speed-18)/35,0,1))
-    local rol10p = Lerp((speed-15)/14,0.6,0.78)
-    local rol40 = math.Clamp((speed-18)/35,0,1)*(1-math.Clamp((speed-55)/40,0,1))
-    local rol40p = Lerp((speed-15)/66,0.6,1.3)
+    local rol10 = math.Clamp(speed/15,0,1)*(1-math.Clamp((speed)/35,0,1))
+    local rol10p = Lerp((speed)/14,0.6,0.78)
+    local rol40 = math.Clamp((speed-18)/35,0,1)*(1-math.Clamp((speed)/40,0,1))
+    local rol40p = Lerp((speed)/66,0.6,1.3)
     local rol70 = math.Clamp((speed-55)/20,0,1)--*(1-math.Clamp((speed-72)/5,0,1))
-    local rol70p = Lerp((speed-55)/27,0.78,1.15)
+    local rol70p = Lerp((speed)/27,0.78,1.15)
 	
 	
 end

@@ -13,9 +13,10 @@ COUPLE_MAX_DISTANCE = COUPLE_MAX_DISTANCE ^ 2
 COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
 --Model,Couple pos,Snake pos,Snake ang
 ENT.Types = {
-    ["u5"] = {"models/lilly/uf/u5/coupler.mdl",Vector(94.9,0,0),Vector(0,0,0),Angle(0,-90,0)},
-    ["u2"] = {"models/lilly/uf/coupler.mdl",Vector(45.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
-    def={"models/lilly/uf/coupler.mdl",Vector(45.5,-2,0),Vector(0,0,0),Angle(0,90,0)},
+    ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(42,0,0),Vector(0,0,0),Angle(0,-90,0)},
+    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(42,0,0),Vector(0,0,0),Angle(0,-90,0)},
+    ["dummy"] = {"models/lilly/uf/coupler_dummy.mdl",Vector(45.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
+    def={"models/lilly/uf/coupler_new.mdl",Vector(42,0,0),Vector(0,0,0),Angle(0,90,0)},
 }
 
 function ENT:SetParameters()
