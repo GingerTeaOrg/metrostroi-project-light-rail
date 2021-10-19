@@ -353,7 +353,7 @@ function ENT:Think(dT)
 	--PrintMessage(HUD_PRINTTALK, self.FrontBogey.MotorForce)
 
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
-	self:SetNWFloat("ThrottleState",self.ThrottleState)
+	--self:SetNWFloat("ThrottleState",self.ThrottleState)
 	self.Duewag_U2:TriggerInput("ThrottleRate", self.ThrottleRate)
 	--PrintMessage(HUD_PRINTTALK, self.Duewag_U2.ThrottleState)
 	--Train:WriteTrainWire(1,self.FrontBogey.MotorForce)
