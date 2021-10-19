@@ -24,6 +24,12 @@ ENT.Lights = {
 
 
 
+ENT.ClientProps["headlights_on"] = {
+	model = "models/lilly/uf/u2/headlight_on.mdl",
+	pos = Vector(541.35,0,43),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
 
 ENT.ClientProps["Door_fl"] = {
 	model = "models/lilly/uf/u2/u2h/doors.mdl",
@@ -69,14 +75,14 @@ ENT.ClientProps["Pantograph"] = {
 
 ENT.ClientProps["Dest"] = {
 	model = "models/lilly/uf/u2/dest_a.mdl",
-	pos = Vector(0.5,0,0),
+	pos = Vector(-0.5,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
 
 ENT.ClientProps["Throttle"] = {
-    model = "models/lilly/uf/u2/cab/kombihebel.mdl",
-    pos = Vector(527.70,35.5,77),
+    model = "models/lilly/uf/common/cab/throttle.mdl",
+    pos = Vector(527.70,32.5,77),
     ang = Angle(0,90,0),
     hideseat = 0.2,
 }
@@ -171,8 +177,7 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 
 	
-	
-	self:Animate("Throttle",self:GetPackedRatio("ThrottleState"),1, 3,4,false)
+	self:Animate("Throttle",self:GetNWInt("ThrottleState", 0),-45,45,1,True)
 	
 	
 

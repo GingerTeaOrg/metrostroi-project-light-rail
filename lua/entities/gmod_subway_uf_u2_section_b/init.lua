@@ -48,7 +48,7 @@ function ENT:Initialize()
 		[KEY_R] = "Reverse",
 		[KEY_L] = "Bell",
 	}
-	self.RearCouple = self:CreateCoupleUF(Vector( -520,0,15),Angle(0,180,0),true,"u2")	
+	self.RearCouple = self:CreateCoupleUF(Vector( -528,0,8),Angle(0,180,0),true,"u2")	
     --self.FrontCouple = self:CreateCoupleUF(Vector( 0,0,23),Angle(0,180,0),true,"u2")	
 	
     --self.RearBogey:SetRenderMode(RENDERMODE_TRANSALPHA)
@@ -391,11 +391,11 @@ function ENT:Think()
 	--self:SetLightPower(113,true)
 
     local N = self.Duewag_U2.Traction
-    self.RearBogey.MotorForce  = 15000*N / 20 --18000*N
-	self.RearBogey.MotorPower = 600--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
+    self.RearBogey.MotorForce  = self.Duewag_U2.Traction --18000*N
+	self.RearBogey.MotorPower = 100--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
 	self.RearBogey.Reversed = self.Duewag_U2.ReverserState < 0
 
 
-    self.RearBogey.PneumaticBrakeForce = (80000.0) 
+    self.RearBogey.PneumaticBrakeForce = (70000.0) 
     self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 end

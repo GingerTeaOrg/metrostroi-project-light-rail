@@ -2,4 +2,5 @@
 {
 	"$basetexture" "models/lilly/uf/u2/u2h/pult"
 	"$surfaceprop" "Metal"
+	$bumpmap	"materials\models\lilly\uf\u2\cab\lever_leather_n"
 }

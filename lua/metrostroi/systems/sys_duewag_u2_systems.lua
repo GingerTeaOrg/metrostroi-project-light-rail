@@ -162,13 +162,16 @@ function TRAIN_SYSTEM:Think(Train,dT)
 		
 		
 	--if self.TractionConditionFulfilled == true and if not self.TractionCutOut == true then
-		self.Traction = self.ThrottleState
+		--self.Traction = 15000*self.ThrottleState / 20
+
+		self.Traction = self.ThrottleState *50 
+		self.Traction = math.Clamp(self.Traction,0,9000) * 5
 		self.Train:WriteTrainWire(1,self.Traction) 
 	--else
 	--	self.Traction = 0
 	--end				
 	
-				
+			
 				
 				
 				
