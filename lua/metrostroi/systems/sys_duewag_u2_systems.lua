@@ -38,6 +38,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.BrakePressure = 0
 	self.TractionCutOut = false
 	self.Haltebremse = 0
+	self.ThrottleStateAnim = 0
 	
 
 end
@@ -171,12 +172,13 @@ function TRAIN_SYSTEM:Think(Train,dT)
 	--	self.Traction = 0
 	--end				
 	
-			
-				
-				
-				
-				
-				
+
+	if self.ThrottleState <= 100 then
+		self.ThrottleStateAnim = self.ThrottleState / 200 + 0.5
+	elseif (self.ThrottleState >= 0) then
+		self.ThrottleStateAnim = (self.ThrottleState * -0.1)
+		
+	end	
 				
 				
 				

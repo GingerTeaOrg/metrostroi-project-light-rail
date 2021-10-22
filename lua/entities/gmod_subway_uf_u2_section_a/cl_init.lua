@@ -82,8 +82,8 @@ ENT.ClientProps["Dest"] = {
 
 ENT.ClientProps["Throttle"] = {
     model = "models/lilly/uf/common/cab/throttle.mdl",
-    pos = Vector(527.70,32.5,77),
-    ang = Angle(0,90,0),
+    pos = Vector(527.70,38.5,77),
+    ang = Angle(0,-90,0),
     hideseat = 0.2,
 }
 
@@ -177,7 +177,8 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 
 	
-	self:Animate("Throttle",self:GetNWInt("ThrottleState", 0),-45,45,1,True)
+	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0,false)
+    --self:Animate("Throttle",0,-45,45,3,0,false)
 	
 	
 

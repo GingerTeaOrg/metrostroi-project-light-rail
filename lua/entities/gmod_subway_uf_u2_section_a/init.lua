@@ -164,7 +164,8 @@ function ENT:Initialize()
 	self.BrakePressure = 0
 	self.ThrottleRate = 0
 
-	
+	self.WagonNumber = 303
+
 	self.Haltebremse = 0
 	
 	self.AlarmSound = 0
@@ -189,8 +190,8 @@ function ENT:Initialize()
 	self.KeyTurnOn = false
 	self.BatteryOn = false
 	
-	self.FrontBogey:SetNWInt("MotorSoundType",2)
-    self.RearBogey:SetNWInt("MotorSoundType",2)
+	self.FrontBogey:SetNWInt("MotorSoundType",0)
+    self.RearBogey:SetNWInt("MotorSoundType",0)
 	
 	
 	--self.PantoState = 0
@@ -222,7 +223,8 @@ function ENT:Initialize()
 							[KEY_0] = "KeyInsert",
 							[KEY_9] = "ReverserInsert",
 							[KEY_A] = "ThrottleUpFast",
-							[KEY_D] = "ThrottleDownFast"},
+							[KEY_D] = "ThrottleDownFast",
+							[KEY_S] = "ThrottleZero"},
 		}
 	
 
@@ -261,8 +263,9 @@ function ENT:TrainSpawnerUpdate()
         self.RearCouple:SetParameters()
 		local tex = "Def_U2"
 		self:UpdateTextures()
-		self:UpdateLampsColors()
+		--self:UpdateLampsColors()
 		self.FrontCouple.CoupleType = "U2"
+		self.RearCouple.CoupleType = "dummy"
 
 end
 
@@ -359,9 +362,9 @@ function ENT:Think(dT)
 	--Train:WriteTrainWire(1,self.FrontBogey.MotorForce)
 	--PrintMessage(HUD_PRINTTALK, "Calculated Traction")
 	--PrintMessage(HUD_PRINTTALK, self.Duewag_U2.Traction)
-	self:SetNWInt("ThrottleState", self.ThrottleState)
+	self:SetNWInt("ThrottleStateAnim", self.Duewag_U2.ThrottleStateAnim)
 	--PrintMessage(HUD_PRINTTALK, self:GetNWInt("ThrottleState", fallback = 0))
-	
+	--PrintMessage(HUD_PRINTTALK, self.Duewag_U2.ThrottleStateAnim)
 	
 end
 
@@ -382,8 +385,8 @@ function ENT:OnButtonPress(button,ply)
 	
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
 	if self.ThrottleRate == 0 then
-		if button == "ThrottleUp" then self.ThrottleRate = 1.5 end
-		if button == "ThrottleDown" then self.ThrottleRate = -1.5 end
+		if button == "ThrottleUp" then self.ThrottleRate = 2 end
+		if button == "ThrottleDown" then self.ThrottleRate = -2 end
 	end
 
 	if self.ThrottleRate == 0 then
@@ -391,6 +394,9 @@ function ENT:OnButtonPress(button,ply)
 		if button == "ThrottleDownFast" then self.ThrottleRate = -5.5 end
 	end
 
+	if self.ThrottleRate == 0 then
+		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
+	end
 
 	
 	if button == "PantoUp" then

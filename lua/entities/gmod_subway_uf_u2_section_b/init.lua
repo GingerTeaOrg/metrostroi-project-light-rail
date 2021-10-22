@@ -77,6 +77,9 @@ function ENT:Initialize()
 	end
 
 	self.BrakePressure = 0	
+
+	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
+    self.DriverSeat:SetColor(Color(0,0,0,0))
 end
 
 

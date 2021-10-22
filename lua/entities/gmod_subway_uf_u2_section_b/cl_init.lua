@@ -37,6 +37,46 @@ ENT.ClientProps["Dest"] = {
 	scale = 1,
 }
 
+ENT.ClientProps["headlights_on"] = {
+	model = "models/lilly/uf/u2/headlight_on.mdl",
+	pos = Vector(-535,0,43),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_fl"] = {
+	model = "models/lilly/uf/u2/u2h/doors.mdl",
+	pos = Vector(7,0,0),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_fr"] = {
+	model = "models/lilly/uf/u2/u2h/doors.mdl",
+	pos = Vector(-918,0,0),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+ENT.ClientProps["Door_br"] = {
+	model = "models/lilly/uf/u2/u2h/doors.mdl",
+	pos = Vector(-610,0,0),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+ENT.ClientProps["Door_bl"] = {
+	model = "models/lilly/uf/u2/u2h/doors.mdl",
+	pos = Vector(314,0,0),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+
+ENT.ClientProps["IBIS"] = {
+	model = "models/lilly/uf/u2/IBIS.mdl",
+	pos = Vector(-525.3,19.5,82.5),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+
 
 function ENT:Think()
 	self.BaseClass.Think(self)
