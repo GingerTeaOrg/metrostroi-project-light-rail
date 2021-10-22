@@ -223,7 +223,8 @@ function ENT:Initialize()
 							[KEY_0] = "KeyInsert",
 							[KEY_9] = "ReverserInsert",
 							[KEY_A] = "ThrottleUpFast",
-							[KEY_D] = "ThrottleDownFast"},
+							[KEY_D] = "ThrottleDownFast",
+							[KEY_S] = "ThrottleZero"},
 		}
 	
 
@@ -393,6 +394,9 @@ function ENT:OnButtonPress(button,ply)
 		if button == "ThrottleDownFast" then self.ThrottleRate = -5.5 end
 	end
 
+	if self.ThrottleRate == 0 then
+		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
+	end
 
 	
 	if button == "PantoUp" then
