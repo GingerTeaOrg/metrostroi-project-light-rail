@@ -6,17 +6,17 @@ function ENT:ReinitializeSounds()
     self.SoundNames = {}
     self.EngineSNDConfig = {}
 
-    self.SoundNames["ted1_703"]  = "lilly/uf//u2/engineloop_test_10.wav"
-    self.SoundNames["ted2_703"]  = "lilly/uf//u2/engineloop_test_20.wav"
-    self.SoundNames["ted3_703"]  = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["ted4_703"]  = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["ted5_703"]  = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["ted6_703"]  = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["ted7_703"]  = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["ted8_703"]  = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["ted9_703"]  = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["ted10_703"] = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["ted11_703"] = "lilly/uf//u2/engineloop_test.wav"
+    self.SoundNames["ted1_703"]  = "lilly/uf/bogeys/u2/drive_10_new.wav"
+    self.SoundNames["ted2_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
+    self.SoundNames["ted3_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
+    self.SoundNames["ted4_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
+    self.SoundNames["ted5_703"]  = "lilly/uf/bogeys/u2/drive_10_new.wav"
+    self.SoundNames["ted6_703"]  = "lilly/uf/bogeys/u2/drive_10_new.wav"
+    self.SoundNames["ted7_703"]  = "lilly/uf/bogeys/u2/drive_10_new.wav"
+    self.SoundNames["ted8_703"]  = "lilly/uf/bogeys/u2/drive_10_new.wav"
+    self.SoundNames["ted9_703"]  = "lilly/uf/bogeys/u2/drive_10_new.wav"
+    self.SoundNames["ted10_703"] = "lilly/uf/bogeys/u2/drive_10_new.wav"
+    self.SoundNames["ted11_703"] = "lilly/uf/bogeys/u2/drive_70.wav"
     --self.SoundNames["tedm_703"]  = "subway_trains/bogey/engines/703/engines_medium.wav"
 
     self.SoundNames["ted1_717"]  = "subway_trains/bogey/engines/717/engines_8.wav"
@@ -235,7 +235,7 @@ function ENT:Think()
                     self:SetSoundState(snd[1].."1",motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2),snd[1],false)
                     self:SetSoundState(snd[1].."2",0,0,1,true)
                     self:SetSoundState(snd[1].."1",((motorsnd + powerVolRamp)*volume)*(snd.vol or 1)*volumemul,pitch*0.975,snd[1],false)
-                    self:SetSoundState(snd[1].."2",((motorsnd + powerVolRamp)*volume)*(snd.vol or 1)*volumemul,pitch*1.025,snd[1],1,true)
+                    self:SetSoundState(snd[1].."2",((motorsnd + powerVolRamp)*volume)*(snd.vol or 1)*volumemul,pitch,snd[1],1,true)
                 end
             end
         else
