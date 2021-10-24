@@ -135,7 +135,7 @@ end
 ENT.BogeyDistance = 1800
 
 
-ENT.SyncTable = { "speed", "ThrottleState", "Drive", "Brake","Reverse","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOn", "KeyTurnOn", "BlinkerState", "StationBrakeOn", "StationBrakeOff"}
+ENT.SyncTable = { "speed", "ThrottleState", "Drive", "Brake","Reverse","BellEngage","Horn","WarningAnnouncement", "PantoUp", "BatteryOn", "KeyTurnOn", "BlinkerState", "StationBrakeOn", "StationBrakeOff"}
 
 
 function ENT:Initialize()
@@ -153,7 +153,7 @@ function ENT:Initialize()
 	self.Debug = 1
 	self.CabEnabled = 0
 	
-	self.BitteZuruecktreten = 0
+	self.WarningAnnouncement = 0
 	
 	self.speed = 0
 	self.ThrottleState = 0
@@ -209,7 +209,7 @@ function ENT:Initialize()
 		[KEY_O] = "DoorUnlock",
 		[KEY_I] = "DoorLock",
 		[KEY_K] = "DoorConfirm",
-		[KEY_Z] = "BitteZuruecktreten",
+		[KEY_Z] = "WarningAnnouncement",
 		[KEY_PAD_4] = "BlinkerLeft",
 		[KEY_PAD_5] = "BlinkerNeutral",
 		[KEY_PAD_6] = "BlinkerRight",
@@ -219,13 +219,27 @@ function ENT:Initialize()
 		[KEY_B] = "Battery",
 		[KEY_0] = "KeyTurnOn",
 		
-			[KEY_LSHIFT] = {
+		[KEY_LSHIFT] = {
 							[KEY_0] = "KeyInsert",
 							[KEY_9] = "ReverserInsert",
 							[KEY_A] = "ThrottleUpFast",
 							[KEY_D] = "ThrottleDownFast",
 							[KEY_S] = "ThrottleZero"},
-		}
+		[KEY_RALT] = {
+							[KEY_PAD_1] = "IBIS-1",
+							[KEY_PAD_2] = "IBIS-2",
+							[KEY_PAD_3] = "IBIS-3",
+							[KEY_PAD_4] = "IBIS-4",
+							[KEY_PAD_5] = "IBIS-5",
+							[KEY_PAD_6] = "IBIS-6",
+							[KEY_PAD_7] = "IBIS-7",
+							[KEY_PAD_8] = "IBIS-8",
+							[KEY_PAD_9] = "IBIS-9",
+							[KEY_PAD_0] = "IBIS-0",
+							[KEY_PAD_ENTER] = "IBIS-Enter",
+							[KEY_PAD_DECIMAL] = "IBIS-Decimal",
+		},
+	}
 	
 
 
@@ -300,7 +314,7 @@ function ENT:Think(dT)
 	
 
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
-	--self:SetNW2Int("Speed",self.Speed*150)
+	self:SetNW2Int("Speed",self.Speed*150)
 	self.Duewag_U2:TriggerInput("Speed",self.Speed*150)
  
 
@@ -417,8 +431,8 @@ function ENT:OnButtonPress(button,ply)
 		
 	end
 	
-	if button == "BitteZuruecktreten"  then
-			self:SetNW2Int("BitteZuruecktreten", 1)
+	if button == "WarningAnnouncement"  then
+			self:SetNW2Int("WarningAnnouncement", 1)
 	end
 	
 	if button == "KeyInsert" then
@@ -517,8 +531,8 @@ function ENT:OnButtonPress(button,ply)
 			end
 	end
 
-	if button == "BitteZuruecktreten" then
-		self:SetNW2Bool("BitteZuruecktreten", true)
+	if button == "WarningAnnouncement" then
+		self:SetNW2Bool("WarningAnnouncement", true)
 	end
 end
 
