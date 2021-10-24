@@ -87,27 +87,231 @@ ENT.ClientProps["Throttle"] = {
     hideseat = 0.2,
 }
 
+
 ENT.ButtonMap["Cab"] = {
-    pos = Vector(540,50,78.5),
-    ang = Angle(0,-90,0),
+    pos = Vector(540,50,78),
+    ang = Angle(0,-90,8),
     width = 690,
-    height = 300,
+    height = 124,
     scale = 0.1,
 	
     buttons = {
 		
-	{ID = "ThrottleUp", x=150, y=110.5, radius=20, tooltip = "Combined Throttle Up", model = {
+	{ID = "ThrottleUp", x=150, y=112.5, radius=20, tooltip = "Combined Throttle Up", model = {
 			model = "models/lilly/uf/u2/cab/kombihebel.mdl", z=0, ang=0,
 			var="main",speed=1, vmin=0, vmax=1,
 			sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
     },
-    {ID = "ThrottleDown", x=150, y=110.5, radius=20, tooltip = "Combined Throttle Down", model = {
+    {ID = "ThrottleDown", x=150, y=155, radius=20, tooltip = "Combined Throttle Down", model = {
         model = "models/lilly/uf/u2/cab/kombihebel.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
+    {ID = "WarningAnnouncement", x=415, y=47, radius=10, tooltip = "Please keep back announcement", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "CablightOverground", x=230, y=80, radius=10, tooltip = "Set cab lights to overground mode", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "CablightUnderground", x=230, y=115, radius=10, tooltip = "Set cab lights to underground mode", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "Lights", x=200, y=45, radius=10, tooltip = "Enable lights", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "BatteryToggle", x=589, y=115, radius=10, tooltip = "Toggle Battery", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "SetPointLeft", x=340, y=115, radius=10, tooltip = "Set track point to left", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "ClearDoorClosedAlarm", x=369, y=115, radius=10, tooltip = "Clear door closed alarm", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "SetPointRight", x=395, y=115, radius=10, tooltip = "Set track point to right", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "IndicatorLightsSwitch", x=420, y=115, radius=10, tooltip = "Indicators Left/Right/Off", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "LowerPantograph", x=449, y=115, radius=10, tooltip = "Lower pantograph", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "ThrowCoupler", x=478, y=115, radius=10, tooltip = "Throw Coupler", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "OpenDoor1", x=501, y=115, radius=10, tooltip = "Open only door 1", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "Sander", x=559, y=115, radius=10, tooltip = "Toggle sanding", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "UnlockDoors", x=531, y=84, radius=10, tooltip = "Toggle doors unlocked", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "RaisePantograph", x=449, y=83, radius=10, tooltip = "Raise Pantograph", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "RaisePantograph", x=369, y=83, radius=10, tooltip = "Raise Pantograph", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "DoorSideSelect", x=531, y=46, radius=10, tooltip = "Select door set to unlock", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+}
+}
+
+ENT.ButtonMap["IBIS"] = {
+    pos = Vector(531,-23,84.9),
+    ang = Angle(48,-225,0),
+    width = 133,
+    height = 230,
+    scale = 0.04,
+
+    buttons = {
+        {ID = "Number1", x=41, y=72, radius=10, tooltip = "", model = {
+        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "Number2", x=40, y=50, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "Number3", x=40, y=27, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "Number4", x=65, y=72, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Number5", x=65, y=50, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Number6", x=65, y=27, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Number7", x=85, y=72, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Number8", x=85, y=50, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Number9", x=85, y=27, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Delete", x=109, y=72, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Number0", x=109, y=50, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Enter", x=109, y=27, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "TimeAndDate", x=109, y=95, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "SpecialAnnouncements", x=109, y=118, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
+        {ID = "Destination", x=85, y=95, radius=10, tooltip = "", model = {
+            model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+            var="main",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                }
+        },
 }
 }
 
@@ -177,18 +381,18 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 
 	
-	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0,false)
+	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
     --self:Animate("Throttle",0,-45,45,3,0,false)
 	
 	
 
 	
 	
-	if self:GetNW2Bool("BitteZuruecktreten") == true then
+	if self:GetNW2Bool("WarningAnnouncement") == true then
 
-        self:SetNW2Bool("BitteZuruecktreten", false)
-        self:PlayOnce("BitteZuruecktreten","cabin",1,1)
-	    self:SetNW2Bool("BitteZuruecktreten", false)
+        self:SetNW2Bool("WarningAnnouncement", false)
+        self:PlayOnce("WarningAnnouncement","cabin",1,1)
+	    self:SetNW2Bool("WarningAnnouncement", false)
 	end
 	
 	

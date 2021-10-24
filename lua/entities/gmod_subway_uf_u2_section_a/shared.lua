@@ -1,6 +1,6 @@
 ENT.Type            = "anim"
 ENT.Base            = "gmod_subway_base"
-ENT.PrintName = "Duewag U2h"
+ENT.PrintName 		= "Duewag U2h"
 ENT.Author          = "LillyWho"
 ENT.Contact         = ""
 ENT.Purpose         = ""
@@ -10,7 +10,7 @@ ENT.Category		= "U-Bahn Frankfurt Metrostroi"
 ENT.Spawnable       = true
 ENT.AdminSpawnable  = false
 
-
+ENT.DontAccelerateSimulation = false
 
 
 function ENT:PassengerCapacity()
@@ -19,6 +19,10 @@ end
 
 function ENT:GetStandingArea()
     return Vector(-450,-30,-55),Vector(380,30,-55) -- TWEAK: NEEDS TESTING INGAME
+end
+
+local function GetDoorPosition(i,k)
+    return Vector(359.0 - 35/2 - 229.5*i,-65*(1-2*k),7.5)
 end
 
 function ENT:InitializeSounds()
@@ -50,6 +54,18 @@ function ENT:InitializeSounds()
 	self.SoundPositions["rolling_motors"] = {480,1e12,Vector(0,0,0),.4}
 end
 
+ENT.AnnouncerPositions = {
+    {Vector(420,-38.2 ,35),80,0.33},
+    {Vector(-3,-60, 62),300,0.2},
+    {Vector(-3,60 ,62),300,0.2},
+}
+
+ENT.LeftDoorPositions = {}
+ENT.RightDoorPositions = {}
+for i=0,3 do
+    table.insert(ENT.LeftDoorPositions,GetDoorPosition(i,1))
+    table.insert(ENT.RightDoorPositions,GetDoorPosition(i,0))
+end
 
 
 
@@ -69,6 +85,7 @@ ENT.Cameras = {
 function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
 	self:LoadSystem("Duewag_Deadman")
+	--self:LoadSystem("IBIS")
 	--self:LoadSystem("81_71_LastStation","destination")
 	--self:LoadSystem("uf_bell")
 	--self:LoadSystem("duewag_electric")
@@ -83,14 +100,16 @@ ENT.SubwayTrain = {
 
 ENT.MirrorCams = {
     Vector(441,72,60),Angle(1,180,0),15,
-    Vector(441,-72,200),Angle(1,180,0),15,
+    Vector(441,-72,60),Angle(1,180,0),15,
 }
+
+
 
 
 --ENT.NumberRanges = {{807,1000},{2001,2468}}
 ENT.Spawner = {
 head = "gmod_subway_uf_u2_section_a",
-    interim = "gmod_subway_uf_u2_section_b",
+    interim = "gmod_subway_uf_u2_section_a",
     Metrostroi.Skins.GetTable("Texture","Texture",false,"train"),
 
 }

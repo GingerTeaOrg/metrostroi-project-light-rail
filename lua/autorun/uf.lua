@@ -6,7 +6,7 @@ if not UF then
     UF.TrainClasses = {}
     UF.IsTrainClass = {}
     -- Supported train classes
-    Metrostroi.TrainSpawnerClasses = {}
+    UF.TrainSpawnerClasses = {}
     timer.Simple(0.05, function()
         for name in pairs(scripted_ents.GetList()) do
             local prefix = "gmod_subway_uf_"
