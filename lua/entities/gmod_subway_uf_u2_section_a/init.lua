@@ -132,7 +132,7 @@ end
     return coupler
 end
 
-ENT.BogeyDistance = 1800
+ENT.BogeyDistance = 2400
 
 
 ENT.SyncTable = { "speed", "ThrottleState", "Drive", "Brake","Reverse","BellEngage","Horn","WarningAnnouncement", "PantoUp", "BatteryOn", "KeyTurnOn", "BlinkerState", "StationBrakeOn", "StationBrakeOff"}
@@ -152,6 +152,7 @@ function ENT:Initialize()
 	
 	self.Debug = 1
 	self.CabEnabled = 0
+	self.LeadingCab = 0
 	
 	self.WarningAnnouncement = 0
 	
@@ -167,7 +168,7 @@ function ENT:Initialize()
 	self.WagonNumber = 303
 
 	self.Haltebremse = 0
-	
+
 	self.AlarmSound = 0
 	-- Create bogeys
 	self.FrontBogey = self:CreateBogeyUF(Vector( 400,-0.7,0),Angle(0,180,0),true,"u2")
@@ -185,7 +186,6 @@ function ENT:Initialize()
 	
 	self.PantoUp = false
 	self.KeyInsert = false 
-	self.ReverserState = 0
 	self.ReverserInsert = false 
 	self.KeyTurnOn = false
 	self.BatteryOn = false
@@ -226,22 +226,25 @@ function ENT:Initialize()
 							[KEY_D] = "ThrottleDownFast",
 							[KEY_S] = "ThrottleZero"},
 		[KEY_RALT] = {
-							[KEY_PAD_1] = "IBIS-1",
-							[KEY_PAD_2] = "IBIS-2",
-							[KEY_PAD_3] = "IBIS-3",
-							[KEY_PAD_4] = "IBIS-4",
-							[KEY_PAD_5] = "IBIS-5",
-							[KEY_PAD_6] = "IBIS-6",
-							[KEY_PAD_7] = "IBIS-7",
-							[KEY_PAD_8] = "IBIS-8",
-							[KEY_PAD_9] = "IBIS-9",
-							[KEY_PAD_0] = "IBIS-0",
-							[KEY_PAD_ENTER] = "IBIS-Enter",
-							[KEY_PAD_DECIMAL] = "IBIS-Decimal",
+							[KEY_PAD_1] = "Number1",
+							[KEY_PAD_2] = "Number2",
+							[KEY_PAD_3] = "Number3",
+							[KEY_PAD_4] = "Number4",
+							[KEY_PAD_5] = "Number5",
+							[KEY_PAD_6] = "Number6",
+							[KEY_PAD_7] = "Number7",
+							[KEY_PAD_8] = "Number8",
+							[KEY_PAD_9] = "Number9",
+							[KEY_PAD_0] = "Number0",
+							[KEY_PAD_ENTER] = "Enter",
+							[KEY_PAD_DECIMAL] = "Delete",
+							[KEY_PAD_DIVIDE] = "Destination",
+							[KEY_PAD_MULTIPLY] = "SpecialAnnouncements",
+							[KEY_PAD_MINUS] = "TimeAndDate",
 		},
 	}
 	
-
+--How to get the IBIS inputs? With function TRAIN_SYSTEM:Trigger(name,value)
 
 
 
@@ -298,7 +301,7 @@ function ENT:Think(dT)
     self:SetPackedBool("BellEngage",self.Duewag_U2.BellEngage)
 	
 	
-
+	
 
 	local function wait(seconds)
 		local time = seconds or 1
@@ -311,12 +314,16 @@ function ENT:Think(dT)
 	self:SetNW2Bool("BatteryOn",self.BatteryOn)
 	self:SetNW2Bool("PantoUp",self.PantoUp)
 	self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
+
+	--if self:GetNW2Bool("ReverserInerted", false) == true then self:SetNW2Int("CabActive", 1) end
 	
 
-	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
+	self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*150)
 	self.Duewag_U2:TriggerInput("Speed",self.Speed*150)
  
+	--PrintMessage(HUD_PRINTTALK,"Current Speed")
+	--PrintMessage(HUD_PRINTTALK,self.Speed)
 
 	--self.RearCouple:Remove()
 	
@@ -432,7 +439,7 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	if button == "WarningAnnouncement"  then
-			self:SetNW2Int("WarningAnnouncement", 1)
+			self:SetNW2Bool("WarningAnnouncement", 1)
 	end
 	
 	if button == "KeyInsert" then
@@ -531,8 +538,17 @@ function ENT:OnButtonPress(button,ply)
 			end
 	end
 
-	if button == "WarningAnnouncement" then
-		self:SetNW2Bool("WarningAnnouncement", true)
+	if button == "Number7" then
+		self.IBIS:Trigger("Number7")
+	end
+
+	if button == "Destination" then
+		self.IBIS:Trigger("Destination")
+	end
+
+
+	if button == "Number0" then
+		self.IBIS:Trigger("Number0")
 	end
 end
 
@@ -558,7 +574,9 @@ function ENT:OnButtonRelease(button,ply)
 			print("DeadmanPressedNo")
 		end
 	
-
+		if button == "WarningAnnouncement" then
+			self:SetNW2Bool("WarningAnnouncement", false)
+		end
 end
 
 
@@ -571,7 +589,7 @@ function ENT:CreateSectionB(pos)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())
 	local xmin = 5
-	local xmax = 5
+	local xmax = 0
 	
 	constraint.AdvBallsocket(
 		u2sectionb,
@@ -587,7 +605,7 @@ function ENT:CreateSectionB(pos)
 		0, --zmin
 		xmax, --xmax
 		0, --ymax
-		50, --zmax
+		100, --zmax
 		0, --xfric
 		0, --yfric
 		0, --zfric

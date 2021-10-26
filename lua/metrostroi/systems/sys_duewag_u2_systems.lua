@@ -86,7 +86,7 @@ function TRAIN_SYSTEM:BlinkerHandler()
 end
 
 --------------------------------------------------------------------------------
-function TRAIN_SYSTEM:Think(Train,dT)
+function TRAIN_SYSTEM:Think(Train)
 	--local train = self.Train 
 	--self.TriggerInput()
 	--self.TriggerOutput()

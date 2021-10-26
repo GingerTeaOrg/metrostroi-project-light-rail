@@ -19,9 +19,17 @@ if SERVER then
 				Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
 			}
 			
-			ENT.Types.u2=
+		ENT.Types.u2=
 		{
 			"models/lilly/uf/bogey.mdl",
+			Vector(0,0.0,0),Angle(0,0,0), "models/lilly/uf/wheelset.mdl",
+			Vector(0,-61,-14),Vector(0,61,-14),
+			nil,
+			Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
+		}
+		ENT.Types.ptb=
+		{
+			"models/lilly/uf/ptb/ptbogey.mdl",
 			Vector(0,0.0,0),Angle(0,0,0), "models/lilly/uf/wheelset.mdl",
 			Vector(0,-61,-14),Vector(0,61,-14),
 			nil,

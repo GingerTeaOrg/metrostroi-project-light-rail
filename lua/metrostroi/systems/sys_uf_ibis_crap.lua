@@ -89,7 +89,7 @@ if CLIENT then
         render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
         --render.Clear(0, 0, 0, 0)
         cam.Start2D()
-            self:IBISScreen(self.Train)
+            self:ASNPScreen(self.Train)
         cam.End2D()
         render.PopRenderTarget()
     end
@@ -112,7 +112,7 @@ if CLIENT then
     end
 
     TRAIN_SYSTEM.LoadSeq = "---------"
-    function TRAIN_SYSTEM:IBISScreen(Train)
+    function TRAIN_SYSTEM:ASNPScreen(Train)
         local State = self.Train:GetNW2Int("IBIS:State",-1)
         if State ~= 0 then
             surface.SetDrawColor(0, 31, 7,self.Warm and 130 or 255)
