@@ -272,7 +272,7 @@ function ENT:CreateSectionB(pos)
 		0, --torquelimit
 		xmin, --xmin
 		0, --ymin
-		0, --zmin
+		-50, --zmin
 		xmax, --xmax
 		0, --ymax
 		50, --zmax

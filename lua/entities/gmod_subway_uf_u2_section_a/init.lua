@@ -589,7 +589,7 @@ function ENT:CreateSectionB(pos)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())
 	local xmin = 5
-	local xmax = 0
+	local xmax = 5
 	
 	constraint.AdvBallsocket(
 		u2sectionb,
@@ -602,10 +602,10 @@ function ENT:CreateSectionB(pos)
 		0, --torquelimit
 		xmin, --xmin
 		0, --ymin
-		0, --zmin
+		-50, --zmin
 		xmax, --xmax
 		0, --ymax
-		100, --zmax
+		50, --zmax
 		0, --xfric
 		0, --yfric
 		0, --zfric
