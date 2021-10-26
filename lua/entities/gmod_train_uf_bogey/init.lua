@@ -52,6 +52,13 @@ ENT.Types = {
     nil,
     Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
     },
+    ptb={
+    "models/lilly/uf/ptb/ptbogey.mdl",
+    Vector(0,0.0,0),Angle(0,0,0),nil,
+    Vector(0,-61,-14),Vector(0,61,-14),
+    nil,
+    Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
+    },
     def={
         "models/lilly/uf/bogey.mdl",
         Vector(0,0.0,0),Angle(0,0,0),nil,
@@ -663,7 +670,7 @@ function ENT:SpawnFunction(ply, tr)
     ent:Spawn()
     ent:Activate()
 
-    if not inhibitrerail then UF.RerailBogey(ent) end
+    if not inhibitrerail then Metrostroi.RerailBogey(ent) end
     return ent
 end
 
