@@ -1,6 +1,6 @@
 
 Metrostroi.DefineSystem("Duewag_U2")
---TRAIN_SYSTEM.DontAccelerateSimulation = false
+TRAIN_SYSTEM.DontAccelerateSimulation = true 
 
 function TRAIN_SYSTEM:Initialize()
 
@@ -39,6 +39,8 @@ function TRAIN_SYSTEM:Initialize()
 	self.TractionCutOut = false
 	self.Haltebremse = 0
 	self.ThrottleStateAnim = 0
+
+	self.ThrottleCutOut = 0
 	
 
 end

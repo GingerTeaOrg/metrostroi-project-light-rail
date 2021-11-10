@@ -171,8 +171,8 @@ function ENT:Initialize()
 
 	self.AlarmSound = 0
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 310,0,-8),Angle(0,180,0),true,"u2")
-    self.RearBogey  = self:CreateBogeyUF(Vector(-9,0,-8),Angle(0,0,0),false,"ptb")
+	self.FrontBogey = self:CreateBogeyUF(Vector( 310,0,-4),Angle(0,180,0),true,"u2")
+    self.RearBogey  = self:CreateBogeyUF(Vector(-9,0,-4),Angle(0,0,0),false,"ptb")
     self.FrontBogey:SetNWBool("Async",true)
     self.RearBogey:SetNWBool("Async",true)
 	-- Create couples
@@ -623,7 +623,7 @@ function ENT:CreateSectionb(pos)
 	local ang = Angle(0,0,0)
 	local ptbsectionb = ents.Create("gmod_subway_uf_ptb_section_b")
 	-- self.ptbsectionb = u2b
-	ptbsectionb:SetPos(self:LocalToWorld(Vector(-245,0,0)))
+	ptbsectionb:SetPos(self:LocalToWorld(Vector(-250,0,0)))
 	ptbsectionb:SetAngles(self:GetAngles() + ang)
 	ptbsectionb:Spawn()
 	ptbsectionb:SetOwner(self:GetOwner())

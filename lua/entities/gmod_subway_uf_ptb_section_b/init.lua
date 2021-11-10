@@ -33,10 +33,10 @@ function ENT:Initialize()
 
 	self.Bogeys = {}
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 310,0,-8),Angle(0,0,0),true,"u2")--103,0,-80
+	self.FrontBogey = self:CreateBogeyUF(Vector( 310,0,-4),Angle(0,0,0),true,"u2")--103,0,-80
 	table.insert(self.Bogeys,self.FrontBogey)
 
-	self.RearBogey  = self:CreateBogeyUF(Vector( -5,0,-8),Angle(0,0,0),false,"ptb")
+	self.RearBogey  = self:CreateBogeyUF(Vector( -5,0,-4),Angle(0,0,0),false,"ptb")
 	
 	
 	self.ThrottleState = 0

@@ -315,11 +315,11 @@ function ENT:Think(dT)
 	self:SetNW2Bool("PantoUp",self.PantoUp)
 	self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
 
-	--if self:GetNW2Bool("ReverserInerted", false) == true then self:SetNW2Int("CabActive", 1) end
+	if self:GetNW2Bool("ReverserInserted", false) == true then self:SetNW2Bool("CabActive", true) end
 	
 
 	self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
-	self:SetNW2Int("Speed",self.Speed*150)
+	self:SetNW2Float("Speed",self.Speed)
 	self.Duewag_U2:TriggerInput("Speed",self.Speed*150)
  
 	--PrintMessage(HUD_PRINTTALK,"Current Speed")
@@ -352,7 +352,7 @@ function ENT:Think(dT)
 	if self.Duewag_Deadman.Alarm == 1 then
 		self.Duewag_U2:TriggerInput("BrakePressure", -100)
 	end
- 
+ 	PrintMessage(HUD_PRINTTALK, self.Duewag_Deadman.Alarm)
 	
 	
 	
@@ -549,6 +549,10 @@ function ENT:OnButtonPress(button,ply)
 
 	if button == "Number0" then
 		self.IBIS:Trigger("Number0")
+	end
+
+	if button == "Enter" then
+		self.IBIS:Trigger("Enter")
 	end
 end
 

@@ -6,6 +6,8 @@ function TRAIN_SYSTEM:Initialize()
     self.RouteChar1 = nil
     self.RouteChar2 = nil
 
+    self.Debug = 1
+    
 	self.Course = 0
     self.CourseChar1 = nil
     self.CourseChar2 = nil
@@ -39,13 +41,13 @@ function TRAIN_SYSTEM:Initialize()
     }
 
     self.Triggers = {}
-    self.State = 0
+    self.State = -2
 
     self.Menu = 0
     self.Announce = false
 
-
-    if not self:GetNW2Int("CabActive",0) == 1 then
+    if not TURBOSTROI then
+    if not self.Train:GetNW2Int("CabActive",0) == 1 then
         self.Train:LoadSystem("Number1","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Number2","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Number3","Relay","Switch",{bass = true })
@@ -61,6 +63,7 @@ function TRAIN_SYSTEM:Initialize()
         self.Train:LoadSystem("SpecialAnnouncements","Relay","Switch",{bass = true })
         self.Train:LoadSystem("TimeAndDate","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Enter","Relay","Switch",{bass = true })
+    end
     end
 
 end
@@ -128,7 +131,7 @@ function TRAIN_SYSTEM:Trigger(name,value)
           self.KeyInput = 9
         end
       if name == "Destination" then
-        self.KeyInput = "Destination"
+        self.Menu = 1
       end
        if name == "Delete" then
           self.KeyInput = "Delete"
@@ -165,7 +168,7 @@ if CLIENT then
             strikeout = false,
             symbol = false,
             rotary = false,
-            shadow = false,
+            shadow = true,
             additive = false,
             outline = false,
             extended = true,
@@ -175,7 +178,7 @@ end
 
 
 
-    createFont("ASNP","Liquid Crystal Display",30,400)
+createFont("ASNP","Liquid Crystal Display",30,200)
 
 
 
@@ -232,6 +235,12 @@ function TRAIN_SYSTEM:ASNPScreen(Train)
         surface.SetDrawColor(20,50,0,230)
         self.Warm = false
     end
+
+    if State == 0 then 
+        surface.SetDrawColor(20,50,0,230)
+        self.Warm = false
+    end
+
     surface.DrawRect(0,0,512,128)
     if State == false then
         return
@@ -239,6 +248,8 @@ function TRAIN_SYSTEM:ASNPScreen(Train)
 
 
     if State == -2 then
+        surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
+        self.Warm = true
         self:PrintText(0,0,"IFIS ERROR")
         self:PrintText(0,1,"Map is missing dataset")
         return
@@ -269,10 +280,6 @@ function TRAIN_SYSTEM:ASNPScreen(Train)
         self:PrintText(8,1,self.Route)
         return 
         end
-    end
-
-    if self.Debug == 1 then
-        self:PrintText(2,1,"This is a Test")
     end
     return
 end

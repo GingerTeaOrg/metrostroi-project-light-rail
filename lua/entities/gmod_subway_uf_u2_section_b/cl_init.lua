@@ -42,6 +42,7 @@ ENT.ClientProps["headlights_on"] = {
 	pos = Vector(-535,0,43),
 	ang = Angle(0,180,0),
 	scale = 1,
+	hide = 2,
 }
 
 ENT.ClientProps["Door_fl"] = {
@@ -85,7 +86,7 @@ function ENT:Think()
 	
 	self:SetSoundState("horn1",self:GetPackedBool("Horn",false) and 1 or 0,1)
 	
-	
+	self:ShowHide("headlights_on",true)
 	
 
 	

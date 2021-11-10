@@ -71,7 +71,7 @@ function ENT:Initialize()
 
 	self.BrakePressure = 0	
 
-	self.ptbsectionb = self:CreateSectionB(Vector(0,0,0))
+	--self.ptbsectionb = self:CreateSectionB(Vector(0,0,0))
 
 end
 

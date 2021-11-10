@@ -75,7 +75,7 @@ ENT.ClientProps["Pantograph"] = {
 
 ENT.ClientProps["Dest"] = {
 	model = "models/lilly/uf/u2/dest_a.mdl",
-	pos = Vector(-0.5,0,0),
+	pos = Vector(-0.5,0,-0.3),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
@@ -84,6 +84,12 @@ ENT.ClientProps["Throttle"] = {
     model = "models/lilly/uf/common/cab/throttle.mdl",
     pos = Vector(527.70,38.5,77),
     ang = Angle(0,-90,0),
+    hideseat = 0.2,
+}
+ENT.ClientProps["Speedo"] = {
+    model = "models/lilly/uf/common/cab/speedneedle.mdl",
+    pos = Vector(535,12.8,77.01),
+    ang = Angle(-5.7,-45,0),
     hideseat = 0.2,
 }
 
@@ -217,7 +223,7 @@ ENT.ButtonMap["Cab"] = {
 
 ENT.ButtonMap["IBISScreen"] = {
     pos = Vector(532.6,-19.2,83.09),
-    ang = Angle(0,45,-48.5),
+    ang = Angle(0,45,-48.5,0),
     width = 112,
     height = 25,
     scale = 0.04,
@@ -396,6 +402,7 @@ function ENT:Think()
 
 	self:SetSoundState("bell",self:GetPackedBool("bell",false) and 1 or 0,1)
 	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
+    self:Animate("Speedo",self:GetNW2Float("Speed",0),0,200,1,0.1,false)
     --self:Animate("Throttle",0,-45,45,3,0,false)
 	
 	

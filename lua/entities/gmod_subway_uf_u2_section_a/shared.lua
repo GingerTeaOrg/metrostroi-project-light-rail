@@ -85,7 +85,7 @@ ENT.Cameras = {
 function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
 	self:LoadSystem("Duewag_Deadman")
-	--self:LoadSystem("IBIS")
+	self:LoadSystem("IBIS")
 	--self:LoadSystem("81_71_LastStation","destination")
 	--self:LoadSystem("uf_bell")
 	--self:LoadSystem("duewag_electric")
