@@ -395,7 +395,7 @@ function ENT:Think()
 
     local N = self.Duewag_U2.Traction
     self.RearBogey.MotorForce  = self.Duewag_U2.Traction --18000*N
-	self.RearBogey.MotorPower = 100--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
+	self.RearBogey.MotorPower = 150--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
 	self.RearBogey.Reversed = self.Duewag_U2.ReverserState < 0
 
 

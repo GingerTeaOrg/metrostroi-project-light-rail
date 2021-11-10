@@ -367,10 +367,10 @@ function ENT:Think(dT)
 
 	
 	self.FrontBogey.MotorForce = self.Duewag_U2.Traction --15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
-	self.FrontBogey.MotorPower = 100--(N *100) + (self.ChopperJump)
+	self.FrontBogey.MotorPower = 150--(N *100) + (self.ChopperJump)
 	self.FrontBogey.Reversed = self.ReverserState < 0
 	self.RearBogey.MotorForce  = self.Duewag_U2.Traction --15000*N / 20 --18000*N
-	self.RearBogey.MotorPower = 100--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
+	self.RearBogey.MotorPower = 0--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
 	self.RearBogey.Reversed = self.Duewag_U2.ReverserState > 0
 	end
 	
