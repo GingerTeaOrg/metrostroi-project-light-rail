@@ -9,3 +9,5 @@ Additional coupler model by "SchienenNahverkehrFFM"
 Additional sound files by "SchienenNahverkehrFFM"
 
 Code coaching by "BlackFox" of Metrostroi
+
+A/B MU Parenting taken from: https://steamcommunity.com/sharedfiles/filedetails/?id=1473507447
