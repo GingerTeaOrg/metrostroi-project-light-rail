@@ -39,6 +39,7 @@ function TRAIN_SYSTEM:Think()
 				timer.Create("Countdown", 5, 0, function() self.Alarm = 1 end )
 		else if self.IsPressed < 1 and self.Train:GetNW2Int("Speed",0) < 5 then
 				 self.Alarm = 0
+				 self.AlarmSound = 0
 				 
 		end
 	end

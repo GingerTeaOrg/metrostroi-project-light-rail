@@ -23,13 +23,13 @@ ENT.Lights = {
 
 
 
-
+--[[
 ENT.ClientProps["headlights_on"] = {
 	model = "models/lilly/uf/u2/headlight_on.mdl",
 	pos = Vector(541.35,0,43),
 	ang = Angle(0,0,0),
 	scale = 1,
-}
+}]]
 
 ENT.ClientProps["Door_fl"] = {
 	model = "models/lilly/uf/u2/u2h/doors.mdl",
@@ -236,89 +236,89 @@ ENT.ButtonMap["IBIS"] = {
     scale = 0.04,
 
     buttons = {
-        {ID = "Number1", x=41, y=72, radius=10, tooltip = "1",
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        {ID = "Number1Set", x=41, y=72, radius=10, tooltip = "1",
+        sndvol = 0.5, snd = function(val) return val and "IBIS_beep" or "IBIS_beep" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             
         },
-        {ID = "Number2", x=40, y=50, radius=10, tooltip = "2", model = {
+        {ID = "Number2Set", x=40, y=50, radius=10, tooltip = "2", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
         },
-        {ID = "Number3", x=40, y=27, radius=10, tooltip = "3", model = {
+        {ID = "Number3Set", x=40, y=27, radius=10, tooltip = "3", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
         },
-        {ID = "Number4", x=65, y=72, radius=10, tooltip = "4", model = {
+        {ID = "Number4Set", x=65, y=72, radius=10, tooltip = "4", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number5", x=65, y=50, radius=10, tooltip = "5", model = {
+        {ID = "Number5Set", x=65, y=50, radius=10, tooltip = "5", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number6", x=65, y=27, radius=10, tooltip = "6", model = {
+        {ID = "Number6Set", x=65, y=27, radius=10, tooltip = "6", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number7", x=85, y=72, radius=10, tooltip = "7", model = {
+        {ID = "Number7Set", x=85, y=72, radius=10, tooltip = "7", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number8", x=85, y=50, radius=10, tooltip = "8", model = {
+        {ID = "Number8Set", x=85, y=50, radius=10, tooltip = "8", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number9", x=85, y=27, radius=10, tooltip = "9", model = {
+        {ID = "Number9Set", x=85, y=27, radius=10, tooltip = "9", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Delete", x=109, y=72, radius=10, tooltip = "Delete", model = {
+        {ID = "DeleteSet", x=109, y=72, radius=10, tooltip = "Delete", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number0", x=109, y=50, radius=10, tooltip = "0", model = {
+        {ID = "Number0Set", x=109, y=50, radius=10, tooltip = "0", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Enter", x=109, y=27, radius=10, tooltip = "Confirm", model = {
+        {ID = "EnterSet", x=109, y=27, radius=10, tooltip = "Confirm", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "TimeAndDate", x=109, y=95, radius=10, tooltip = "Set time and date", model = {
+        {ID = "TimeAndDateSet", x=109, y=95, radius=10, tooltip = "Set time and date", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "SpecialAnnouncements", x=109, y=118, radius=10, tooltip = "Special Annoucements", model = {
+        {ID = "SpecialAnnouncementsSet", x=109, y=118, radius=10, tooltip = "Special Annoucements", model = {
             model = "m", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Destination", x=85, y=95, radius=10, tooltip = "Destination", model = {
+        {ID = "DestinationSet", x=85, y=95, radius=10, tooltip = "Destination", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
@@ -366,9 +366,6 @@ function ENT:OnPlay(soundid,location,range,pitch)
         end
         return
 	end
-	if self.Duewag_Deadman.AlarmSound ~= 0 then
-		self.SetSoundState("Deadman",1,1,1)
-	end
 end
 
 
@@ -405,11 +402,15 @@ function ENT:Think()
     self:Animate("Speedo",self:GetNW2Float("Speed",0),0,200,1,0.1,false)
     --self:Animate("Throttle",0,-45,45,3,0,false)
 	
-	
 
+    self.SetSoundState("Deadman", self.Duewag_Deadman.AlarmSound and 1 or 0,1)
+
+
+
+	self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
+    self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
 	
-	
-	if self:GetNW2Int("WarningAnnouncement") == 1 then
+	if self:GetNW2Bool("WarningAnnouncement") == true then
         self:PlayOnce("WarningAnnouncement","cabin",1,1)
 
 	end

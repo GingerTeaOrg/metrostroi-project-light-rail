@@ -224,7 +224,8 @@ function ENT:Initialize()
 							[KEY_9] = "ReverserInsert",
 							[KEY_A] = "ThrottleUpFast",
 							[KEY_D] = "ThrottleDownFast",
-							[KEY_S] = "ThrottleZero"},
+							[KEY_S] = "ThrottleZero",
+							[KEY_H] = "Horn"},
 		[KEY_RALT] = {
 							[KEY_PAD_1] = "Number1",
 							[KEY_PAD_2] = "Number2",
@@ -352,7 +353,7 @@ function ENT:Think(dT)
 	if self.Duewag_Deadman.Alarm == 1 then
 		self.Duewag_U2:TriggerInput("BrakePressure", -100)
 	end
- 	PrintMessage(HUD_PRINTTALK, self.Duewag_Deadman.Alarm)
+ 	--PrintMessage(HUD_PRINTTALK, self.Duewag_Deadman.Alarm)
 	
 	
 	
@@ -438,8 +439,9 @@ function ENT:OnButtonPress(button,ply)
 		
 	end
 	
-	if button == "WarningAnnouncement"  then
-			self:SetNW2Bool("WarningAnnouncement", 1)
+	if button == "WarningAnnouncement" then
+			self:Wait(1)
+			self:SetNW2Bool("WarningAnnouncement", true)
 	end
 	
 	if button == "KeyInsert" then
@@ -538,6 +540,16 @@ function ENT:OnButtonPress(button,ply)
 			end
 	end
 
+	if button == "BellEngage" then
+		self:SetNW2Bool("Bell",true)
+	end
+
+	if button == "Horn" then
+		self:SetNW2Bool("Horn",true)
+	end
+
+
+
 	if button == "Number7" then
 		self.IBIS:Trigger("Number7")
 	end
@@ -549,6 +561,13 @@ function ENT:OnButtonPress(button,ply)
 
 	if button == "Number0" then
 		self.IBIS:Trigger("Number0")
+	end
+
+	if button == "Number1" then
+		self.IBIS:Trigger("Number1")
+	end
+	if button == "Number2" then
+		self.IBIS:Trigger("Number2")
 	end
 
 	if button == "Enter" then
@@ -580,6 +599,13 @@ function ENT:OnButtonRelease(button,ply)
 	
 		if button == "WarningAnnouncement" then
 			self:SetNW2Bool("WarningAnnouncement", false)
+		end
+
+		if button == "BellEngage" then
+			self:SetNW2Bool("Bell",false)
+		end
+		if button == "Horn" then
+			self:SetNW2Bool("Horn",false)
 		end
 end
 

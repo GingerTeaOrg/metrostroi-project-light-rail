@@ -27,12 +27,12 @@ end
 
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
-	self.SoundNames["bell"] = {loop=0.1,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["bell"] = {1100,1e9,Vector(100,0,0),1}
-	self.SoundNames["horn2"] = {loop=0.5,"lilly/uf/u2/U3_Hupe_start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_end.mp3"}
-	self.SoundPositions["horn2"] = {1100,1e9,Vector(100,0,0),1}
-	self.SoundNames["BitteZuruecktreten"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
-	self.SoundPositions["BitteZuruecktreten"] = {1100,1e9,Vector(100,0,0),1}
+	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
+	self.SoundPositions["bell"] = {1100,1e9,Vector(550,0,50),1}
+	self.SoundNames["horn"] = {loop=0.014,"lilly/uf/u2/U3_Hupe_Start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_Ende.mp3"}
+	self.SoundPositions["horn"] = {1100,1e9,Vector(580,0,70),1}
+	self.SoundNames["WarningAnnouncement"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
+	self.SoundPositions["WarningAnnouncement"] = {1100,1e9,Vector(200,0,100),1}
 	self.SoundNames["idle"]   = {"lilly/uf/u2/Moto/Duewag_idle.mp3",loop = 1}
 	self.SoundPositions["idle"] = {800,1e9,Vector(100,0,0),0.035}
 	
@@ -41,7 +41,7 @@ function ENT:InitializeSounds()
 
 	self.SoundNames["Door_close"] = {"lilly/uf/u2/Door_close.mp3"}
 	self.SoundPositions["Door_close"] = {800,1e9,Vector(300,14,14),1}
-	self.SoundNames["Deadman"] = {"lilly/uf/common/Duwag_Totmann.wav"}
+	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.wav","lilly/uf/common/deadman_loop.wav","lilly/uf/common/deadman_end.wav"}
 	self.SoundPositions["Deadman"] = {800,1e9,Vector(300,14,14),1}
 	
 
@@ -52,6 +52,9 @@ function ENT:InitializeSounds()
 	
 	self.SoundNames["rolling_motors"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}
 	self.SoundPositions["rolling_motors"] = {480,1e12,Vector(0,0,0),.4}
+
+	self.SoundNames["IBIS_beep"] = {bass=true,"lilly/uf/IBIS/beep.wav"}
+	self.SoundPositions["IBIS_beep"] = {1100,1e9,Vector(531,-23,84.9),.4}
 end
 
 ENT.AnnouncerPositions = {

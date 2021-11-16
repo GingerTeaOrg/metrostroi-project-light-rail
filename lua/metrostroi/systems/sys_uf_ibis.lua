@@ -46,8 +46,8 @@ function TRAIN_SYSTEM:Initialize()
     self.Menu = 0
     self.Announce = false
 
-    if not TURBOSTROI then
-    if not self.Train:GetNW2Int("CabActive",0) == 1 then
+
+    --if not self.Train:GetNW2Int("CabActive",0) == 1 then
         self.Train:LoadSystem("Number1","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Number2","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Number3","Relay","Switch",{bass = true })
@@ -63,7 +63,10 @@ function TRAIN_SYSTEM:Initialize()
         self.Train:LoadSystem("SpecialAnnouncements","Relay","Switch",{bass = true })
         self.Train:LoadSystem("TimeAndDate","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Enter","Relay","Switch",{bass = true })
-    end
+    --end
+
+    if not TURBOSTROI then
+
     end
 
 end

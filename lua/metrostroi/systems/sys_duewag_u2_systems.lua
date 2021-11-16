@@ -84,8 +84,7 @@ end
 end]]
 
 
-function TRAIN_SYSTEM:BlinkerHandler()
-end
+
 
 --------------------------------------------------------------------------------
 function TRAIN_SYSTEM:Think(Train)
@@ -112,16 +111,16 @@ function TRAIN_SYSTEM:Think(Train)
 	end
 
 	if self.Speed < 2 then
-		if ThrottleEngaged == false then
-		timer.Create("ThrottleLastEngaged", 1, 0, function() self.Haltebremse = 1 end)
+		if self.ThrottleEngaged == false then
+		timer.Create("ThrottleLastEngaged", 1, 0, function() self.SpringBrake = 1 end)
 		end
 	end
 	
-	if ThrottleEngaged == true then
+	if self.ThrottleEngaged == true then
 		self.SpringBrake = 0
 	end
 
-
+	
 
 
 
