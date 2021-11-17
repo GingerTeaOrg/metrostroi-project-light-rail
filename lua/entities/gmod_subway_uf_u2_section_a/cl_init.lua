@@ -97,7 +97,7 @@ ENT.ClientProps["Speedo"] = {
 ENT.ButtonMap["Cab"] = {
     pos = Vector(540,50,78),
     ang = Angle(0,-90,8),
-    width = 690,
+    width = 650,
     height = 124,
     scale = 0.1,
 	
@@ -339,6 +339,28 @@ ENT.ButtonMap["LastStation"] = {
     }
 }
 
+ENT.ButtonMap["Left"] = {
+    pos = Vector(530,40,78),
+    ang = Angle(0,180,0),
+    width = 160,
+    height = 80,
+    scale = 0.1,
+    buttons = {
+        {ID = "ParrallelToggle", x=25, y=22, radius=3, tooltip = "Set engines to shunt mode (not yet implemented)", model = {
+            model = "lilly/uf/u2/switch_flick.mdl", z=0, ang=0,
+            var="Parrallel",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+                },
+        },
+        {ID = "WarnBlinkerToggle", x=92, y=71, radius=3, tooltip = "Set blinker to warning mode", model = {
+            model = "lilly/uf/u2/switch_flick.mdl", z=0, ang=0,
+            var="WarnBlinker",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        },
+        },
+}
+}
+
 
 
 
@@ -403,7 +425,7 @@ function ENT:Think()
     --self:Animate("Throttle",0,-45,45,3,0,false)
 	
 
-    self.SetSoundState("Deadman", self.Duewag_Deadman.AlarmSound and 1 or 0,1)
+    self:SetSoundState("Deadman", self.Duewag_Deadman.AlarmSound and 1 or 0,1)
 
 
 

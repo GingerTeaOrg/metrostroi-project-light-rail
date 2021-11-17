@@ -127,10 +127,7 @@ function TRAIN_SYSTEM:Think(Train)
 	
 
 	self.BrakePressure = math.Clamp(self.ThrottleState,-100,0)  * -0.01 * 2.7 --convert to positive value and put in percentage relation of maximum brake value
-	
-	if self.Haltebremse == true then --try to implement the brake on stopped train
-		self.BrakePressure = 2.7
-	end
+
 
 
 
@@ -165,13 +162,18 @@ function TRAIN_SYSTEM:Think(Train)
 		
 	--if self.TractionConditionFulfilled == true and if not self.TractionCutOut == true then
 		--self.Traction = 15000*self.ThrottleState / 20
-
+		if not self.Train:GetNW2Bool("DeadmanTripped",false) == true then
 		self.Traction = self.ThrottleState *50 
 		self.Traction = math.Clamp(self.Traction,0,9000) * 5
-		self.Train:WriteTrainWire(1,self.Traction) 
-	--else
-	--	self.Traction = 0
-	--end				
+		self.Train:WriteTrainWire(1,self.Traction)
+
+		elseif 
+			self.Train:GetNW2Bool("DeadmanTripped",false) == true then
+			self.Traction = 0 
+			self.BrakePressure = 2.7
+			self.Train:WriteTrainWire(1,self.Traction)
+		end
+			
 	
 
 	if self.ThrottleState <= 100 then
