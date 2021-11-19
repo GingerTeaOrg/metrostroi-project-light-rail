@@ -11,3 +11,5 @@ Additional sound files by "SchienenNahverkehrFFM"
 Code coaching by "BlackFox" and "Glebq" of Metrostroi
 
 A/B MU Parenting taken from: https://steamcommunity.com/sharedfiles/filedetails/?id=1473507447
+
+A/B Detail scripting concept ideas: "Glebq" of Metrostroi
