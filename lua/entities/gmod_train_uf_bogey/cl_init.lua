@@ -6,18 +6,31 @@ function ENT:ReinitializeSounds()
     self.SoundNames = {}
     self.EngineSNDConfig = {}
 
-    self.SoundNames["ted1_703"]  = "lilly/uf/bogeys/u2/drive_10_new_new.wav"
+    self.SoundNames["ted1_703"]  = "lilly/uf/bogeys/u2/drive_10_exp.wav"
     self.SoundNames["ted2_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
-    self.SoundNames["ted3_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
-    self.SoundNames["ted4_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
-    self.SoundNames["ted5_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
-    self.SoundNames["ted6_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
+    self.SoundNames["ted3_703"]  = "lilly/uf/bogeys/u2/drive_30_new.wav"
+    self.SoundNames["ted4_703"]  = "lilly/uf/bogeys/u2/drive_40_new.wav"
+    self.SoundNames["ted5_703"]  = "lilly/uf/bogeys/u2/drive_50_new.wav"
+    self.SoundNames["ted6_703"]  = "lilly/uf/bogeys/u2/drive_60_new.wav"
     self.SoundNames["ted7_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
     self.SoundNames["ted8_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
     self.SoundNames["ted9_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
     self.SoundNames["ted10_703"] = "lilly/uf/bogeys/u2/drive_70.wav"
     self.SoundNames["ted11_703"] = "lilly/uf/bogeys/u2/drive_70.wav"
-    --self.SoundNames["tedm_703"]  = "subway_trains/bogey/engines/703/engines_medium.wav"
+    self.SoundNames["tedm_703"]  = "lilly/uf/bogeys/u2/test/engine_loop_primary.wav"
+
+    --[[self.SoundNames["ted1_703"]  = "lilly/uf/bogeys/u2/test/engine_loop_primary.wav"
+    self.SoundNames["ted2_703"]  = "lilly/uf/bogeys/u2/test/engine_loop_primary.wav"
+    self.SoundNames["ted3_703"]  = "lilly/uf/bogeys/u2/test/engine_loop_secondary.wav"
+    self.SoundNames["ted4_703"]  = "lilly/uf/bogeys/u2/drive_40_new.wav"
+    self.SoundNames["ted5_703"]  = "lilly/uf/bogeys/u2/drive_50_new.wav"
+    self.SoundNames["ted6_703"]  = "lilly/uf/bogeys/u2/drive_60_new.wav"
+    self.SoundNames["ted7_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
+    self.SoundNames["ted8_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
+    self.SoundNames["ted9_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
+    self.SoundNames["ted10_703"] = "lilly/uf/bogeys/u2/drive_70.wav"
+    self.SoundNames["ted11_703"] = "lilly/uf/bogeys/u2/drive_70.wav"
+    self.SoundNames["tedm_703"]  = "lilly/uf/bogeys/u2/engine_loop_start.wav"]]
 
     self.SoundNames["ted1_717"]  = "subway_trains/bogey/engines/717/engines_8.wav"
     self.SoundNames["ted2_717"]  = "subway_trains/bogey/engines/717/engines_16.wav"
@@ -49,11 +62,11 @@ function ENT:ReinitializeSounds()
     self.SoundNames["flange2"]      = "lilly/uf/bogeys/u2/curvesqueal2.wav"
     self.SoundNames["brakea_loop1"]       = "subway_trains/bogey/braking_async1.wav"
     self.SoundNames["brakea_loop2"]       = "subway_trains/bogey/braking_async2.wav"
-    self.SoundNames["brake_loop1"]       = "subway_trains/bogey/brake_rattle3.wav"
-    self.SoundNames["brake_loop2"]       = "subway_trains/bogey/brake_rattle4.wav"
-    self.SoundNames["brake_loop3"]       = "subway_trains/bogey/brake_rattle5.wav"
-    self.SoundNames["brake_loop4"]       = "subway_trains/bogey/brake_rattle6.wav"
-    self.SoundNames["brake_loopb"]       = "subway_trains/common/junk/junk_background_braking1.wav"
+    self.SoundNames["brake_loop1"]       = "subway_trains/bogey/null.wav"
+    self.SoundNames["brake_loop2"]       = "subway_trains/bogey/null.wav"
+    self.SoundNames["brake_loop3"]       = "subway_trains/bogey/null.wav"
+    self.SoundNames["brake_loop4"]       = "subway_trains/bogey/null.wav"
+    self.SoundNames["brake_loopb"]       = "subway_trains/bogey/brake_squeal1.wav"
     self.SoundNames["brake2_loop1"]       = "subway_trains/bogey/brake_rattle2.wav"
     self.SoundNames["brake2_loop2"]       = "subway_trains/bogey/brake_rattle_h.wav"
     self.SoundNames["brake_squeal1"]       = "subway_trains/bogey/brake_squeal1.wav"
@@ -165,9 +178,9 @@ function ENT:Think()
             table.insert(self.EngineSNDConfig,{"ted6_720" ,48,40-4,56,1*0.55})
             table.insert(self.EngineSNDConfig,{"ted7_720" ,56,48-4,64,1*0.58})
             table.insert(self.EngineSNDConfig,{"ted8_720" ,64,56-4,72,1*0.61})
-            table.insert(self.EngineSNDConfig,{"ted9_720" ,72,64-4,80,1*0.64})
-            table.insert(self.EngineSNDConfig,{"ted10_720",80,72-4,88,1*0.67})
-            table.insert(self.EngineSNDConfig,{"ted11_720",88,80-4   ,1*0.7})
+            --table.insert(self.EngineSNDConfig,{"ted9_720" ,72,64-4,80,1*0.64})
+            --table.insert(self.EngineSNDConfig,{"ted10_720",80,72-4,88,1*0.67})
+            --table.insert(self.EngineSNDConfig,{"ted11_720",88,80-4   ,1*0.7})
         elseif self.MotorSoundType==0 then
             table.insert(self.EngineSNDConfig,{"ted1_703" ,08,00,16,1})
             table.insert(self.EngineSNDConfig,{"ted2_703" ,16,08-4,24,1})
@@ -179,7 +192,8 @@ function ENT:Think()
             table.insert(self.EngineSNDConfig,{"ted8_703" ,64,56-4,72,1})
             table.insert(self.EngineSNDConfig,{"ted9_703" ,72,64-4,80,1})
             table.insert(self.EngineSNDConfig,{"ted10_703",80,72-4,88,1})
-            table.insert(self.EngineSNDConfig,{"ted11_703",88,80-4   ,1})
+            table.insert(self.EngineSNDConfig,{"ted11_703",88,80-4,106,1})
+            table.insert(self.EngineSNDConfig,{"tedm_703",88,80-4,  106,1})
         else
             table.insert(self.EngineSNDConfig,{"ted1_717" ,08,00,16,1})
             table.insert(self.EngineSNDConfig,{"ted2_717" ,16,08-4,24,1})
@@ -196,15 +210,15 @@ function ENT:Think()
     self.Async = self:GetNWBool("Async")
     -- Engine sound
     if not self:GetNWBool("DisableEngines") then
-        self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-0.5,1)
+        self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1,1)
         local t = RealTime()*2.5
-        local modulation = (0.2 + 1.0*math.max(0,4+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp(speed/4,0,1)
-        local mod2 = 1.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
+        local modulation = (0.2 + 3.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp(speed/4,0,1)
+        local mod2 = 5.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
         if (speed > -1.0) and (math.abs(self.MotorPowerSound)+modulation) >= 0.0 then
-            local startVolRamp = 0.2 + 0.8*math.max(0.0,math.min(1.0,(speed - 1.0)*0.5))
+            --local startVolRamp = 0.2 + 0.8*math.max(0.0,math.min(1.0,(speed - 1.0)*0.5))
             local powerVolRamp
             if self.MotorSoundType==2 then
-                powerVolRamp = 0.2*modulation*mod2 + --[[6*]]math.abs(self.MotorPowerSound)*2.0*(math.abs(motorPower)^2)
+                powerVolRamp = 0.2*modulation*mod2 + 6*math.abs(self.MotorPowerSound)--2.0*(math.abs(motorPower)^2)
             else
                 powerVolRamp = 0.3*modulation*mod2 + 2*math.abs(self.MotorPowerSound)--2.0*(math.abs(motorPower)^2)
             end
@@ -227,17 +241,22 @@ function ENT:Think()
                 elseif next  and speed > next[3] then
                     volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
                 end
-                local pitch = math.max(0,speed/snd[2])+0.06*streetC
+                local pitch = math.max(0,speed/snd[2])+0.1*streetC
                 if self.Async then
                     self:SetSoundState(snd[1].."1",motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2),snd[1],false)
-                    self:SetSoundState(snd[1].."2",0,0,true)
+                    --self:SetSoundState(snd[1].."2",0,0,true)
                 else
                     self:SetSoundState(snd[1].."1",motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2),snd[1],false)
-                    self:SetSoundState(snd[1].."2",0,0,1,true)
-                    self:SetSoundState(snd[1].."1",((motorsnd + powerVolRamp)*volume)*(snd.vol or 1)*volumemul,pitch*0.975,snd[1],false)
-                    self:SetSoundState(snd[1].."2",((motorsnd + powerVolRamp)*volume)*(snd.vol or 1)*volumemul,pitch,snd[1],1,true)
+                    --self:SetSoundState(snd[1].."2",0,0,true)
+                    --self:SetSoundState(snd[1].."1",((motorsnd + powerVolRamp)*volume)*(snd.vol or 1)*volumemul,pitch*0.975,snd[1],false)
+                    --self:SetSoundState(snd[1].."2",((motorsnd + powerVolRamp)*volume)*(snd.vol or 1)*volumemul,pitch*1.025,snd[1],true)
                 end
             end
+             --[[if self.MotorSoundType==0 then
+                self:SetSoundState("tedm_703",math.min(1,(soundsmul^0.3)*motorsnd*2)*math.Clamp((speed-20)/10,0,1)*(1-math.Clamp((speed-38)/20,0,1))*0.18,math.max(0,speed/35.4)+0.06*streetC)
+            else
+                self:SetSoundState("tedm_703",0,0)
+            end--]]
         else
             for k,v in pairs(self.EngineSNDConfig) do
                 self:SetSoundState(v[1].."1",0,0,v[1],false)
@@ -275,7 +294,7 @@ function ENT:Think()
         self:SetSoundState("brake2_loop2",0,0)
     else
         local squealSound = self:GetNW2Int("SquealSound",0)
-        local brakeSqueal1 = math.max(0.0,math.min(1,self:GetNW2Float("BrakeSqueal1")))--FIXME math.max(0.0,math.min(1,self:GetNW2Float("BrakeSqueal1")))
+        local brakeSqueal1 = math.max(0.0,math.min(2,self:GetNW2Float("BrakeSqueal1")))--FIXME math.max(0.0,math.min(1,self:GetNW2Float("BrakeSqueal1")))
         --local brakeSqueal2 = 0--FIXME local brakeSqueal2 = math.max(0.0,math.min(1,self:GetNW2Float("BrakeSqueal2")))
         --local brakeSqueal2 = math.max(0.0,math.min(1,self:GetNW2Float("BrakeSqueal2")))
         --local brakeRamp = math.min(1.0,math.max(0.0,speed/2.0))
@@ -345,7 +364,6 @@ function ENT:Think()
     end--]]
     -- Create sound
     local speed_mod = math.min(1.0,math.max(0.0,speed/5))
-    
     local flangea = math.Clamp((speed-18)/25,0,1)
     local x = self.SmoothAngleDelta
     local f1 = math.max(0,x-0.5)*0.1

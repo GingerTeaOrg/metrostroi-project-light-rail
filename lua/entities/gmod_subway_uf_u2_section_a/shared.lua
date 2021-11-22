@@ -28,11 +28,11 @@ end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["bell"] = {1100,1e9,Vector(550,0,50),1}
+	self.SoundPositions["bell"] = {1100,1e9,Vector(580,0,70),1}
 	self.SoundNames["horn"] = {loop=0.014,"lilly/uf/u2/U3_Hupe_Start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_Ende.mp3"}
 	self.SoundPositions["horn"] = {1100,1e9,Vector(580,0,70),1}
 	self.SoundNames["WarningAnnouncement"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
-	self.SoundPositions["WarningAnnouncement"] = {1100,1e9,Vector(200,0,100),1}
+	self.SoundPositions["WarningAnnouncement"] = {1100,1e9,Vector(550,0,300),1}
 	self.SoundNames["idle"]   = {"lilly/uf/u2/Moto/Duewag_idle.mp3",loop = 1}
 	self.SoundPositions["idle"] = {800,1e9,Vector(100,0,0),0.035}
 	
@@ -42,7 +42,7 @@ function ENT:InitializeSounds()
 	self.SoundNames["Door_close"] = {"lilly/uf/u2/Door_close.mp3"}
 	self.SoundPositions["Door_close"] = {800,1e9,Vector(300,14,14),1}
 	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.mp3","lilly/uf/common/deadman_loop.mp3","lilly/uf/common/deadman_end.mp3"}
-	self.SoundPositions["Deadman"] = {800,1e9,Vector(300,14,14),1}
+	self.SoundPositions["Deadman"] = {800,1e9,Vector(550,14,14),1}
 	
 
 	self.SoundNames["rolling_10"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}
@@ -53,8 +53,19 @@ function ENT:InitializeSounds()
 	self.SoundNames["rolling_motors"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}
 	self.SoundPositions["rolling_motors"] = {480,1e12,Vector(0,0,0),.4}
 
-	self.SoundNames["IBIS_beep"] = {bass=true,"lilly/uf/IBIS/beep.wav"}
+	self.SoundNames["IBIS_beep"] = {"lilly/uf/IBIS/beep.wav"}
 	self.SoundPositions["IBIS_beep"] = {1100,1e9,Vector(531,-23,84.9),.4}
+
+	self.SoundNames["IBIS_bootup"] = {"lilly/uf/IBIS/startup_chime.mp3"}
+	self.SoundPositions["IBIS_bootup"] = {1100,1e9,Vector(531,-23,84.9),.4}
+
+	self.SoundNames["Fan1"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
+	self.SoundPositions ["Fan1"] = {1100,1e9,Vector(550,0,70),0.035}
+	self.SoundNames["Fan2"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
+	self.SoundPositions ["Fan2"] = {1100,1e9,Vector(250,0,70),0.035}
+	self.SoundNames["Fan3"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
+	self.SoundPositions ["Fan3"] = {1100,1e9,Vector(300,0,70),0.035}
+
 end
 
 ENT.AnnouncerPositions = {
@@ -89,6 +100,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
 	self:LoadSystem("Duewag_Deadman")
 	self:LoadSystem("IBIS")
+	self:LoadSystem("Duewag_Battery")
 	--self:LoadSystem("81_71_LastStation","destination")
 	--self:LoadSystem("uf_bell")
 	--self:LoadSystem("duewag_electric")

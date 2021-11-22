@@ -13,8 +13,8 @@ COUPLE_MAX_DISTANCE = COUPLE_MAX_DISTANCE ^ 2
 COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
 --Model,Couple pos,Snake pos,Snake ang
 ENT.Types = {
-    ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(42,0,0),Vector(0,0,0),Angle(0,-90,0)},
-    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(42,0,0),Vector(0,0,0),Angle(0,-90,0)},
+    ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(44.1,0,0),Vector(0,0,0),Angle(0,-90,0)},
+    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(44.1,0,0),Vector(0,0,0),Angle(0,-90,0)},
     ["dummy"] = {"models/lilly/uf/coupler_dummy.mdl",Vector(45.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
     def={"models/lilly/uf/coupler_new.mdl",Vector(42,0,0),Vector(0,0,0),Angle(0,90,0)},
 }
@@ -63,6 +63,24 @@ local function AreCoupled(ent1,ent2)
     return coupled
 end
 
+function ENT:AreCoupled(ent1,ent2)
+
+
+        if ent1.Coupled or ent2.Coupled then return false end
+        local constrainttable = constraint.FindConstraints(ent1,"Weld")
+        local coupled = false
+        for k,v in pairs(constrainttable) do
+            if v.Type == "Weld" then
+                if( (v.Ent1 == ent1 or v.Ent1 == ent2) and (v.Ent2 == ent1 or v.Ent2 == ent2)) then
+                    coupled = true
+                end
+            end
+        end
+    
+        return coupled
+
+end
+
 -- Adv ballsockets ents by their CouplingPointOffset
 function ENT:Couple(ent)
     local strain = self:GetNW2Entity("TrainEntity")
@@ -100,7 +118,7 @@ function ENT:Couple(ent)
         --0, --rotonly
         --1 --nocollide
     )) then
-        sound.Play("subway_trains/bogey/couple.mp3",(self:GetPos()+ent:GetPos())/2,70,100,1)
+        sound.Play("lilly/uf/common/coupling.mp3",(self:GetPos()+ent:GetPos())/2,70,100,1)
 
         self:OnCouple(ent)
         ent:OnCouple(self)
@@ -145,12 +163,13 @@ function ENT:StartTouch(ent)
 end
 
 
-util.AddNetworkString("metrostroi-coupler-menu")
+
 -- Used to decouple
 function ENT:Use(ply)
     local train = self:GetNW2Entity("TrainEntity")
     local isfront = self:GetNW2Bool("IsForwardCoupler")
-    net.Start("metrostroi-coupler-menu")
+    RunConsoleCommand("say", "To uncouple, set the brakes on both units and press the decouple button in cab" )
+    --[[net.Start("metrostroi-coupler-menu")
         net.WriteEntity(self)
         net.WriteBool(not self.CPPICanUse or self:CPPICanUse(ply))
         net.WriteBool(self.CoupledEnt ~= nil)
@@ -171,7 +190,7 @@ function ENT:Use(ply)
         end
         net.WriteBool(self.CoupleType=="722")
         net.WriteBool(self.EKKDisconnected)
-    net.Send(ply)
+    net.Send(ply)]]
     --[[ if self.CoupledEnt ~= nil then
         local tr = ply:GetEyeTrace()
         if not tr.Hit then return end
@@ -186,7 +205,7 @@ function ENT:ElectricDisconnected()
     return self.EKKDisconnected or self.CoupledEnt.EKKDisconnected
 end
 
-net.Receive("metrostroi-coupler-menu",function(_,ply)
+--[[net.Receive("metrostroi-coupler-menu",function(_,ply)
     local bogey = net.ReadEntity()
     local train = bogey:GetNW2Entity("TrainEntity")
     local isfront = bogey:GetNW2Bool("IsForwardCoupler")
@@ -235,7 +254,7 @@ net.Receive("metrostroi-coupler-menu",function(_,ply)
             if IsValid(coupledTrain) then coupledTrain:OnConnectDisconnect() end
         end
     end
-end)
+end)]]
 
 function ENT:ConnectDisconnect(status)
     local isfront = self:GetNW2Bool("IsForwardCoupler")

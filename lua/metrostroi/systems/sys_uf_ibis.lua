@@ -6,6 +6,7 @@ function TRAIN_SYSTEM:Initialize()
     self.RouteChar1 = nil
     self.RouteChar2 = nil
 
+    self.PowerOn = 0
     self.Debug = 1
     
 	self.Course = 0
@@ -230,7 +231,7 @@ function TRAIN_SYSTEM:PrintText(x,y,text,inverse)
 end
 
 function TRAIN_SYSTEM:ASNPScreen(Train)
-    local State = self.Train:GetNW2Int("CabActive",0)
+    local State = self.PowerOn
     if State == 1 then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
         self.Warm = true
@@ -289,7 +290,7 @@ end
 
 function TRAIN_SYSTEM:Think()
 
-
+    
     
     local Train = self.Train
 
@@ -298,6 +299,10 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:Destination",self.Destination)
     Train:SetNW2Int("IBIS:Course",self.Course)
     Train:SetNW2Int("Menu",self.Menu)
+
+    if self.Train:GetNW2Bool("BatteryOn",false) == true then
+    self.PowerOn = 1
+    end
 
     --Add together all variables to one string
 

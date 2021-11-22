@@ -1,4 +1,4 @@
-UF.DefineSystem("IBIS_Announcer")
+Metrostroi.DefineSystem("IBIS_Announcer")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 local ANNOUNCER_CACHE_LIMIT = 30
 

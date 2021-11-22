@@ -118,8 +118,8 @@ end
 
         if forward and IsValid(self.FrontBogey) then
             constraint.NoCollide(self.FrontBogey,coupler,0,0)
-        elseif not forward and IsValid(self.RearBogey) then
-            constraint.NoCollide(self.RearBogey,coupler,0,0)
+        elseif not forward and IsValid(self.MiddleBogey) then
+            constraint.NoCollide(self.MiddleBogey,coupler,0,0)
         end
         
         constraint.Axis(coupler,self,0,0,
@@ -143,27 +143,30 @@ function ENT:Initialize()
 	-- Set model and initialize
 	self:SetModel("models/lilly/uf/u2/u2h.mdl")
 	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,000))  --set to 200 if one unit spawns in ground
+	self:SetPos(self:GetPos() + Vector(0,0,3.9))  --set to 200 if one unit spawns in ground
 	
 	-- Create seat entities
     self.DriverSeat = self:CreateSeat("driver",Vector(500,14,55))
+	--self.HelperSeat = self:CreateSeat("instructor",Vector(505,-25,55))
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.DriverSeat:SetColor(Color(0,0,0,0))
 	
 	self.Debug = 1
-	self.CabEnabled = 0
+	self.CabEnabled = false
 	self.LeadingCab = 0
 	
 	self.WarningAnnouncement = 0
 	
-	self.speed = 0
+	self.Speed = 0
 	self.ThrottleState = 0
 	self.ThrottleEngaged = false
 	self.ReverserState = 0
+	self.ReverserLeverState = 0
 	self.ReverserEnaged = 0
 	self.ChopperJump = 0
 	self.BrakePressure = 0
 	self.ThrottleRate = 0
+	self.MotorPower = 0
 
 	self.WagonNumber = 303
 
@@ -171,10 +174,10 @@ function ENT:Initialize()
 
 	self.AlarmSound = 0
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 400,-0.7,0),Angle(0,180,0),true,"u2")
-    self.RearBogey  = self:CreateBogeyUF(Vector(2.8,1.5,0),Angle(0,0,0),false,"u2joint")
-    self.FrontBogey:SetNWBool("Async",true)
-    self.RearBogey:SetNWBool("Async",true)
+	self.FrontBogey = self:CreateBogeyUF(Vector( 400,0,0),Angle(0,180,0),true,"u2")
+    self.MiddleBogey  = self:CreateBogeyUF(Vector(3.1,0,0),Angle(0,0,0),false,"u2joint")
+    
+
 	-- Create couples
     self.FrontCouple = self:CreateCoupleUF(Vector( 530,0,8),Angle(0,0,0),true,"u2")	
     self.RearCouple = self:CreateCoupleUF(Vector( 100,50,50),Angle(0,0,0),false,"dummy")	
@@ -182,19 +185,24 @@ function ENT:Initialize()
 	self.Async = true
 	-- Create U2 Section B
 	self.u2sectionb = self:CreateSectionB(Vector(-770,0,0))
+	self.RearBogey = self.u2sectionb.RearBogey
 	
 	
 	self.PantoUp = false
 	self.KeyInsert = false 
 	self.ReverserInsert = false 
-	self.KeyTurnOn = false
 	self.BatteryOn = false
 	
 	self.FrontBogey:SetNWInt("MotorSoundType",0)
-    self.RearBogey:SetNWInt("MotorSoundType",0)
+    self.MiddleBogey:SetNWInt("MotorSoundType",0)
+	self.RearBogey:SetNWInt("MotorSoundType",0)
+	self.FrontBogey:SetNWBool("Async",false)
+    self.MiddleBogey:SetNWBool("Async",false)
+	self.RearBogey:SetNWBool("Async",false)
 	
 	
 	--self.PantoState = 0
+	
 	
 	
 	-- Initialize key mapping
@@ -209,39 +217,39 @@ function ENT:Initialize()
 		[KEY_O] = "DoorUnlock",
 		[KEY_I] = "DoorLock",
 		[KEY_K] = "DoorConfirm",
-		[KEY_Z] = "WarningAnnouncement",
+		[KEY_Z] = "WarningAnnouncementSet",
 		[KEY_PAD_4] = "BlinkerLeft",
 		[KEY_PAD_5] = "BlinkerNeutral",
 		[KEY_PAD_6] = "BlinkerRight",
 		[KEY_PAD_8] = "BlinkerWarn",
 		[KEY_J] = "DoorSelectLeft",
 		[KEY_L] = "DoorSelectRight",
-		[KEY_B] = "Battery",
-		[KEY_0] = "KeyTurnOn",
+		[KEY_B] = "BatteryToggle",
+		[KEY_V] = "LightsToggle",
+		--[KEY_0] = "KeyTurnOn",
 		
 		[KEY_LSHIFT] = {
-							[KEY_0] = "KeyInsert",
-							[KEY_9] = "ReverserInsert",
+							[KEY_0] = "ReverserInsert",
 							[KEY_A] = "ThrottleUpFast",
 							[KEY_D] = "ThrottleDownFast",
 							[KEY_S] = "ThrottleZero",
 							[KEY_H] = "Horn"},
 		[KEY_RALT] = {
-							[KEY_PAD_1] = "Number1",
-							[KEY_PAD_2] = "Number2",
-							[KEY_PAD_3] = "Number3",
-							[KEY_PAD_4] = "Number4",
-							[KEY_PAD_5] = "Number5",
-							[KEY_PAD_6] = "Number6",
-							[KEY_PAD_7] = "Number7",
-							[KEY_PAD_8] = "Number8",
-							[KEY_PAD_9] = "Number9",
-							[KEY_PAD_0] = "Number0",
-							[KEY_PAD_ENTER] = "Enter",
-							[KEY_PAD_DECIMAL] = "Delete",
-							[KEY_PAD_DIVIDE] = "Destination",
-							[KEY_PAD_MULTIPLY] = "SpecialAnnouncements",
-							[KEY_PAD_MINUS] = "TimeAndDate",
+							[KEY_PAD_1] = "Number1Set",
+							[KEY_PAD_2] = "Number2Set",
+							[KEY_PAD_3] = "Number3Set",
+							[KEY_PAD_4] = "Number4Set",
+							[KEY_PAD_5] = "Number5Set",
+							[KEY_PAD_6] = "Number6Set",
+							[KEY_PAD_7] = "Number7Set",
+							[KEY_PAD_8] = "Number8Set",
+							[KEY_PAD_9] = "Number9Set",
+							[KEY_PAD_0] = "Number0Set",
+							[KEY_PAD_ENTER] = "EnterSet",
+							[KEY_PAD_DECIMAL] = "DeleteSet",
+							[KEY_PAD_DIVIDE] = "DestinationSet",
+							[KEY_PAD_MULTIPLY] = "SpecialAnnouncementsSet",
+							[KEY_PAD_MINUS] = "TimeAndDateSet",
 		},
 	}
 	
@@ -256,8 +264,18 @@ function ENT:Initialize()
 
 	--self:TrainSpawnerUpdate()
 
+	self.TrainWireCrossConnections = {
+        [3] = 4, -- Reverser F<->B
 
+    }
 
+	self.Lights = {
+	[51] = { "light",Vector(542,50,43), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
+    [52] = { "light",Vector(542,-50,43), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
+	[53] = { "light",Vector(546,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
+	[54] = { "light",Vector(545,38.8,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[55] = { "light",Vector(545,-38.8,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	}
 
 end
 
@@ -276,7 +294,6 @@ function ENT:TrainSpawnerUpdate()
 		--local num = self.WagonNumber
 		--math.randomseed(num+400)
 		
-		self.RearCouple.CoupleType = self.FrontCouple.CoupleType
         self.FrontCouple:SetParameters()
         self.RearCouple:SetParameters()
 		local tex = "Def_U2"
@@ -299,24 +316,21 @@ end
 
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
-    self:SetPackedBool("BellEngage",self.Duewag_U2.BellEngage)
+    --self:SetPackedBool("BellEngage",self.Duewag_U2.BellEngage)
 	
-	
-	
+	math.Clamp(self.ReverserLeverState, -1, 3)
+	math.Clamp(self.Duewag_U2.ReverserLeverState, -1, 3)
+	--self:SetNW2Entity("U2a",self)
 
-	local function wait(seconds)
-		local time = seconds or 1
-		local start = os.time()
-		repeat until os.time() == start + time
-	end
-	
-	self:SetNW2Bool("KeyInsert",self.KeyInsert)
-	self:SetNW2Bool("KeyTurnOn",self.KeyTurnOn)
+
 	self:SetNW2Bool("BatteryOn",self.BatteryOn)
 	self:SetNW2Bool("PantoUp",self.PantoUp)
 	self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
 
-	if self:GetNW2Bool("ReverserInserted", false) == true then self:SetNW2Bool("CabActive", true) end
+	if self.BatteryOn == true then 
+		self.CabEnabled = true
+		self:SetNW2Bool("CabAEnabled",true)
+	end
 	
 
 	self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
@@ -330,18 +344,61 @@ function ENT:Think(dT)
 	
 	--self:SetPackedBool("Headlights1",true)
 	
-	
+	self:SetNW2Float("BatteryCharge",self.Duewag_Battery.Voltage)
 
 	
-	
-
+	if self:GetNW2Float("BatteryCharge",0) > 0 and self:GetNW2Bool("BatteryOn",false) == true  then
 		
+		
+		
+		if self:GetNW2Bool("CabAEnabled",false) == true then
+			if self:GetNW2Int("ReverserState",0) == 1 then
+				if self:GetNW2Bool("Headlights",false) == true then
+					self:SetLightPower(51,true)
+    				self:SetLightPower(52,true)
+					self:SetLightPower(53,true)
+					self:SetLightPower(54,false)
+					self:SetLightPower(55,false)
+					
+				elseif self:GetNW2Bool("Headlights",false) == false then
+					self:SetLightPower(51,false)
+    				self:SetLightPower(52,false)
+					self:SetLightPower(53,false)
+					self:SetLightPower(54,false)
+					self:SetLightPower(55,false)
+				end
+			elseif self:GetNW2Int("ReverserState",0) == -1 then
+				self:SetLightPower(51,false)
+    			self:SetLightPower(52,false)
+				self:SetLightPower(53,false)
+				self:SetLightPower(54,true)
+				self:SetLightPower(55,true)
+			elseif self:GetNW2Int("ReverserState",0) == 0 then
+				self:SetLightPower(51,false)
+    			self:SetLightPower(52,false)
+				self:SetLightPower(53,false)
+				self:SetLightPower(54,true)
+				self:SetLightPower(55,true)
+			end
+		end
+			if self:GetNW2Bool("CabBEnabled",false) == true then
+			self:SetLightPower(51,false)
+    		self:SetLightPower(52,false)
+			self:SetLightPower(53,false)
+			self:SetLightPower(54,true)
+			self:SetLightPower(55,true)
+		end
+	end
 	
 	
 
 
-	
-
+	--self:WriteTrainWire(1,self.Duewag_U2.Traction)
+	--self.MotorPower = self.Duewag_U2.Traction
+	--self.BrakePressure = self.Duewag_U2.BrakePressure
+	--self.ReverserState = self.Duewag_U2.ReverserState < 0
+	--self:WriteTrainWire(1, self.MotorPower)
+	--self:WriteTrainWire(2, self.BrakePressure)
 
 	
 	
@@ -350,43 +407,103 @@ function ENT:Think(dT)
 	
 	
 	
-	if self.Duewag_Deadman.Alarm == 1 then
-		self.Duewag_U2:TriggerInput("BrakePressure", -100)
-	end
+	
  	--PrintMessage(HUD_PRINTTALK, self.Duewag_Deadman.Alarm)
 	
 	
 	
 	
-	if IsValid(self.FrontBogey) and IsValid(self.RearBogey) then
+	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 	
 	
-	self.FrontBogey.PneumaticBrakeForce = (60000.0) 
-	self.RearBogey.PneumaticBrakeForce = (60000.0) 
-    self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure  
-	self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure  
+	self.FrontBogey.PneumaticBrakeForce = 50000.0
+	self.MiddleBogey.PneumaticBrakeForce = 50000.0
+	self.RearBogey.PneumaticBrakeForce = 50000.0  
 
+
+	if self.Duewag_U2.VE == true then
+    	self.FrontBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
+		self.MiddleBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
+		self.RearBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
+		if self.Duewag_U2.ThrottleState < 0 then
+			self.RearBogey.MotorForce  = -10001 
+			self.FrontBogey.MotorForce = -10001
+			self.RearBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+		elseif self.Duewag_U2.ThrottleState > 0 then 
+			self.RearBogey.MotorForce  = 16001
+			self.FrontBogey.MotorForce = 16001
+		end
+
+	elseif self.Duewag_U2.VZ == true then
+    	self.FrontBogey.BrakeCylinderPressure = self:ReadTrainWire(5) 
+		self.MiddleBogey.BrakeCylinderPressure = self:ReadTrainWire(5)
+		self.RearBogey.BrakeCylinderPressure = self:ReadTrainWire(5)
+
+		if self:ReadTrainWire(2) == 0 then
+			self.RearBogey.MotorForce  = 16001
+			self.FrontBogey.MotorForce = 16001
+		elseif self:ReadTrainWire(2) == 1 then 
+			self.RearBogey.MotorForce  = -10001 
+			self.FrontBogey.MotorForce = -10001
+		end
+		self.RearBogey.MotorPower = self:ReadTrainWire(1)
+		self.FrontBogey.MotorPower = self:ReadTrainWire(1)
+
+
+	end
+
+	if self.Duewag_U2.VZ == true then
+		PrintMessage(HUD_PRINTTALK, "Unit is in VZ mode")
+	end
+	if self.Duewag_U2.VE == true then
+		PrintMessage(HUD_PRINTTALK, "Unit is in VE mode")
+	end
+
+
+
+	 --15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
+	--self:ReadTrainWire(1)*5000--(N *100) + (self.ChopperJump)
 	
-	self.FrontBogey.MotorForce = self.Duewag_U2.Traction --15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
-	self.FrontBogey.MotorPower = 150--(N *100) + (self.ChopperJump)
-	self.FrontBogey.Reversed = self.ReverserState < 0
-	self.RearBogey.MotorForce  = self.Duewag_U2.Traction --15000*N / 20 --18000*N
-	self.RearBogey.MotorPower = 0--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
-	self.RearBogey.Reversed = self.Duewag_U2.ReverserState > 0
+	
+	if self:ReadTrainWire(3) == 1 then 
+		self.FrontBogey.Reversed = false
+		self.RearBogey.Reversed = true --The rear bogey is turned by 180° as far as it is concerned, so it has to be reversed when the front isn't
+	elseif self:ReadTrainWire(4) == 1 then
+		self.FrontBogey.Reversed = true
+		self.RearBogey.Reversed = false
+	end
+
+
+
+
+
+	--if self.Duewag_U2.VZ == true then
+	--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
+	--elseif self.Duewag_U2.VE == true and self.Duewag_U2.VZ == false then
+		--self.RearBogey.MotorPower = self.Duewag_U2.Traction
+		--self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+	--end
+
+		
+
 	end
 	
-	--PrintMessage(HUD_PRINTTALK, self.FrontBogey.MotorForce)
+	--PrintMessage(HUD_PRINTTALK, self:ReadTrainWire(1))
+	--PrintMessage(HUD_PRINTTALK,#self.WagonList)
 
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
 	--self:SetNWFloat("ThrottleState",self.ThrottleState)
-	self.Duewag_U2:TriggerInput("ThrottleRate", self.ThrottleRate)
-	--PrintMessage(HUD_PRINTTALK, self.Duewag_U2.ThrottleState)
-	--Train:WriteTrainWire(1,self.FrontBogey.MotorForce)
-	--PrintMessage(HUD_PRINTTALK, "Calculated Traction")
-	--PrintMessage(HUD_PRINTTALK, self.Duewag_U2.Traction)
+	--self.Duewag_U2:TriggerInput("ThrottleRate", self.ThrottleRate)
 	self:SetNWInt("ThrottleStateAnim", self.Duewag_U2.ThrottleStateAnim)
-	--PrintMessage(HUD_PRINTTALK, self:GetNWInt("ThrottleState", fallback = 0))
-	--PrintMessage(HUD_PRINTTALK, self.Duewag_U2.ThrottleStateAnim)
+	
+	--PrintMessage(HUD_PRINTTALK, self:ReadTrainWire(1))
+	--PrintMessage(HUD_PRINTTALK, self:ReadTrainWire(2))
+
+	--self:WriteTrainWire(1, self.Duewag_U2.Traction)
+
+	PrintMessage(HUD_PRINTTALK,self.Duewag_U2.Traction)
+	
 	
 end
 
@@ -406,17 +523,18 @@ function ENT:OnButtonPress(button,ply)
 
 	
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
-	if self.ThrottleRate == 0 then
-		if button == "ThrottleUp" then self.ThrottleRate = 2 end
-		if button == "ThrottleDown" then self.ThrottleRate = -2 end
+	if self.Duewag_U2.ThrottleRate == 0 then
+		if button == "ThrottleUp" then self.Duewag_U2.ThrottleRate = 2 end
+		if button == "ThrottleDown" then self.Duewag_U2.ThrottleRate = -2 end
 	end
 
-	if self.ThrottleRate == 0 then
-		if button == "ThrottleUpFast" then self.ThrottleRate = 5.5 end
-		if button == "ThrottleDownFast" then self.ThrottleRate = -5.5 end
+	if self.Duewag_U2.ThrottleRate == 0 then
+		if button == "ThrottleUpFast" then self.Duewag_U2.ThrottleRate = 5.5 end
+		if button == "ThrottleDownFast" then self.Duewag_U2.ThrottleRate = -5.5  end
+		
 	end
 
-	if self.ThrottleRate == 0 then
+	if self.Duewag_U2.ThrottleRate == 0 then
 		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
 	end
 
@@ -439,44 +557,30 @@ function ENT:OnButtonPress(button,ply)
 		
 	end
 	
-	if button == "WarningAnnouncement" then
+	if button == "WarningAnnouncementSet" then
 			self:Wait(1)
 			self:SetNW2Bool("WarningAnnouncement", true)
 	end
-	
-	if button == "KeyInsert" then
-			if self.KeyInsert == false then
-				self.KeyInsert = true 
-				self.Duewag_U2:TriggerInput("KeyInsert",self.KeyInsert)
-				self:SetPackedBool("KeyInsert",true)
-				PrintMessage(HUD_PRINTTALK, "Key is in")
-			
 
-			elseif  self.KeyInsert == true then
-				self.KeyInsert = false
-				self.Duewag_U2:TriggerInput("KeyInsert",0)
-				self:SetPackedBool("KeyInsert",0)
-				PrintMessage(HUD_PRINTTALK, "Key is out")
-			end
-	end
 	
 	if button == "ReverserUp" then
 			if 
 				not self.Duewag_U2.ThrottleEngaged == true  then
 					if self.Duewag_U2.ReverserInserted == true then
-					self.ReverserState = self.ReverserState + 1
-					self.ReverserState = math.Clamp(self.ReverserState,-1,1)
-					self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
-					PrintMessage(HUD_PRINTTALK,self.ReverserState)
+						self.ReverserLeverState = self.Duewag_U2.ReverserLeverState + 1
+						math.Clamp(self.ReverserLeverState, -1, 3)
+						self.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
+						PrintMessage(HUD_PRINTTALK,self.Duewag_U2.ReverserLeverState)
 					end
 			end
 	end
 	if button == "ReverserDown" then
 			if 
 				not self.Duewag_U2.ThrottleEngaged == true and self.Duewag_U2.ReverserInserted == true then
-				self.ReverserState = self.ReverserState - 1
-				self.ReverserState = math.Clamp(self.ReverserState,-1,1)
-				self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
+				self.ReverserLeverState = self.ReverserLeverState - 1
+				math.Clamp(self.ReverserLeverState, -1, 3)
+				self.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
+				PrintMessage(HUD_PRINTTALK,self.Duewag_U2.ReverserLeverState)
 			end
 	end
 	
@@ -488,30 +592,43 @@ function ENT:OnButtonPress(button,ply)
 			self.ReverserInsert = true
 			self.Duewag_U2:TriggerInput("ReverserInserted",self.ReverserInsert)
 			self:SetNW2Bool("ReverserInserted",true)
-			PrintMessage(HUD_PRINTTALK, "Reverser is in")
+			--PrintMessage(HUD_PRINTTALK, "Reverser is in")
 		
 		elseif  self.ReverserInsert == true then
 			self.ReverserInsert = false
 			self.Duewag_U2:TriggerInput("ReverserInserted",false)
 			self:SetNW2Bool("ReverserInserted",false)
-			PrintMessage(HUD_PRINTTALK, "Reverser is out")
+			--PrintMessage(HUD_PRINTTALK, "Reverser is out")
 		end
 	end
 
 
-	if button == "Battery" then
+	if button == "BatteryToggle" then
 		if self.BatteryOn == false then
 			self.BatteryOn = true
-			self.Duewag_U2:TriggerInput("BatteryOn",self.ReverserInsert)
+			
+			self.Duewag_Battery:TriggerInput("Charge",1.3)
 			self:SetNW2Bool("BatteryOn",true)
-			PrintMessage(HUD_PRINTTALK, "Battery is ON")
+			PrintMessage(HUD_PRINTTALK, "Battery switch is ON")
+
+			
+			
+			local delay
+			local startMoment
+			delay = 15
+			
+			startMoment = CurTime()
+			if startMoment - delay > 15 then
+				self:SetNW2Bool("IBIS_impulse",true)
+			end
+			
 
 
 			elseif  self.BatteryOn == true then
 				self.BatteryOn = false
-				self.Duewag_U2:TriggerInput("BatteryOn",false)
 				self:SetNW2Bool("BatteryOn",false)
-				PrintMessage(HUD_PRINTTALK, "Battery is OFF")
+				PrintMessage(HUD_PRINTTALK, "Battery switch is OFF")
+				self.Duewag_Battery:TriggerInput("Charge",0)
 			
 		end
 			
@@ -524,21 +641,7 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 
-	if button == "KeyTurnOn" then
-			if self.KeyTurnOn == false then
-				if self.KeyInsert == true	then
-					self.KeyTurnOn = true
-					PrintMessage(HUD_PRINTTALK, "Key is turned")
-				end
-			end
-			else
-			if self.KeyTurnOn == true then
-					if self.KeyInsert == true  then
-						self.KeyTurnOn = false
-						PrintMessage(HUD_PRINTTALK, "Key is turned off")
-					end
-			end
-	end
+
 
 	if button == "BellEngage" then
 		self:SetNW2Bool("Bell",true)
@@ -549,29 +652,71 @@ function ENT:OnButtonPress(button,ply)
 	end
 
 
-
-	if button == "Number7" then
-		self.IBIS:Trigger("Number7")
+	if button == "LightsToggle" then
+		if self:GetNW2Bool("Headlights",false) == false then
+			self:SetNW2Bool("Headlights",true)
+		elseif self:GetNW2Bool("Headlights",false) == true then
+			self:SetNW2Bool("Headlights",false)
+		end
 	end
 
-	if button == "Destination" then
+
+
+
+	if button == "DestinationSet" then
 		self.IBIS:Trigger("Destination")
 	end
 
 
-	if button == "Number0" then
+	if button == "Number0Set" then
 		self.IBIS:Trigger("Number0")
 	end
 
-	if button == "Number1" then
+	if button == "Number1Set" then
 		self.IBIS:Trigger("Number1")
 	end
-	if button == "Number2" then
+	if button == "Number2Set" then
 		self.IBIS:Trigger("Number2")
 	end
-
-	if button == "Enter" then
+	if button == "Number3Set" then
+		self.IBIS:Trigger("Number3")
+	end
+	if button == "Number4Set" then
+		self.IBIS:Trigger("Number4")
+	end
+	if button == "Number5Set" then
+		self.IBIS:Trigger("Number5")
+	end
+	if button == "Number6Set" then
+		self.IBIS:Trigger("Number6")
+	end
+	if button == "Number7Set" then
+		self.IBIS:Trigger("Number7")
+	end
+	if button == "Number8Set" then
+		self.IBIS:Trigger("Number8")
+	end
+	if button == "Number9Set" then
+		self.IBIS:Trigger("Number9")
+	end
+	if button == "EnterSet" then
 		self.IBIS:Trigger("Enter")
+	end
+
+	if button == "ThrowCouplerSet" then
+		if self.Duewag_U2.BrakePressure > 1 and self.Duewag_U2.Speed < 1 then
+			self.FrontCouple:Decouple()
+		end
+	end
+
+	if button == "DriverLightToggle" then
+
+		if self:GetNW2Bool("Cablight",false) then
+			self:SetNW2Bool("Cablight",true)
+		end
+		if self:GetNW2Bool("Cablight",true) then
+			self:SetNW2Bool("Cablight",false)
+		end
 	end
 end
 
@@ -581,11 +726,11 @@ function ENT:OnButtonRelease(button,ply)
 
 			
 			----THROTTLE CODE --Black Phoenix: Make sure it snaps to zero when next to zero
-			if (button == "ThrottleUp" and self.ThrottleRate > 0) or (button == "ThrottleDown" and self.ThrottleRate < 0) then
-				self.ThrottleRate = 0
+			if (button == "ThrottleUp" and self.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDown" and self.Duewag_U2.ThrottleRate < 0) then
+				self.Duewag_U2.ThrottleRate = 0
 			end
-			if (button == "ThrottleUpFast" and self.ThrottleRate > 0) or (button == "ThrottleDownFast" and self.ThrottleRate < 0) then
-				self.ThrottleRate = 0
+			if (button == "ThrottleUpFast" and self.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDownFast" and self.Duewag_U2.ThrottleRate < 0) then
+				self.Duewag_U2.ThrottleRate = 0
 			end
 		
 		
@@ -597,7 +742,7 @@ function ENT:OnButtonRelease(button,ply)
 			print("DeadmanPressedNo")
 		end
 	
-		if button == "WarningAnnouncement" then
+		if button == "WarningAnnouncementSet" then
 			self:SetNW2Bool("WarningAnnouncement", false)
 		end
 
@@ -607,14 +752,23 @@ function ENT:OnButtonRelease(button,ply)
 		if button == "Horn" then
 			self:SetNW2Bool("Horn",false)
 		end
+
+		if button == "BatteryToggle" then
+			self:SetNW2Bool("IBIS_impulse",false)
+		end
 end
 
 
 function ENT:CreateSectionB(pos)
+
+	
+
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
+	u2sectionb.ParentTrain = self
+	u2sectionb:SetNW2Entity("U2a",self)
 	-- self.u2sectionb = u2b
-	u2sectionb:SetPos(self:LocalToWorld(Vector(0,0,0)))
+	u2sectionb:SetPos(self:LocalToWorld(Vector(0,0,-4)))
 	u2sectionb:SetAngles(self:GetAngles() + ang)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())
