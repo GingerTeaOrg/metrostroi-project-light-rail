@@ -273,8 +273,10 @@ function ENT:Initialize()
 	[51] = { "light",Vector(542,50,43), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
     [52] = { "light",Vector(542,-50,43), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
 	[53] = { "light",Vector(546,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
-	[54] = { "light",Vector(545,38.8,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[55] = { "light",Vector(545,-38.8,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[54] = { "light",Vector(545,39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[55] = { "light",Vector(545,-39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[56] = { "light",Vector(545,39.5,46.2), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[57] = { "light",Vector(545,-39.5,46.2), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	}
 
 end
@@ -349,7 +351,10 @@ function ENT:Think(dT)
 	
 	if self:GetNW2Float("BatteryCharge",0) > 0 and self:GetNW2Bool("BatteryOn",false) == true  then
 		
-		
+		if self.FrontBogey.BrakeCylinderPressure > 1 then
+			self:SetLightPower(56,true)
+			self:SetLightPower(57,true)
+		end
 		
 		if self:GetNW2Bool("CabAEnabled",false) == true then
 			if self:GetNW2Int("ReverserState",0) == 1 then
@@ -416,42 +421,77 @@ function ENT:Think(dT)
 	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 	
 	
-	self.FrontBogey.PneumaticBrakeForce = 50000.0
-	self.MiddleBogey.PneumaticBrakeForce = 50000.0
-	self.RearBogey.PneumaticBrakeForce = 50000.0  
+	self.FrontBogey.PneumaticBrakeForce = 10000.0
+	self.MiddleBogey.PneumaticBrakeForce = 10000.0
+	self.RearBogey.PneumaticBrakeForce = 10000.0  
 
 
-	if self.Duewag_U2.VE == true then
-    	self.FrontBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
-		self.MiddleBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
-		self.RearBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
+	if self.Duewag_U2.VE == true and not self:ReadTrainWire(6) == 1 then
+    	--self.FrontBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
+		--self.MiddleBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
+		--self.RearBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
 		if self.Duewag_U2.ThrottleState < 0 then
-			self.RearBogey.MotorForce  = -10001 
-			self.FrontBogey.MotorForce = -10001
+			self.RearBogey.MotorForce  = -16001 
+			self.FrontBogey.MotorForce = -16001
 			self.RearBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 		elseif self.Duewag_U2.ThrottleState > 0 then 
 			self.RearBogey.MotorForce  = 16001
 			self.FrontBogey.MotorForce = 16001
+			self.RearBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+		elseif self.Duewag_U2.ThrottleState == 0 then 
+			self.RearBogey.MotorForce  = 16001
+			self.FrontBogey.MotorForce = 16001
+			self.RearBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 		end
 
-	elseif self.Duewag_U2.VZ == true then
-    	self.FrontBogey.BrakeCylinderPressure = self:ReadTrainWire(5) 
-		self.MiddleBogey.BrakeCylinderPressure = self:ReadTrainWire(5)
-		self.RearBogey.BrakeCylinderPressure = self:ReadTrainWire(5)
+		if self.Duewag_U2.ReverserState == 1 then 
+			self.FrontBogey.Reversed = false
+			self.RearBogey.Reversed = true --The rear bogey is turned by 180° as far as it is concerned, so it has to be reversed when the front isn't
+		elseif self.Duewag_U2.ReverserState == -1 then
+			self.FrontBogey.Reversed = true
+			self.RearBogey.Reversed = false
+		end
+
+	elseif self.Duewag_U2.VZ == true or self:ReadTrainWire(6) == 1 then
+    	self.FrontBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
+		self.MiddleBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
+		self.RearBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
+		
 
 		if self:ReadTrainWire(2) == 0 then
 			self.RearBogey.MotorForce  = 16001
 			self.FrontBogey.MotorForce = 16001
 		elseif self:ReadTrainWire(2) == 1 then 
-			self.RearBogey.MotorForce  = -10001 
-			self.FrontBogey.MotorForce = -10001
+			self.RearBogey.MotorForce  = -16001 
+			self.FrontBogey.MotorForce = -16001
 		end
 		self.RearBogey.MotorPower = self:ReadTrainWire(1)
 		self.FrontBogey.MotorPower = self:ReadTrainWire(1)
+		
 
+		if self:ReadTrainWire(3) == 1 then 
+			self.FrontBogey.Reversed = false
+			self.RearBogey.Reversed = true --The rear bogey is turned by 180° as far as it is concerned, so it has to be reversed when the front isn't
+		elseif self:ReadTrainWire(4) == -1 then
+			self.FrontBogey.Reversed = true
+			self.RearBogey.Reversed = false
+		end
 
 	end
+	PrintMessage(HUD_PRINTTALK,self.FrontBogey.MotorPower)
+	PrintMessage(HUD_PRINTTALK,self.RearBogey.BrakeCylinderPressure)
 
 	if self.Duewag_U2.VZ == true then
 		PrintMessage(HUD_PRINTTALK, "Unit is in VZ mode")
@@ -466,13 +506,7 @@ function ENT:Think(dT)
 	--self:ReadTrainWire(1)*5000--(N *100) + (self.ChopperJump)
 	
 	
-	if self:ReadTrainWire(3) == 1 then 
-		self.FrontBogey.Reversed = false
-		self.RearBogey.Reversed = true --The rear bogey is turned by 180° as far as it is concerned, so it has to be reversed when the front isn't
-	elseif self:ReadTrainWire(4) == 1 then
-		self.FrontBogey.Reversed = true
-		self.RearBogey.Reversed = false
-	end
+
 
 
 
@@ -502,7 +536,7 @@ function ENT:Think(dT)
 
 	--self:WriteTrainWire(1, self.Duewag_U2.Traction)
 
-	PrintMessage(HUD_PRINTTALK,self.Duewag_U2.Traction)
+	--PrintMessage(HUD_PRINTTALK,self.Duewag_U2.Traction)
 	
 	
 end
@@ -586,7 +620,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	
-	
+	if self.Duewag_U2.ReverserState == 0 then
 	if button == "ReverserInsert" then
 		if self.ReverserInsert == false then
 			self.ReverserInsert = true
@@ -600,6 +634,7 @@ function ENT:OnButtonPress(button,ply)
 			self:SetNW2Bool("ReverserInserted",false)
 			--PrintMessage(HUD_PRINTTALK, "Reverser is out")
 		end
+	end
 	end
 
 
