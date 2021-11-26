@@ -65,6 +65,8 @@ function ENT:InitializeSounds()
 	self.SoundPositions ["Fan2"] = {1100,1e9,Vector(250,0,70),0.035}
 	self.SoundNames["Fan3"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
 	self.SoundPositions ["Fan3"] = {1100,1e9,Vector(300,0,70),0.035}
+	self.SoundNames["Door_open1"] = {"lilly/uf/u2/door_open.wav"}
+	self.SoundPositions ["Door_open1"] = {1100,1e9,Vector(400,179,70),0.035}
 
 end
 

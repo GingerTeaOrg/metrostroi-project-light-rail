@@ -12,11 +12,11 @@ function ENT:ReinitializeSounds()
     self.SoundNames["ted4_703"]  = "lilly/uf/bogeys/u2/drive_40_new.wav"
     self.SoundNames["ted5_703"]  = "lilly/uf/bogeys/u2/drive_50_new.wav"
     self.SoundNames["ted6_703"]  = "lilly/uf/bogeys/u2/drive_60_new.wav"
-    self.SoundNames["ted7_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
+    self.SoundNames["ted7_703"]  = "lilly/uf/u2/moto/zeug 2/engine_loop 2"
     self.SoundNames["ted8_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
-    self.SoundNames["ted9_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
+    --[[self.SoundNames["ted9_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
     self.SoundNames["ted10_703"] = "lilly/uf/bogeys/u2/drive_70.wav"
-    self.SoundNames["ted11_703"] = "lilly/uf/bogeys/u2/drive_70.wav"
+    self.SoundNames["ted11_703"] = "lilly/uf/bogeys/u2/drive_70.wav"]]--
     self.SoundNames["tedm_703"]  = "lilly/uf/bogeys/u2/test/engine_loop_primary.wav"
 
     --[[self.SoundNames["ted1_703"]  = "lilly/uf/bogeys/u2/test/engine_loop_primary.wav"

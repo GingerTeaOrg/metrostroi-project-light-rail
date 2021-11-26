@@ -13,8 +13,8 @@ COUPLE_MAX_DISTANCE = COUPLE_MAX_DISTANCE ^ 2
 COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
 --Model,Couple pos,Snake pos,Snake ang
 ENT.Types = {
-    ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(44.1,0,0),Vector(0,0,0),Angle(0,-90,0)},
-    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(44.1,0,0),Vector(0,0,0),Angle(0,-90,0)},
+    ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(42.5,0,0),Vector(0,0,0),Angle(0,-90,0)},
+    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(42.5,0,0),Vector(0,0,0),Angle(0,-90,0)},
     ["dummy"] = {"models/lilly/uf/coupler_dummy.mdl",Vector(45.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
     def={"models/lilly/uf/coupler_new.mdl",Vector(42,0,0),Vector(0,0,0),Angle(0,90,0)},
 }
@@ -63,11 +63,11 @@ local function AreCoupled(ent1,ent2)
     return coupled
 end
 
-function ENT:AreCoupled(ent1,ent2)
+function ENT:AreCoupled(ent1)--,ent2)
 
 
-        if ent1.Coupled or ent2.Coupled then return false end
-        local constrainttable = constraint.FindConstraints(ent1,"Weld")
+        --if ent1.Coupled or ent2.Coupled then return false end
+        local constrainttable = constraint.FindConstraints(self,"Weld")
         local coupled = false
         for k,v in pairs(constrainttable) do
             if v.Type == "Weld" then

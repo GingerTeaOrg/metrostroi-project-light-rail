@@ -147,7 +147,7 @@ function ENT:Initialize()
 	
 	-- Create seat entities
     self.DriverSeat = self:CreateSeat("driver",Vector(500,14,55))
-	--self.HelperSeat = self:CreateSeat("instructor",Vector(505,-25,55))
+	self.HelperSeat = self:CreateSeat("instructor",Vector(505,-25,55))
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.DriverSeat:SetColor(Color(0,0,0,0))
 	
@@ -196,9 +196,9 @@ function ENT:Initialize()
 	self.FrontBogey:SetNWInt("MotorSoundType",0)
     self.MiddleBogey:SetNWInt("MotorSoundType",0)
 	self.RearBogey:SetNWInt("MotorSoundType",0)
-	self.FrontBogey:SetNWBool("Async",false)
-    self.MiddleBogey:SetNWBool("Async",false)
-	self.RearBogey:SetNWBool("Async",false)
+	self.FrontBogey:SetNWBool("Async",true)
+    self.MiddleBogey:SetNWBool("Async",true)
+	self.RearBogey:SetNWBool("Async",true)
 	
 	
 	--self.PantoState = 0
@@ -266,6 +266,7 @@ function ENT:Initialize()
 
 	self.TrainWireCrossConnections = {
         [3] = 4, -- Reverser F<->B
+		[31] = 32, --Heads or tails
 
     }
 
@@ -349,7 +350,7 @@ function ENT:Think(dT)
 	self:SetNW2Float("BatteryCharge",self.Duewag_Battery.Voltage)
 
 	
-	if self:GetNW2Float("BatteryCharge",0) > 0 and self:GetNW2Bool("BatteryOn",false) == true  then
+	if self:GetNW2Float("BatteryCharge",0) > 0 and self:GetNW2Bool("BatteryOn",false) == true and self.FrontCouple.CoupledEnt == nil then
 		
 		if self.FrontBogey.BrakeCylinderPressure > 1 then
 			self:SetLightPower(56,true)
@@ -426,7 +427,7 @@ function ENT:Think(dT)
 	self.RearBogey.PneumaticBrakeForce = 10000.0  
 
 
-	if self.Duewag_U2.VE == true and not self:ReadTrainWire(6) == 1 then
+	if self.Duewag_U2.VE == true or self:ReadTrainWire(6) == 0 then
     	--self.FrontBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
 		--self.MiddleBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
 		--self.RearBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
@@ -739,7 +740,7 @@ function ENT:OnButtonPress(button,ply)
 	end
 
 	if button == "ThrowCouplerSet" then
-		if self.Duewag_U2.BrakePressure > 1 and self.Duewag_U2.Speed < 1 then
+		if self:ReadTrainWire(5) > 1 and self.Duewag_U2.Speed < 1 then
 			self.FrontCouple:Decouple()
 		end
 	end

@@ -111,9 +111,13 @@ function ENT:Initialize()
 	--self.Wheels = self.FrontBogey.Wheels
    
 	self.Lights = {
-		[111] = { "dynamiclight",        Vector( 0, 0, 100), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
-		[112] = { "dynamiclight",        Vector( 200, 0, 100), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
-		[113] = { "dynamiclight",        Vector( 100, 0, 100), Angle(0,0,0), Color(216,161,92), distance = 450, brightness = 2},
+	[61] = { "light",Vector(-538.7,50,43), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
+    [62] = { "light",Vector(-538.7,-50,43), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
+	[63] = { "light",Vector(-538.7,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
+	[64] = { "light",Vector(-538.7,39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[65] = { "light",Vector(-538.7,-39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[66] = { "light",Vector(-538.7,39.5,46.2), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[67] = { "light",Vector(-538.7,-39.5,46.2), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	}
 	for k,v in pairs(self.Lights) do
 		self:SetLightPower(k,false)
@@ -130,11 +134,6 @@ function ENT:Initialize()
         [3] = 4, -- Reverser F<->B
 
     }]]
-
-	self.TrainWire1 = 0
-	self.TrainWire2 = 0
-	self.TrainWire3 = 0
-	self.TrainWire4 = 0
 
 
 end
@@ -444,7 +443,7 @@ function ENT:OnButtonPress(button,ply)
 
 	if button == "ThrowCouplerSet" then
 		if self.Duewag_U2.BrakePressure > 1 and self.Duewag_U2.Speed < 1 then
-			self.FrontCouple:Decouple()
+			self.RearCouple:Decouple()
 		end
 	end
 end
@@ -543,7 +542,47 @@ function ENT:Think()
 	end]]
 
 
+	if self.RearCouple.CoupledEnt ~= nil then
+		self:SetNW2Bool("BIsCoupled", true)
+	else
+		self:SetNW2Bool("BIsCoupled",false)
+	end
+	--self:SetNW2Bool("BIsCoupled",self.RearCouple:AreCoupled(self.RearCouple))
+    
 
-
+	if not self:GetNW2Bool("BIsCoupled",false) == true then
+		if self.ParentTrain:ReadTrainWire(3) == 1 then
+			self:SetLightPower(61,false)
+    		self:SetLightPower(62,false)
+			self:SetLightPower(63,false)
+			self:SetLightPower(64,true)
+			self:SetLightPower(65,true)
+		elseif self.ParentTrain:ReadTrainWire(4) == 1 then
+			self:SetLightPower(61,true)
+    		self:SetLightPower(62,true)
+			self:SetLightPower(63,true)
+			self:SetLightPower(64,false)
+			self:SetLightPower(65,false)
+		end
+	elseif self:GetNW2Bool("BIsCoupled",false) == true then
+		if self.ParentTrain:ReadTrainWire(3) == 1 then
+			self:SetLightPower(61,false)
+    		self:SetLightPower(62,false)
+			self:SetLightPower(63,false)
+			self:SetLightPower(64,false)
+			self:SetLightPower(65,false)
+		elseif self.ParentTrain:ReadTrainWire(4) == 1 then
+			self:SetLightPower(61,false)
+    		self:SetLightPower(62,false)
+			self:SetLightPower(63,false)
+			self:SetLightPower(64,false)
+			self:SetLightPower(65,false)
+		end
+	end
+	if self.RearBogey.BrakeCylinderPressure > 1 and self.ParentTrain:GetNW2Int("Speed",0) < 2 and not self:GetNW2Bool("BIsCoupled",false) == true then
+		self:SetLightPower(66,true)
+		self:SetLightPower(67,true)
+	end
+	--print(self.RearCouple.CoupledEnt)
 
 end

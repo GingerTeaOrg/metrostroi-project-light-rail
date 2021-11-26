@@ -120,12 +120,12 @@ function TRAIN_SYSTEM:Think(Train)
 	end
 
 	
-	--Set reverser logic either directly or if the train wire is applied, read it from there
-	if self.ReverserLeverState == 0 then
+	--Set reverser logic either directly or if the train wire 6 is applied, read it from there VE=single traction
+	if self.ReverserLeverState == 0 and self.Train:ReadTrainWire(6) == 0 then
 		self.ReverserState = 0
 		self.VE = false
 		self.VZ = false
-	elseif self.ReverserLeverState == -1 then
+	elseif self.ReverserLeverState == -1 and self.Train:ReadTrainWire(6) == 0 then
 		self.ReverserState = -1
 		self.VE = true
 		self.VZ = false
@@ -134,15 +134,20 @@ function TRAIN_SYSTEM:Think(Train)
 		self.BatteryStartUnlock = true
 		self.VE = false
 		self.VZ = false
-	elseif self.Train:ReadTrainWire(6) == 1 then
+	elseif self.Train:ReadTrainWire(6) == 1 and self.ReverserLeverState == 2 then
 		self.VZ = true
 		if self.Train:ReadTrainWire(3) == 1 then
 			self.ReverserState = 1
 		elseif self.Train:ReadTrainWire(4) == 1 then
-			self.ReverserState = 0
+			self.ReverserState = -1
 		end
+	elseif self.Train:ReadTrainWire(6) == 1 and self.ReverserLeverState == 3 then
+		self.VZ = false
+		self.VE = true
+		self.Train:WriteTrainWire(6,0)
 	end
-
+	math.Clamp(self.ReverserLeverState, -1, 3)
+	
 	if self.ReverserLeverState == 2 then
 		self.VZ = true
 		self.VE = false
@@ -230,7 +235,7 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	
 	
-	if self.Train:GetNW2Bool("BatteryOn",false) == true and self.ReverserInserted == true--[[and self.PantoUp == true]] then
+	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) == 1--[[and self.PantoUp == true]] then
 
 		if self.ReverserState == 1 then
 			self.TractionConditionFulfilled = true

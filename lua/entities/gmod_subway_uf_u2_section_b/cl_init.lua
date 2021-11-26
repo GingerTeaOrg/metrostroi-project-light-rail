@@ -348,8 +348,17 @@ function ENT:Think()
 
     self:Animate("Speedo",self.SpeedoAnim,0,200,1,0.1,false)
     --self:Animate("Throttle",0,-45,45,3,0,false)
+	if not self.ParentTrain:GetNW2Bool("Headlights",false) == true and self:GetNW2Bool("Headlights",false) == true then
+        self:ShowHide("headlights_on",true)
+    else
+        self:ShowHide("headlights_on",false)
+    end
+    
+
+    if self:GetNW2Bool("BIsCoupled",false) == true then -- Fixme set headlights
+    end
+
 	
-	self:SetNW2Entity("U2b-Client",self)
 
     self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
 

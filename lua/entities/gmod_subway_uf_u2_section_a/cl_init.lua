@@ -129,6 +129,18 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
+    {ID = "SetHoldingBrakeSet", x=201.5, y=83, radius=10, tooltip = "Set mechanical holding brake manually", model = {
+        model = "models/lilly/uf/common/cab/button_red.mdl", z=-2, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "ReleaseHoldingBrakeSet", x=201.5, y=112, radius=10, tooltip = "Release mechanical holding brake manually", model = {
+        model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
     {ID = "PassengerOvergroundSet", x=229.5, y=83, radius=10, tooltip = "Set passenger lights to overground mode", model = {
         model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
@@ -221,6 +233,12 @@ ENT.ButtonMap["Cab"] = {
     },
     {ID = "DoorSideSelectToggle", x=531, y=46, radius=10, tooltip = "Select door set to unlock", model = {
         model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+        var="main",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "DoorCloseSignalSet", x=531, y=112, radius=10, tooltip = "Set doors to close", model = {
+        model = "models/lilly/uf/common/cab/button_red.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -480,7 +498,7 @@ function ENT:Think()
     if self:GetNW2Float("BatteryCharge",0) > 0 and self:GetNW2Bool("BatteryOn",false) == true and self:GetNW2Bool("Headlights",false) == true then
             if self:GetNW2Float("Speed",0) < 1.5 then
 
-                self:SetLightPower(6, true)
+                self:SetLightPower(5, true)
                 self:SetLightPower(6, true)
             end
 		    if self:GetNW2Bool("CabAEnabled",false) == true then
@@ -528,7 +546,7 @@ function ENT:Think()
         self.ThrottleLastEngaged = CurTime()
     end
 
-    if self:GetNW2Bool("ThrottleEngaged",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) == true then
+    if self:GetNW2Bool("ThrottleEngaged",false) == true and self:GetNW2Bool("BatteryOn",false) == true then
         self:SetSoundState("Fan1",1,1,1)
         self:SetSoundState("Fan2",1,1,1)
         self:SetSoundState("Fan3",1,1,1)
