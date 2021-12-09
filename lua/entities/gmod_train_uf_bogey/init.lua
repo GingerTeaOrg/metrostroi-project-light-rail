@@ -677,11 +677,61 @@ end
 function ENT:AcceptInput(inputName, activator, called, data)
     if inputName == "OnFeederIn" then
         self.Feeder = tonumber(data)
-        if self.Feeder and not UF.Voltages[self.Feeder] then
-            UF.Voltages[self.Feeder] = 0
-            UF.Currents[self.Feeder] = 0
+        if self.Feeder and not Metrostroi.Voltages[self.Feeder] then
+            Metrostroi.Voltages[self.Feeder] = 0
+            Metrostroi.Currents[self.Feeder] = 0
         end
     elseif inputName == "OnFeederOut" then
         self.Feeder = nil
     end
+end
+
+
+function ENT:UpdateTextures()
+    local texture = Metrostroi.Skins["train"][self:GetNW2String("Texture")]
+    local passtexture = Metrostroi.Skins["pass"][self:GetNW2String("PassTexture")]
+    local cabintexture = Metrostroi.Skins["cab"][self:GetNW2String("CabTexture")]
+    if texture and texture.func then
+        self:SetNW2String("Texture",texture.func(self))
+    end
+    if passtexture and passtexture.func then
+        self:SetNW2String("PassTexture",passtexture.func(self))
+    end
+    if cabintexture and cabintexture.func then
+        self:SetNW2String("CabTexture",cabintexture.func(self))
+    end
+
+    self.Texture = self:GetNW2String("Texture")
+    self.PassTexture = self:GetNW2String("PassTexture")
+    self.CabTexture = self:GetNW2String("CabTexture")
+    local texture = Metrostroi.Skins["train"][self.Texture]
+    local passtexture = Metrostroi.Skins["pass"][self.PassTexture]
+    local cabintexture = Metrostroi.Skins["cab"][self.CabTexture]
+    for k in pairs(self:GetMaterials()) do self:SetSubMaterial(k-1,"") end
+    for k,v in pairs(self:GetMaterials()) do
+        local tex = v:gsub("^.+/","")
+        if self.GetAdditionalTextures then
+            local tex = self:GetAdditionalTextures(tex)
+            if tex then
+                self:SetSubMaterial(k-1,tex)
+                continue
+            end
+        end
+        if cabintexture and cabintexture.textures and cabintexture.textures[tex] then
+            self:SetSubMaterial(k-1,cabintexture.textures[tex])
+        end
+        if passtexture and passtexture.textures and passtexture.textures[tex] then
+            self:SetSubMaterial(k-1,passtexture.textures[tex])
+        end
+        if texture and texture.textures and texture.textures[tex] then
+            self:SetSubMaterial(k-1,texture.textures[tex])
+        end
+    end
+
+    if texture and texture.postfunc then texture.postfunc(self) end
+    if passtexture and passtexture.postfunc then passtexture.postfunc(self) end
+    if cabintexture and cabintexture.postfunc then cabintexture.postfunc(self) end
+
+    local level = math.random() > 0.95 and 0.7 or math.random() > 0.8 and 0.55 or math.random() > 0.35 and 0.25 or 0
+    self:SetNW2Vector("DirtLevel",math.Clamp(level+math.random()*0.2-0.1,0,1))
 end

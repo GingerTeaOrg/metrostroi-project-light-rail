@@ -28,13 +28,13 @@ function ENT:Initialize()
 	-- Set model and initialize
 	self:SetModel("models/lilly/uf/u2/u2hb.mdl")
 	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,3.9))
+	self:SetPos(self:GetPos() + Vector(0,0,4.9))
 
 	self.Bogeys = {}
 	-- Create bogeys
 	--self.FrontBogey = self:CreateBogey(Vector( 0,0,0),Angle(0,0,0),true,"u2")--103,0,-80
 	table.insert(self.Bogeys,self.FrontBogey)	
-	self.RearBogey  = self:CreateBogeyUF(Vector( -400,0,0),Angle(0,0,0),false,"u2")
+	self.RearBogey  = self:CreateBogeyUF(Vector( -400,0,0),Angle(0,180,0),true,"u2")
 	
 	self.CabEnabled = false
 	self.BatteryOn = false
@@ -119,9 +119,9 @@ function ENT:Initialize()
 	[66] = { "light",Vector(-538.7,39.5,46.2), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	[67] = { "light",Vector(-538.7,-39.5,46.2), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	}
-	for k,v in pairs(self.Lights) do
+	--[[for k,v in pairs(self.Lights) do
 		self:SetLightPower(k,false)
-	end
+	end]]
 
 	self.BrakePressure = 0	
 
@@ -130,12 +130,12 @@ function ENT:Initialize()
 
 
 
-	--[[self.TrainWireCrossConnections = {
+	self.TrainWireCrossConnections = {
         [3] = 4, -- Reverser F<->B
 
-    }]]
-
-
+    }
+	self:SetNW2String("Texture",self.ParentTrain:GetNW2String("Texture").."_b")
+	self:TrainSpawnerUpdate()
 end
 
 
@@ -153,7 +153,7 @@ function ENT:CreateBogeyUF(pos,ang,forward,typ)
     bogey:Spawn()
 
     -- Assign ownership
-    if CPPI and IsValid(self:CPPIGetOwner()) then bogeyUF:CPPISetOwner(self:CPPIGetOwner()) end
+    if CPPI and IsValid(self:CPPIGetOwner()) then bogey:CPPISetOwner(self:CPPIGetOwner()) end
 
     -- Some shared general information about the bogey
     self.SquealSound = self.SquealSound or math.floor(4*math.random())
@@ -491,10 +491,14 @@ function ENT:TrainSpawnerUpdate()
 	--math.randomseed(num+400)
 	
 	self.RearCouple:SetParameters()
-	local tex = "Def_U2"
-	self:UpdateTextures()
-	self:UpdateLampsColors()
+	--local tex = "Def_U2"
+	--self:UpdateTextures()
+	--self:UpdateLampsColors()
 	self.RearCouple.CoupleType = "U2"
+	--self:SetNW2String("Texture", self.ParentTrain:GetNW2String("Texture"))
+	--self:SetNW2String("Texture", self.ParentTrain:GetNW2String("Texture").."_b")
+	self:SetNW2String("Texture",self.ParentTrain:GetNW2String("Texture").."_b")
+	self:UpdateTextures()
 
 end
 
@@ -504,9 +508,8 @@ function ENT:Think()
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*150)
 
-	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
-	self:SetNW2Int("Speed",self.Speed*100)
-
+	
+	--PrintMessage(HUD_PRINTTALK, self:GetNW2String("Texture"))
 	
 	--self:SetLightPower(111,true)
 	--self:SetLightPower(112,true)
@@ -519,14 +522,14 @@ function ENT:Think()
 
 
 	
-    self.RearBogey.MotorForce  =  self.ParentTrain.FrontBogey.MotorForce--18000*N
+    --self.RearBogey.MotorForce  =  self.ParentTrain.FrontBogey.MotorForce--18000*N
 
 	
 	--self.RearBogey.MotorPower = self:ReadTrainWire(1)--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
 	--self.RearBogey.Reversed = self:ReadTrainWire(2) < 0
 
 
-    self.RearBogey.PneumaticBrakeForce = 50000.0
+    --self.RearBogey.PneumaticBrakeForce = 50000.0
     
 
 	--self.RearBogey.Reversed = self.ParentTrain.ReverserState < 1
@@ -549,40 +552,49 @@ function ENT:Think()
 	end
 	--self:SetNW2Bool("BIsCoupled",self.RearCouple:AreCoupled(self.RearCouple))
     
-
-	if not self:GetNW2Bool("BIsCoupled",false) == true then
-		if self.ParentTrain:ReadTrainWire(3) == 1 then
-			self:SetLightPower(61,false)
-    		self:SetLightPower(62,false)
-			self:SetLightPower(63,false)
-			self:SetLightPower(64,true)
-			self:SetLightPower(65,true)
-		elseif self.ParentTrain:ReadTrainWire(4) == 1 then
-			self:SetLightPower(61,true)
-    		self:SetLightPower(62,true)
-			self:SetLightPower(63,true)
-			self:SetLightPower(64,false)
-			self:SetLightPower(65,false)
+	
+		if not self:GetNW2Bool("BIsCoupled",false) == true then
+			if self.ParentTrain:ReadTrainWire(3) == 1 then
+				self:SetLightPower(61,false)
+    			self:SetLightPower(62,false)
+				self:SetLightPower(63,false)
+				self:SetLightPower(64,true)
+				self:SetLightPower(65,true)
+			elseif self.ParentTrain:ReadTrainWire(4) == 1 then
+				if self:GetNW2Bool("HeadlightsSwitch",false) == true then
+				self:SetLightPower(61,true)
+    			self:SetLightPower(62,true)
+				self:SetLightPower(63,true)
+				end
+				self:SetLightPower(64,false)
+				self:SetLightPower(65,false)
+			end
+		elseif self:GetNW2Bool("BIsCoupled",false) == true then
+			if self.ParentTrain:ReadTrainWire(3) == 1 then
+				self:SetLightPower(61,false)
+   		 		self:SetLightPower(62,false)
+				self:SetLightPower(63,false)
+				self:SetLightPower(64,false)
+				self:SetLightPower(65,false)
+			elseif self.ParentTrain:ReadTrainWire(4) == 1 then
+				self:SetLightPower(61,false)
+    			self:SetLightPower(62,false)
+				self:SetLightPower(63,false)
+				self:SetLightPower(64,false)
+				self:SetLightPower(65,false)
+			end
 		end
-	elseif self:GetNW2Bool("BIsCoupled",false) == true then
-		if self.ParentTrain:ReadTrainWire(3) == 1 then
-			self:SetLightPower(61,false)
-    		self:SetLightPower(62,false)
-			self:SetLightPower(63,false)
-			self:SetLightPower(64,false)
-			self:SetLightPower(65,false)
-		elseif self.ParentTrain:ReadTrainWire(4) == 1 then
-			self:SetLightPower(61,false)
-    		self:SetLightPower(62,false)
-			self:SetLightPower(63,false)
-			self:SetLightPower(64,false)
-			self:SetLightPower(65,false)
-		end
-	end
+	
 	if self.RearBogey.BrakeCylinderPressure > 1 and self.ParentTrain:GetNW2Int("Speed",0) < 2 and not self:GetNW2Bool("BIsCoupled",false) == true then
 		self:SetLightPower(66,true)
 		self:SetLightPower(67,true)
+	elseif self:GetNW2Bool("BIsCoupled",false) == true then
+		self:SetLightPower(66,false)
+		self:SetLightPower(67,false)
+	elseif self.RearBogey.BrakeCylinderPressure == 0 then 
+		self:SetLightPower(66,false)
+		self:SetLightPower(67,false)
 	end
-	--print(self.RearCouple.CoupledEnt)
+	
 
 end

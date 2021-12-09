@@ -10,7 +10,9 @@ ENT.Category		= "U-Bahn Frankfurt Metrostroi"
 ENT.Spawnable       = true
 ENT.AdminSpawnable  = false
 
-ENT.DontAccelerateSimulation = false
+ENT.SkinsType = "U2h"
+
+ENT.DontAccelerateSimulation = true
 
 
 function ENT:PassengerCapacity()
@@ -18,7 +20,7 @@ function ENT:PassengerCapacity()
 end
 
 function ENT:GetStandingArea()
-    return Vector(-450,-30,-55),Vector(380,30,-55) -- TWEAK: NEEDS TESTING INGAME
+    return Vector(450,-30,-55),Vector(200,30,-55) -- TWEAK: NEEDS TESTING INGAME
 end
 
 local function GetDoorPosition(i,k)
@@ -28,13 +30,17 @@ end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["bell"] = {1100,1e9,Vector(580,0,70),1}
+	self.SoundPositions["bell"] = {1100,1e9,Vector(595,-15,20),1}
+	self.SoundNames["bell_in"] = {loop=0.01,"lilly/uf/u2/insidecab/Bell_start.wav","lilly/uf/u2/insidecab/Bell_loop.wav", "lilly/uf/u2/insidecab/Bell_end.wav"}	
+	self.SoundPositions["bell_in"] = {800,1e9,Vector(550,0,55),1}
+
+	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.wav"}	
+	self.SoundPositions["Startup"] = {800,1e9,Vector(500,0,55),1}
+
 	self.SoundNames["horn"] = {loop=0.014,"lilly/uf/u2/U3_Hupe_Start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_Ende.mp3"}
 	self.SoundPositions["horn"] = {1100,1e9,Vector(580,0,70),1}
 	self.SoundNames["WarningAnnouncement"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
 	self.SoundPositions["WarningAnnouncement"] = {1100,1e9,Vector(550,0,300),1}
-	self.SoundNames["idle"]   = {"lilly/uf/u2/Moto/Duewag_idle.mp3",loop = 1}
-	self.SoundPositions["idle"] = {800,1e9,Vector(100,0,0),0.035}
 	
 	self.SoundNames["Door_open"] = {"lilly/uf/u2/Door_open.mp3"}
 	self.SoundPositions["Door_open"] = {800,1e9,Vector(300,14,14),1}
@@ -68,6 +74,9 @@ function ENT:InitializeSounds()
 	self.SoundNames["Door_open1"] = {"lilly/uf/u2/door_open.wav"}
 	self.SoundPositions ["Door_open1"] = {1100,1e9,Vector(400,179,70),0.035}
 
+	self.SoundNames["Switchgear1"] = {"lilly/uf/u2/Stuk01.wav"}
+	self.SoundPositions["Switchgear1"] = {1100,1e9,Vector(550,0,70),0.035}
+
 end
 
 ENT.AnnouncerPositions = {
@@ -87,14 +96,13 @@ end
 
 ENT.Cameras = {
     {Vector(480.5+17,-40,110),Angle(0,-90,0),"Train.UF_U2.Destinations"},
-    {Vector(407.5+17,32,3),Angle(0,180-7,0),"Train.720.CameraPPZ"},
-    {Vector(407.5+17,32,-19.5),Angle(0,180-7,0),"Train.720.CameraPV"},
     {Vector(407.5+10,6,100),Angle(0,180+5,0),"Train.UF_U2.PassengerStanding"},
-    {Vector(407.5+50,-14,-15),Angle(90-46,0,0),"Train.720.CameraVityaz"},
-    {Vector(407.5+40,-35,-30),Angle(60,90,0),"Train.720.CameraKRMH"},
-    {Vector(380,35,-5),Angle(0,60,0),"Train.720.CameraPVZ"},
     {Vector(490.5+90,0,150),Angle(0,180,0),"Train.Common.RouteNumber"},
     {Vector(570,0,70),Angle(80,0,0),"Train.Common.CouplerCamera"},
+}
+ENT.MirrorCams = {
+    Vector(550,72,400),Angle(0,180,0),30,
+    Vector(550,-72,400),Angle(0,180,0),30,
 }
 
 
@@ -104,7 +112,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem("IBIS")
 	self:LoadSystem("Duewag_Battery")
 	--self:LoadSystem("81_71_LastStation","destination")
-	--self:LoadSystem("uf_bell")
+	
 	--self:LoadSystem("duewag_electric")
 end
 
@@ -115,10 +123,7 @@ ENT.SubwayTrain = {
 	Manufacturer = "Duewag",
 }
 
-ENT.MirrorCams = {
-    Vector(441,72,60),Angle(1,180,0),15,
-    Vector(441,-72,60),Angle(1,180,0),15,
-}
+
 
 
 
@@ -127,6 +132,7 @@ ENT.MirrorCams = {
 ENT.Spawner = {
 head = "gmod_subway_uf_u2_section_a",
     interim = "gmod_subway_uf_u2_section_a",
-    Metrostroi.Skins.GetTable("Texture","Texture",false,"train"),
+    Metrostroi.Skins.GetTable("Texture","Spawner.Texture",false,"train"),
+	Metrostroi.Skins.GetTable("Texture","Spawner.Texture",false,"cab"),
 
 }

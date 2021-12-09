@@ -11,7 +11,7 @@ function ENT:ReinitializeSounds()
     self.SoundNames["ted3_703"]  = "lilly/uf/bogeys/u2/drive_30_new.wav"
     self.SoundNames["ted4_703"]  = "lilly/uf/bogeys/u2/drive_40_new.wav"
     self.SoundNames["ted5_703"]  = "lilly/uf/bogeys/u2/drive_50_new.wav"
-    self.SoundNames["ted6_703"]  = "lilly/uf/bogeys/u2/drive_60_new.wav"
+    self.SoundNames["ted6_703"]  = "lilly/uf/bogeys/u2/drive_60.wav"
     self.SoundNames["ted7_703"]  = "lilly/uf/u2/moto/zeug 2/engine_loop 2"
     self.SoundNames["ted8_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
     --[[self.SoundNames["ted9_703"]  = "lilly/uf/bogeys/u2/drive_70.wav"
@@ -60,8 +60,8 @@ function ENT:ReinitializeSounds()
     self.SoundNames["flangeb"]      = "lilly/uf/bogeys/u2/curvesqueal_a.wav"
     self.SoundNames["flange1"]      = "lilly/uf/bogeys/u2/curvesqueal_b.wav"
     self.SoundNames["flange2"]      = "lilly/uf/bogeys/u2/curvesqueal2.wav"
-    self.SoundNames["brakea_loop1"]       = "subway_trains/bogey/braking_async1.wav"
-    self.SoundNames["brakea_loop2"]       = "subway_trains/bogey/braking_async2.wav"
+    self.SoundNames["brakea_loop1"]       = "lilly/uf/bogeys/u2/brake_squeal.wav"
+    self.SoundNames["brakea_loop2"]       = "lilly/uf/bogeys/u2/brake_squeal.wav"
     self.SoundNames["brake_loop1"]       = "subway_trains/bogey/brake_squeal1.wav"
     self.SoundNames["brake_loop2"]       = "subway_trains/bogey/brake_squeal1.wav"
     self.SoundNames["brake_loop3"]       = "subway_trains/bogey/brake_squeal2.wav"
@@ -190,10 +190,10 @@ function ENT:Think()
             table.insert(self.EngineSNDConfig,{"ted6_703" ,48,40-4,56,1})
             table.insert(self.EngineSNDConfig,{"ted7_703" ,56,48-4,64,1})
             table.insert(self.EngineSNDConfig,{"ted8_703" ,64,56-4,72,1})
-            table.insert(self.EngineSNDConfig,{"ted9_703" ,72,64-4,80,1})
+            --[[table.insert(self.EngineSNDConfig,{"ted9_703" ,72,64-4,80,1})
             table.insert(self.EngineSNDConfig,{"ted10_703",80,72-4,88,1})
-            table.insert(self.EngineSNDConfig,{"ted11_703",88,80-4,106,1})
-            table.insert(self.EngineSNDConfig,{"tedm_703",88,80-4,  106,1})
+            table.insert(self.EngineSNDConfig,{"ted11_703",88,80-4,106,1})]]
+            --table.insert(self.EngineSNDConfig,{"tedm_703",88,80-4,  106,1})
         else
             table.insert(self.EngineSNDConfig,{"ted1_717" ,08,00,16,1})
             table.insert(self.EngineSNDConfig,{"ted2_717" ,16,08-4,24,1})
@@ -380,6 +380,24 @@ function ENT:Think()
     self:SetSoundState("flange2",(0.3+soundsmul*0.7)*(speed_mod)*f1,pitch40)
 end
 
+
+function ENT:UpdateTextures()
+    self.Texture = self.Train:GetNW2String("Texture")
+
+    local texture = Metrostroi.Skins["train"][self.Texture]
+    for id,ent in pairs(self.ClientEnts) do
+        if not IsValid(ent) then continue end
+        if self.ClientProps[id].callback then self.ClientProps[id].callback(self,ent) end
+        for k in pairs(ent:GetMaterials()) do ent:SetSubMaterial(k-1,"") end
+        for k,v in pairs(ent:GetMaterials()) do
+            local tex = string.Explode("/",v)
+            tex = tex[#tex]
+            if texture and texture.textures and texture.textures[tex] then
+                ent:SetSubMaterial(k-1,texture.textures[tex])
+            end
+        end
+    end
+end
 
 function ENT:Draw()
     self:DrawModel()

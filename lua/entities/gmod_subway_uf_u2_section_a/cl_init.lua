@@ -9,12 +9,12 @@ ENT.AutoAnimNames = {}
 
 ENT.Lights = {
 	-- Headlight glow
-	[1] = { "headlight",        Vector(545,50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-    [2] = { "headlight",        Vector(545,-50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1, texture = "models/metrostroi_train/equipment/headlight2",shadows = 1,headlight=true},
+	[1] = { "headlight",        Vector(545,50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
+    [2] = { "headlight",        Vector(545,-50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
     [3] = { "light",        Vector(545,0,600), Angle(0,0,0), Color(216,161,92), fov=40,farz=450,brightness = 3, texture = "effects/flashlight/soft",shadows = 1,headlight=true},
     [4] = { "headlight",        Vector(545,38.5,40), Angle(-20,0,0), Color(255,0,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
 	[5] = { "headlight",        Vector(545,-38.5,40), Angle(-20,0,0), Color(255,0,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
-    [6] = { "light",        Vector(519,40,131), Angle(0,-180,0), Color(255,254,184), fov=50 ,brightness = 0.1, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
+    [6] = { "headlight",        Vector(519,47,130), Angle(90,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.9, texture = "effects/flashlight/soft.vmt" },
     [7] = { "headlight",        Vector(545,38.5,45), Angle(-20,0,0), Color(255,102,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
 	[8] = { "headlight",        Vector(545,-38.5,45), Angle(-20,0,0), Color(255,102,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true}, 
 	
@@ -76,7 +76,7 @@ ENT.ClientProps["Pantograph"] = {
 
 ENT.ClientProps["Dest"] = {
 	model = "models/lilly/uf/u2/dest_a.mdl",
-	pos = Vector(-0.5,0,-0.3),
+	pos = Vector(-1,0,-0.3),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
@@ -426,7 +426,7 @@ function ENT:Initialize()
 
     self.SpeedoAnim = 0
 	
-    self:ShowHide("headlights_on",false,0)
+    --self:ShowHide("headlights_on",false,0)
 	
 	self.ThrottleLastEngaged = 0
 	
@@ -452,15 +452,15 @@ function ENT:Think()
 
 
     if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
-        self:SetLightPower(6,true,100)
+        self:SetLightPower(6,true)
     elseif self:GetNW2Bool("Cablight",false) == false then
         self:SetLightPower(6,false)
     end
 
 
-    if self:GetNW2Bool("Headlights",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
+    if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
         self:ShowHide("headlights_on",true,0)
-    elseif self:GetNW2Bool("Headlights",false) == false then
+    elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
         self:ShowHide("headlights_on",false,0)
     end
 
@@ -475,7 +475,20 @@ function ENT:Think()
 
 
 	self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
+    self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
     self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
+
+    if self:GetNW2Bool("BatteryOn",false) == true then
+
+        if self:GetNW2Bool("StartupPlayed",false) == false and self:GetNW2Bool("BatteryOn",false) == true then
+            self:PlayOnce("Startup","cabin",1,1)
+            self:SetNW2Bool("StartupPlayed",true)
+            
+        
+        elseif self:GetNW2Bool("BatteryOn",false) == false then
+            self:SetNW2Bool("StartupPlayed",false)
+        end
+    end
 	
 	if self:GetNW2Bool("WarningAnnouncement") == true then
         self:PlayOnce("WarningAnnouncement","cabin",1,1)
@@ -495,64 +508,71 @@ function ENT:Think()
 
     
 
-    if self:GetNW2Float("BatteryCharge",0) > 0 and self:GetNW2Bool("BatteryOn",false) == true and self:GetNW2Bool("Headlights",false) == true then
-            if self:GetNW2Float("Speed",0) < 1.5 then
-
-                self:SetLightPower(5, true)
-                self:SetLightPower(6, true)
-            end
-		    if self:GetNW2Bool("CabAEnabled",false) == true then
-                if self:GetNW2Int("ReverserState") == 1 then
+    if self:GetNW2Bool("Headlights",false) == true then
+            
+		    if self:GetNW2Bool("Headlights",false) == true then
+                
+                    self:SetLightPower(1,true)
+                    self:SetLightPower(2,true)
+                    self:SetLightPower(4,false)
+                    self:SetLightPower(5,false)
+            elseif
+            self:GetNW2Bool("Headlights",false) == false then
+                
+                self:SetLightPower(1,false)
+                self:SetLightPower(2,false)
+            elseif
+                self:GetNW2Bool("Taillights") == true then
+                    self:SetLightPower(1,false)
+                    self:SetLightPower(2,false)
+                    self:SetLightPower(4,true)
+                    self:SetLightPower(5,true)
+            elseif
+                self:GetNW2Bool("Taillights") == false and self:GetNW2Bool("Headlights",false) == true  then
                     self:SetLightPower(1,true)
                     self:SetLightPower(2,true)
                     self:SetLightPower(4,false,100)
                     self:SetLightPower(5,false,100)
-                elseif
-                self:GetNW2Int("ReverserState") <= 0 then
-                    self:SetLightPower(1,false)
-                    self:SetLightPower(2,false)
-                    self:SetLightPower(4,true,100)
-                    self:SetLightPower(5,true,100)
-                end
-
-            elseif self:GetNW2Bool("CabBEnabled",false) == true then
-              self:SetLightPower(1,false)
-              self:SetLightPower(2,false)
-              self:SetLightPower(4,true,100)
-              self:SetLightPower(5,true,100)
             end
 
-        elseif self:GetNW2Float("BatteryCharge",0) > 0 and self:GetNW2Bool("BatteryOn",false) == true and self:GetNW2Bool("Headlights",false) == false then
+    elseif self:GetNW2Bool("Headlights",false) == false then
             self:SetLightPower(1,false)
             self:SetLightPower(2,false)
-            self:SetLightPower(4,true,100)
-            self:SetLightPower(5,true,100)
+            
 
-        elseif self:GetNW2Float("BatteryCharge",0) == 0 or self:GetNW2Bool("BatteryOn",false) == false then
+    elseif self:GetNW2Bool("Taillights") == true then
             self:SetLightPower(1,false)
             self:SetLightPower(2,false)
-            self:SetLightPower(4,false,100)
-            self:SetLightPower(5,false,100)
+            self:SetLightPower(4,true)
+            self:SetLightPower(5,true)
+        
 
     end
 
+    if self:GetNW2Float("Speed",0) < 1.5 and self:GetNW2Bool("BrakeLights",false) == true then
+        self:SetLightPower(4, true)
+        self:SetLightPower(5, true)
+    else
+        self:SetLightPower(4, false)
+        self:SetLightPower(5, false)
+    end
 	
 	
 	
 	
 	-- Fan handler
 
-    if self:GetNW2Bool("ThrottleEngaged",false) then
+    if self:GetNW2Bool("Fans",false) then
         self.ThrottleLastEngaged = CurTime()
     end
 
-    if self:GetNW2Bool("ThrottleEngaged",false) == true and self:GetNW2Bool("BatteryOn",false) == true then
+    if self:GetNW2Bool("Fans",false) == true and self:GetNW2Bool("BatteryOn",false) == true then
         self:SetSoundState("Fan1",1,1,1)
         self:SetSoundState("Fan2",1,1,1)
         self:SetSoundState("Fan3",1,1,1)
     end
 
-    if self:GetNW2Bool("ThrottleEngaged",false) == false and self:GetNW2Int("Speed",0) < 3 then
+    if self:GetNW2Bool("Fans",false) == false and self:GetNW2Int("Speed",0) < 3 then
         if CurTime() - self.ThrottleLastEngaged > 5 then
             self:SetSoundState("Fan1",0,1,1 )
             self:SetSoundState("Fan2",0,1,1 )

@@ -96,7 +96,7 @@ function TRAIN_SYSTEM:Think(Train)
 	--local train = self.Train 
 	--self.TriggerInput()
 	--self.TriggerOutput()
-	math.Clamp(self.ReverserLeverState, -1, 3)
+	
 	self.PrevTime = self.PrevTime or RealTime()-0.33
     self.DeltaTime = (RealTime() - self.PrevTime)
     self.PrevTime = RealTime()
@@ -125,16 +125,25 @@ function TRAIN_SYSTEM:Think(Train)
 		self.ReverserState = 0
 		self.VE = false
 		self.VZ = false
-	elseif self.ReverserLeverState == -1 and self.Train:ReadTrainWire(6) == 0 then
+	elseif self.ReverserLeverState == -1 then
 		self.ReverserState = -1
 		self.VE = true
 		self.VZ = false
+		self.Train:WriteTrainWire(6,0)
 	elseif self.ReverserLeverState == 1 then
 		self.ReverserState = 0
 		self.BatteryStartUnlock = true
 		self.VE = false
 		self.VZ = false
-	elseif self.Train:ReadTrainWire(6) == 1 and self.ReverserLeverState == 2 then
+	elseif self.ReverserLeverState == 2 then
+		self.VZ = true
+		self.Train:WriteTrainWire(6,1)
+		if self.Train:ReadTrainWire(3) == 1 then
+			self.ReverserState = 1
+		elseif self.Train:ReadTrainWire(4) == 1 then
+			self.ReverserState = -1
+		end
+	elseif self.Train:ReadTrainWire(6) == 1 or self.ReverserLeverState == 2 then
 		self.VZ = true
 		if self.Train:ReadTrainWire(3) == 1 then
 			self.ReverserState = 1
@@ -164,19 +173,23 @@ function TRAIN_SYSTEM:Think(Train)
 
 	if self.BatteryStartUnlock == false then --Only on the * Setting onf the reverser lever should the battery turn on
 		self.BatteryOn = self.BatteryOn
+		self.Train:WriteTrainWire(7,self.Train:ReadTrainWire(7))
 	elseif self.BatteryStartUnlock == true then
 		self.BatteryOn = self.Train:GetNW2Bool("BatteryOn",false)
 			if self.Train:GetNW2Bool("BatteryOn",false) == true then
 				self.Train:WriteTrainWire(7,1)
 			end
-	elseif self.Train:ReadTrainWire(6) == 1 then --Except that the leading cab turns the batteries on for the entire train
+			if self.Train:GetNW2Bool("BatteryOn",false) == false then
+				self.Train:WriteTrainWire(7,0)
+			end
+	elseif self.BatteryStartUnlock == true or self.Train:ReadTrainWire(7) == 1 then --Except that the leading cab turns the batteries on for the entire train
 		self.BatteryOn = true
 		self.Train:SetNW2Bool("BatteryOn",true)
 	end
 
 
 
-	math.Clamp(self.ReverserLeverState, -1, 3)
+	self.ReverserLeverState = math.Clamp(self.ReverserLeverState, -2, 3)
 
 
 
@@ -187,7 +200,7 @@ function TRAIN_SYSTEM:Think(Train)
 	elseif self.ReverserState == -1 then
 		self.Train:WriteTrainWire(4,1)
 		self.Train:SetNW2Int("ReverserState",-1)
-	else
+	elseif self.ReverserState == 1 then
 		self.Train:WriteTrainWire(3,0)
 		self.Train:WriteTrainWire(4,0)
 		self.Train:SetNW2Int("ReverserState",0)
@@ -235,7 +248,7 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	
 	
-	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) == 1--[[and self.PantoUp == true]] then
+	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) == 1 and self.Train:ReadTrainWire(7) == 1--[[and self.PantoUp == true]] then
 
 		if self.ReverserState == 1 then
 			self.TractionConditionFulfilled = true
@@ -252,7 +265,7 @@ function TRAIN_SYSTEM:Think(Train)
 	if self.TractionConditionFulfilled == true then
 		--self.Traction = 15000*self.ThrottleState / 20
 		if not self.Train:GetNW2Bool("DeadmanTripped",false) == true then
-			if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
+			--if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
 				self.Traction = math.Clamp(self.ThrottleState * 0.01 * 600,-600,650)
 				if self.VZ == true then
 					if self.Traction > 0 then
@@ -268,11 +281,16 @@ function TRAIN_SYSTEM:Think(Train)
 					
 						self.Train:WriteTrainWire(2,1)
 						self.Train:WriteTrainWire(1,self.Traction * -1)
+						if self.Speed < 2.5 and self.Train:ReadTrainWire(2) == 1 and self.Train:ReadTrainWire(5) == 2.7 then
+							self.Traction = 0
+						elseif self.Speed > 2 and self.Train:ReadTrainWire(2) == 1 and self.Train:ReadTrainWire(5) == 0 then
+							self.Traction = self.Traction
+						end
 					end
 
 					if self.Traction == 0 then
 						self.Train:WriteTrainWire(1,self.Traction)
-						self.Train:WriteTrainWire(2,0)
+						--self.Train:WriteTrainWire(2,0)
 					end
 				elseif self.VE == true then
 					if self.Traction > 0 then
@@ -282,6 +300,11 @@ function TRAIN_SYSTEM:Think(Train)
 					end
 					if self.Traction < 0 then
 						self.Traction = self.Traction * -1
+						if self.Speed < 2.5 and self.ThrottleState < 0 and self.BrakePressure == 2.7 then
+							self.Traction = 0
+						elseif self.Speed > 2 and self.ThrottleState > 0 and self.BrakePressure == 0 then
+							self.Traction = self.Traction
+						end
 					end
 					if self.Traction == 0 then
 						self.Traction = self.Traction
@@ -291,7 +314,7 @@ function TRAIN_SYSTEM:Think(Train)
 
 
 			
-			end
+			--end
 		elseif 
 			self.Train:GetNW2Bool("DeadmanTripped",false) == true then
 			self.Traction = 0 
@@ -308,31 +331,45 @@ function TRAIN_SYSTEM:Think(Train)
 		
 	end		
 				
-	if self.Traction < 0 and self.Train:GetNW2Float("Speed",0) < 2.5 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
+	if self.ThrottleState < 0 and self.Train:GetNW2Float("Speed",0) < 2.5 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
  
-			if self.VZ == true then
+			if self.Train:ReadTrainWire(6) == 1 then
 				self.Train:WriteTrainWire(5,2.7)
-			end
+			
 
-			if self.VE == true then
+			elseif self.Train:ReadTrainWire(6) == 0 then
 				self.BrakePressure = 2.7
 				self.Train:SetNW2Int("BrakePressure",2.7)
 			end
 		
 	end
 
-	if self.Traction > 0 and self.Train:GetNW2Float("Speed",0) < 3 then
+	if self.ThrottleState > 0 and self.Train:GetNW2Float("Speed",0) < 3 then
  
-		if self.VZ == true then
+		if self.Train:ReadTrainWire(6) == 1 then
 			self.Train:WriteTrainWire(5,0)
-		end
+		
 
-		if self.VE == true then
+		elseif self.Train:ReadTrainWire(6) == 0 then
 			self.BrakePressure = 0
 			self.Train:SetNW2Int("BrakePressure",0)
 		end
 	
 	end
+	if self.ThrottleState == 0 and self.Train:GetNW2Float("Speed",0) < 3 then
+ 
+		if self.Train:ReadTrainWire(6) == 1 then
+			--self.Train:WriteTrainWire(5,0)
+		
+
+		elseif self.Train:ReadTrainWire(6) == 0 then
+			--self.BrakePressure = 0
+			--self.Train:SetNW2Int("BrakePressure",0)
+		end
+	
+	end
+
+
 
 	--[[if self.VZ == true then
 			self.VE = false
@@ -341,6 +378,24 @@ function TRAIN_SYSTEM:Think(Train)
 
 			self.VZ = false
 	end]]
+	--[[if self.Speed > 81 then
+		
+		if self.Train:ReadTrainWire(6) == 1 then
+			self.Traction = 100
+			self.Train:WriteTrainWire(2,1)
+			self.Train:SetNW2Bool("Speedlimiter",true)
+		elseif self.Train:ReadTrainWire(6) == 0 then
+			self.Train:SetNW2Bool("Speedlimiter",true)
+			self.Traction = 100
+		end
+	elseif self.Speed < 80 then
+		self.Traction = self.Traction
+		if self.Train:GetNW2Bool("Speedlimiter",false) == true then
+			self.Train:WriteTrainWire(2,0)
+			self.Train:SetNW2Bool("Speedlimiter",false)
+		end
+	end]]
+
 
 
 	
