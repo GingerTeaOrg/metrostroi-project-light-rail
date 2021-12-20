@@ -200,7 +200,9 @@ function ENT:Initialize()
 	self.FrontBogey:SetNWBool("Async",true)
     self.MiddleBogey:SetNWBool("Async",true)
 	self.RearBogey:SetNWBool("Async",true)
-	
+	--[[self.FrontBogey:TriggerInput("DisableSound",3)
+	self.MiddleBogey:TriggerInput("DisableSound",3)
+	self.RearBogey:TriggerInput("DisableSound",3)]]
 	
 	--self.PantoState = 0
 	
@@ -920,6 +922,22 @@ function ENT:OnButtonRelease(button,ply)
 
 		if button == "BatteryToggle" then
 			self:SetNW2Bool("IBIS_impulse",false)
+		end
+
+		if button == "BatteryToggle" then
+
+			self:SetNW2Int("Startup",CurTime())
+				if self:GetNW2Bool("BatteryButton",false) == false then
+					self:SetNW2Bool("BatteryButton",true)
+				elseif self:GetNW2Bool("BatteryButton",false) == true then
+					self:SetNW2Bool("BatteryButton",false)
+					if self:GetNW2Bool("BatteryOn",false) == false then
+						self:SetNW2Bool("IBISPlayed",false)
+						self:SetNW2Bool("StartupPlayed",false)
+					end
+				end
+
+			
 		end
 
 

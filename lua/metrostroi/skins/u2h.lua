@@ -423,3 +423,21 @@ Metrostroi.AddSkin("train","White-bordeaux_b",{
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
     }
 })
+
+Metrostroi.AddSkin("train","Rockport",{
+    name = "Rockport",
+    typ = "U2h",
+    textures = {
+        main = "models/lilly/uf/u2/u2h/Rockport",
+		decals = "models/lilly/uf/u2/u2h/decals-modern",
+
+    }
+})
+Metrostroi.AddSkin("train","Rockport_b",{
+    name = "Rockport",
+    typ = "U2hb",
+    textures = {
+        main_b = "models/lilly/uf/u2/u2h/Rockport",
+		decals = "models/lilly/uf/u2/u2h/decals-modern",
+    }
+})

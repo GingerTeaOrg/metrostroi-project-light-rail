@@ -21,10 +21,6 @@ ENT.Lights = {
 }
 
 
-
-
-
-
 ENT.ClientProps["headlights_on"] = {
 	model = "models/lilly/uf/u2/headlight_on.mdl",
 	pos = Vector(541,0,43),
@@ -478,7 +474,7 @@ function ENT:Think()
     self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
     self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
 
-    if self:GetNW2Bool("BatteryOn",false) == true then
+    --[[if self:GetNW2Bool("BatteryOn",false) == true then
 
         if self:GetNW2Bool("StartupPlayed",false) == false and self:GetNW2Bool("BatteryOn",false) == true then
             self:PlayOnce("Startup","cabin",1,1)
@@ -488,15 +484,34 @@ function ENT:Think()
         elseif self:GetNW2Bool("BatteryOn",false) == false then
             self:SetNW2Bool("StartupPlayed",false)
         end
+    end]]
+
+    if self:GetNW2Bool("BatteryButton",false) == true and self:GetNW2Int("Startup") < CurTime() +3 then
+
+        if not self:GetNW2Bool("StartupPlayed",false) == true then
+            self:SetNW2Bool("StartupPlayed",true)
+            self:PlayOnce("Startup","cabin",1,1)
+            
+        end
+        if self:GetNW2Int("Startup") - CurTime() > 5 and not self:GetNW2Bool("IBISPlayed",false) == true then
+            self:PlayOnce("IBIS_bootup", "bass",1,1)
+            self:GetNW2Bool("IBISPlayed",true)
+        end
     end
 	
+    if self:GetNW2Int("Startup") - CurTime() > 5 and not self:GetNW2Bool("IBISPlayed",false) == true then
+        self:PlayOnce("IBIS_bootup", "bass",1,1)
+        self:GetNW2Bool("IBISPlayed",true)
+    end
+
+
 	if self:GetNW2Bool("WarningAnnouncement") == true then
         self:PlayOnce("WarningAnnouncement","cabin",1,1)
 
 	end
 
 
-    local delay
+    --[[local delay
     local startMoment
     delay = 15
     if self:GetNW2Bool("IBIS_impulse",false) == true then
@@ -504,7 +519,7 @@ function ENT:Think()
         if startMoment - delay > 15 then
             self:PlayOnce("IBIS_bootup", "bass",1,1)
         end
-    end
+    end]]
 
     
 
@@ -597,6 +612,13 @@ function ENT:Think()
 	local nxt = 35
 
 	
+    if self:GetNW2Int("Speed") > 10 then
+        self:SetSoundState("Cruise",math.Clamp(self:GetNW2Int("Speed"),0,100),1,1)
+    end
+
+    if self:GetNW2Int("Speed") < 10 then
+        self:SetSoundState("Cruise",0,1,1)
+    end
 
 	
 	
@@ -622,11 +644,11 @@ function ENT:Think()
     --self:SetSoundState("rolling_70",rollingi*rol70,rol70p)
     --self:SetSoundState("rolling_80",rollingi*rol80,rol80p)
 
-	local rol_motors = math.Clamp((speed-20)/40,0,1)
+	--local rol_motors = math.Clamp((speed-20)/40,0,1)
     --self:SetSoundState("rolling_motors",math.max(rollingi,rollings*0.3)*rol_motors,speed/56)
 
-    local rol10 = math.Clamp(speed/15,0,1)*(1-math.Clamp((speed)/35,0,1))
-    local rol10p = Lerp((speed)/14,0.6,0.78)
+    --local rol10 = math.Clamp(speed/15,0,1)*(1-math.Clamp((speed)/35,0,1))
+    --local rol10p = Lerp((speed)/14,0.6,0.78)
     local rol40 = math.Clamp((speed-18)/35,0,1)*(1-math.Clamp((speed)/40,0,1))
     local rol40p = Lerp((speed)/66,0.6,1.3)
     local rol70 = math.Clamp((speed-55)/20,0,1)--*(1-math.Clamp((speed-72)/5,0,1))

@@ -34,8 +34,8 @@ function ENT:InitializeSounds()
 	self.SoundNames["bell_in"] = {loop=0.01,"lilly/uf/u2/insidecab/Bell_start.wav","lilly/uf/u2/insidecab/Bell_loop.wav", "lilly/uf/u2/insidecab/Bell_end.wav"}	
 	self.SoundPositions["bell_in"] = {800,1e9,Vector(550,0,55),1}
 
-	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.wav"}	
-	self.SoundPositions["Startup"] = {800,1e9,Vector(500,0,55),1}
+	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.mp3"}	
+	self.SoundPositions["Startup"] = {800,1e9,Vector(550,0,55),1}
 
 	self.SoundNames["horn"] = {loop=0.014,"lilly/uf/u2/U3_Hupe_Start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_Ende.mp3"}
 	self.SoundPositions["horn"] = {1100,1e9,Vector(580,0,70),1}
@@ -76,6 +76,10 @@ function ENT:InitializeSounds()
 
 	self.SoundNames["Switchgear1"] = {"lilly/uf/u2/Stuk01.wav"}
 	self.SoundPositions["Switchgear1"] = {1100,1e9,Vector(550,0,70),0.035}
+
+
+	self.SoundNames["Cruise"] = {"lilly/uf/u2/cruise/cruise_medium.mp3"}
+	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),0.035}
 
 end
 
