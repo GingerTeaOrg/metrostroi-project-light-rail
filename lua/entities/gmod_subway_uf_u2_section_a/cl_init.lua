@@ -243,6 +243,14 @@ ENT.ButtonMap["Cab"] = {
 }
 
 
+--[[ENT.ButtonMap["Lefthand"] = {
+    pos = Vector(532.6,-19.2,83.09),
+    ang = Angle(0,90,0),
+    width = 112,
+    height = 25,
+    scale = 0.04,
+}]]
+
 ENT.ButtonMap["IBISScreen"] = {
     pos = Vector(532.6,-19.2,83.09),
     ang = Angle(0,45,-48.5,0),
@@ -373,6 +381,11 @@ ENT.ButtonMap["Left"] = {
             var="Parrallel",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
+        {ID = "WarnBlinkToggle", x=92, y=70, radius=3, tooltip = "Set indicators to warning mode", model = {
+            model = "models/lilly/uf/u2/switch_flick.mdl", z=5, ang=0,
+            var="Parrallel",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
+        },
         }
 }
 
@@ -469,10 +482,23 @@ function ENT:Think()
     self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
 
 
-
+    if self:GetNW2Bool("BatteryOn",false) == true then
 	self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
     self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
     self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
+    end
+
+    if self:GetNW2Bool("BlinkerTick",false) == true and not self:GetNW2Bool("BlinkerTicked",false) == true then
+
+        
+        self:PlayOnce("Blinker","cabin",0.4,1)   
+        self:SetNW2Bool("BlinkerTicked",true)
+        
+    elseif self:GetNW2Bool("BlinkerTick",false) == false then
+        self:SetNW2Bool("BlinkerTicked",false)
+        --self:SetSoundState("Blinker",1,1,1)
+        --self:SetNW2Bool("BlinkerTick",false)
+    end
 
     --[[if self:GetNW2Bool("BatteryOn",false) == true then
 
@@ -486,7 +512,7 @@ function ENT:Think()
         end
     end]]
 
-    if self:GetNW2Bool("BatteryButton",false) == true and self:GetNW2Int("Startup") < CurTime() +3 then
+    if self:GetNW2Bool("BatteryOn",false) == true and self:GetNW2Int("Startup") < CurTime() +3 then
 
         if not self:GetNW2Bool("StartupPlayed",false) == true then
             self:SetNW2Bool("StartupPlayed",true)
@@ -564,7 +590,7 @@ function ENT:Think()
 
     end
 
-    if self:GetNW2Float("Speed",0) < 1.5 and self:GetNW2Bool("BrakeLights",false) == true then
+    if self:GetNW2Bool("Braking",false) == true then
         self:SetLightPower(4, true)
         self:SetLightPower(5, true)
     else
@@ -577,7 +603,7 @@ function ENT:Think()
 	
 	-- Fan handler
 
-    if self:GetNW2Bool("Fans",false) then
+    if self:GetNW2Bool("Fans",false) == true then
         self.ThrottleLastEngaged = CurTime()
     end
 
@@ -606,13 +632,13 @@ function ENT:Think()
 	
 	
 	
-
+    local dT = self.DeltaTime
 	local speed = self:GetNW2Int("Speed")/100
 
 	local nxt = 35
 
 	
-    if self:GetNW2Int("Speed") > 10 then
+    if self:GetNW2Int("Speed") > 30 then
         self:SetSoundState("Cruise",math.Clamp(self:GetNW2Int("Speed"),0,100),1,1)
     end
 
@@ -622,9 +648,8 @@ function ENT:Think()
 
 	
 	
-	local rollingi = math.min(1,self.TunnelCoeff+math.Clamp((self.StreetCoeff-0.82)/0.3,0,1))
+    local rollingi = math.min(1,self.TunnelCoeff+math.Clamp((self.StreetCoeff-0.82)/0.3,0,1))
     local rollings = math.max(self.TunnelCoeff*1,self.StreetCoeff)
-	
 	
 	local rol5 = math.Clamp(speed/1,0,1)*(1-math.Clamp((speed)/8,0,1))
     local rol10 = math.Clamp(speed/12,0,1)*(1-math.Clamp((speed)/8,0,1))
@@ -644,9 +669,10 @@ function ENT:Think()
     --self:SetSoundState("rolling_70",rollingi*rol70,rol70p)
     --self:SetSoundState("rolling_80",rollingi*rol80,rol80p)
 
-	--local rol_motors = math.Clamp((speed-20)/40,0,1)
-    --self:SetSoundState("rolling_motors",math.max(rollingi,rollings*0.3)*rol_motors,speed/56)
-
+	local rol_motors = math.Clamp((speed-20)/40,0,1)
+    --self:SetSoundState("MotorType1",math.max(rollingi,rollings*0.8)*rol_motors,self:GetNW2Int("Speed")/56)
+    self:SetSoundState("MotorType1",1,speed/56)
+    --self:SetSoundState("MotorType1",10,1,1)
     --local rol10 = math.Clamp(speed/15,0,1)*(1-math.Clamp((speed)/35,0,1))
     --local rol10p = Lerp((speed)/14,0.6,0.78)
     local rol40 = math.Clamp((speed-18)/35,0,1)*(1-math.Clamp((speed)/40,0,1))

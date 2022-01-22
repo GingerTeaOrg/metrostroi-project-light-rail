@@ -585,13 +585,13 @@ function ENT:Think()
 			end
 		end
 	
-	if self.RearBogey.BrakeCylinderPressure > 1 and self.ParentTrain:GetNW2Int("Speed",0) < 2 and not self:GetNW2Bool("BIsCoupled",false) == true then
+	if self.ParentTrain:GetNW2Bool("Braking",true) == true and not self:GetNW2Bool("BIsCoupled",false) == true then
 		self:SetLightPower(66,true)
 		self:SetLightPower(67,true)
 	elseif self:GetNW2Bool("BIsCoupled",false) == true then
 		self:SetLightPower(66,false)
 		self:SetLightPower(67,false)
-	elseif self.RearBogey.BrakeCylinderPressure == 0 then 
+	elseif self.ParentTrain:GetNW2Bool("Braking",true) == false then 
 		self:SetLightPower(66,false)
 		self:SetLightPower(67,false)
 	end

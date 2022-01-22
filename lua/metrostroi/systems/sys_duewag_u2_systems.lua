@@ -266,7 +266,7 @@ function TRAIN_SYSTEM:Think(Train)
 		--self.Traction = 15000*self.ThrottleState / 20
 		if not self.Train:GetNW2Bool("DeadmanTripped",false) == true then
 			--if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
-				self.Traction = math.Clamp(self.ThrottleState * 0.01 * 600,-600,650)
+				self.Traction = math.Clamp(self.ThrottleState * 0.01 * 800,-800,800)
 				if self.VZ == true then
 					if self.Traction > 0 then
 						self.Train:WriteTrainWire(2,0)

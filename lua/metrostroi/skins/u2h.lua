@@ -22,12 +22,22 @@ Metrostroi.AddSkin("train","Def_U2SW",{
         
     }
 })
-Metrostroi.AddSkin("train","Def_U2SW_b",{
-    name = "Default Stadtwerke",
+
+Metrostroi.AddSkin("train","Def_U2FVV",{
+    name = "Default FVV",
+    typ = "U2h",
+    textures = {
+        main = "models/lilly/uf/u2/u2h/main",
+        decals = "models/lilly/uf/u2/u2h/decals-FVV",
+        
+    }
+})
+Metrostroi.AddSkin("train","Def_U2FVV_b",{
+    name = "Default FVV",
     typ = "U2hb",
     textures = {
         main_b = "models/lilly/uf/u2/u2h/main_b",
-        decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
+        decals = "models/lilly/uf/u2/u2h/decals-FVV",
     }
 })
 

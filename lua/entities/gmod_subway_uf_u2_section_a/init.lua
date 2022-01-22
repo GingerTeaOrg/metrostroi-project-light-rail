@@ -206,7 +206,13 @@ function ENT:Initialize()
 	
 	--self.PantoState = 0
 	
-	
+	-- Blinker variables
+
+	self.BlinkerOn = false
+	self.BlinkerLeft = false
+	self.BlinkerRight = false
+	self.Blinker = "Off"
+	self.LastTriggerTime = 0
 	
 	-- Initialize key mapping
 	self.KeyMap = {
@@ -229,6 +235,9 @@ function ENT:Initialize()
 		[KEY_L] = "DoorSelectRight",
 		[KEY_B] = "BatteryToggle",
 		[KEY_V] = "LightsToggle",
+		[KEY_PERIOD] = "WarnBlinkToggle",
+		[KEY_COMMA] = "BlinkerLeftToggle",
+		[KEY_MINUS] = "BlinkerRightToggle",
 		--[KEY_0] = "KeyTurnOn",
 		
 		[KEY_LSHIFT] = {
@@ -238,7 +247,7 @@ function ENT:Initialize()
 							[KEY_S] = "ThrottleZero",
 							[KEY_H] = "Horn",
 							[KEY_V] = "DriverLightToggle",},
-		[KEY_RALT] = {
+		[KEY_LALT] = {
 							[KEY_PAD_1] = "Number1Set",
 							[KEY_PAD_2] = "Number2Set",
 							[KEY_PAD_3] = "Number3Set",
@@ -254,6 +263,8 @@ function ENT:Initialize()
 							[KEY_PAD_DIVIDE] = "DestinationSet",
 							[KEY_PAD_MULTIPLY] = "SpecialAnnouncementsSet",
 							[KEY_PAD_MINUS] = "TimeAndDateSet",
+							
+							
 		},
 	}
 	
@@ -278,11 +289,11 @@ function ENT:Initialize()
 	[53] = { "light",Vector(546,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
 	[54] = { "light",Vector(545,39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	[55] = { "light",Vector(545,-39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[56] = { "light",Vector(545,39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[57] = { "light",Vector(545,-39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[58] = { "light",Vector(419,65,102), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[56] = { "light",Vector(545,39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+	[57] = { "light",Vector(545,-39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+	[58] = { "light",Vector(418.5,65,102), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	[59] = { "light",Vector(419,-65,102), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[48] = { "light",Vector(419,65,95), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[48] = { "light",Vector(418.5,65,95), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	[49] = { "light",Vector(419,-65,95), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	}
 
@@ -397,7 +408,7 @@ function ENT:Think(dT)
 	
 	--if self:ReadTrainWire(7) == 1 then -- if the battery is on
 		
-		if self.FrontBogey.BrakeCylinderPressure > 1 and self:GetNW2Int("Speed",0) < 2 and not self:GetNW2Bool("AIsCoupled",false) == true and not self:ReadTrainWire(3) == 1 then
+		if self:GetNW2Bool("Braking",true) == true and not self:GetNW2Bool("AIsCoupled",false) == true and not self:ReadTrainWire(3) == 1 then
 			self:SetLightPower(56,true)
 			self:SetLightPower(57,true)
 			self:SetNW2Bool("BrakeLights",true)
@@ -510,7 +521,7 @@ function ENT:Think(dT)
 	--[[self:SetLightPower(58,true)
 	self:SetLightPower(59,true)
 	self:SetLightPower(48,true)
-	self:SetLightPower(49,true)]]
+	self:SetLightPower(49,true)]]--
 
 	
 	--self:SetLightPower(58,false)
@@ -539,32 +550,35 @@ function ENT:Think(dT)
 		--self.MiddleBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
 		--self.RearBogey.BrakeCylinderPressure = self:GetNW2Int("BrakePressure",2.7)
 		if self.Duewag_U2.ThrottleState < 0 then
-			self.RearBogey.MotorForce  = -16001 
-			self.FrontBogey.MotorForce = -16001
+			self.RearBogey.MotorForce  = -25000 
+			self.FrontBogey.MotorForce = -25000
+			self:SetNW2Bool("Braking",true)
 			self.RearBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
 			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 		elseif self.Duewag_U2.ThrottleState > 0 then 
-			self.RearBogey.MotorForce  = 16001
-			self.FrontBogey.MotorForce = 16001
+			self.RearBogey.MotorForce  = 25000
+			self.FrontBogey.MotorForce = 25000
 			self.RearBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
 			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 		elseif self:GetNW2Bool("Speedlimiter",false) == true then 
-			self.RearBogey.MotorForce  = -16001
-			self.FrontBogey.MotorForce = -16001
+			self.RearBogey.MotorForce  = -25000
+			self.FrontBogey.MotorForce = -25000
+			self:SetNW2Bool("Braking",true)
 			self.RearBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
 			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 		elseif self.Duewag_U2.ThrottleState == 0 then 
-			self.RearBogey.MotorForce  = 16001
-			self.FrontBogey.MotorForce = 16001
+			self.RearBogey.MotorForce  = 25000
+			self.FrontBogey.MotorForce = 25000
+			self:SetNW2Bool("Braking",false)
 			self.RearBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
@@ -576,6 +590,7 @@ function ENT:Think(dT)
 			self.FrontBogey.BrakeCylinderPressure = 2.7 
 			self.MiddleBogey.BrakeCylinderPressure = 2.7
 			self.RearBogey.BrakeCylinderPressure = 2.7
+			self:SetNW2Bool("Braking",true)
 		end
 
 		if self.Duewag_U2.ReverserState == 1 then 
@@ -598,11 +613,13 @@ function ENT:Think(dT)
 		
 
 			if self:ReadTrainWire(2) == 0 then
-				self.RearBogey.MotorForce  = 16500
-				self.FrontBogey.MotorForce = 16500
+				self.RearBogey.MotorForce  = 25000
+				self.FrontBogey.MotorForce = 25000
+				self:SetNW2Bool("Braking",false)
 			elseif self:ReadTrainWire(2) == 1 then 
-				self.RearBogey.MotorForce  = -16500 
-				self.FrontBogey.MotorForce = -16500
+				self.RearBogey.MotorForce  = -25000 
+				self.FrontBogey.MotorForce = -25000
+				self:SetNW2Bool("Braking",true)
 			end
 			self.RearBogey.MotorPower = self:ReadTrainWire(1)
 			self.FrontBogey.MotorPower = self:ReadTrainWire(1)
@@ -622,6 +639,7 @@ function ENT:Think(dT)
 			self.RearBogey.BrakeCylinderPressure = 2.7
 			self.RearBogey.MotorPower = 0
 			self.FrontBogey.MotorPower = 0
+			self:SetNW2Bool("Braking",true)
 		end
 
 
@@ -645,11 +663,22 @@ function ENT:Think(dT)
 
 	 --15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
 	
+	if self.Blinker == "Left" then
+		self:Blink(true,true,false)
+	elseif
+
+	self.Blinker == "Right" then
+		self:Blink(true,false,true)
+
+	elseif self:GetNW2Bool("WarningBlinker",false) == true then
+			self:Blink(true,true,true)
+	elseif self.Blinker == "Off" and self:GetNW2Bool("WarningBlinker",false) == false then
+		self:Blink(false,false,false)
+	end
+
+
+	print(self.Blinker)
 	
-	
-
-
-
 
 
 
@@ -789,7 +818,7 @@ function ENT:OnButtonPress(button,ply)
 			delay = 15
 			
 			startMoment = CurTime()
-			if startMoment - delay > 15 then
+			if startMoment - 15 > 15 then
 				self:SetNW2Bool("IBIS_impulse",true)
 			end
 			
@@ -812,7 +841,38 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 
+	if button == "BlinkerLeftToggle" then
 
+		if self.Blinker == "Right" then -- If you press the button and the blinkers are already set to right, do nothing
+			self.Blinker = self.Blinker
+		elseif
+			self.Blinker == "Off" then -- If you press the button and the blinkers are off, set to left
+			self.Blinker = "Left"
+		elseif
+			self.Blinker == "Left" then -- If you press the button and the blinkers are already on, turn them off
+			self.Blinker = "Off"
+		elseif
+		self.Blinker == "Warn" then
+			self.Blinker = self.Blinker
+		end
+	end
+
+
+	if button == "BlinkerRightToggle" then
+
+		if self.Blinker == "Right" then -- If you press the button and the blinkers are already set to right, turn them off
+			self.Blinker = "Off"
+		elseif
+			self.Blinker == "Left" then -- If you press the button and the blinkers are already set to left, do nothing
+			self.Blinker = self.Blinker
+		elseif
+			self.Blinker == "Off" then
+				self.Blinker = "Right"
+		elseif
+			self.Blinker == "Warn" then
+				self.Blinker = self.Blinker
+		end
+	end
 
 	if button == "BellEngage" then
 		self:SetNW2Bool("Bell",true)
@@ -822,9 +882,18 @@ function ENT:OnButtonPress(button,ply)
 		self:SetNW2Bool("Horn",true)
 	end
 
-
 	
-
+	if button == "WarnBlinkToggle" then
+		if self:GetNW2Bool("WarningBlinker",false) == false then
+			self:SetNW2Bool("WarningBlinker",true)
+			self.Blinker = "Warn"
+		elseif
+			self:GetNW2Bool("WarningBlinker",false) == true then
+				self:SetNW2Bool("WarningBlinker",false)
+				self.Blinker = "Off"
+		end
+	end
+	
 
 
 
@@ -989,28 +1058,27 @@ function ENT:CreateSectionB(pos)
 	return u2sectionb
 end
 
+function ENT:Blink(enable, left, right)
 
-function ENT:BlinkerHandler(enable, left, right)
 
-	
-	if enable == true and left == true then
-	
-		self:SetLightPower(58,true)
-	
-		self:SetLightPower(48,true)
-	elseif enable == true and right == true then
+	if not enable then
 
-	
-		self:SetLightPower(59,true)
-		self:SetLightPower(49,true)
-	
+		self.BlinkerOn = false
+		self.LastTriggerTime = CurTime()
 
-	elseif enable == false then
 
-		self:SetLightPower(59,false)
-		self:SetLightPower(49,false)
-		self:SetLightPower(58,false)
-		self:SetLightPower(48,false)
+	elseif CurTime() - self.LastTriggerTime > 0.7 then
+			self.BlinkerOn = not self.BlinkerOn
+			
+			self.LastTriggerTime = CurTime()
+
 	end
+
+	self:SetLightPower(58,self.BlinkerOn and left)
+	self:SetLightPower(48,self.BlinkerOn and left)
+	self:SetLightPower(59,self.BlinkerOn and right)
+	self:SetLightPower(49,self.BlinkerOn and right)
+
+	self:SetNW2Bool("BlinkerTick",self.BlinkerOn)
 
 end
