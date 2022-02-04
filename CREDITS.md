@@ -8,6 +8,10 @@ Additional coupler model by "SchienenNahverkehrFFM"
 
 Additional sound files by "SchienenNahverkehrFFM"
 
+Duewag Door and Door Opener Button Models by "TramKatze"
+
+New Pantograph models by "TramKatze"
+
 Code coaching by "BlackFox" and "Glebq" of Metrostroi
 
 A/B MU Parenting taken from: https://steamcommunity.com/sharedfiles/filedetails/?id=1473507447
