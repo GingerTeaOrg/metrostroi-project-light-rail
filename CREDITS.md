@@ -17,3 +17,5 @@ Code coaching by "BlackFox" and "Glebq" of Metrostroi
 A/B MU Parenting taken from: https://steamcommunity.com/sharedfiles/filedetails/?id=1473507447
 
 A/B Detail scripting concept ideas: "Glebq" of Metrostroi
+
+MagnumMacKivler for Source standard gauge track support https://discord.gg/EHUT3b9u
