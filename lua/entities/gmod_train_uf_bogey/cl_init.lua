@@ -6,7 +6,7 @@ function ENT:ReinitializeSounds()
     self.SoundNames = {}
     self.EngineSNDConfig = {}
 
-    self.SoundNames["ted1_703"]  = "lilly/uf/bogeys/u2/drive_10_exp.wav"
+    self.SoundNames["ted1_703"]  = "lilly/uf/bogeys/u2/drive_10_new.wav"
     self.SoundNames["ted2_703"]  = "lilly/uf/bogeys/u2/drive_20_new.wav"
     self.SoundNames["ted3_703"]  = "lilly/uf/bogeys/u2/drive_30_new.wav"
     self.SoundNames["ted4_703"]  = "lilly/uf/bogeys/u2/drive_40_new.wav"
@@ -132,6 +132,7 @@ end
 function ENT:Initialize()
     self.MotorPowerSound = 0
 --  self:ReinitializeSounds()
+    self.Texture = nil
 end
 
 function ENT:OnRemove()
@@ -182,17 +183,17 @@ function ENT:Think()
             --table.insert(self.EngineSNDConfig,{"ted10_720",80,72-4,88,1*0.67})
             --table.insert(self.EngineSNDConfig,{"ted11_720",88,80-4   ,1*0.7})
         elseif self.MotorSoundType==0 then
-            table.insert(self.EngineSNDConfig,{"ted1_703" ,08,00,16,1})
-            table.insert(self.EngineSNDConfig,{"ted2_703" ,16,08-4,24,1})
-            table.insert(self.EngineSNDConfig,{"ted3_703" ,24,16-4,32,1})
-            table.insert(self.EngineSNDConfig,{"ted4_703" ,32,24-4,40,1})
-            table.insert(self.EngineSNDConfig,{"ted5_703" ,40,32-4,48,1})
-            table.insert(self.EngineSNDConfig,{"ted6_703" ,48,40-4,56,1})
-            table.insert(self.EngineSNDConfig,{"ted7_703" ,56,48-4,64,1})
-            table.insert(self.EngineSNDConfig,{"ted8_703" ,64,56-4,72,1})
-            --[[table.insert(self.EngineSNDConfig,{"ted9_703" ,72,64-4,80,1})
-            table.insert(self.EngineSNDConfig,{"ted10_703",80,72-4,88,1})
-            table.insert(self.EngineSNDConfig,{"ted11_703",88,80-4,106,1})]]
+            table.insert(self.EngineSNDConfig,{"ted1_703" ,10,00,16,1})
+            table.insert(self.EngineSNDConfig,{"ted2_703" ,20,08-4,24,1})
+            table.insert(self.EngineSNDConfig,{"ted3_703" ,30,16-4,32,1})
+            table.insert(self.EngineSNDConfig,{"ted4_703" ,40,24-4,40,1})
+            table.insert(self.EngineSNDConfig,{"ted5_703" ,50,32-4,48,1})
+            table.insert(self.EngineSNDConfig,{"ted6_703" ,60,40-4,56,1})
+            table.insert(self.EngineSNDConfig,{"ted7_703" ,70,48-4,64,1})
+            table.insert(self.EngineSNDConfig,{"ted8_703" ,80,56-4,72,1})
+            table.insert(self.EngineSNDConfig,{"ted9_703" ,90,64-4,80,1})
+            --table.insert(self.EngineSNDConfig,{"ted10_703",90,72-4,88,1})
+            --table.insert(self.EngineSNDConfig,{"ted11_703",88,80-4,106,1})]]
             --table.insert(self.EngineSNDConfig,{"tedm_703",88,80-4,  106,1})
         else
             table.insert(self.EngineSNDConfig,{"ted1_717" ,08,00,16,1})
@@ -383,8 +384,12 @@ end
 
 function ENT:UpdateTextures()
     self.Texture = self.Train:GetNW2String("Texture")
+    --self.PassTexture = self.Train:GetNW2String("PassTexture")
+    --self.CabinTexture = self.Train:GetNW2String("CabTexture")
 
     local texture = Metrostroi.Skins["train"][self.Texture]
+   -- local passtexture = Metrostroi.Skins["pass"][self.PassTexture]
+    --local cabintexture = Metrostroi.Skins["cab"][self.CabinTexture]
     for id,ent in pairs(self.ClientEnts) do
         if not IsValid(ent) then continue end
         if self.ClientProps[id].callback then self.ClientProps[id].callback(self,ent) end
@@ -392,6 +397,12 @@ function ENT:UpdateTextures()
         for k,v in pairs(ent:GetMaterials()) do
             local tex = string.Explode("/",v)
             tex = tex[#tex]
+            --if cabintexture and cabintexture.textures and cabintexture.textures[tex] then
+            --    ent:SetSubMaterial(k-1,cabintexture.textures[tex])
+            --end
+            --if passtexture and passtexture.textures and passtexture.textures[tex] then
+            --    ent:SetSubMaterial(k-1,passtexture.textures[tex])
+            --end
             if texture and texture.textures and texture.textures[tex] then
                 ent:SetSubMaterial(k-1,texture.textures[tex])
             end

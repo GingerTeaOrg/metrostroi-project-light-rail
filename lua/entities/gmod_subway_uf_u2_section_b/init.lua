@@ -28,13 +28,13 @@ function ENT:Initialize()
 	-- Set model and initialize
 	self:SetModel("models/lilly/uf/u2/u2hb.mdl")
 	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,4.9))
+	self:SetPos(self:GetPos() + Vector(0,0,0))
 
 	self.Bogeys = {}
 	-- Create bogeys
 	--self.FrontBogey = self:CreateBogey(Vector( 0,0,0),Angle(0,0,0),true,"u2")--103,0,-80
 	table.insert(self.Bogeys,self.FrontBogey)	
-	self.RearBogey  = self:CreateBogeyUF(Vector( -400,0,0),Angle(0,180,0),true,"u2")
+	self.RearBogey  = self:CreateBogeyUF(Vector( -400,0,-2),Angle(0,180,0),true,"u2")
 	
 	self.CabEnabled = false
 	self.BatteryOn = false
@@ -111,13 +111,13 @@ function ENT:Initialize()
 	--self.Wheels = self.FrontBogey.Wheels
    
 	self.Lights = {
-	[61] = { "light",Vector(-538.7,50,43), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
-    [62] = { "light",Vector(-538.7,-50,43), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
-	[63] = { "light",Vector(-538.7,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
-	[64] = { "light",Vector(-538.7,39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[65] = { "light",Vector(-538.7,-39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[66] = { "light",Vector(-538.7,39.5,46.2), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[67] = { "light",Vector(-538.7,-39.5,46.2), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[61] = { "light",Vector(-542,50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
+    [62] = { "light",Vector(-542,-50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
+	[63] = { "light",Vector(-542,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
+	[64] = { "light",Vector(-542,39.5,37), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[65] = { "light",Vector(-542,-38.8,37), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[66] = { "light",Vector(-542,39.5,43.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[67] = { "light",Vector(-542,-38.8,43.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
 	}
 	--[[for k,v in pairs(self.Lights) do
 		self:SetLightPower(k,false)
@@ -131,9 +131,10 @@ function ENT:Initialize()
 
 
 	self.TrainWireCrossConnections = {
-        [3] = 4, -- Reverser F<->B
-
-    }
+        --[4] = 3, -- Reverser F<->B
+		--[21] = 20, --Blinkers
+	}
+    
 	self:SetNW2String("Texture",self.ParentTrain:GetNW2String("Texture").."_b")
 	self:TrainSpawnerUpdate()
 end

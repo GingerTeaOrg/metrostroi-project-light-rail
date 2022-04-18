@@ -79,6 +79,25 @@ Metrostroi.AddSkin("train","Def_U1G_U2SW_b",{
     }
 })
 
+Metrostroi.AddSkin("train","Def_A1R_U2SW",{
+    name = "Stadtwerke A1 Römerberg",
+    typ = "U2h",
+    textures = {
+        main = "models/lilly/uf/u2/u2h/main",
+        decals = "models/lilly/uf/u2/u2h/decals-FVV",
+        dest_01 = "models/lilly/uf/u2/rollerblinds/a1-roemerstadt",
+    }
+})
+Metrostroi.AddSkin("train","Def_A1R_U2SW_b",{
+    name = "Stadtwerke A1 Römerberg",
+    typ = "U2hb",
+    textures = {
+        main_b = "models/lilly/uf/u2/u2h/main_b",
+        decals = "models/lilly/uf/u2/u2h/decals-FVV",
+        dest_01 = "models/lilly/uf/u2/rollerblinds/a1-roemerstadt",
+    }
+})
+
 Metrostroi.AddSkin("train","pride",{
     name = "LGBTQ Pride because fuck bigots",
     typ = "U2h",
@@ -430,24 +449,6 @@ Metrostroi.AddSkin("train","White-bordeaux_b",{
     typ = "U2hb",
     textures = {
         main_b = "models/lilly/uf/u2/u2h/white-orange",
-		decals = "models/lilly/uf/u2/u2h/decals-modern",
-    }
-})
-
-Metrostroi.AddSkin("train","Rockport",{
-    name = "Rockport",
-    typ = "U2h",
-    textures = {
-        main = "models/lilly/uf/u2/u2h/Rockport",
-		decals = "models/lilly/uf/u2/u2h/decals-modern",
-
-    }
-})
-Metrostroi.AddSkin("train","Rockport_b",{
-    name = "Rockport",
-    typ = "U2hb",
-    textures = {
-        main_b = "models/lilly/uf/u2/u2h/Rockport",
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
     }
 })

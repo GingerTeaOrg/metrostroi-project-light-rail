@@ -60,7 +60,7 @@ ENT.Types = {
     Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
     },
     def={
-        "models/lilly/uf/bogey.mdl",
+        "models/lilly/uf/u2/jointbogey.mdl",
         Vector(0,0.0,0),Angle(0,0,0),nil,
         Vector(0,-61,-14),Vector(0,61,-14),
          nil,
@@ -100,7 +100,7 @@ ENT.SnakePos = Vector(-168.25,0,6.5)
 ENT.SnakeAng = Angle(0,90,0)
 function ENT:SetParameters()
     local typ = self.Types[self.BogeyType or "def"]
-    self:SetModel(typ and typ[1] or "models/lilly/uf/bogey.mdl")
+    self:SetModel(typ and typ[1] or "models/lilly/uf/u2/jointbogey.mdl")
     self.PantLPos = typ and typ[5]
     self.PantRPos = typ and typ[6]
     self.BogeyOffset = typ and typ[7]
@@ -118,7 +118,7 @@ function ENT:Initialize()
 
     -- Set proper parameters for the bogey
     if IsValid(self:GetPhysicsObject()) then
-        self:GetPhysicsObject():SetMass(2500)
+        self:GetPhysicsObject():SetMass(6000)
     end
 
     -- Store coupling point offset

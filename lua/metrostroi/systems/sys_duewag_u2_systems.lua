@@ -9,6 +9,16 @@ function TRAIN_SYSTEM:Initialize()
 	self.Speed = 0
 	self.ThrottleState = 0
 	
+	self.DoorFLState = 100
+	self.DoorRLState = 100
+	self.DoorFRState = 100
+	self.DoorRRState = 100
+
+	self.DoorAnimationStepFL = 0
+	self.DoorAnimationStepRL = 0
+	self.DoorAnimationStepFR = 0
+	self.DoorAnimationStepRR = 0
+
 	self.Traction = 0
 	
 	self.Drive = 0
@@ -46,6 +56,11 @@ function TRAIN_SYSTEM:Initialize()
 	self.ThrottleCutOut = 0
 
 	self.Haltebremse = false
+
+	self.CloseDoorsButton = false
+
+	self.DoorsOpenButton = false
+	
 	
 
 end
@@ -63,7 +78,7 @@ end
 
 
 function TRAIN_SYSTEM:Inputs()
-	return {"BrakePressure", "speed", "ThrottleRate", "ThrottleState", "BrakePressure","ReverserState","ReverserLeverState", "ReverserInserted","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOnA", "BatteryOnB", "KeyInsertA", "KeyInsertB", "KeyTurnOnA", "KeyTurnOnB", "BlinkerState", "Haltebremse"}
+	return {"BrakePressure", "speed", "ThrottleRate", "ThrottleState", "BrakePressure","ReverserState","ReverserLeverState", "ReverserInserted","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOnA", "BatteryOnB", "KeyInsertA", "KeyInsertB", "KeyTurnOnA", "KeyTurnOnB", "BlinkerState", "Haltebremse", "CloseDoorsButton", "DoorsOpenButton"}
 end
 
 function TRAIN_SYSTEM:Outputs()
@@ -369,35 +384,37 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	end
 
-
-
-	--[[if self.VZ == true then
-			self.VE = false
-
-	elseif self.VE == true then
-
-			self.VZ = false
-	end]]
-	--[[if self.Speed > 81 then
-		
-		if self.Train:ReadTrainWire(6) == 1 then
-			self.Traction = 100
-			self.Train:WriteTrainWire(2,1)
-			self.Train:SetNW2Bool("Speedlimiter",true)
-		elseif self.Train:ReadTrainWire(6) == 0 then
-			self.Train:SetNW2Bool("Speedlimiter",true)
-			self.Traction = 100
-		end
-	elseif self.Speed < 80 then
-		self.Traction = self.Traction
-		if self.Train:GetNW2Bool("Speedlimiter",false) == true then
-			self.Train:WriteTrainWire(2,0)
-			self.Train:SetNW2Bool("Speedlimiter",false)
-		end
-	end]]
+	if self.Train:GetNW2Bool("DepartureConfirmed",false) == true then
+		self.Train:WriteTrainWire(9,1)
+	elseif
+		self.Train:GetNW2Bool("DepartureConfirmed",false) == false then
+			self.Train:WriteTrainWire(9,0)
+	end
 
 
 
 	
 end
 
+--[[function ENT:DoorHandler(left,right,open,DoorState)
+
+
+	local closing
+
+
+	if self.DoorsOpen == false then
+	
+	self.DoorFLState = 100
+	self.DoorRLState = 100
+	self.DoorFRState = 100
+	self.DoorRRState = 100
+	
+	elseif self.CloseDoorsButton == true then
+		self.CloseDoorsButton == false
+		if left == true then
+			self.DoorFLState = math.abs(CurTime())
+		end
+	end
+
+
+end ]]

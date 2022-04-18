@@ -8,7 +8,7 @@ ENT.Instructions    = ""
 ENT.Category		= "U-Bahn Frankfurt Metrostroi"
 
 ENT.Spawnable       = true
-ENT.AdminSpawnable  = false
+ENT.AdminSpawnable  = true
 
 ENT.SkinsType = "U2h"
 
@@ -16,39 +16,48 @@ ENT.DontAccelerateSimulation = true
 
 
 function ENT:PassengerCapacity()
-    return 162
+    return 81
 end
 
 function ENT:GetStandingArea()
-    return Vector(450,-30,-55),Vector(200,30,-55) -- TWEAK: NEEDS TESTING INGAME
+    return Vector(465,-20,35),Vector(60,20,35) -- TWEAK: NEEDS TESTING INGAME
 end
 
 local function GetDoorPosition(i,k)
-    return Vector(359.0 - 35/2 - 229.5*i,-65*(1-2*k),7.5)
+
+	--math.random
+    return Vector(450,0)
 end
 
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["bell"] = {1100,1e9,Vector(595,-15,20),1}
+	self.SoundPositions["bell"] = {1100,1e9,Vector(520,-15,20),1}
 	self.SoundNames["bell_in"] = {loop=0.01,"lilly/uf/u2/insidecab/Bell_start.wav","lilly/uf/u2/insidecab/Bell_loop.wav", "lilly/uf/u2/insidecab/Bell_end.wav"}	
-	self.SoundPositions["bell_in"] = {800,1e9,Vector(550,0,55),1}
+	self.SoundPositions["bell_in"] = {800,1e9,Vector(500,0,55),1}
 
 	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.mp3"}	
 	self.SoundPositions["Startup"] = {800,1e9,Vector(550,0,55),1}
 
+	--self.SoundNames["DoorsCloseAlarm"] = {loop=0.014, "lilly/uf/u2/doorsareclosed_start.mp3", "lilly/uf/u2/Doorsareclosed_loop.mp3", "lilly/uf/u2/doorsareclosed_end.mp3"}	
+	--self.SoundPositions["DoorsCloseAlarm"] = {800,1e9,Vector(550,0,55),1}
+
 	self.SoundNames["horn"] = {loop=0.014,"lilly/uf/u2/U3_Hupe_Start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_Ende.mp3"}
-	self.SoundPositions["horn"] = {1100,1e9,Vector(580,0,70),1}
+	self.SoundPositions["horn"] = {1100,1e9,Vector(520,0,70),1}
 	self.SoundNames["WarningAnnouncement"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
-	self.SoundPositions["WarningAnnouncement"] = {1100,1e9,Vector(550,0,300),1}
+	self.SoundPositions["WarningAnnouncement"] = {1100,1e9,Vector(400,0,300),1}
 	
 	self.SoundNames["Door_open1"] = {"lilly/uf/u2/Door_open.mp3"}
-	self.SoundPositions["Door_open1"] = {400,1e9,Vector(300,14,14),1}
+	self.SoundPositions["Door_open1"] = {400,1e9,Vector(300,100,120),1}
 
 	self.SoundNames["Door_close1"] = {"lilly/uf/u2/Door_close.mp3"}
-	self.SoundPositions["Door_close1"] = {400,1e9,Vector(300,14,14),1}
+	self.SoundPositions["Door_close1"] = {400,1e9,Vector(300,100,120),1}
+
 	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.mp3","lilly/uf/common/deadman_loop.mp3","lilly/uf/common/deadman_end.mp3"}
 	self.SoundPositions["Deadman"] = {800,1e9,Vector(550,14,14),1}
+
+	self.SoundNames["DoorsCloseAlarm"] = {loop=0.014,"lilly/uf/common/doorsareclosed_start.mp3","lilly/uf/common/doorsareclosed_loop.mp3","lilly/uf/common/doorsareclosed_end.mp3"}
+	self.SoundPositions["DoorsCloseAlarm"] = {400,1e9,Vector(550,14,200),1}
 	
 
 	self.SoundNames["rolling_10"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}
@@ -71,8 +80,6 @@ function ENT:InitializeSounds()
 	self.SoundPositions ["Fan2"] = {1100,1e9,Vector(250,0,70),0.035}
 	self.SoundNames["Fan3"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
 	self.SoundPositions ["Fan3"] = {1100,1e9,Vector(300,0,70),0.035}
-	self.SoundNames["Door_open1"] = {"lilly/uf/u2/door_open.wav"}
-	self.SoundPositions ["Door_open1"] = {1100,1e9,Vector(400,179,70),0.035}
 
 	self.SoundNames["Switchgear1"] = {"lilly/uf/u2/Stuk01.wav"}
 	self.SoundPositions["Switchgear1"] = {1100,1e9,Vector(550,0,70),0.035}
@@ -82,7 +89,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),0.035}
 
 	self.SoundNames["Blinker"] = {"lilly/uf/u2/blinker.mp3"}
-	self.SoundPositions["Blinker"] = {800,1e9,Vector(550,0,65),1}
+	self.SoundPositions["Blinker"] = {10,1e9,Vector(550,0,65),1}
 
 	self.SoundNames["MotorType1"] = {loop=5, "lilly/uf/bogeys/u2/test/engine_loop_primary_start.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary_end.mp3"}
 	self.SoundPositions["MotorType1"] = {1100,1e9,Vector(540,0,70),0.035}
@@ -98,8 +105,8 @@ ENT.AnnouncerPositions = {
 ENT.LeftDoorPositions = {}
 ENT.RightDoorPositions = {}
 for i=0,3 do
-    table.insert(ENT.LeftDoorPositions,GetDoorPosition(i,1))
-    table.insert(ENT.RightDoorPositions,GetDoorPosition(i,0))
+    table.insert(ENT.LeftDoorPositions,GetDoorPosition(i,k))
+    table.insert(ENT.RightDoorPositions,GetDoorPosition(i,k))
 end
 
 
@@ -107,12 +114,13 @@ end
 ENT.Cameras = {
     {Vector(480.5+17,-40,110),Angle(0,-90,0),"Train.UF_U2.Destinations"},
     {Vector(407.5+10,6,100),Angle(0,180+5,0),"Train.UF_U2.PassengerStanding"},
+	{Vector(70.5+10,6,100),Angle(0,0,0),"Train.UF_U2.PassengerStanding2"},
     {Vector(490.5+90,0,150),Angle(0,180,0),"Train.Common.RouteNumber"},
     {Vector(570,0,70),Angle(80,0,0),"Train.Common.CouplerCamera"},
 }
 ENT.MirrorCams = {
-    Vector(550,72,400),Angle(0,180,0),30,
-    Vector(550,-72,400),Angle(0,180,0),30,
+    {Vector(407.5+30,40,5) ,Angle(30,10,0),"Train.U2.Left"},
+    {Vector(450+13,0,26),Angle(60,0,0),"Train.U2.Right"},
 }
 
 

@@ -6,7 +6,7 @@ include("shared.lua")
 
 --------------------------------------------------------------------------------
 function ENT:Initialize()
-	self:SetModel(self.Model or "models/lilly/uf/wheelset_int.mdl")
+	self:SetModel(self.Model or "/models/lilly/uf/wheelset_int.mdl")
 	if not self.NoPhysics then
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetMoveType(MOVETYPE_VPHYSICS)

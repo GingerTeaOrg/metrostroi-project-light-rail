@@ -52,9 +52,9 @@ ENT.ClientProps["Speedo"] = {
 }
 
 ENT.ClientProps["Dest"] = {
-	model = "models/lilly/uf/u2/dest_b.mdl",
+	model = "models/lilly/uf/u2/dest_a.mdl",
 	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
+	ang = Angle(0,180,0),
 	scale = 1,
 }
 
@@ -66,35 +66,65 @@ ENT.ClientProps["headlights_on"] = {
 	hide = 2,
 }
 
-ENT.ClientProps["Door_fl"] = {
-	model = "models/lilly/uf/u2/u2h/doors.mdl",
-	pos = Vector(7,0,0),
+ENT.ClientProps["Door_fl1"] = {
+	model = "models/lilly/uf/u2/doors_h_l.mdl",
+	pos = Vector(0,0,0),
 	ang = Angle(0,180,0),
 	scale = 1,
 }
 
-ENT.ClientProps["Door_fr"] = {
-	model = "models/lilly/uf/u2/u2h/doors.mdl",
-	pos = Vector(-918,0,0),
-	ang = Angle(0,0,0),
+ENT.ClientProps["Door_fl2"] = {
+	model = "models/lilly/uf/u2/doors_h_r.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,180,0),
 	scale = 1,
 }
-ENT.ClientProps["Door_br"] = {
-	model = "models/lilly/uf/u2/u2h/doors.mdl",
-	pos = Vector(-610,0,0),
-	ang = Angle(0,0,0),
+
+ENT.ClientProps["Door_fr1"] = {
+	model = "models/lilly/uf/u2/door_h_fr1.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,180,0),
 	scale = 1,
 }
-ENT.ClientProps["Door_bl"] = {
-	model = "models/lilly/uf/u2/u2h/doors.mdl",
-	pos = Vector(314,0,0),
+
+ENT.ClientProps["Door_fr2"] = {
+	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_rr1"] = {
+	model = "models/lilly/uf/u2/door_h_rr1.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_rr2"] = {
+	model = "models/lilly/uf/u2/door_h_rr2.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_rl1"] = {
+	model = "models/lilly/uf/u2/door_h_rl1.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,180,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_rl2"] = {
+	model = "models/lilly/uf/u2/door_h_rl2.mdl",
+	pos = Vector(0,0,0),
 	ang = Angle(0,180,0),
 	scale = 1,
 }
 
 ENT.ClientProps["IBIS"] = {
 	model = "models/lilly/uf/u2/IBIS.mdl",
-	pos = Vector(-527.1,19,82.5),
+	pos = Vector(0,0,0),
 	ang = Angle(0,180,0),
 	scale = 1,
 }

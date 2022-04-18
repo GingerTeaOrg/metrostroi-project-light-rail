@@ -118,7 +118,7 @@ function ENT:Initialize()
 
     -- Set proper parameters for the bogey
     if IsValid(self:GetPhysicsObject()) then
-        self:GetPhysicsObject():SetMass(2500)
+        self:GetPhysicsObject():SetMass(6000)
     end
 
     -- Store coupling point offset
