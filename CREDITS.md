@@ -20,4 +20,4 @@ A/B Detail scripting concept ideas: "Glebq" of Metrostroi
 
 MagnumMacKivler for Source standard gauge track support https://discord.gg/EHUT3b9u
 
-Bogey model redux by "GregTame"
+Bogey model redux by "GregTame" https://twitter.com/Greg_Tame
