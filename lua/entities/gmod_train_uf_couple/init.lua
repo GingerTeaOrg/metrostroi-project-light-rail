@@ -14,15 +14,15 @@ COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
 --Model,Couple pos,Snake pos,Snake ang
 ENT.Types = {
     ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(42.5,0,0),Vector(0,0,0),Angle(0,-90,0)},
-    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(42,0,0),Vector(0,0,0),Angle(0,-90,0)},
-    ["dummy"] = {"models/lilly/uf/coupler_dummy.mdl",Vector(42.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
-    def={"models/lilly/uf/coupler_new.mdl",Vector(40,0,0),Vector(42.6,0,0),Angle(0,-90,0)},
+    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(0,0,0),Vector(0,0,0),Angle(0,-90,0)},
+    --["dummy"] = {"models/lilly/uf/coupler_dummy.mdl",Vector(42.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
+    def={"models/lilly/uf/coupler_new.mdl",Vector(10,0,0),Vector(42.6,0,0),Angle(0,-90,0)},
 }
 
 function ENT:SetParameters()
     local typ = self.Types[self.CoupleType or "def"]
     self:SetModel(typ and typ[1] or "models/lilly/uf/coupler_new.mdl")
-    self.CouplingPointOffset = typ and typ[2] or Vector(42.5,0,0)
+    self.CouplingPointOffset = typ and typ[2] or Vector(37-0.4,0,0)
     self.SnakePos = typ and typ[3] or Vector(65,0,0)
     self.SnakeAng = typ and typ[4] or Angle(180,90,0)
 end

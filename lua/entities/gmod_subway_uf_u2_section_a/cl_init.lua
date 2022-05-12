@@ -9,9 +9,9 @@ ENT.AutoAnimNames = {}
 
 ENT.Lights = {
 	-- Headlight glow
-	[1] = { "headlight",        Vector(545,50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-    [2] = { "headlight",        Vector(550,-50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-    [3] = { "light",        Vector(550,0,100), Angle(0,0,0), Color(216,161,92), fov=40,farz=450,brightness = 3, texture = "effects/flashlight/soft",shadows = 1,headlight=true},
+	[1] = { "headlight",        Vector(330,50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
+    [2] = { "headlight",        Vector(330,-50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
+    [3] = { "light",        Vector(330,0,100), Angle(0,0,0), Color(216,161,92), fov=40,farz=450,brightness = 3, texture = "effects/flashlight/soft",shadows = 1,headlight=true},
     [4] = { "headlight",        Vector(545,38.5,40), Angle(-20,0,0), Color(255,0,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
 	[5] = { "headlight",        Vector(545,-38.5,40), Angle(-20,0,0), Color(255,0,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
     [6] = { "headlight",        Vector(519,47,130), Angle(90,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.9, texture = "effects/flashlight/soft.vmt" },
@@ -30,19 +30,8 @@ ENT.ClientProps["headlights_on"] = {
 	scale = 1,
 }
 
-ENT.ClientProps["Door_fl1"] = {
-	model = "models/lilly/uf/u2/doors_h_l.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
-	scale = 1,
-}
 
-ENT.ClientProps["Door_fl2"] = {
-	model = "models/lilly/uf/u2/doors_h_r.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
-	scale = 1,
-}
+
 
 ENT.ClientProps["Door_fr1"] = {
 	model = "models/lilly/uf/u2/door_h_fr1.mdl",
@@ -53,6 +42,20 @@ ENT.ClientProps["Door_fr1"] = {
 
 ENT.ClientProps["Door_fr2"] = {
 	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_fl1"] = {
+	model = "models/lilly/uf/u2/door_h_fl1.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
+ENT.ClientProps["Door_fl2"] = {
+	model = "models/lilly/uf/u2/door_h_fl2.mdl",
 	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
@@ -87,25 +90,6 @@ ENT.ClientProps["Door_rl2"] = {
 }
 
 
---[[ENT.ClientProps["Door_fr"] = {
-	model = "models/lilly/uf/u2/u2h/doors.mdl",
-	pos = Vector(924,0,0),
-	ang = Angle(0,180,0),
-	scale = 1,
-}
-ENT.ClientProps["Door_br"] = {
-	model = "models/lilly/uf/u2/u2h/doors.mdl",
-	pos = Vector(615,0,0),
-	ang = Angle(0,180,0),
-	scale = 1,
-}
-ENT.ClientProps["Door_bl"] = {
-	model = "models/lilly/uf/u2/u2h/doors.mdl",
-	pos = Vector(-309,0,0),
-	ang = Angle(0,0,0),
-	scale = 1,
-}]]
-
 ENT.ClientProps["IBIS"] = {
 	model = "models/lilly/uf/u2/IBIS.mdl",
 	--pos = Vector(530,-20.5,78),
@@ -132,14 +116,14 @@ ENT.ClientProps["Dest"] = {
 
 ENT.ClientProps["Throttle"] = {
     model = "models/lilly/uf/common/cab/throttle.mdl",
-    pos = Vector(525,37.5,74),
+    pos = Vector(413,31,55),
     ang = Angle(0,-90,0),
     hideseat = 0.2,
 }
 
-ENT.ClientProps["reverser_lever"] = {
+--[[ENT.ClientProps["reverser_lever"] = {
     model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
-    pos = Vector(532.7,37.8,75),
+    pos = Vector(482.5,35.2,78),
     ang = Angle(0,-90,0),
     hideseat = 0.2,
 }
@@ -148,30 +132,18 @@ ENT.ClientProps["Speedo"] = {
     pos = Vector(528,12.8,77.01),
     ang = Angle(-0.1,-90,9),
     hideseat = 0.2,
-}
+}]]
 
-
+--[[
 ENT.ButtonMap["Cab"] = {
-    pos = Vector(534.5,32,74.2),
+    pos = Vector(484.9,32,77.2),
     ang = Angle(0,-90,8),
     width = 649,
     height = 130,
-    scale = 0.07,
+    scale = 0.069,
 	
     buttons = {
 		
-	--[[{ID = "ThrottleUp", x=150, y=112.5, radius=20, tooltip = "Combined Throttle Up", model = {
-			model = "models/lilly/uf/u2/cab/kombihebel.mdl", z=0, ang=0,
-			var="main",speed=1, vmin=0, vmax=1,
-			sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-            }
-    },
-    {ID = "ThrottleDown", x=150, y=155, radius=20, tooltip = "Combined Throttle Down", model = {
-        model = "models/lilly/uf/u2/cab/kombihebel.mdl", z=0, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-        }
-    },]]
     {ID = "WarningAnnouncementSet", x=345, y=22, radius=10, tooltip = "Please keep back announcement", model = {
         model = "models/lilly/uf/common/cab/button_orange.mdl", z=1, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
@@ -305,11 +277,11 @@ ENT.ButtonMap["Cab"] = {
 }]]
 
 ENT.ButtonMap["IBISScreen"] = {
-    pos = Vector(530.20,-19.55,79.45),
+    pos = Vector(416.65,-14.8,59.6),
     ang = Angle(0,45,-48.5,0),
-    width = 112,
-    height = 25,
-    scale = 0.04,
+    width = 2,
+    height = 2,
+    scale = 0.0311,
 }
 --[[ENT.ButtonMap["IBIS"] = {
     pos = Vector(531,-23,84.9),
@@ -421,7 +393,7 @@ ENT.ButtonMap["LastStation"] = {
         {ID = "LastStation+",x=400,y=0,w=400,h=205, tooltip=""},
     }
 }
-
+--[[]
 ENT.ButtonMap["Left"] = {
     pos = Vector(527.7,39.5,74.5),
     ang = Angle(0,180,0),
@@ -444,7 +416,7 @@ ENT.ButtonMap["Left"] = {
 
 
 
-
+]]
 	
 function ENT:Draw()
     self.BaseClass.Draw(self)
@@ -452,7 +424,7 @@ end
 
 
 function ENT:DrawPost()
-    self.RTMaterial:SetTexture("$basetexture",self.ASNP)
+    self.RTMaterial:SetTexture("$basetexture",self.IBIS)
     self:DrawOnPanel("IBISScreen",function(...)
         surface.SetMaterial(self.RTMaterial)
         surface.SetDrawColor(255,255,255)
@@ -477,7 +449,7 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 
 	
-	self.ASNP = self:CreateRT("717ASNP",512,128)
+	self.IBIS = self:CreateRT("IBIS",512,128)
 	
 
     self.Locked = 0
@@ -595,7 +567,7 @@ function ENT:Think()
         end
     end
 
-    if CurTime() - self.ElectricOnMoment == 3 then
+    if CurTime() - self.ElectricOnMoment == 5 then
         self:PlayOnce("IBIS_bootup", "bass",1,1)
     end
     --[[if self:GetNW2Bool("BatteryOn",false) == true then

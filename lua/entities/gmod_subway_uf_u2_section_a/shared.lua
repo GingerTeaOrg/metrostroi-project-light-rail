@@ -54,7 +54,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Door_close1"] = {400,1e9,Vector(300,100,120),1}
 
 	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.mp3","lilly/uf/common/deadman_loop.mp3","lilly/uf/common/deadman_end.mp3"}
-	self.SoundPositions["Deadman"] = {800,1e9,Vector(550,14,14),1}
+	self.SoundPositions["Deadman"] = {800,1e9,Vector(401,14,14),1}
 
 	self.SoundNames["DoorsCloseAlarm"] = {loop=0.014,"lilly/uf/common/doorsareclosed_start.mp3","lilly/uf/common/doorsareclosed_loop.mp3","lilly/uf/common/doorsareclosed_end.mp3"}
 	self.SoundPositions["DoorsCloseAlarm"] = {400,1e9,Vector(550,14,200),1}
@@ -72,14 +72,14 @@ function ENT:InitializeSounds()
 	self.SoundPositions["IBIS_beep"] = {1100,1e9,Vector(531,-23,84.9),.4}
 
 	self.SoundNames["IBIS_bootup"] = {"lilly/uf/IBIS/startup_chime.mp3"}
-	self.SoundPositions["IBIS_bootup"] = {1100,1e9,Vector(531,-23,84.9),.4}
+	self.SoundPositions["IBIS_bootup"] = {1100,1e9,Vector(400,-23,84.9),.4}
 
 	self.SoundNames["Fan1"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
-	self.SoundPositions ["Fan1"] = {1100,1e9,Vector(550,0,70),0.035}
+	self.SoundPositions ["Fan1"] = {1100,1e9,Vector(350,0,70),0.035}
 	self.SoundNames["Fan2"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
 	self.SoundPositions ["Fan2"] = {1100,1e9,Vector(250,0,70),0.035}
 	self.SoundNames["Fan3"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
-	self.SoundPositions ["Fan3"] = {1100,1e9,Vector(300,0,70),0.035}
+	self.SoundPositions ["Fan3"] = {1100,1e9,Vector(100,0,70),0.035}
 
 	self.SoundNames["Switchgear1"] = {"lilly/uf/u2/Stuk01.wav"}
 	self.SoundPositions["Switchgear1"] = {1100,1e9,Vector(550,0,70),0.035}
@@ -89,7 +89,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),0.035}
 
 	self.SoundNames["Blinker"] = {"lilly/uf/u2/blinker.mp3"}
-	self.SoundPositions["Blinker"] = {10,1e9,Vector(550,0,65),1}
+	self.SoundPositions["Blinker"] = {10,1e9,Vector(400,0,65),1}
 
 	self.SoundNames["MotorType1"] = {loop=5, "lilly/uf/bogeys/u2/test/engine_loop_primary_start.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary_end.mp3"}
 	self.SoundPositions["MotorType1"] = {1100,1e9,Vector(540,0,70),0.035}

@@ -191,8 +191,8 @@ function ENT:Initialize()
 	self:SetPos(self:GetPos() + Vector(0,0,20))  --set to 200 if one unit spawns in ground
 	
 	-- Create seat entities
-    self.DriverSeat = self:CreateSeat("driver",Vector(500,14,55))
-	self.InstructorsSeat = self:CreateSeat("instructor",Vector(505,-20,45),Angle(0,90,0),"models/vehicles/prisoner_pod_inner.mdl")
+    self.DriverSeat = self:CreateSeat("driver",Vector(395,15,34))
+	self.InstructorsSeat = self:CreateSeat("instructor",Vector(395,-20,30),Angle(0,90,0),"models/vehicles/prisoner_pod_inner.mdl")
 	--self.HelperSeat = self:CreateSeat("instructor",Vector(505,-25,55))
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.DriverSeat:SetColor(Color(0,0,0,0))
@@ -215,28 +215,30 @@ function ENT:Initialize()
 	self.ThrottleRate = 0
 	self.MotorPower = 0
 
+	self.LastDoorTick = 0
+
 	self.WagonNumber = 303
 
 	self.Haltebremse = 0
 
 	self.AlarmSound = 0
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 400,0,-2),Angle(0,180,0),true,"u2")
-    self.MiddleBogey  = self:CreateBogeyUFInt(Vector(0,0,0),Angle(0,0,0),false,"u2joint")
+	self.FrontBogey = self:CreateBogeyUF(Vector( 300,0,0),Angle(0,180,0),true,"duewag_motor")
+    self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,-1),Angle(0,0,0),false,"u2joint")
     
 
 	-- Create couples
-    self.FrontCouple = self:CreateCoupleUF(Vector( 532,-0.2,8),Angle(0,0,0),true,"u2")	
+    self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,2),Angle(0,0,0),true,"u2")	
     
 
 	
 	-- Create U2 Section B
-	self.u2sectionb = self:CreateSectionB(Vector(-770,0,0))
+	self.u2sectionb = self:CreateSectionB(Vector(-770,0,-0))
 	self.RearBogey = self.u2sectionb.RearBogey
 	self.RearCouple = self.u2sectionb.RearCouple --self:CreateCoupleUF(Vector( 100,50,50),Angle(0,0,0),false,"U2")	
 	
 	
-	self.PantoUp = false
+	self.PantoUp = 0
 	
 	self.ReverserInsert = false 
 	self.BatteryOn = false
@@ -266,10 +268,7 @@ function ENT:Initialize()
 	self:SetNW2Bool("DoorsUnlocked",false)
 	--self.SetNW2String("DoorsSideUnlocked","None")
 
-	self.Door1L = false
-	self.Door1R = false
-	self.Door2L = false
-	self.Door2R = false
+	self.DoorState = 0
 
 	
 	-- Initialize key mapping
@@ -340,23 +339,23 @@ function ENT:Initialize()
 
 
 	self.Lights = {
-	[50] = { "light",Vector(518,47,127), Angle(90,0,0), Color(227,197,160),     brightness = 0.9, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --headlight top
-	[51] = { "light",Vector(540,50,43), Angle(0,0,0), Color(227,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
-	[52] = { "light",Vector(540,-50,43), Angle(0,0,0), Color(227,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
-	[53] = { "light",Vector(543,0,145), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --cab light
-	[54] = { "light",Vector(545,39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
-	[55] = { "light",Vector(545,-39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-	[56] = { "light",Vector(545,39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-	[57] = { "light",Vector(545,-39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
-	[58] = { "light",Vector(416.45,66,98), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
-	[59] = { "light",Vector(416.45,-65,98), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
-	[48] = { "light",Vector(416.45,66,91), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
-	[49] = { "light",Vector(416.45,-65,91), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom right
+	[50] = { "light",Vector(400,47,127), Angle(90,0,0), Color(227,197,160),     brightness = 0.9, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
+	[51] = { "light",Vector(430,34,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
+	[52] = { "light",Vector(430,-34,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
+	[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
+	[54] = { "light",Vector(327,39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+	[55] = { "light",Vector(327,-39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+	[56] = { "light",Vector(327,39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+	[57] = { "light",Vector(327,-39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+	[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
+	[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
+	[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
+	[49] = { "light",Vector(327,-52,68), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom right
 	}
 
 
 	self.TrainWireCrossConnections = {
-        [3] = 4, -- Reverser F<->B
+        --[3] = 4, -- Reverser F<->B
 		[20] = 21,
 
     }
@@ -1098,6 +1097,8 @@ function ENT:OnButtonPress(button,ply)
 		if self:GetNW2Bool("DoorsUnlocked",false) == false then
 			self:SetNW2Bool("DoorsUnlocked",true)
 			self:SetNW2Bool("DepartureConfirmed",false)
+			self:DoorHandler(true,false)
+			
 		end
 	end
 
@@ -1107,6 +1108,7 @@ function ENT:OnButtonPress(button,ply)
 			self:SetNW2Bool("DoorsUnlocked",false)
 			self:SetNW2Bool("DoorsClosedAlarmTrigger",true)
 			self:SetNW2Bool("DoorsClosedAlarm",true)
+			self:DoorHandler(false,true)
 		end
 	end
 
@@ -1267,5 +1269,38 @@ function ENT:Blink(enable, left, right)
 	self:SetLightPower(49,self.BlinkerOn and right)
 
 	self:SetNW2Bool("BlinkerTick",self.BlinkerOn)
+
+end
+
+function ENT:DoorHandler(CommandOpen,CommandClose,Left,Right)
+
+	if not CommandOpen == true or CommandClose == true then
+
+
+		
+			if State > 0 then return end -- State == 1 means Doors fully open, do nothing
+			elseif State < 1 then -- If state less than 1, open them
+				if CurTime() == self.LastDoorTick + 1 and State != 1 then -- Every second, we check if a second has passed
+				
+					State == State +0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
+					math.Clamp(State, 0, 1) --Just to be sure it doesn't go past scope
+				end
+			end
+	end
+
+	if CommandClose == true then
+		-- now we reverse the whole dance
+		
+		if State <= 0 then return end -- State == 1 means Doors fully open, do nothing
+		elseif State > 1 then -- If state less than 1, open them
+			if CurTime() == self.LastDoorTick + 1 and State != 0 then -- Every second, we check if a second has passed
+				State == State +0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
+				math.Clamp(State,0,1)
+				self.LastDoorTick = CurTime()
+			end
+		end
+	end
+
+	print(Status)
 
 end

@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lilly/uf/bogeys/bogey"
+	"$envmapmask" "models/lilly/uf/bogeys/bogey_s"
+	"$normalmap" "models/lilly/uf/bogeys/bogey_s"
+	"$surfaceprop" "Metal"
+	"$surfaceprop2" "SolidMetal"
+}

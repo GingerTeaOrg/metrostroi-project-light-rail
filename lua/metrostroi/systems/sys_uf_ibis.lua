@@ -6,7 +6,7 @@ function TRAIN_SYSTEM:Initialize()
     self.RouteChar1 = nil
     self.RouteChar2 = nil
 
-    self.PowerOn = 0
+    self.PowerOn = 1
     self.Debug = 1
     
 	self.Course = 0
@@ -189,24 +189,24 @@ createFont("ASNP","Liquid Crystal Display",30,200)
 function TRAIN_SYSTEM:ClientThink()
     if not self.Train:ShouldDrawPanel("IBISScreen") then return end
         if not self.DrawTimer then
-            render.PushRenderTarget(self.Train.ASNP,0,0,512, 128)
+            render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
             render.Clear(0, 0, 0, 0)
             render.PopRenderTarget()
         end
         if self.DrawTimer and CurTime()-self.DrawTimer < 0.1 then return end
         self.DrawTimer = CurTime()
-        render.PushRenderTarget(self.Train.ASNP,0,0,512, 128)
+        render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
         --render.Clear(0, 0, 0, 0)
         cam.Start2D()
-            self:ASNPScreen(self.Train)
+            self:IBISScreen(self.Train)
         cam.End2D()
         render.PopRenderTarget()
         if self.DrawTimer and CurTime()-self.DrawTimer < 0.1 then return end
         self.DrawTimer = CurTime()
-        render.PushRenderTarget(self.Train.ASNP,0,0,512, 128)
+        render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
         --render.Clear(0, 0, 0, 0)
         cam.Start2D()
-            self:ASNPScreen(self.Train)
+            self:IBISScreen(self.Train)
         cam.End2D()
         render.PopRenderTarget()
     end
@@ -230,7 +230,7 @@ function TRAIN_SYSTEM:PrintText(x,y,text,inverse)
     end
 end
 
-function TRAIN_SYSTEM:ASNPScreen(Train)
+function TRAIN_SYSTEM:IBISScreen(Train)
     local State = self.PowerOn
     if State == 1 then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
@@ -300,9 +300,9 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:Course",self.Course)
     Train:SetNW2Int("Menu",self.Menu)
 
-    if self.Train:GetNW2Bool("BatteryOn",false) == true then
-    self.PowerOn = 1
-    end
+    --if self.Train:GetNW2Bool("BatteryOn",false) == true then
+    --self.PowerOn = 1
+    --end
 
     --Add together all variables to one string
 
