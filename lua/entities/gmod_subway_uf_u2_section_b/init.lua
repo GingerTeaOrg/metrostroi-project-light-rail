@@ -39,6 +39,11 @@ function ENT:Initialize()
 	self.CabEnabled = false
 	self.BatteryOn = false
 
+	self.BlinkerLeft = false
+	self.BlinkerRight = false
+
+	self.BlinkerHazard = false
+
 	self.ThrottleState = 0
 	self.ThrottleEngaged = false
 	self.ReverserState = 0
@@ -111,13 +116,17 @@ function ENT:Initialize()
 	--self.Wheels = self.FrontBogey.Wheels
    
 	self.Lights = {
-	[61] = { "light",Vector(-327,50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
-    [62] = { "light",Vector(-327,-50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
-	[63] = { "light",Vector(-327,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
-	[64] = { "light",Vector(-440,39.5,37), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[65] = { "light",Vector(-440,-38.8,37), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[66] = { "light",Vector(-440,39.5,43.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
-	[67] = { "light",Vector(-440,-38.8,43.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" },
+	[61] = { "light",Vector(-426.5,50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
+    [62] = { "light",Vector(-426.5,-50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
+	[63] = { "light",Vector(-426.5,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
+	[64] = { "light",Vector(-426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+	[65] = { "light",Vector(-426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+	[66] = { "light",Vector(-426.5,31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light left
+	[67] = { "light",Vector(-426.5,-31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light right
+	[158] = { "light",Vector(-327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
+	[159] = { "light",Vector(-327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
+	[148] = { "light",Vector(-327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
+	[149] = { "light",Vector(-327,-52,68), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom right
 	}
 	--[[for k,v in pairs(self.Lights) do
 		self:SetLightPower(k,false)
@@ -132,7 +141,7 @@ function ENT:Initialize()
 
 	self.TrainWireCrossConnections = {
         [4] = 3, -- Reverser F<->B
-		--[21] = 20, --Blinkers
+		[21] = 20, --Blinkers
 	}
     
 	self:SetNW2String("Texture",self.ParentTrain:GetNW2String("Texture").."_b")
@@ -191,7 +200,7 @@ end
 	
 	
 
-	function ENT:CreateCoupleUF(pos,ang,forward,typ)
+function ENT:CreateCoupleUF(pos,ang,forward,typ)
     -- Create bogey entity
     local coupler = ents.Create("gmod_train_uf_couple")
     coupler:SetPos(self:LocalToWorld(pos))
@@ -522,28 +531,25 @@ function ENT:Think()
 	end
 
 
-	
-    --self.RearBogey.MotorForce  =  self.ParentTrain.FrontBogey.MotorForce--18000*N
-
-	
-	--self.RearBogey.MotorPower = self:ReadTrainWire(1)--N *100 + (self.ChopperJump) --100 ----------- maximum kW of one bogey 36.67
-	--self.RearBogey.Reversed = self:ReadTrainWire(2) < 0
 
 
-    --self.RearBogey.PneumaticBrakeForce = 50000.0
-    
 
-	--self.RearBogey.Reversed = self.ParentTrain.ReverserState < 1
-	
-	--[[if IsValid(self.ParentTrain) then
-		self.RearBogey.MotorPower = self.ParentTrain.FrontBogey.MotorPower
-		self:WriteTrainWire(1,self.ParentTrain.FrontBogey.MotorPower)
-		self.RearBogey.Reversed = self.ParentTrain.ReverserState > 0
-		self.RearBogey.BrakeCylinderPressure = self.ParentTrain.BrakePressure
-		--PrintMessage(HUD_PRINTTALK,self.ParentTrain.MotorPower)
-		--Var1 = self.ParentTrain.Something
-		--NWVar = self.ParentTrain:GetNW2Int("Something")
-	end]]
+		self:SetLightPower(148,self.BlinkerLeft)
+		self:SetLightPower(158,self.BlinkerLeft)
+
+
+		self:SetLightPower(149,self.BlinkerRight)
+		self:SetLightPower(159,self.BlinkerRight)
+
+		if self.BlinkerLeft == true then
+			self:SetNW2Bool("BlinkerShineLeft",true)
+		else
+			self:SetNW2Bool("BlinkerShineLeft",false)
+		end
+
+
+
+
 
 
 	if self.RearCouple.CoupledEnt ~= nil then

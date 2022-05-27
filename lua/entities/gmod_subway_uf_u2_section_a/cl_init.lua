@@ -9,17 +9,17 @@ ENT.AutoAnimNames = {}
 
 ENT.Lights = {
 	-- Headlight glow
-	[1] = { "headlight",        Vector(330,50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-    [2] = { "headlight",        Vector(330,-50,43), Angle(0,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
-    [3] = { "light",        Vector(330,0,100), Angle(0,0,0), Color(216,161,92), fov=40,farz=450,brightness = 3, texture = "effects/flashlight/soft",shadows = 1,headlight=true},
+	[1] = { "headlight",        Vector(410,39,43), Angle(10,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
+    [2] = { "headlight",        Vector(410,-39,43), Angle(10,0,0), Color(216,161,92), fov=60,farz=600,brightness = 1.2, texture = "models/metrostroi_train/equipment/headlight",shadows = 1,headlight=true},
+    [3] = { "light",        Vector(406,0,100), Angle(0,0,0), Color(216,161,92), fov=40,farz=450,brightness = 3, texture = "effects/flashlight/soft",shadows = 1,headlight=true},
     [4] = { "headlight",        Vector(545,38.5,40), Angle(-20,0,0), Color(255,0,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
 	[5] = { "headlight",        Vector(545,-38.5,40), Angle(-20,0,0), Color(255,0,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
-    [6] = { "headlight",        Vector(519,47,130), Angle(90,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.9, texture = "effects/flashlight/soft.vmt" },
+    [6] = { "headlight",        Vector(406,39,98), Angle(90,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.7, texture = "effects/flashlight/soft.vmt" },
     [7] = { "headlight",        Vector(545,38.5,45), Angle(-20,0,0), Color(255,102,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
 	[8] = { "headlight",        Vector(545,-38.5,45), Angle(-20,0,0), Color(255,102,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
     [9] = { "dynamiclight",        Vector(400,30,490), Angle(90,0,0), Color(226,197,160), fov=100,    brightness = 0.9, scale = 1.0, texture = "effects/flashlight/soft.vmt" }, --passenger light front left
     [10] = { "dynamiclight",        Vector(400,-30,490), Angle(90,0,0), Color(226,197,160), fov=100,    brightness = 1.0, scale = 1.0, texture = "effects/flashlight/soft.vmt" }, --passenger light front right
-	
+	[11] = { "dynamiclight",        Vector(327,-52,71), Angle(90,0,0), Color(255,102,0), fov=100,    brightness = 1.0, scale = 1.0, texture = "effects/flashlight/soft.vmt" },
 }
 
 
@@ -501,12 +501,23 @@ function ENT:Think()
         self:ShowHide("headlights_on",false,0)
     end
 
+    if self:GetNW2Bool("BlinkerShineLeft",false) == true then
+        self:SetLightPower(11,true)
+    else
+        self:SetLightPower(11,false)
+    end
+
+
     self.SpeedoAnim = math.Clamp(self:GetNW2Float("Speed"),0, 80) * 0.01 * 2
 
     self:Animate("Speedo",self.SpeedoAnim,0,200,1,0.1,false)
     --self:Animate("Throttle",0,-45,45,3,0,false)
 	
-    --self:SetSoundState("DoorsCloseAlarm",true and 1 or 0,1)
+    
+    self:SetSoundState("DoorsCloseAlarm", self:GetNW2Bool("DoorAlarm",false) and 1 or 0,1)
+    
+      
+
     self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
 
     --local JustLocked 
@@ -567,9 +578,9 @@ function ENT:Think()
         end
     end
 
-    if CurTime() - self.ElectricOnMoment == 5 then
-        self:PlayOnce("IBIS_bootup", "bass",1,1)
-    end
+    --if CurTime() - self.ElectricOnMoment = 3 then
+      --  self:PlayOnce("IBIS_bootup", "bass",1,1)
+    --end
     --[[if self:GetNW2Bool("BatteryOn",false) == true then
 
         if self:GetNW2Bool("StartupPlayed",false) == false and self:GetNW2Bool("BatteryOn",false) == true then

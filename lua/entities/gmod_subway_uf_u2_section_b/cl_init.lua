@@ -36,7 +36,7 @@ function ENT:Initialize()
 end
 
 
-
+--[[
 ENT.ClientProps["Throttle"] = {
     model = "models/lilly/uf/common/cab/throttle.mdl",
     pos = Vector(-521.29,-39,77),
@@ -49,7 +49,7 @@ ENT.ClientProps["Speedo"] = {
     pos = Vector(-500,12.8,77.01),
     ang = Angle(-0.1,-90,9),
     hideseat = 0.2,
-}
+}]]--
 
 ENT.ClientProps["Dest"] = {
 	model = "models/lilly/uf/u2/dest_a.mdl",

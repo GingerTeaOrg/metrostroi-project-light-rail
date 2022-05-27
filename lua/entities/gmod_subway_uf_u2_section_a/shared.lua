@@ -32,9 +32,9 @@ end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["bell"] = {1100,1e9,Vector(520,-15,20),1}
+	self.SoundPositions["bell"] = {1100,1e9,Vector(386,-20,8),0.7}
 	self.SoundNames["bell_in"] = {loop=0.01,"lilly/uf/u2/insidecab/Bell_start.wav","lilly/uf/u2/insidecab/Bell_loop.wav", "lilly/uf/u2/insidecab/Bell_end.wav"}	
-	self.SoundPositions["bell_in"] = {800,1e9,Vector(500,0,55),1}
+	self.SoundPositions["bell_in"] = {800,1e9,Vector(386,-20,50),1}
 
 	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.mp3"}	
 	self.SoundPositions["Startup"] = {800,1e9,Vector(550,0,55),1}
@@ -54,10 +54,10 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Door_close1"] = {400,1e9,Vector(300,100,120),1}
 
 	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.mp3","lilly/uf/common/deadman_loop.mp3","lilly/uf/common/deadman_end.mp3"}
-	self.SoundPositions["Deadman"] = {800,1e9,Vector(401,14,14),1}
+	self.SoundPositions["Deadman"] = {800,1e9,Vector(401,14,14),.7}
 
 	self.SoundNames["DoorsCloseAlarm"] = {loop=0.014,"lilly/uf/common/doorsareclosed_start.mp3","lilly/uf/common/doorsareclosed_loop.mp3","lilly/uf/common/doorsareclosed_end.mp3"}
-	self.SoundPositions["DoorsCloseAlarm"] = {400,1e9,Vector(550,14,200),1}
+	self.SoundPositions["DoorsCloseAlarm"] = {400,1e9,Vector(412,0,53),1}
 	
 
 	self.SoundNames["rolling_10"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}
@@ -72,7 +72,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions["IBIS_beep"] = {1100,1e9,Vector(531,-23,84.9),.4}
 
 	self.SoundNames["IBIS_bootup"] = {"lilly/uf/IBIS/startup_chime.mp3"}
-	self.SoundPositions["IBIS_bootup"] = {1100,1e9,Vector(400,-23,84.9),.4}
+	self.SoundPositions["IBIS_bootup"] = {1100,1e9,Vector(412,-12,55),.7}
 
 	self.SoundNames["Fan1"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
 	self.SoundPositions ["Fan1"] = {1100,1e9,Vector(350,0,70),0.035}
@@ -89,7 +89,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),0.035}
 
 	self.SoundNames["Blinker"] = {"lilly/uf/u2/blinker.mp3"}
-	self.SoundPositions["Blinker"] = {10,1e9,Vector(400,0,65),1}
+	self.SoundPositions["Blinker"] = {10,1e9,Vector(412,-12,55),.3}
 
 	self.SoundNames["MotorType1"] = {loop=5, "lilly/uf/bogeys/u2/test/engine_loop_primary_start.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary_end.mp3"}
 	self.SoundPositions["MotorType1"] = {1100,1e9,Vector(540,0,70),0.035}
@@ -146,7 +146,9 @@ ENT.SubwayTrain = {
 
 
 
---ENT.NumberRanges = {{807,1000},{2001,2468}}
+ENT.NumberRanges = {{303,364}}
+
+
 ENT.Spawner = {
 head = "gmod_subway_uf_u2_section_a",
     interim = "gmod_subway_uf_u2_section_a",

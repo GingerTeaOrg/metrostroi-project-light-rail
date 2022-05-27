@@ -113,7 +113,7 @@ function ENT:CreateBogeyUFInt(pos,ang,forward,typ)
     return bogey
 end
 
-	function ENT:CreateCoupleUF(pos,ang,forward,typ)
+function ENT:CreateCoupleUF(pos,ang,forward,typ)
     -- Create bogey entity
     local coupler = ents.Create("gmod_train_uf_couple")
     coupler:SetPos(self:LocalToWorld(pos))
@@ -230,7 +230,12 @@ function ENT:Initialize()
 	-- Create couples
     self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,2),Angle(0,0,0),true,"u2")	
     
-
+	self.DoorStates = {
+		[1] = 0,
+		[2] = 0,
+		[3] = 0,
+		[4] = 0,
+	}
 	
 	-- Create U2 Section B
 	self.u2sectionb = self:CreateSectionB(Vector(-770,0,-0))
@@ -263,6 +268,7 @@ function ENT:Initialize()
 	self.Blinker = "Off"
 	self.LastTriggerTime = 0
 
+	
 
 	self:SetNW2Bool("DepartureConfirmed",true)
 	self:SetNW2Bool("DoorsUnlocked",false)
@@ -339,26 +345,32 @@ function ENT:Initialize()
 
 
 	self.Lights = {
-	[50] = { "light",Vector(400,47,127), Angle(90,0,0), Color(227,197,160),     brightness = 0.9, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
-	[51] = { "light",Vector(430,34,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
-	[52] = { "light",Vector(430,-34,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
+	[50] = { "light",Vector(406,39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.5, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
+	[51] = { "light",Vector(430,40,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.5, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
+	[52] = { "light",Vector(430,-40,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.5, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
 	[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
-	[54] = { "light",Vector(327,39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
-	[55] = { "light",Vector(327,-39.5,40), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-	[56] = { "light",Vector(327,39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-	[57] = { "light",Vector(327,-39.5,46.3), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+	[54] = { "light",Vector(-426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+	[55] = { "light",Vector(-426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+	[56] = { "light",Vector(-426.5,31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+	[57] = { "light",Vector(-426.5,-31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
 	[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 	[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 	[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
 	[49] = { "light",Vector(327,-52,68), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom right
-	}
+	[30] = { "light",Vector(397.343,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 1
+	[31] = { "light",Vector(326.738,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 2
+	[32] = { "light",Vector(151.5,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 3
+	[33] = { "light",Vector(83,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 4
+}
 
 
 	self.TrainWireCrossConnections = {
         --[3] = 4, -- Reverser F<->B
-		[20] = 21,
+		--[21] = 20,
 
     }
+
+	
 
 
 
@@ -410,7 +422,7 @@ end
 
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
-    --self:SetPackedBool("BellEngage",self.Duewag_U2.BellEngage)
+    
 	
 	self.u2sectionb:TrainSpawnerUpdate()
 	--self:SetNW2Entity("U2a",self)
@@ -439,9 +451,9 @@ function ENT:Think(dT)
 	--PrintMessage(HUD_PRINTTALK,"Current Speed")
 	--PrintMessage(HUD_PRINTTALK,self.Speed)
 
-	--self.RearCouple:Remove()
 	
-	--self:SetPackedBool("Headlights1",true)
+	
+	
 
 	if self.FrontCouple.CoupledEnt ~= nil then
 		self:SetNW2Bool("AIsCoupled", true)
@@ -451,7 +463,7 @@ function ENT:Think(dT)
 	
 	self:SetNW2Float("BatteryCharge",self.Duewag_Battery.Voltage)
 
-
+	
 	if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
         self:SetLightPower(50,true)
     elseif self:GetNW2Bool("Cablight",false) == false then
@@ -461,8 +473,14 @@ function ENT:Think(dT)
 
 	if self.BatteryOn == true then
 	self:SetNW2Bool("BatteryOn",true)
+		if self.Duewag_U2.ReverserLeverState == 2 then
+			self:WriteTrainWire(7,1)
+		end
 	elseif self.BatteryOn == false then
 	self:SetNW2Bool("BatteryOn",false)
+		if self.Duewag_U2.ReverserLeverState == 2 then
+			self:WriteTrainWire(7,1)
+		end
 	end
 
 
@@ -541,34 +559,7 @@ function ENT:Think(dT)
 
 	
 
-	--[[if self:GetNW2Bool("Blinker") == true then
-
-
-
-		local On = false
-		local OffMoment = 0
-		local delay = 10
-
-		
-
-		
-			self:SetLightPower(58,false)
-			self:SetLightPower(59,false)
-			OffMoment = CurTime()
-			On = false
-		
-
-
-		if OffMoment == CurTime() - 10 and On == false then	
-
-			
-		self:SetLightPower(58,true)
-		self:SetLightPower(59,true)
-		OffMoment = CurTime()
-		end
-				
-		
-	end]]
+	
 
 
 	
@@ -577,27 +568,43 @@ function ENT:Think(dT)
 	
 	
 	
- 	if self:GetNW2Bool("DoorsUnlocked",false) == true then
+ 	if self:GetNW2Bool("DoorsUnlocked",false) == true  then
 
 		if self:GetNWString("DoorSide","none") == "left" then
+			self:SetLightPower(30,true)
+			self:SetLightPower(31,true)
+			self:SetLightPower(32,true)
+			self:SetLightPower(33,true)
+		else
+			self:SetLightPower(30,false)
+			self:SetLightPower(31,false)
+			self:SetLightPower(32,false)
+			self:SetLightPower(33,false)
+		end
+
+		if self:GetNWString("DoorSide","none") == "left" and self.DoorState == 1 then
 			self.LeftDoorsOpen = true
 			self.RightDoorsOpen = false
+			
 		elseif self:GetNWString("DoorSide","none") == "none" then
 		self.LeftDoorsOpen = false
 		self.RightDoorsOpen = false
-		elseif self:GetNWString("DoorSide","none") == "right" then
+		
+		elseif self:GetNWString("DoorSide","none") == "right" and self.DoorState == 1 then
 			self.LeftDoorsOpen = false
 			self.RightDoorsOpen = true
+			
 		end
 	else 
 		self.LeftDoorsOpen = false
 		self.RightDoorsOpen = false
+		
 	end
 	
 	
 	
 	
-	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
+if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 	
 	
 	self.FrontBogey.PneumaticBrakeForce = 10000.0
@@ -745,12 +752,7 @@ function ENT:Think(dT)
 
 
 	
-	--[[if self:GetNW2Bool("DoorsUnlocked",false) == true then
-		self:WriteTrainWire(9,1)
-	elseif
-		self:GetNW2Bool("DoorsUnlocked",false) == false then
-			self:WriteTrainWire(9,0)
-	end]]
+	
 
 
 
@@ -760,21 +762,21 @@ function ENT:Think(dT)
 
 	
 
-	if self:GetNW2Bool("BatteryOn",false) == true then --blinker only works when electricity is on, duh
-	if self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 0 then
-		self:Blink(true,true,false)
+	--if self:GetNW2Bool("BatteryOn",false) == true or self:ReadTrainWire(7) == 1 then --blinker only works when electricity is on, duh
+		if self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 0 then
+			self:Blink(true,true,false)
 		--self.Blinker = "Left"
-	elseif self:ReadTrainWire(20) == 0 and self:ReadTrainWire(21) == 1 then
+		elseif self:ReadTrainWire(20) == 0 and self:ReadTrainWire(21) == 1 then
 		self:Blink(true,false,true)
 		--self.Blinker = "Right"
-	elseif self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 1 then
-		self:Blink(true,true,true)
+		elseif self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 1 then
+			self:Blink(true,true,true)
 		--self.Blinker = "Warn"
-	elseif self:ReadTrainWire(20) == 0 and self:ReadTrainWire(21) == 0 then
-		self:Blink(false,false,false)
+		elseif self:ReadTrainWire(20) == 0 and self:ReadTrainWire(21) == 0 then
+			self:Blink(false,false,false)
 		--self.Blinker = "Off"
-	end
-	end
+		end
+	--end
 	
 	--print(self.Blinker)
 
@@ -802,8 +804,38 @@ function ENT:Think(dT)
 
 	---Door control
 
-	
-	
+	if self:GetNW2Bool("DoorsUnlocked") == true then
+		if self.DoorState <= 1 then
+			self:DoorHandler(true,false)
+			math.Clamp(self.DoorState,0,1)
+			
+			--PrintMessage(HUD_PRINTTALK, self.DoorState)
+		elseif self.DoorState == 1 then
+			self:DoorHandler(false,false)
+			math.Clamp(self.DoorSate,0,1)
+			self:SetNW2Bool("DoorsJustOpened",true)
+		end
+	elseif self:GetNW2Bool("DoorsUnlocked") == false then
+		if self.DoorState >= 0 then
+			self:DoorHandler(false,true)
+			math.Clamp(self.DoorState,0,1)
+		elseif self.DoorState <= 0 then
+			self:DoorHandler(false,false)
+			math.Clamp(self.DoorState,0,1)
+			if self:GetNW2Bool("DoorsJustOpened",false) == true then
+				self:SetNW2Bool("DoorsJustOpened",false)
+				self:SetNW2Bool("DoorsJustClosed",true)
+			end
+		end
+	end
+	math.Clamp(self.DoorState,0,1)
+
+	if self:GetNW2Bool("DoorCloseCommand",false) == true then
+		self:SetNW2Bool("DoorAlarm",true)
+
+	else
+		self:SetNW2Bool("DoorAlarm",false)
+	end
 	
 end
 
@@ -824,8 +856,8 @@ function ENT:OnButtonPress(button,ply)
 	
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
 	if self.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUp" then self.Duewag_U2.ThrottleRate = 2 end
-		if button == "ThrottleDown" then self.Duewag_U2.ThrottleRate = -2 end
+		if button == "ThrottleUp" then self.Duewag_U2.ThrottleRate = 3 end
+		if button == "ThrottleDown" then self.Duewag_U2.ThrottleRate = -3 end
 	end
 
 	if self.Duewag_U2.ThrottleRate == 0 then
@@ -858,7 +890,7 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	if button == "WarningAnnouncementSet" then
-			self:Wait(1)
+			--self:Wait(1)
 			self:SetNW2Bool("WarningAnnouncement", true)
 	end
 
@@ -1097,8 +1129,7 @@ function ENT:OnButtonPress(button,ply)
 		if self:GetNW2Bool("DoorsUnlocked",false) == false then
 			self:SetNW2Bool("DoorsUnlocked",true)
 			self:SetNW2Bool("DepartureConfirmed",false)
-			self:DoorHandler(true,false)
-			
+			self:SetNW2Bool("DoorCloseCommand",false)
 		end
 	end
 
@@ -1106,17 +1137,17 @@ function ENT:OnButtonPress(button,ply)
 
 		if self:GetNW2Bool("DoorsUnlocked",false) == true then
 			self:SetNW2Bool("DoorsUnlocked",false)
-			self:SetNW2Bool("DoorsClosedAlarmTrigger",true)
-			self:SetNW2Bool("DoorsClosedAlarm",true)
-			self:DoorHandler(false,true)
+			self:SetNW2Bool("DoorCloseCommand",true)
 		end
 	end
 
 	if button == "DoorsCloseConfirmSet" then
 
+		self:SetNW2Bool("DoorCloseCommand",false)
+		self:SetNW2Bool("DepartureConfirmed",true)
 		if self:GetNW2Bool("DoorsClosedAlarm",false) == true then
 			self:SetNW2Bool("DoorsClosedAlarm",false)
-			self:SetNW2Bool("DepartureConfirmed",true)
+			
 		end
 	end
 
@@ -1164,7 +1195,7 @@ function ENT:OnButtonRelease(button,ply)
 		
 		if button == "DeadmanSet" then
 			self.Duewag_Deadman:TriggerInput("IsPressed", 0)
-			print("DeadmanPressedNo")
+			--print("DeadmanPressedNo")
 		end
 	
 		if button == "WarningAnnouncementSet" then
@@ -1256,7 +1287,7 @@ function ENT:Blink(enable, left, right)
 		self.LastTriggerTime = CurTime()
 
 
-	elseif CurTime() - self.LastTriggerTime > 0.7 then
+	elseif CurTime() - self.LastTriggerTime > 0.4 then
 			self.BlinkerOn = not self.BlinkerOn
 			
 			self.LastTriggerTime = CurTime()
@@ -1264,43 +1295,64 @@ function ENT:Blink(enable, left, right)
 	end
 
 	self:SetLightPower(58,self.BlinkerOn and left)
+
+	self.u2sectionb.BlinkerLeft = self.BlinkerOn and left
+	
 	self:SetLightPower(48,self.BlinkerOn and left)
 	self:SetLightPower(59,self.BlinkerOn and right)
 	self:SetLightPower(49,self.BlinkerOn and right)
+	self.u2sectionb.BlinkerRight = self.BlinkerOn and right
 
-	self:SetNW2Bool("BlinkerTick",self.BlinkerOn)
+
+	self:SetNW2Bool("BlinkerTick",self.BlinkerOn) --one tick sound for the blinker relay
 
 end
 
-function ENT:DoorHandler(CommandOpen,CommandClose,Left,Right)
+function ENT:DoorHandler(CommandOpen,CommandClose,State)
 
-	if not CommandOpen == true or CommandClose == true then
+	--State = self.DoorState
 
+	if CommandOpen == true and CommandClose == false then
 
-		
-			if State > 0 then return end -- State == 1 means Doors fully open, do nothing
-			elseif State < 1 then -- If state less than 1, open them
-				if CurTime() == self.LastDoorTick + 1 and State != 1 then -- Every second, we check if a second has passed
-				
-					State == State +0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
-					math.Clamp(State, 0, 1) --Just to be sure it doesn't go past scope
+			
+			--print("DoorsOpening")
+			--if State > 0 then return end -- State == 1 means Doors fully open, do nothing
+			if self.DoorState <= 1 then -- If state less than 1, open them
+				if self.DoorState != 1 then
+				--if CurTime() == self.LastDoorTick + 1 then -- Every second, we check if a second has passed
+					--print("Ticking door state +")
+					self.DoorState = self.DoorState + 0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
+					self.DoorState = math.Clamp(self.DoorState, 0, 1) --Just to be sure it doesn't go past scope
+					self.LastDoorTick = CurTime()
 				end
+			elseif self.DoorState >= 1 then
+				self.DoorState = 1
 			end
+			--print(self.DoorState)
+	else
+
 	end
 
-	if CommandClose == true then
+	if CommandClose == true and CommandOpen == false then
 		-- now we reverse the whole dance
-		
-		if State <= 0 then return end -- State == 1 means Doors fully open, do nothing
-		elseif State > 1 then -- If state less than 1, open them
-			if CurTime() == self.LastDoorTick + 1 and State != 0 then -- Every second, we check if a second has passed
-				State == State +0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
-				math.Clamp(State,0,1)
+		--print("DoorsClosing")
+		--if State <= 0 then return end -- State == 1 means Doors fully open, do nothing
+		if self.DoorState > 0 then -- If state less than 1, close them
+			--if CurTime() == self.LastDoorTick + 1 then -- Every second, we check if a second has passed
+				--print("Ticking door state -")
+				self.DoorState = self.DoorState - 0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
+				self.DoorState = math.Clamp(self.DoorState,0,1)
 				self.LastDoorTick = CurTime()
-			end
+				
+			--end
+		elseif self.DoorState <= 0 then
+			self.DorState = 0
 		end
+	else
 	end
 
-	print(Status)
+	--self.DoorState = State
+
+	--print(self.DoorState)
 
 end
