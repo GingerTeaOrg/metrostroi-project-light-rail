@@ -1,3 +1,6 @@
+Base assets by alTerr, used and modified with permission.
+
+
 Additional textures (C) by Daniel Schmidt Photography: https://www.danielschmidt.com/2018/10/06/vgf50/
 
 Throttle code concept by "Toth Peter"
