@@ -488,11 +488,7 @@ function ENT:Think()
     end
 
 
-    if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
-        self:SetLightPower(6,true)
-    elseif self:GetNW2Bool("Cablight",false) == false then
-        self:SetLightPower(6,false)
-    end
+    
 
 
     if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
@@ -524,23 +520,16 @@ function ENT:Think()
 
     if self:GetNW2Bool("BatteryOn",false) == true then
         
-        if self:GetNW2Bool("DoorsClosedAlarmTrigger",false) == true then
-            self:SetNW2Bool("DoorsClosedAlarmTrigger",false)
+       
 
-            self.JustLocked = CurTime()
-        else 
-            self.JustLocked = 0
+
+        if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
+            self:SetLightPower(6,true)
+        elseif self:GetNW2Bool("Cablight",false) == false then
+            self:SetLightPower(6,false)
         end
 
-        if CurTime() - self.JustLocked > 5 and self:GetNW2Bool("DoorsClosedAlarmTrigger",false) == true then
-
-            self:SetSoundState("DoorsCloseAlarm",true and 1 or 0,1)
-        else
-            self:SetSoundState("DoorsCloseAlarm",false and 1 or 0,1)
-        end
-
-
-
+        
 	    self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
         self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
         self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)

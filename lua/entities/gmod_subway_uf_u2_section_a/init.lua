@@ -345,9 +345,9 @@ function ENT:Initialize()
 
 
 	self.Lights = {
-	[50] = { "light",Vector(406,39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.5, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
-	[51] = { "light",Vector(430,40,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.5, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
-	[52] = { "light",Vector(430,-40,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.5, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
+	[50] = { "light",Vector(406,39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
+	[51] = { "light",Vector(430,40,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
+	[52] = { "light",Vector(430,-40,28), Angle(0,0,0), Color(227,197,160),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
 	[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
 	[54] = { "light",Vector(-426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
 	[55] = { "light",Vector(-426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
@@ -360,7 +360,11 @@ function ENT:Initialize()
 	[30] = { "light",Vector(397.343,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 1
 	[31] = { "light",Vector(326.738,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 2
 	[32] = { "light",Vector(151.5,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 3
-	[33] = { "light",Vector(83,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 4
+	[33] = { "light",Vector(83.7,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 4
+	[34] = { "light",Vector(397.343,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 1
+	[35] = { "light",Vector(326.738,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
+	[36] = { "light",Vector(151.5,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
+	[37] = { "light",Vector(83.7,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
 }
 
 
@@ -575,11 +579,21 @@ function ENT:Think(dT)
 			self:SetLightPower(31,true)
 			self:SetLightPower(32,true)
 			self:SetLightPower(33,true)
-		else
+		elseif self:GetNWString("DoorSide","none") == "none" then
 			self:SetLightPower(30,false)
 			self:SetLightPower(31,false)
 			self:SetLightPower(32,false)
 			self:SetLightPower(33,false)
+			self:SetLightPower(34,false)
+			self:SetLightPower(35,false)
+			self:SetLightPower(36,false)
+			self:SetLightPower(37,false)
+		elseif self:GetNWString("DoorSide","none") == "right" then
+			self:SetLightPower(34,true)
+			self:SetLightPower(35,true)
+			self:SetLightPower(36,true)
+			self:SetLightPower(37,true)
+
 		end
 
 		if self:GetNWString("DoorSide","none") == "left" and self.DoorState == 1 then
@@ -1126,7 +1140,7 @@ function ENT:OnButtonPress(button,ply)
 
 	if button == "DoorsUnlockSet" then
 		
-		if self:GetNW2Bool("DoorsUnlocked",false) == false then
+		if self:GetNW2Bool("DoorsUnlocked",false) == false and self:GetNW2String("DoorSide") != "none" then
 			self:SetNW2Bool("DoorsUnlocked",true)
 			self:SetNW2Bool("DepartureConfirmed",false)
 			self:SetNW2Bool("DoorCloseCommand",false)
