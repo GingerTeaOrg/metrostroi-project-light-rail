@@ -230,12 +230,7 @@ function ENT:Initialize()
 	-- Create couples
     self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,2),Angle(0,0,0),true,"u2")	
     
-	self.DoorStates = {
-		[1] = 0,
-		[2] = 0,
-		[3] = 0,
-		[4] = 0,
-	}
+	
 	
 	-- Create U2 Section B
 	self.u2sectionb = self:CreateSectionB(Vector(-770,0,-0))
@@ -274,7 +269,10 @@ function ENT:Initialize()
 	self:SetNW2Bool("DoorsUnlocked",false)
 	--self.SetNW2String("DoorsSideUnlocked","None")
 
-	self.DoorState = 0
+	self.DoorState = 0 --Front Left Door
+	self.DoorState2 = 0 --Front Right Door
+	self.DoorState3 = 0 --Rear Left Door
+	self.DoorState4 = 0 --Read Right Door
 
 	
 	-- Initialize key mapping
@@ -294,6 +292,7 @@ function ENT:Initialize()
 		[KEY_L] = "DoorsSelectRightToggle",
 		[KEY_B] = "BatteryToggle",
 		[KEY_V] = "LightsToggle",
+		[KEY_M] = "Mirror",
 		[KEY_PERIOD] = "WarnBlinkToggle",
 		
 		[KEY_COMMA] = "BlinkerLeftToggle",
@@ -376,9 +375,13 @@ function ENT:Initialize()
 
 	
 
+self.InteractionZones = {
+        {
+            ID = "DoorButtonFLSet",
+            Pos = Vector(397.343,51,49.7), Radius = 16,
+        },
 
-
-
+}
 
 
 end
@@ -570,7 +573,16 @@ function ENT:Think(dT)
 	local N = math.Clamp(self.Duewag_U2.Traction, 0, 100)
 	
 	
-	
+	if self:GetNW2Bool("DoorsUnlocked",false) == false then
+			self:SetLightPower(30,false)
+			self:SetLightPower(31,false)
+			self:SetLightPower(32,false)
+			self:SetLightPower(33,false)
+			self:SetLightPower(34,false)
+			self:SetLightPower(35,false)
+			self:SetLightPower(36,false)
+			self:SetLightPower(37,false)
+	end
 	
  	if self:GetNW2Bool("DoorsUnlocked",false) == true  then
 
@@ -579,6 +591,11 @@ function ENT:Think(dT)
 			self:SetLightPower(31,true)
 			self:SetLightPower(32,true)
 			self:SetLightPower(33,true)
+
+			self:SetLightPower(34,false)
+			self:SetLightPower(35,false)
+			self:SetLightPower(36,false)
+			self:SetLightPower(37,false)
 		elseif self:GetNWString("DoorSide","none") == "none" then
 			self:SetLightPower(30,false)
 			self:SetLightPower(31,false)
@@ -594,21 +611,26 @@ function ENT:Think(dT)
 			self:SetLightPower(36,true)
 			self:SetLightPower(37,true)
 
+			self:SetLightPower(30,false)
+			self:SetLightPower(31,false)
+			self:SetLightPower(32,false)
+			self:SetLightPower(33,false)
+
 		end
 
-		if self:GetNWString("DoorSide","none") == "left" and self.DoorState == 1 then
-			self.LeftDoorsOpen = true
-			self.RightDoorsOpen = false
+			if self:GetNWString("DoorSide","none") == "left" and self.DoorState == 1 then
+				self.LeftDoorsOpen = true
+				self.RightDoorsOpen = false
 			
-		elseif self:GetNWString("DoorSide","none") == "none" then
-		self.LeftDoorsOpen = false
-		self.RightDoorsOpen = false
+			elseif self:GetNWString("DoorSide","none") == "none" then
+				self.LeftDoorsOpen = false
+				self.RightDoorsOpen = false
 		
-		elseif self:GetNWString("DoorSide","none") == "right" and self.DoorState == 1 then
-			self.LeftDoorsOpen = false
-			self.RightDoorsOpen = true
+			elseif self:GetNWString("DoorSide","none") == "right" and self.DoorState == 1 then
+				self.LeftDoorsOpen = false
+				self.RightDoorsOpen = true
 			
-		end
+			end
 	else 
 		self.LeftDoorsOpen = false
 		self.RightDoorsOpen = false
@@ -818,7 +840,7 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 	---Door control
 
-	if self:GetNW2Bool("DoorsUnlocked") == true then
+	if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") != "none" then
 		if self.DoorState <= 1 then
 			self:DoorHandler(true,false)
 			math.Clamp(self.DoorState,0,1)
@@ -844,7 +866,7 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 	end
 	math.Clamp(self.DoorState,0,1)
 
-	if self:GetNW2Bool("DoorCloseCommand",false) == true then
+	if self:GetNW2Bool("DoorCloseCommand",false) == true and self.DoorState == 0 then
 		self:SetNW2Bool("DoorAlarm",true)
 
 	else
@@ -1138,12 +1160,15 @@ function ENT:OnButtonPress(button,ply)
 		end
 	end
 
-	if button == "DoorsUnlockSet" then
+	if button == "DoorsUnlockSet"  then
 		
-		if self:GetNW2Bool("DoorsUnlocked",false) == false and self:GetNW2String("DoorSide") != "none" then
-			self:SetNW2Bool("DoorsUnlocked",true)
-			self:SetNW2Bool("DepartureConfirmed",false)
-			self:SetNW2Bool("DoorCloseCommand",false)
+		if self:GetNW2Bool("DoorsUnlocked",false) == false then
+
+			if self:GetNW2String("DoorSide") ~= "none" then
+				self:SetNW2Bool("DoorsUnlocked",true)
+				self:SetNW2Bool("DepartureConfirmed",false)
+				self:SetNW2Bool("DoorCloseCommand",false)
+			end
 		end
 	end
 
@@ -1190,6 +1215,23 @@ function ENT:OnButtonPress(button,ply)
 		elseif self:GetNWString("DoorSide","none") == "none" then
 			self:SetNWString("DoorSide","right")
 			PrintMessage(HUD_PRINTTALK, "Door switch position right")
+		end
+	end
+
+	if button == "PassengerDoor" then
+
+		if self:GetNW2Float("DriversDoorState",0) == 0 then
+			self:SetNW2Float("DriversDoorState",1)
+		else
+			self:SetNW2Float("DriversDoorState",0)
+		end
+	end
+
+	if button == "Mirror" then
+		if self:GetNW2Float("Mirror",0) == 0 then
+			self:SetNW2Float("Mirror",1)
+		else
+			self:SetNW2Float("Mirror",0)
 		end
 	end
 end

@@ -56,8 +56,8 @@ function ENT:InitializeSounds()
 	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.mp3","lilly/uf/common/deadman_loop.mp3","lilly/uf/common/deadman_end.mp3"}
 	self.SoundPositions["Deadman"] = {800,1e9,Vector(401,14,14),.7}
 
-	self.SoundNames["DoorsCloseAlarm"] = {loop=0.014,"lilly/uf/common/doorsareclosed_start.mp3","lilly/uf/common/doorsareclosed_loop.mp3","lilly/uf/common/doorsareclosed_end.mp3"}
-	self.SoundPositions["DoorsCloseAlarm"] = {400,1e9,Vector(412,0,53),1}
+	self.SoundNames["DoorsCloseAlarm"] = {loop=0.01,"lilly/uf/common/doorsareclosed_start.mp3","lilly/uf/common/doorsareclosed_loop.mp3","lilly/uf/common/doorsareclosed_end.mp3"}
+	self.SoundPositions["DoorsCloseAlarm"] = {400,1e9,Vector(412,0,53),0.8}
 	
 
 	self.SoundNames["rolling_10"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}

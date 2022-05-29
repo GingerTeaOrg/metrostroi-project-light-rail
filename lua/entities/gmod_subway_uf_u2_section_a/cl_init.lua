@@ -100,7 +100,7 @@ ENT.ClientProps["IBIS"] = {
 
 ENT.ClientProps["Pantograph"] = {
 	model = "models/lilly/uf/common/pantograph.mdl",
-	pos = Vector(43,0,0),
+	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
@@ -121,25 +121,72 @@ ENT.ClientProps["Throttle"] = {
     hideseat = 0.2,
 }
 
---[[ENT.ClientProps["reverser_lever"] = {
+ENT.ClientProps["reverser_lever"] = {
     model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
-    pos = Vector(482.5,35.2,78),
-    ang = Angle(0,-90,0),
+    pos = Vector(417.5,35.2,55),
+    ang = Angle(0,0,0),
     hideseat = 0.2,
 }
+
+ENT.ClientProps["drivers_door"] = {
+    model = "models/lilly/uf/u2/drivers_door.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    hideseat = 5,
+}
+
+ENT.ClientProps["Mirror"] = {
+    model = "models/lilly/uf/u2/mirror.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    hideseat = 5,
+}
+--[[
 ENT.ClientProps["Speedo"] = {
     model = "models/lilly/uf/common/cab/speedneedle.mdl",
     pos = Vector(528,12.8,77.01),
     ang = Angle(-0.1,-90,9),
     hideseat = 0.2,
-}]]
+} ]]
 
---[[
+ENT.ButtonMap["Drivers_Door"] = {
+    pos = Vector(385.874,-10.7466,24.4478),
+    ang = Angle(0,-90,-90),
+    width = 25,
+    height = 80,
+    scale = 1,
+    buttons ={
+        
+        {ID = "PassengerDoor",x=0,y=0,w=25,h=80, tooltip="Дверь в кабину машиниста из салона\nPass door", model = {
+        var="PassengerDoor",sndid="door_cab_m",
+        sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+        sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+        noTooltip = true,
+    }},
+    }
+}
+ENT.ButtonMap["Drivers_Door2"] = {
+    pos = Vector(385.874,-35.7466,24.4478),
+    ang = Angle(0,90,-90),
+    width = 25,
+    height = 80,
+    scale = 1,
+    buttons ={
+        
+        {ID = "PassengerDoor",x=0,y=0,w=25,h=80, tooltip="Дверь в кабину машиниста из салона\nPass door", model = {
+        var="PassengerDoor",sndid="door_cab_m",
+        sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+        sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+        noTooltip = true,
+    }},
+    }
+}
+
 ENT.ButtonMap["Cab"] = {
-    pos = Vector(484.9,32,77.2),
+    pos = Vector(420,25,55.1),
     ang = Angle(0,-90,8),
-    width = 649,
-    height = 130,
+    width = 500,
+    height = 120,
     scale = 0.069,
 	
     buttons = {
@@ -150,14 +197,14 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "SetHoldingBrakeSet", x=38.45, y=114, radius=10, tooltip = "Set mechanical holding brake manually", model = {
-        model = "models/lilly/uf/common/cab/button_red.mdl", z=-1, ang=0,
+    {ID = "ReleaseHoldingBrakeSet", x=21, y=92, radius=10, tooltip = "Release mechanical brake manually", model = {
+        model = "models/lilly/uf/common/cab/button_green.mdl", z=-1, ang=90,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "ReleaseHoldingBrakeSet", x=38.4, y=73, radius=10, tooltip = "Release mechanical holding brake manually", model = {
-        model = "models/lilly/uf/common/cab/button_green.mdl", z=2, ang=0,
+    {ID = "SetHoldingBrakeSet", x=21, y=62, radius=10, tooltip = "set mechanical holding brake manually", model = {
+        model = "models/lilly/uf/common/cab/button_red.mdl", z=-1, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -168,8 +215,8 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "PassengerUndergroundSet", x=79, y=114, radius=10, tooltip = "Set passenger lights to underground mode", model = {
-        model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
+    {ID = "PassengerUndergroundSet", x=52, y=92, radius=10, tooltip = "Set passenger lights to underground mode", model = {
+        model = "models/lilly/uf/common/cab/button_green.mdl", z=1, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -192,20 +239,20 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "SetPointLeftSet", x=237, y=112, radius=10, tooltip = "Set track point to left", model = {
-        model = "models/lilly/uf/common/cab/button_right.mdl", z=-2, ang=0,
+    {ID = "SetPointLeftSet", x=177.5, y=91, radius=10, tooltip = "Set track point to left", model = {
+        model = "models/lilly/uf/common/cab/button_left.mdl", z=-2, ang=90,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "ClearDoorClosedAlarmSet", x=276.5, y=113, radius=10, tooltip = "Clear door closed alarm", model = {
+    {ID = "DoorsCloseConfirmSet", x=209, y=90, radius=10, tooltip = "Clear door closed alarm", model = {
         model = "models/lilly/uf/common/cab/button_loeschen.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "SetPointRightSet", x=315, y=112, radius=10, tooltip = "Set track point to right", model = {
-        model = "models/lilly/uf/common/cab/button_left.mdl", z=-2, ang=0,
+    {ID = "SetPointRightSet", x=240, y=91, radius=10, tooltip = "Set track point to right", model = {
+        model = "models/lilly/uf/common/cab/button_right.mdl", z=-2, ang=90,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -383,7 +430,7 @@ ENT.ButtonMap["IBISScreen"] = {
 }]]--
 
 ENT.ButtonMap["LastStation"] = {
-    pos = Vector(544,-25,145),
+    pos = Vector(425.699,-25,110),
     ang = Angle(0,90,90),
     width = 840,
     height = 205,
@@ -476,8 +523,8 @@ end
 function ENT:Think()
 	self.BaseClass.Think(self)
 
-    
-
+    self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,1,1,false)
+    self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
 	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
     self:Animate("reverser_lever",10,0,100,5,0.5,false)
 
