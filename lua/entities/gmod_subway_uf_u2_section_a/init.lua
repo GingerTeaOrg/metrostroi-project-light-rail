@@ -264,7 +264,7 @@ function ENT:Initialize()
 	self.LastTriggerTime = 0
 
 	
-
+	self.DoorSideUnlocked = "None"
 	self:SetNW2Bool("DepartureConfirmed",true)
 	self:SetNW2Bool("DoorsUnlocked",false)
 	--self.SetNW2String("DoorsSideUnlocked","None")
@@ -273,6 +273,9 @@ function ENT:Initialize()
 	self.DoorState2 = 0 --Front Right Door
 	self.DoorState3 = 0 --Rear Left Door
 	self.DoorState4 = 0 --Read Right Door
+
+	self:SetPackedBool("FlickBatterySwitchOn",false)
+	self:SetPackedBool("FlickBatterySwitchOff",false)
 
 	
 	-- Initialize key mapping
@@ -490,7 +493,21 @@ function ENT:Think(dT)
 		end
 	end
 
+	if self.Duewag_U2.ReverserLeverState == 1 then
+		self:SetNW2Float("ReverserAnimate",0.4)
 
+	elseif self.Duewag_U2.ReverserLeverState == 0 then
+		self:SetNW2Float("ReverserAnimate",0.25)
+
+	elseif self.Duewag_U2.ReverserLeverState == 3 then
+		self:SetNW2Float("ReverserAnimate",1)
+
+	elseif self.Duewag_U2.ReverserLeverState == 2 then
+		self:SetNW2Float("ReverserAnimate",0.7)
+
+	elseif self.Duewag_U2.ReverserLeverState == -1 then
+		self:SetNW2Float("ReverserAnimate",0)
+	end
 	
 	--if self:ReadTrainWire(7) == 1 then -- if the battery is on
 		
@@ -938,7 +955,7 @@ function ENT:OnButtonPress(button,ply)
 						self.Duewag_U2.ReverserLeverState = self.Duewag_U2.ReverserLeverState + 1
 						self.Duewag_U2.ReverserLeverState = math.Clamp(self.Duewag_U2.ReverserLeverState, -1, 3)
 						--self.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-						PrintMessage(HUD_PRINTTALK,self.Duewag_U2.ReverserLeverState)
+						--PrintMessage(HUD_PRINTTALK,self.Duewag_U2.ReverserLeverState)
 					end
 			end
 	end
@@ -950,7 +967,7 @@ function ENT:OnButtonPress(button,ply)
 				--self.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
 				self.Duewag_U2.ReverserLeverState = self.Duewag_U2.ReverserLeverState - 1
 				self.Duewag_U2.ReverserLeverState = math.Clamp(self.Duewag_U2.ReverserLeverState, -1, 3)
-				PrintMessage(HUD_PRINTTALK,self.Duewag_U2.ReverserLeverState)
+				--PrintMessage(HUD_PRINTTALK,self.Duewag_U2.ReverserLeverState)
 			end
 	end
 	
@@ -1164,7 +1181,12 @@ function ENT:OnButtonPress(button,ply)
 		
 		if self:GetNW2Bool("DoorsUnlocked",false) == false then
 
-			if self:GetNW2String("DoorSide") ~= "none" then
+			if self.DoorSideUnlocked == "Left" then
+				self:SetNW2Bool("DoorsUnlocked",true)
+				self:SetNW2Bool("DepartureConfirmed",false)
+				self:SetNW2Bool("DoorCloseCommand",false)
+			end
+			if self.DoorSideUnlocked == "Right" then
 				self:SetNW2Bool("DoorsUnlocked",true)
 				self:SetNW2Bool("DepartureConfirmed",false)
 				self:SetNW2Bool("DoorCloseCommand",false)
