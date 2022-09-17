@@ -399,54 +399,48 @@ function TRAIN_SYSTEM:Think()
     end
 
     if self.Menu == 2 then
-        if not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-            if not self.CourseChar4 then
-                self.CourseChar4 = self.KeyInput
-            end
-            if self.CourseChar4 then
-                self.CourseChar3 = self.CourseChar4
-                self.CourseChar4 = self.KeyInput
-            end
-            if self.CourseChar3 ~=nil then
-                self.CourseChar2 = self.CourseChar3
-                self.CourseChar3 = self.KeyInput
-            end
-            if self.CourseChar2 ~=nil then
-                self.CourseChar1 = self.CourseChar2
-                self.CourseChar2 = self.KeyInput
-            end
-            if self.CourseChar1 ~=nil then
-                self.CourseChar1 = self.KeyInput
-            end
+	if self.KeyInput ~= "Menu" or self.KeyInput ~= "Delete" or self.KeyInput ~= "Destination" and self.KeyInput ~=nil then
+        if not self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+
+	    if not self.CourseChar5 then
+		self.CourseChar5 = self.KeyInput
+	    end
+
 
         else
 
-        if self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and self.CourseChar1 then
+        if self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 
-            self.CourseChar4 = nil
-            self.CourseChar3 = nil
-            self.CourseChar2 = nil 
-            self.CourseChar1 = nil
+            
+		self.CourseChar4 = self.CourseChar5
+		self.CourseChar5 = self.KeyInput
+		
+	    
+	else
+	if self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+	   
+		self.CourseChar3 = self.CourseChar4
+		self.CourseChar4 = self.CourseChar5
+		self.CourseChar5 = self.KeyInput
+	else
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		
+		self.CourseChar2 = self.CourseChar3						
+		self.CourseChar3 = self.CourseChar4
+		self.CourseChar4 = self.CourseChar5
+		self.CourseChar5 = self.KeyInput
+	end
+	else
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
+		
+		self.CourseChar1 = self.CourseChar2
+		self.CourseChar2 = self.CourseChar3						
+		self.CourseChar3 = self.CourseChar4
+		self.CourseChar4 = self.CourseChar5
+		self.CourseChar5 = self.KeyInput
+	end
+	end
 
-            if self.CourseChar4 == nil then
-                self.CourseChar4 = self.KeyInput
-            end
-            if self.CourseChar4 ~= nil then
-                self.CourseChar3 = self.CourseChar4
-                self.CourseChar4 = self.KeyInput
-            end
-            if self.CourseChar3 ~= nil then
-                self.CourseChar2 = self.CourseChar3
-                self.CourseChar3 = self.KeyInput
-            end
-            if self.CourseChar2 ~=nil then
-                self.CourseChar1 = self.CourseChar2
-                self.CourseChar2 = self.KeyInput
-            end
-            if self.CourseChar1 ~=nil then
-                self.CourseChar1 = self.KeyInput
-            end
-        end
     end
 
 
