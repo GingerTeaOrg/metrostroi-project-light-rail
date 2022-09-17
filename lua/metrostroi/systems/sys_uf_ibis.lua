@@ -441,6 +441,23 @@ function TRAIN_SYSTEM:Think()
 	end
 	end
 
+	if self.KeyInput = "Delete" then
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and self.CourseChar1 then
+		self.CourseChar1 = nil
+	else
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
+		self.CourseChar2 = nil
+	else
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		self.CourseChar3 = nil
+	else
+	if self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		self.CourseChar4 = nil
+	else
+	if self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		self.CourseChar5 = nil
+	end
+	end
     end
 
 
@@ -451,6 +468,9 @@ function TRAIN_SYSTEM:Think()
 
 
 end
+				
+
+	
 end
 
 function TRAIN_SYSTEM:AnnQueue(msg)
