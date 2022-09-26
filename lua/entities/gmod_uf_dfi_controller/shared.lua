@@ -1,9 +1,9 @@
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 
-ENT.PrintName		= "Daisy Controller"
+ENT.PrintName		= "Lumina DFO Controller"
 ENT.Author			= "Ron"
-ENT.Category 		= "Metrostroi German Entities"
+ENT.Category 		= "Metrostroi Frankfurt"
 ENT.Editable 		= false
 ENT.Spawnable 		= false
 ENT.AdminOnly 		= false
