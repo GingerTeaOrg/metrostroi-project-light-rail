@@ -568,7 +568,7 @@ function ENT:Think()
     --self:Animate("Throttle",0,-45,45,3,0,false)
 	
     
-    self:SetSoundState("DoorsCloseAlarm", self:GetNW2Bool("DoorAlarm",false) and 1 or 0,1)
+    
     
       
 
@@ -580,7 +580,8 @@ function ENT:Think()
         
        
 
-
+		self:SetSoundState("DoorsCloseAlarm", self:GetNW2Bool("DoorAlarm",false) and 1 or 0,1)
+		
         	if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
             		self:SetLightPower(6,true)
         	elseif self:GetNW2Bool("Cablight",false) == false then
