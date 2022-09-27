@@ -93,7 +93,7 @@ ENT.ClientProps["Door_rl2"] = {
 ENT.ClientProps["IBIS"] = {
 	model = "models/lilly/uf/u2/IBIS.mdl",
 	--pos = Vector(530,-20.5,78),
-    pos = Vector(0,0,0),
+    	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
@@ -507,19 +507,22 @@ function ENT:Initialize()
 	self.IBIS = self:CreateRT("IBIS",512,128)
 	
 
-    self.Locked = 0
+    	self.Locked = 0
 
 
 
-    self.CabLight = 0
+    	self.CabLight = 0
 
-    self.SpeedoAnim = 0
+    	self.SpeedoAnim = 0
 	
-    --self:ShowHide("headlights_on",false,0)
+    	--self:ShowHide("headlights_on",false,0)
 	
 	self.ThrottleLastEngaged = 0
 
-    self.ElectricOnMoment = 0
+    	self.ElectricOnMoment = 0
+	self.IBISKickStart = false
+	self.IBISStarted = false
+	self.StartupSoundPlayed = false
 	
 	--self.LeftMirror = self:CreateRT("LeftMirror",512,256)
     --self.RightMirror = self:CreateRT("RightMirror",128,256)
@@ -530,33 +533,33 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-
-    self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,false)
-    self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
+	
+    	self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,false)
+    	self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
 	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
-    self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,1,false)
+    	self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,1,false)
 
-    if self:GetNW2Bool("ReverserInserted",false) == true then
-        self:ShowHide("reverser",true)
-    elseif self:GetNW2Bool("ReverserInserted",false) == false then
-        self:ShowHide("reverser",false,0)
-    end
+    	if self:GetNW2Bool("ReverserInserted",false) == true then
+        	self:ShowHide("reverser",true)
+    	elseif self:GetNW2Bool("ReverserInserted",false) == false then
+        	self:ShowHide("reverser",false,0)
+    	end
 
 
     
 
 
-    if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
-        self:ShowHideSmooth("headlights_on",true,0)
-    elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
-        self:ShowHideSmooth("headlights_on",false,0)
-    end
+    	if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
+        	self:ShowHideSmooth("headlights_on",true,0)
+    	elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
+        	self:ShowHideSmooth("headlights_on",false,0)
+    	end
 
-    if self:GetNW2Bool("BlinkerShineLeft",false) == true then
-        self:SetLightPower(11,true)
-    else
-        self:SetLightPower(11,false)
-    end
+    	if self:GetNW2Bool("BlinkerShineLeft",false) == true then
+        	self:SetLightPower(11,true)
+    	else
+        	self:SetLightPower(11,false)
+    	end
 
 
     self.SpeedoAnim = math.Clamp(self:GetNW2Float("Speed"),0,80) / 100 * 1.5
@@ -571,23 +574,23 @@ function ENT:Think()
 
     self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
 
-    --local JustLocked 
+  
 
     if self:GetNW2Bool("BatteryOn",false) == true then
         
        
 
 
-        if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
-            self:SetLightPower(6,true)
-        elseif self:GetNW2Bool("Cablight",false) == false then
-            self:SetLightPower(6,false)
-        end
+        	if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
+            		self:SetLightPower(6,true)
+        	elseif self:GetNW2Bool("Cablight",false) == false then
+            		self:SetLightPower(6,false)
+        	end
 
         
-	    self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
-        self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
-        self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
+	    	self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
+        	self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
+        	self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
     
 
             if self:GetNW2Bool("BlinkerTick",false) == true and not self:GetNW2Bool("BlinkerTicked",false) == true then
@@ -616,15 +619,34 @@ function ENT:Think()
             self:SetNW2Bool("DoorOpenSoundPlayed",false)
         end
         
-        if self:GetNW2Bool("IBIS_started",false) == false then 
-            self:SetNW2Bool("IBIS_started",true)
-            self.ElectricOnMoment = CurTime()
-        end
-    end
+        
+	if self.IBISKickStart == false then	--if we haven't kicked off starting the IBIS yet
+        	self.IBISKickStart = true	--remember that we are doing now
+		self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
+	end
+	if self.ElectricOnMoment - CurTime() > 5 then --if it's been five seconds
+		if self.IBISStarted = false then --and if we haven't fully started the IBIS yet
+			self.IBISStarted = true --say that we have started it
+			self:PlayOnce("IBIS_bootup") --play the chime
+		end
+	end
+	
+	if self.ElectricOnMoment != 0 then
+		if self.StartupSoundPlayed = false then
+			self.StartupSoundPlayed = true
+			self:PlayOnce("Startup","cabin",1,1)
+		end
+	end
+		
+elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
+		self.StartupSoundPlayed = false	
+		self.ElectricOnMoment = 0
+		
+		self.IBISKickStart = false
+		self.IBISStarted = false
+end
 
-    --if CurTime() - self.ElectricOnMoment = 3 then
-      --  self:PlayOnce("IBIS_bootup", "bass",1,1)
-    --end
+
     --[[if self:GetNW2Bool("BatteryOn",false) == true then
 
         if self:GetNW2Bool("StartupPlayed",false) == false and self:GetNW2Bool("BatteryOn",false) == true then
@@ -637,7 +659,7 @@ function ENT:Think()
         end
     end]]
 
-    
+    	
 
 
 	if self:GetNW2Bool("WarningAnnouncement") == true then
