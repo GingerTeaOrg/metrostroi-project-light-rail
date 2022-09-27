@@ -324,6 +324,7 @@ function ENT:OnCouple(ent)
         parent:OnCouple(ent,isforward)
     end
     if self.OnCoupleSpawner then self:OnCoupleSpawner() end
+    self:SetPackedBool("IsCoupledAnim",true)
 end
 
 function ENT:OnDecouple()
