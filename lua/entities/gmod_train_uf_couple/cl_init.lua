@@ -8,7 +8,7 @@ end
 
 --------------------------------------------------------------------------------
 function ENT:Think()
-self:Animate
+self:Animate()
 end
 
 function ENT:Animate()
