@@ -51,7 +51,7 @@ function TRAIN_SYSTEM:Think()
 			
 			if self.Train:GetNW2Bool("DeadmanTripped") == true then --If we've tripped an emergency stop
 				if self.IsPressed == 1 then								--And if we're pressing the pedal
-					if CurTime() - self.BrakeTime > 10 then --If the moment of braking was 10 secs ago
+					if CurTime() - self.BrakeTime > 10 and self.Speed > 4 then --If the moment of braking was 10 secs ago
 						if self.IsPressed == 1 then -- and if we're pressing the pedal
 						--if self.Train:GetNW2Bool("DeadmanTripped",true) then
 							self.Train:SetNW2Bool("DeadmanTripped",false) --Reset the trip and the time flags and the brake moment
@@ -96,8 +96,8 @@ function TRAIN_SYSTEM:Think()
 		
 		if self.Train:GetNW2Bool("DeadmanTripped") == true then --if the deadman is  tripped
 			if self.BrakeMomentAlreadyRecorded == false then --if the point in time when we've started braking is not already captured
-				self.BrakeMomentAlreadyRecorded = true
-				self.BrakeTime = CurTime() --We've tripped the deadman just now, but only do it once.
+				self.BrakeMomentAlreadyRecorded = true --we've just done that now
+				self.BrakeTime = CurTime() --We've tripped the deadman just now.
 			end
 		end
 
