@@ -547,9 +547,9 @@ function ENT:Think()
 
 
     if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
-        self:ShowHide("headlights_on",true,0)
+        self:ShowHideSmooth("headlights_on",true,0)
     elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
-        self:ShowHide("headlights_on",false,0)
+        self:ShowHideSmooth("headlights_on",false,0)
     end
 
     if self:GetNW2Bool("BlinkerShineLeft",false) == true then
