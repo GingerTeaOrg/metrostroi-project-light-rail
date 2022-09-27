@@ -10,7 +10,7 @@ if not UF then
     timer.Simple(0.05, function()
         for name in pairs(scripted_ents.GetList()) do
             local prefix = "gmod_subway_uf_"
-            if string.sub(name,1,#prefix) == prefix and scripted_ents.Get(name).Base == "gmod_subway_base" and not scripted_ents.Get(name).NoTrain then then
+            if string.sub(name,1,#prefix) == prefix and scripted_ents.Get(name).Base == "gmod_subway_base" and not scripted_ents.Get(name).NoTrain then
                 table.insert(UF.TrainClasses,name)
                 UF.IsTrainClass[name] = true
             end
