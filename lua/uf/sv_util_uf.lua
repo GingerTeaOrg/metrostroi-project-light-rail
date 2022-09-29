@@ -1,4 +1,4 @@
-UF.TotalkWh = UF.TotalkWh or tonumber(file.Read("metrostroi_data/total_kwh_uf.txt") or "") or 0
+UF.TotalkWh = UF.TotalkWh or tonumber(file.Read("metrostroi_data/total_kwh_UF.txt") or "") or 0
 UF.TotalRateWatts = UF.TotalRateWatts or 0
 
 UF.Voltage = 600
@@ -89,8 +89,8 @@ end)
 
 concommand.Add("uf_electric", function(ply, _, args) -- (%.2f$) Metrostroi.GetEnergyCost(Metrostroi.TotalkWh),
     local m = Format("[%25s] %010.3f kWh, %.3f kW (%5.1f v, %4.0f A)","<total>",
-        uf.TotalkWh,uf.TotalRateWatts*1e-3,
-        uf.Voltage,uf.Current)
+        UF.TotalkWh,UF.TotalRateWatts*1e-3,
+        UF.Voltage,UF.Current)
     if IsValid(ply)
     then ply:PrintMessage(HUD_PRINTCONSOLE,m)
     else print(m)
@@ -99,7 +99,7 @@ concommand.Add("uf_electric", function(ply, _, args) -- (%.2f$) Metrostroi.GetEn
     if CPPI then
         local U = {}
         local D = {}
-        for _,class in pairs(uf.TrainClasses) do
+        for _,class in pairs(UF.TrainClasses) do
             local trains = ents.FindByClass(class)
             for _,train in pairs(trains) do
                 local owner = "(disconnected)"
@@ -114,7 +114,7 @@ concommand.Add("uf_electric", function(ply, _, args) -- (%.2f$) Metrostroi.GetEn
         end
         for player,_ in pairs(U) do --, n=%.0f%%
             --local m = Format("[%20s] %08.1f KWh (lost %08.1f KWh)",player,U[player]/(3.6e6),D[player]/(3.6e6)) --,100*D[player]/U[player]) --,D[player])
-            local m = Format("[%25s] %010.3f kWh (%.2f$)",player,U[player]/(3.6e6),uf.GetEnergyCost(U[player]/(3.6e6)))
+            local m = Format("[%25s] %010.3f kWh (%.2f$)",player,U[player]/(3.6e6),UF.GetEnergyCost(U[player]/(3.6e6)))
             if IsValid(ply)
             then ply:PrintMessage(HUD_PRINTCONSOLE,m)
             else print(m)
