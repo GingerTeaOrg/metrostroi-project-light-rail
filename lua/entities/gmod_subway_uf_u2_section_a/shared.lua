@@ -127,7 +127,7 @@ ENT.MirrorCams = {
 function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
 	self:LoadSystem("Duewag_Deadman")
-	self:LoadSystem("IBIS")
+	--self:LoadSystem("IBIS")
 	self:LoadSystem("Duewag_Battery")
 	--self:LoadSystem("81_71_LastStation","destination")
 	

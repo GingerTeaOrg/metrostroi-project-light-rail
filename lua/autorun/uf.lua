@@ -26,7 +26,7 @@ end
 --List of spawned trains
 UF.SpawnedTrains = {}
 for k,ent in pairs(ents.GetAll()) do
-    if ent.ClassName == "gmod_subway_uf". then
+    if ent.ClassName == "gmod_subway_uf" then
         UF.SpawnedTrains[ent] = true
     end
 end
@@ -38,13 +38,13 @@ hook.Add("EntityRemoved","UFTrains",function(ent)
 end)
 if SERVER then
     hook.Add("OnEntityCreated","UFTrains",function(ent)
-        if ent:GetClass() == "gmod_subway_uf". then
+        if ent:GetClass() == "gmod_subway_uf" then
             UF.SpawnedTrains[ent] = true
         end
     end)
 else
     hook.Add("OnEntityCreated","UFTrains",function(ent)
-        if ent:GetClass() == "gmod_subway_uf". then
+        if ent:GetClass() == "gmod_subway_uf" then
             UF.SpawnedTrains[ent] = true
         end
     end)
