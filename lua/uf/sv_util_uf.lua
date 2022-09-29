@@ -127,7 +127,7 @@ timer.Create("uf_ElectricConsumptionTimer",0.5,0,function()
     if CPPI then
         local U = {}
         local D = {}
-        for _,class in pairs(Metrostroi.TrainClasses) do
+        for _,class in pairs(UF.TrainClasses) do
             local trains = ents.FindByClass(class)
             for _,train in pairs(trains) do
                 local owner = train:CPPIGetOwner()
