@@ -224,7 +224,7 @@ function ENT:Initialize()
 	self.AlarmSound = 0
 	-- Create bogeys
 	self.FrontBogey = self:CreateBogeyUF(Vector( 300,0,0),Angle(0,180,0),true,"duewag_motor")
-    self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,-1),Angle(0,0,0),false,"u2joint")
+    self.MiddleBogey  = self:CreateBogeyUF(Vector(-2,0,0),Angle(0,0,0),false,"u2joint")
     
 
 	-- Create couples
@@ -233,7 +233,7 @@ function ENT:Initialize()
 	
 	
 	-- Create U2 Section B
-	self.u2sectionb = self:CreateSectionB(Vector(-770,0,-0))
+	self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
 	self.RearBogey = self.u2sectionb.RearBogey
 	self.RearCouple = self.u2sectionb.RearCouple --self:CreateCoupleUF(Vector( 100,50,50),Angle(0,0,0),false,"U2")	
 	
@@ -257,6 +257,9 @@ function ENT:Initialize()
 	
 	-- Blinker variables
 
+	self:SetNW2Float("Blinds",0.2)
+
+
 	self.BlinkerOn = false
 	self.BlinkerLeft = false
 	self.BlinkerRight = false
@@ -277,6 +280,26 @@ function ENT:Initialize()
 	self:SetPackedBool("FlickBatterySwitchOn",false)
 	self:SetPackedBool("FlickBatterySwitchOff",false)
 
+	self.PossibleDoors = {
+		empty1 = empty,
+		empty2 = empty,
+	}
+
+	self.ChosenDoor = nil
+
+	self.SelectedDoor = 0
+
+	self.DoorArrayRight = {
+
+		0, -- Door State 2
+		0 -- Door State 4
+	}
+
+	self.DoorArrayLeft = {
+		
+		0, --Door State 1
+		0, --Door State 3
+	}
 	
 	-- Initialize key mapping
 	self.KeyMap = {
@@ -635,7 +658,7 @@ function ENT:Think(dT)
 
 		end
 
-			if self:GetNWString("DoorSide","none") == "left" and self.DoorState == 1 then
+			if self:GetNWString("DoorSide","none") == "left" and (self.DoorState == 1 or self.DoorState3 == 1) then
 				self.LeftDoorsOpen = true
 				self.RightDoorsOpen = false
 			
@@ -643,7 +666,7 @@ function ENT:Think(dT)
 				self.LeftDoorsOpen = false
 				self.RightDoorsOpen = false
 		
-			elseif self:GetNWString("DoorSide","none") == "right" and self.DoorState == 1 then
+			elseif self:GetNWString("DoorSide","none") == "right" and (self.DoorState2 == 1 or self.DoorState4) then
 				self.LeftDoorsOpen = false
 				self.RightDoorsOpen = true
 			
@@ -857,31 +880,33 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 	---Door control
 
-	if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") != "none" then
+	if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "left" then
+
+		
 		if self.DoorState <= 1 then
-			self:DoorHandler(true,false)
-			math.Clamp(self.DoorState,0,1)
+			self:DoorHandler(true,false,self.SelectedDoor)
+			--math.Clamp(self.SelectedDoor,0,1)
 			
 			--PrintMessage(HUD_PRINTTALK, self.DoorState)
 		elseif self.DoorState == 1 then
-			self:DoorHandler(false,false)
-			math.Clamp(self.DoorSate,0,1)
+			self:DoorHandler(false,false,self.SelectedDoor)
+			--math.Clamp(self.SelectedDoor,0,1)
 			self:SetNW2Bool("DoorsJustOpened",true)
 		end
 	elseif self:GetNW2Bool("DoorsUnlocked") == false then
 		if self.DoorState >= 0 then
-			self:DoorHandler(false,true)
-			math.Clamp(self.DoorState,0,1)
+			self:DoorHandler(false,true,self.SelectedDoor)
+			--math.Clamp(self.SelectedDoor,0,1)
 		elseif self.DoorState <= 0 then
 			self:DoorHandler(false,false)
-			math.Clamp(self.DoorState,0,1)
+			--math.Clamp(self.SelectedDoor,0,1)
 			if self:GetNW2Bool("DoorsJustOpened",false) == true then
 				self:SetNW2Bool("DoorsJustOpened",false)
 				self:SetNW2Bool("DoorsJustClosed",true)
 			end
 		end
 	end
-	math.Clamp(self.DoorState,0,1)
+	--math.Clamp(self.DoorState,0,1)
 
 	if self:GetNW2Bool("DoorCloseCommand",false) == true and self.DoorState == 0 then
 		self:SetNW2Bool("DoorAlarm",true)
@@ -947,7 +972,18 @@ function ENT:OnButtonPress(button,ply)
 			self:SetNW2Bool("WarningAnnouncement", true)
 	end
 
-	
+	if button == "Blinds+" then
+
+		self:SetNW2Float("Blinds",self:GetNW2Float("Blinds") +0.1)
+		self:SetNW2Float("Blinds",math.Clamp(self:GetNW2Float("Blinds"),0.2,1))
+	end
+
+	if button == "Blinds-" then
+
+		self:SetNW2Float("Blinds",self:GetNW2Float("Blinds") -0.1)
+		self:SetNW2Float("Blinds",math.Clamp(self:GetNW2Float("Blinds"),0.2,1))
+	end
+
 	if button == "ReverserUpSet" then
 			if 
 				not self.Duewag_U2.ThrottleEngaged == true  then
@@ -1181,16 +1217,17 @@ function ENT:OnButtonPress(button,ply)
 		
 		if self:GetNW2Bool("DoorsUnlocked",false) == false then
 
-			if self.DoorSideUnlocked == "Left" then
+
+
+				self.SelectedDoor = math.random(1,2)
+
+				PrintMessage(HUD_PRINTTALK,"Chosen Door\n"..self.SelectedDoor)
+
 				self:SetNW2Bool("DoorsUnlocked",true)
 				self:SetNW2Bool("DepartureConfirmed",false)
 				self:SetNW2Bool("DoorCloseCommand",false)
-			end
-			if self.DoorSideUnlocked == "Right" then
-				self:SetNW2Bool("DoorsUnlocked",true)
-				self:SetNW2Bool("DepartureConfirmed",false)
-				self:SetNW2Bool("DoorCloseCommand",false)
-			end
+			
+			
 		end
 	end
 
@@ -1255,6 +1292,10 @@ function ENT:OnButtonPress(button,ply)
 		else
 			self:SetNW2Float("Mirror",0)
 		end
+	end
+
+	if button == "ComplaintSet" then
+		self:SetNW2Bool("Microphone",true)
 	end
 end
 
@@ -1386,51 +1427,115 @@ function ENT:Blink(enable, left, right)
 
 end
 
-function ENT:DoorHandler(CommandOpen,CommandClose,State)
+function ENT:DoorHandler(CommandOpen,CommandClose,ChosenDoor)
 
 	--State = self.DoorState
 
-	if CommandOpen == true and CommandClose == false then
+	local ActiveDoor = ChosenDoor
+	ActiveDoor = ChosenDoor
+	--rint(ActiveDoor)
+	
+
+	if self.DoorSideUnlocked == "Left" then
+
+
+		if CommandOpen == true and CommandClose == false then
+
+		
+
+				
 
 			
 			--print("DoorsOpening")
 			--if State > 0 then return end -- State == 1 means Doors fully open, do nothing
-			if self.DoorState <= 1 then -- If state less than 1, open them
-				if self.DoorState != 1 then
-				--if CurTime() == self.LastDoorTick + 1 then -- Every second, we check if a second has passed
-					--print("Ticking door state +")
-					self.DoorState = self.DoorState + 0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
-					self.DoorState = math.Clamp(self.DoorState, 0, 1) --Just to be sure it doesn't go past scope
-					self.LastDoorTick = CurTime()
+				if self.DoorArrayLeft[self.SelectedDoor] <= 1 then -- If state less than 1, open them
+					if self.DoorArrayLeft[self.SelectedDoor] != 1 then
+				
+						self.DoorArrayLeft[self.SelectedDoor] = self.DoorArrayLeft[self.SelectedDoor] + 0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
+						self.DoorArrayLeft[self.SelectedDoor] = math.Clamp(self.DoorArrayLeft[self.SelectedDoor], 0, 1) --Just to be sure it doesn't go past scope
+						self.LastDoorTick = CurTime()
+					end
+				elseif self.DoorArrayLeft[self.SelectedDoor] >= 1 then
+					self.DoorArrayLeft[self.SelectedDoor] = 1
 				end
-			elseif self.DoorState >= 1 then
-				self.DoorState = 1
-			end
-			--print(self.DoorState)
-	else
+				--print(ChosenDoor)
+		else
 
-	end
+		end
 
-	if CommandClose == true and CommandOpen == false then
+	
+
+		if CommandClose == true and CommandOpen == false then
 		-- now we reverse the whole dance
 		--print("DoorsClosing")
 		--if State <= 0 then return end -- State == 1 means Doors fully open, do nothing
-		if self.DoorState > 0 then -- If state less than 1, close them
+			if self.DoorArrayLeft[self.SelectedDoor] > 0 then -- If state less than 1, close them
 			--if CurTime() == self.LastDoorTick + 1 then -- Every second, we check if a second has passed
 				--print("Ticking door state -")
-				self.DoorState = self.DoorState - 0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
-				self.DoorState = math.Clamp(self.DoorState,0,1)
-				self.LastDoorTick = CurTime()
+					self.DoorArrayLeft[self.SelectedDoor] = self.DoorArrayLeft[self.SelectedDoor] - 0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
+					self.DoorArrayLeft[self.SelectedDoor] = math.Clamp(self.DoorArrayLeft[self.SelectedDoor],0,1)
+					self.LastDoorTick = CurTime()
 				
-			--end
-		elseif self.DoorState <= 0 then
-			self.DorState = 0
+			
+			elseif self.DoorArrayLeft[self.SelectedDoor] <= 0 then
+				self.DoorArrayLeft[self.SelectedDoor] = 0
+			end
+		else
 		end
-	else
+
 	end
 
+	if self.DoorSideUnlocked == "Right" then
+
+
+		if CommandOpen == true and CommandClose == false then
+	
+			
+	
+				--ActiveDoor = math.random(1,2)
+	
+				
+				--print("DoorsOpening")
+				--if State > 0 then return end -- State == 1 means Doors fully open, do nothing
+				if self.DoorArrayRight[self.SelectedDoor] <= 1 then -- If state less than 1, open them
+					if self.DoorArrayRight[self.SelectedDoor] != 1 then
+					--if CurTime() == self.LastDoorTick + 1 then -- Every second, we check if a second has passed
+						--print("Ticking door state +")
+						self.DoorArrayRight[self.SelectedDoor] = self.DoorArrayRight[self.SelectedDoor] + 0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
+						self.DoorArrayRight[self.SelectedDoor] = math.Clamp(self.DoorArrayRight[self.SelectedDoor], 0, 1) --Just to be sure it doesn't go past scope
+						self.LastDoorTick = CurTime()
+					end
+				elseif self.DoorArrayRight[self.SelectedDoor] >= 1 then
+					self.DoorArrayRight[self.SelectedDoor] = 1
+				end
+				--print(ChosenDoor)
+		else
+	
+		end
+	
+		if CommandClose == true and CommandOpen == false then
+			-- now we reverse the whole dance
+			--print("DoorsClosing")
+			--if State <= 0 then return end -- State == 1 means Doors fully open, do nothing
+			--print(ActiveDoor)
+			if self.DoorArrayRight[self.SelectedDoor] > 0 then -- If state less than 1, close them
+				--if CurTime() == self.LastDoorTick + 1 then -- Every second, we check if a second has passed
+					--print("Ticking door state -")
+					self.DoorArrayRight[self.SelectedDoor] = self.DoorArrayRight[self.SelectedDoor] - 0.1 --A second has passed, so add a little to the door status register. How much added will be adjusted to properly drive the door animation.
+					self.DoorArrayRight[self.SelectedDoor] = math.Clamp(self.DoorArrayRight[self.SelectedDoor],0,1)
+					self.LastDoorTick = CurTime()
+					
+				--end
+			elseif self.DoorArrayRight[self.SelectedDoor] <= 0 then
+				self.DoorArrayRight[self.SelectedDoor] = 0
+			end
+		else
+		end
+	end
 	--self.DoorState = State
 
 	--print(self.DoorState)
+
+	
 
 end

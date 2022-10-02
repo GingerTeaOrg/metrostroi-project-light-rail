@@ -121,13 +121,6 @@ ENT.ClientProps["Throttle"] = {
     hideseat = 0.2,
 }
 
-ENT.ClientProps["reverser_lever"] = {
-    model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
-    pos = Vector(417.5,35.2,55),
-    ang = Angle(0,0,0),
-    hideseat = 0.2,
-}
-
 ENT.ClientProps["drivers_door"] = {
     model = "models/lilly/uf/u2/drivers_door.mdl",
     pos = Vector(0,0,0),
@@ -156,6 +149,13 @@ ENT.ClientProps["reverser"] = {
     hideseat = 0.2,
 }
 
+ENT.ClientProps["blinds_l"] = {
+    model = "models/lilly/uf/u2/cab/blinds.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    hideseat = 8,
+}
+
 ENT.ButtonMap["Drivers_Door"] = {
     pos = Vector(385.874,-10.7466,24.4478),
     ang = Angle(0,-90,-90),
@@ -180,7 +180,7 @@ ENT.ButtonMap["Drivers_Door2"] = {
     scale = 1,
     buttons ={
         
-        {ID = "PassengerDoor",x=0,y=0,w=25,h=80, tooltip="Дверь в кабину машиниста из салона\nPass door", model = {
+        {ID = "PassengerDoor",x=0,y=0,w=25,h=80, tooltip="It's a door. Does this really need explanation?", model = {
         var="PassengerDoor",sndid="door_cab_m",
         sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
         sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
@@ -437,6 +437,22 @@ ENT.ButtonMap["IBISScreen"] = {
     }
 }]]--
 
+ENT.ButtonMap["Microphone"] = {
+    pos = Vector(417.4,0.6,73),
+    ang = Angle(120,-10,184),
+    width = 50,
+    height = 50,
+    scale = 0.0625, 
+    buttons = {
+    {ID = "ComplaintSet",x=10,y=10,z=0,w=5,h=5,radius=90, tooltip="Activate Driver's Rage"},
+
+    }
+}
+
+
+
+
+
 ENT.ButtonMap["LastStation"] = {
     pos = Vector(425.699,-25,110),
     ang = Angle(0,90,90),
@@ -446,6 +462,18 @@ ENT.ButtonMap["LastStation"] = {
     buttons = {
         {ID = "LastStation-",x=000,y=0,w=400,h=205, tooltip=""},
         {ID = "LastStation+",x=400,y=0,w=400,h=205, tooltip=""},
+    }
+}
+
+ENT.ButtonMap["Blinds"] = {
+    pos = Vector(415,40,100),
+    ang = Angle(0,280,90),
+    width = 780,
+    height = 800,
+    scale = 0.0625,
+    buttons = {
+        {ID = "Blinds+",x=000,y=200,w=800,h=205, tooltip="Pull the blinds up"},
+        {ID = "Blinds-",x=0,y=400,w=800,h=205, tooltip="Pull the blinds down"},
     }
 }
 --[[]
@@ -523,6 +551,13 @@ function ENT:Initialize()
 	
 	--self.LeftMirror = self:CreateRT("LeftMirror",512,256)
     --self.RightMirror = self:CreateRT("RightMirror",128,256)
+
+
+    self.Nags = {
+        "Nag1",
+        "Nag2",
+        "Nag3"
+    }
 end
 
 
@@ -536,6 +571,8 @@ function ENT:Think()
 	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,1,false)
 
+    self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,1,false)
+
     if self:GetNW2Bool("ReverserInserted",false) == true then
         self:ShowHide("reverser",true)
     elseif self:GetNW2Bool("ReverserInserted",false) == false then
@@ -544,6 +581,10 @@ function ENT:Think()
 
 
     
+    if self:GetNW2Bool("Microphone",false) == true then
+        self:SetNW2Bool("Microphone",false)
+        self:PlayOnce(self.Nags[1],"cabin",1,1)
+    end
 
 
     if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then

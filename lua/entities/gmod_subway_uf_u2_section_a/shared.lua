@@ -46,6 +46,9 @@ function ENT:InitializeSounds()
 	self.SoundPositions["horn"] = {1100,1e9,Vector(520,0,70),1}
 	self.SoundNames["WarningAnnouncement"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
 	self.SoundPositions["WarningAnnouncement"] = {1100,1e9,Vector(350,-30,113),1}
+
+	self.SoundNames["Nag1"] = {"lilly/uf/u2/PAsystem/door_complaints/clear_the_doors.mp3"}
+	self.SoundPositions["Nag1"] = {1100,1e9,Vector(350,-30,113),1}
 	
 	self.SoundNames["Door_open1"] = {"lilly/uf/u2/Door_open.mp3"}
 	self.SoundPositions["Door_open1"] = {400,1e9,Vector(300,100,120),1}
