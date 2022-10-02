@@ -88,11 +88,11 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Switchgear1"] = {1100,1e9,Vector(550,0,70),0.035}
 
 
-	self.SoundNames["Cruise"] = {loop=0.5,"lilly/uf/u2/cruise/cruise_medium_start.mp3","lilly/uf/u2/cruise/cruise_medium.mp3","lilly/uf/u2/cruise/cruise_medium_end.mp3"}
-	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),0.035}
+	self.SoundNames["Cruise"] = {loop=0.5,"lilly/uf/u2/cruise/cruise_medium_start.mp3","lilly/uf/u2/cruise/cruise_medium.mp3","lilly/uf/u2/cruise/cruise_medium_stop.mp3"}
+	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),1}
 
 	self.SoundNames["Blinker"] = {"lilly/uf/u2/blinker.mp3"}
-	self.SoundPositions["Blinker"] = {10,1e9,Vector(412,-12,55),.3}
+	self.SoundPositions["Blinker"] = {10,1e9,Vector(390,-5,200),1}
 
 	self.SoundNames["MotorType1"] = {loop=5, "lilly/uf/bogeys/u2/test/engine_loop_primary_start.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary_end.mp3"}
 	self.SoundPositions["MotorType1"] = {1100,1e9,Vector(540,0,70),0.035}

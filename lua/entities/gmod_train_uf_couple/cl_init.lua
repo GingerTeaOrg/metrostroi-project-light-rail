@@ -13,10 +13,10 @@ end
 
 function ENT:Animate()
     
-    if self:GetPackedBool("IsCoupledAnim",false) == true then
-        self:SetPoseParameter("position",100)
-    else
-        self:SetPoseParameter("position",0)
-    end
+    --if self:GetNWBool("IsCoupledAnim",false) == true then
+    --    self:SetPoseParameter("position",100)
+    --else
+    --    self:SetPoseParameter("position",0)
+    --end
 
 end

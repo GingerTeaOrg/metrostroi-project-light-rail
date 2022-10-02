@@ -121,13 +121,6 @@ ENT.ClientProps["Throttle"] = {
     hideseat = 0.2,
 }
 
-ENT.ClientProps["reverser_lever"] = {
-    model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
-    pos = Vector(417.5,35.2,55),
-    ang = Angle(0,0,0),
-    hideseat = 0.2,
-}
-
 ENT.ClientProps["drivers_door"] = {
     model = "models/lilly/uf/u2/drivers_door.mdl",
     pos = Vector(0,0,0),
@@ -578,6 +571,7 @@ function ENT:Think()
 	
     	self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,false)
     	self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
+        self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,1,false)
 	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,1,false)
 
@@ -596,9 +590,9 @@ function ENT:Think()
 
 
     	if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
-        	self:ShowHideSmooth("headlights_on",true,0)
+        	self:ShowHide("headlights_on",true,0)
     	elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
-        	self:ShowHideSmooth("headlights_on",false,0)
+        	self:ShowHide("headlights_on",false,0)
     	end
 
     	if self:GetNW2Bool("BlinkerShineLeft",false) == true then
@@ -642,7 +636,7 @@ function ENT:Think()
             if self:GetNW2Bool("BlinkerTick",false) == true and not self:GetNW2Bool("BlinkerTicked",false) == true then
 
         
-                self:PlayOnce("Blinker","cabin",0.4,1)   
+                self:PlayOnce("Blinker","cabin",1,1)   
                 self:SetNW2Bool("BlinkerTicked",true)
         
             elseif self:GetNW2Bool("BlinkerTick",false) == false then
@@ -651,6 +645,26 @@ function ENT:Think()
                --self:SetNW2Bool("BlinkerTick",false)
              end
 
+
+             	-- Fan handler
+
+        if self:GetNW2Bool("Fans",false) == true then
+            self.ThrottleLastEngaged = CurTime()
+        end
+
+        if self:GetNW2Bool("Fans",false) == true and self:GetNW2Bool("BatteryOn",false) == true then
+            self:SetSoundState("Fan1",1,1,1)
+            self:SetSoundState("Fan2",1,1,1)
+            self:SetSoundState("Fan3",1,1,1)
+        end
+
+        if self:GetNW2Bool("Fans",false) == false and self:GetNW2Int("Speed",0) < 3 then
+            if CurTime() - self.ThrottleLastEngaged > 2 then
+                self:SetSoundState("Fan1",0,1,1 )
+                self:SetSoundState("Fan2",0,1,1 )
+                self:SetSoundState("Fan3",0,1,1 )
+            end
+        end
         if self:GetNW2Bool("DoorsUnlocked",false) == true and self:GetNW2Bool("DoorOpenSoundPlayed",false) == false then
             self:SetNW2Bool("DoorOpenSoundPlayed",true)
             self:SetNW2Bool("DoorCloseSoundPlayed",false)
@@ -666,63 +680,38 @@ function ENT:Think()
         end
         
         
-	if self.IBISKickStart == false then	--if we haven't kicked off starting the IBIS yet
+	    if self.IBISKickStart == false then	--if we haven't kicked off starting the IBIS yet
         	self.IBISKickStart = true	--remember that we are doing now
-		self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
-	end
-	if self.ElectricOnMoment - CurTime() > 5 then --if it's been five seconds
-		if self.IBISStarted = false then --and if we haven't fully started the IBIS yet
-			self.IBISStarted = true --say that we have started it
-			self:PlayOnce("IBIS_bootup") --play the chime
-		end
-	end
+		    self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
+	    end
+	    if self.ElectricOnMoment - CurTime() > 5 then --if it's been five seconds
+		    if self.IBISStarted == false then --and if we haven't fully started the IBIS yet
+			    self.IBISStarted = true --say that we have started it
+			    self:PlayOnce("IBIS_bootup") --play the chime
+		    end
+	    end
 	
-	if self.ElectricOnMoment != 0 then
-		if self.StartupSoundPlayed = false then
-			self.StartupSoundPlayed = true
-			self:PlayOnce("Startup","cabin",1,1)
-		end
-	end
-		
-elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
+	    if self.ElectricOnMoment != 0 then
+		    if self.StartupSoundPlayed == false then
+		    	self.StartupSoundPlayed = true
+		    	self:PlayOnce("Startup","cabin",1,1)
+		    end
+	    end
+		if self:GetNW2Bool("WarningAnnouncement") == true then
+            self:PlayOnce("WarningAnnouncement","cabin",1,1)
+    
+        end
+    elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
 		self.StartupSoundPlayed = false	
 		self.ElectricOnMoment = 0
 		
 		self.IBISKickStart = false
 		self.IBISStarted = false
-end
+
+    end
 
 
-    --[[if self:GetNW2Bool("BatteryOn",false) == true then
 
-        if self:GetNW2Bool("StartupPlayed",false) == false and self:GetNW2Bool("BatteryOn",false) == true then
-            self:PlayOnce("Startup","cabin",1,1)
-            self:SetNW2Bool("StartupPlayed",true)
-            
-        
-        elseif self:GetNW2Bool("BatteryOn",false) == false then
-            self:SetNW2Bool("StartupPlayed",false)
-        end
-    end]]
-
-    	
-
-
-	if self:GetNW2Bool("WarningAnnouncement") == true then
-        self:PlayOnce("WarningAnnouncement","cabin",1,1)
-
-	end
-
-
-    --[[local delay
-    local startMoment
-    delay = 15
-    if self:GetNW2Bool("IBIS_impulse",false) == true then
-        startMoment = CurTime()
-        if startMoment - delay > 15 then
-            self:PlayOnce("IBIS_bootup", "bass",1,1)
-        end
-    end]]
 
     self:SetLightPower(9,true)
     self:SetLightPower(10,true)
@@ -779,25 +768,7 @@ end
 	
 	
 	
-	-- Fan handler
 
-    if self:GetNW2Bool("Fans",false) == true then
-        self.ThrottleLastEngaged = CurTime()
-    end
-
-    if self:GetNW2Bool("Fans",false) == true and self:GetNW2Bool("BatteryOn",false) == true then
-        self:SetSoundState("Fan1",1,1,1)
-        self:SetSoundState("Fan2",1,1,1)
-        self:SetSoundState("Fan3",1,1,1)
-    end
-
-    if self:GetNW2Bool("Fans",false) == false and self:GetNW2Int("Speed",0) < 3 then
-        if CurTime() - self.ThrottleLastEngaged > 2 then
-            self:SetSoundState("Fan1",0,1,1 )
-            self:SetSoundState("Fan2",0,1,1 )
-            self:SetSoundState("Fan3",0,1,1 )
-        end
-    end
 	
 	
 	
@@ -816,15 +787,22 @@ end
 	local nxt = 35
 
 	
-    if self:GetNW2Int("Speed") > 30 then
-        self:SetSoundState("Cruise",math.Clamp(self:GetNW2Int("Speed"),0,100),1,1)
+
+    local volume
+    local pitch
+        
+
+        pitch = math.Clamp(math.Clamp(self:GetNW2Int("Speed"),0,80) / 80, 0.8, 1)
+        volume = math.Clamp(self:GetNW2Int("Speed"),0,100) / 100 + 0.5
+    
+
+    if self:GetNW2Int("Speed") > 10 then
+        self:SetSoundState("Cruise",1,pitch,1)
     end
 
     if self:GetNW2Int("Speed") < 10 then
         self:SetSoundState("Cruise",0,1,1)
     end
-
-	
 	
     local rollingi = math.min(1,self.TunnelCoeff+math.Clamp((self.StreetCoeff-0.82)/0.3,0,1))
     local rollings = math.max(self.TunnelCoeff*1,self.StreetCoeff)

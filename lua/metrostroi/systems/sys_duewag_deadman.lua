@@ -37,7 +37,7 @@ end
 function TRAIN_SYSTEM:Think()
 		local train = self.Train
 		
-	if self.Train:GetNW2Bool("ReverserInserted",false) == true then
+	if self.Train:GetNW2Bool("BatteryOn",false) == true then
 
 		if self.Train:GetNW2Int("Speed",0) > 5 and self.IsPressed == 1 then --Train is at speed, and pedal is pressed
 		self.AlarmTime = CurTime()

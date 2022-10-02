@@ -203,6 +203,8 @@ function ENT:Initialize()
 	self.LeadingCab = 0
 	
 	self.WarningAnnouncement = 0
+
+
 	
 	self.Speed = 0
 	self.ThrottleState = 0
@@ -258,6 +260,10 @@ function ENT:Initialize()
 	-- Blinker variables
 
 	self:SetNW2Float("Blinds",0.2)
+
+	self.FrontBogey.DisableSound = 3
+	self.MiddleBogey.DisableSound = 3
+    self.RearBogey.DisableSound = 3
 
 
 	self.BlinkerOn = false
@@ -457,6 +463,9 @@ function ENT:Think(dT)
 	self.BaseClass.Think(self)
     
 	
+
+
+
 	self.u2sectionb:TrainSpawnerUpdate()
 	--self:SetNW2Entity("U2a",self)
 
@@ -1362,7 +1371,7 @@ function ENT:CreateSectionB(pos)
 	u2sectionb.ParentTrain = self
 	u2sectionb:SetNW2Entity("U2a",self)
 	-- self.u2sectionb = u2b
-	u2sectionb:SetPos(self:LocalToWorld(Vector(0,0,0)))
+	u2sectionb:SetPos(self:LocalToWorld(Vector(0,0,-0.5)))
 	u2sectionb:SetAngles(self:GetAngles() + ang)
 	u2sectionb:Spawn()
 	u2sectionb:SetOwner(self:GetOwner())
