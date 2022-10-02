@@ -88,7 +88,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Switchgear1"] = {1100,1e9,Vector(550,0,70),0.035}
 
 
-	self.SoundNames["Cruise"] = {"lilly/uf/u2/cruise/cruise_medium.mp3"}
+	self.SoundNames["Cruise"] = {loop=0.5,"lilly/uf/u2/cruise/cruise_medium_start.mp3","lilly/uf/u2/cruise/cruise_medium.mp3","lilly/uf/u2/cruise/cruise_medium_end.mp3"}
 	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),0.035}
 
 	self.SoundNames["Blinker"] = {"lilly/uf/u2/blinker.mp3"}
@@ -130,7 +130,7 @@ ENT.MirrorCams = {
 function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
 	self:LoadSystem("Duewag_Deadman")
-	self:LoadSystem("IBIS")
+	--self:LoadSystem("IBIS")
 	self:LoadSystem("Duewag_Battery")
 	--self:LoadSystem("81_71_LastStation","destination")
 	

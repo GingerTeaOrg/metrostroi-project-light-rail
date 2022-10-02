@@ -37,7 +37,7 @@ function TRAIN_SYSTEM:Initialize()
 	
 	self.ReverserInserted = false
 	self.ReverserState = 0
-	self.ReverserLeverState = 0
+	self.ReverserLeverState = 0 --for the reverser lever setting. -1 is reverse, 0 is neutral, 1 is startup, 2 is single unit, 3 is multiple unit
 
 	self.VZ = false
 	self.VE = false
@@ -51,7 +51,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.BrakePressure = 0
 	self.TractionCutOut = false
 	self.Haltebremse = 0
-	self.ThrottleStateAnim = 0
+	self.ThrottleStateAnim = 0 --whether to stop listening to the throttle input
 
 	self.ThrottleCutOut = 0
 
@@ -113,12 +113,12 @@ function TRAIN_SYSTEM:Think(Train)
 	--self.TriggerOutput()
 	
 	self.PrevTime = self.PrevTime or RealTime()-0.33
-    self.DeltaTime = (RealTime() - self.PrevTime)
-    self.PrevTime = RealTime()
+    	self.DeltaTime = (RealTime() - self.PrevTime)
+    	self.PrevTime = RealTime()
 	local dT = self.DeltaTime
 
 	
-	self.ThrottleState = self.ThrottleState + self.ThrottleRate --* dT * 2
+	self.ThrottleState = self.ThrottleState + self.ThrottleRate --* dT * 2 --todo: enable deltaTime correction
 	
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
 	
@@ -186,7 +186,7 @@ function TRAIN_SYSTEM:Think(Train)
 		self.Train:WriteTrainWire(6,0)
 	end
 
-	if self.BatteryStartUnlock == false then --Only on the * Setting onf the reverser lever should the battery turn on
+	if self.BatteryStartUnlock == false then --Only on the * Setting of the reverser lever should the battery turn on
 		self.BatteryOn = self.BatteryOn
 		self.Train:WriteTrainWire(7,self.Train:ReadTrainWire(7))
 	elseif self.BatteryStartUnlock == true then
@@ -197,7 +197,7 @@ function TRAIN_SYSTEM:Think(Train)
 			if self.Train:GetNW2Bool("BatteryOn",false) == false then
 				self.Train:WriteTrainWire(7,0)
 			end
-	elseif self.BatteryStartUnlock == true or self.Train:ReadTrainWire(7) == 1 then --Except that the leading cab turns the batteries on for the entire train
+	elseif self.BatteryStartUnlock == true or self.Train:ReadTrainWire(7) == 1 then --Except if the leading cab turns the batteries on for the entire train
 		self.BatteryOn = true
 		self.Train:SetNW2Bool("BatteryOn",true)
 	end
@@ -249,21 +249,21 @@ function TRAIN_SYSTEM:Think(Train)
 	
 
 
-	if self.BatteryStartUnlock == true then
+	if self.BatteryStartUnlock == true then --if we're allowed to turn on the battery, turn it on
 		self.BatteryOn = self.Train:GetNW2Bool("BatteryOn")
 	end
 
-	if self.Train:GetNW2Bool("BatteryOn",false) == true then
+	if self.Train:GetNW2Bool("BatteryOn",false) == true then --if the battery is on, we can command the pantograph
 		self.PantoUp = self.Train:GetNW2Bool("PantoUp")
 	end
 
 
-	self.ReverserInserted = self.Train:GetNW2Bool("ReverserInserted")
+	self.ReverserInserted = self.Train:GetNW2Bool("ReverserInserted") --get from the train whether the reverser is present
 	
 	
 	
 	
-	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) == 1 and self.Train:ReadTrainWire(7) == 1--[[and self.PantoUp == true]] then
+	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) == 1 and self.Train:ReadTrainWire(7) == 1--[[and self.PantoUp == true]] then --if either the battery is on or the EMU cables signal multiple unit mode
 
 		if self.ReverserState == 1 then
 			self.TractionConditionFulfilled = true
@@ -281,7 +281,7 @@ function TRAIN_SYSTEM:Think(Train)
 		--self.Traction = 15000*self.ThrottleState / 20
 		if not self.Train:GetNW2Bool("DeadmanTripped",false) == true then
 			--if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
-				self.Traction = math.Clamp(self.ThrottleState * 0.01 * 800,-800,800)
+				self.Traction = math.Clamp(self.ThrottleState * 0.01 * 800,-800,800) --right now it's coupled directly to the throttle. This needs a somewhat realistic custom simulation, if we don't get schematics
 				if self.VZ == true then
 					if self.Traction > 0 then
 						self.Train:WriteTrainWire(2,0)
@@ -339,20 +339,20 @@ function TRAIN_SYSTEM:Think(Train)
 	end		
 	
 
-	if self.ThrottleState <= 100 then
+	if self.ThrottleState <= 100 then --Throttle animation handling. Adapt the value to the pose aprameter on the model
 		self.ThrottleStateAnim = self.ThrottleState / 200 + 0.5
 	elseif (self.ThrottleState >= 0) then
 		self.ThrottleStateAnim = (self.ThrottleState * -0.1)
 		
 	end		
 				
-	if self.ThrottleState < 0 and self.Train:GetNW2Float("Speed",0) < 2.5 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
+	if self.ThrottleState < 0 and self.Train:GetNW2Float("Speed",0) < 8 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
  
-			if self.Train:ReadTrainWire(6) == 1 then
+			if self.Train:ReadTrainWire(6) == 1 then --in MU mode we write that to the train wire for the train script to handle
 				self.Train:WriteTrainWire(5,2.7)
 			
 
-			elseif self.Train:ReadTrainWire(6) == 0 then
+			elseif self.Train:ReadTrainWire(6) == 0 then --in single unit mode we write that directly to the brake pressure
 				self.BrakePressure = 2.7
 				self.Train:SetNW2Int("BrakePressure",2.7)
 			end
@@ -371,18 +371,18 @@ function TRAIN_SYSTEM:Think(Train)
 		end
 	
 	end
-	if self.ThrottleState == 0 and self.Train:GetNW2Float("Speed",0) < 3 then
+	--[[if self.ThrottleState == 0 and self.Train:GetNW2Float("Speed",0) < 3 then
  
 		if self.Train:ReadTrainWire(6) == 1 then
 			--self.Train:WriteTrainWire(5,0)
 		
 
 		elseif self.Train:ReadTrainWire(6) == 0 then
-			--self.BrakePressure = 0
-			--self.Train:SetNW2Int("BrakePressure",0)
+			self.BrakePressure = 0
+			self.Train:SetNW2Int("BrakePressure",0)
 		end
 	
-	end
+	end]]
 
 	if self.Train:GetNW2Bool("DepartureConfirmed",false) == true then
 		self.Train:WriteTrainWire(9,1)
@@ -396,25 +396,6 @@ function TRAIN_SYSTEM:Think(Train)
 	
 end
 
---[[function ENT:DoorHandler(left,right,open,DoorState)
 
-
-	local closing
-
-
-	if self.DoorsOpen == false then
-	
-	self.DoorFLState = 100
-	self.DoorRLState = 100
-	self.DoorFRState = 100
-	self.DoorRRState = 100
-	
-	elseif self.CloseDoorsButton == true then
-		self.CloseDoorsButton == false
-		if left == true then
-			self.DoorFLState = math.abs(CurTime())
-		end
-	end
-
-
-end ]]
+function TRAIN_SYSTEM:U2Engine()
+end

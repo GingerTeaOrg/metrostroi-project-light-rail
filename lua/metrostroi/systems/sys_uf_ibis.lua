@@ -2,49 +2,48 @@ Metrostroi.DefineSystem("IBIS")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 
 function TRAIN_SYSTEM:Initialize()
-    self.Route = 0
+    self.Route = 0 --Route index number
     self.RouteChar1 = nil
     self.RouteChar2 = nil
 
     self.PowerOn = 1
     self.Debug = 1
     
-	self.Course = 0
+    self.Course = 0 --Course index number, format is LLLSS
     self.CourseChar1 = nil
     self.CourseChar2 = nil
     self.CourseChar3 = nil
     self.CourseChar4 = nil
+    self.CourseChar5 = nil
 
 
-	self.Destination = 0
+    self.Destination = 0 --Destination index number
     self.DestinationChar1 = nil
     self.DestinationChar2 = nil
     self.DestinationChar3 = nil
 	
     self.KeyInput = nil
 
-	 self.TriggerNames = {
-        "Number1",
-        "Number2",
-        "Number3",
-        "Number4",
-        "Number5",
-        "Number6",
+    self.TriggerNames = {
+        	"Number1",
+        	"Number2",
+        	"Number3",
+        	"Number4",
+        	"Number5",
+        	"Number6",
 		"Number7",
 		"Number8",
 		"Number9",
 		"Number0",
 		"Destination",
-        "Delete",
-        "Enter",
-        "SpecialAnnouncements",
-        "TimeAndDate"
+        	"Delete",
+        	"Enter",
+        	"SpecialAnnouncements",
+        	"TimeAndDate"
     }
+    self.State = -2 -- -2 is debug, -1 is no data, 0 is off, 1 is on
 
-    self.Triggers = {}
-    self.State = -2
-
-    self.Menu = 0
+    self.Menu = 0 -- which menu are we in
     self.Announce = false
 
 
@@ -66,17 +65,17 @@ function TRAIN_SYSTEM:Initialize()
         self.Train:LoadSystem("Enter","Relay","Switch",{bass = true })
     --end
 
-    if not TURBOSTROI then
-
-    end
+    
 
 end
+
+if TURBOSTROI then return end
 
 function TRAIN_SYSTEM:Inputs()
-    return {"KeyInput","State"}
+    return {"KeyInput","Power"}
 end
 function TRAIN_SYSTEM:Outputs()
-    return {"Course","Route","Destination"}
+    return {"Course","Route","Destination","State"}
 end
 
 function TRAIN_SYSTEM:Trigger(name,value)
@@ -157,12 +156,21 @@ function TRAIN_SYSTEM:TriggerInput(name,value)
 
 end
 
+function TRAIN_SYSTEM:TriggerOutput(name,value)
+	if self[name] then self[name] = value end
+    
+    
+ 
+
+
+end
+
 
 
 if CLIENT then
     local function createFont(name,font,size)
-        surface.CreateFont("Metrostroi_"..name, {
-            font = font,
+        surface.CreateFont("IBIS", {
+            font = "Liquid Crystal Display", -- main text font
             size = size,
             weight = 500,
             blursize = false,
@@ -178,6 +186,23 @@ if CLIENT then
             extended = true,
             scanlines = false,
         })
+	surface.CreateFont("IBIS_Glow", { -- background glow font
+	font = "Liquid Crystal Display",
+	size = 42,
+	weight = 0,
+	blursize = 3,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = true,
+	outline = true,
+	extended = true
+	})
 end
 
 
@@ -187,7 +212,7 @@ createFont("ASNP","Liquid Crystal Display",30,200)
 
 
 function TRAIN_SYSTEM:ClientThink()
-    if not self.Train:ShouldDrawPanel("IBISScreen") then return end
+
         if not self.DrawTimer then
             render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
             render.Clear(0, 0, 0, 0)
@@ -209,7 +234,6 @@ function TRAIN_SYSTEM:ClientThink()
             self:IBISScreen(self.Train)
         cam.End2D()
         render.PopRenderTarget()
-    end
 end
 
 function TRAIN_SYSTEM:PrintText(x,y,text,inverse)
@@ -222,36 +246,36 @@ function TRAIN_SYSTEM:PrintText(x,y,text,inverse)
     for i=1,#str do
         local char = utf8.char(str[i])
         if inverse then
-            draw.SimpleText(string.char(0x7f),"Metrostroi_ASNP",(x+i)*20.5+5,y*40+40,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-            draw.SimpleText(char,"Metrostroi_ASNP",(x+i)*20.5+5,y*40+40,Color(140,190,0,150),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            draw.SimpleText(string.char(0x7f),"IBIS",(x+i)*20.5+5,y*40+40,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            draw.SimpleText(char,"IBIS",(x+i)*20.5+5,y*40+40,Color(140,190,0,150),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
         else
-            draw.SimpleText(char,"Metrostroi_ASNP",(x+i)*20.5+5,y*40+40,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            draw.SimpleText(char,"IBIS",(x+i)*20.5+5,y*40+40,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
         end
     end
 end
 
 function TRAIN_SYSTEM:IBISScreen(Train)
-    local State = self.PowerOn
-    if State == 1 then
+    
+		
+		
+	if self.PowerOn == 1 then
+		self.State = 1
+	end
+		
+    if self.State == 1 then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
         self.Warm = true
-    else
-        surface.SetDrawColor(20,50,0,230)
-        self.Warm = false
     end
 
-    if State == 0 then 
+    if self.State == 0 then 
         surface.SetDrawColor(20,50,0,230)
         self.Warm = false
     end
 
     surface.DrawRect(0,0,512,128)
-    if State == false then
-        return
-    end
 
 
-    if State == -2 then
+    if self.State == -2 then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
         self.Warm = true
         self:PrintText(0,0,"IFIS ERROR")
@@ -298,11 +322,11 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:Route",self.Route)
     Train:SetNW2Int("IBIS:Destination",self.Destination)
     Train:SetNW2Int("IBIS:Course",self.Course)
-    Train:SetNW2Int("Menu",self.Menu)
+    Train:SetNW2Int("IBIS:MenuState",self.Menu)
 
-    --if self.Train:GetNW2Bool("BatteryOn",false) == true then
-    --self.PowerOn = 1
-    --end
+    if self.Train:GetNW2Bool("BatteryOn",false) == true then
+    	self.PowerOn = 1
+    end
 
     --Add together all variables to one string
 
@@ -375,54 +399,65 @@ function TRAIN_SYSTEM:Think()
     end
 
     if self.Menu == 2 then
-        if not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-            if self.CourseChar4 == nil then
-                self.CourseChar4 = self.KeyInput
-            end
-            if self.CourseChar4 ~= nil then
-                self.CourseChar3 = self.CourseChar4
-                self.CourseChar4 = self.KeyInput
-            end
-            if self.CourseChar3 ~=nil then
-                self.CourseChar2 = self.CourseChar3
-                self.CourseChar3 = self.KeyInput
-            end
-            if self.CourseChar2 ~=nil then
-                self.CourseChar1 = self.CourseChar2
-                self.CourseChar2 = self.KeyInput
-            end
-            if self.CourseChar1 ~=nil then
-                self.CourseChar1 = self.KeyInput
-            end
+	if self.KeyInput ~= "Menu" or self.KeyInput ~= "Delete" or self.KeyInput ~= "Destination" and self.KeyInput ~=nil then
+        if not self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+
+	    if not self.CourseChar5 then
+		self.CourseChar5 = self.KeyInput
+	    end
+
 
         else
 
-        if self.CourseChar4 ~= nil and self.CourseChar3 ~= nil and self.CourseChar2 ~=nil and self.CourseChar1 ~= nil then
+        if self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 
-            self.CourseChar4 = nil
-            self.CourseChar3 = nil
-            self.CourseChar2 = nil 
-            self.CourseChar1 = nil
+            
+		self.CourseChar4 = self.CourseChar5
+		self.CourseChar5 = self.KeyInput
+		
+	    
+	else
+	if self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+	   
+		self.CourseChar3 = self.CourseChar4
+		self.CourseChar4 = self.CourseChar5
+		self.CourseChar5 = self.KeyInput
+	else
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		
+		self.CourseChar2 = self.CourseChar3						
+		self.CourseChar3 = self.CourseChar4
+		self.CourseChar4 = self.CourseChar5
+		self.CourseChar5 = self.KeyInput
+	end
+	else
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
+		
+		self.CourseChar1 = self.CourseChar2
+		self.CourseChar2 = self.CourseChar3						
+		self.CourseChar3 = self.CourseChar4
+		self.CourseChar4 = self.CourseChar5
+		self.CourseChar5 = self.KeyInput
+	end
+	end
 
-            if self.CourseChar4 == nil then
-                self.CourseChar4 = self.KeyInput
-            end
-            if self.CourseChar4 ~= nil then
-                self.CourseChar3 = self.CourseChar4
-                self.CourseChar4 = self.KeyInput
-            end
-            if self.CourseChar3 ~= nil then
-                self.CourseChar2 = self.CourseChar3
-                self.CourseChar3 = self.KeyInput
-            end
-            if self.CourseChar2 ~=nil then
-                self.CourseChar1 = self.CourseChar2
-                self.CourseChar2 = self.KeyInput
-            end
-            if self.CourseChar1 ~=nil then
-                self.CourseChar1 = self.KeyInput
-            end
-        end
+	if self.KeyInput = "Delete" then
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and self.CourseChar1 then
+		self.CourseChar1 = nil
+	else
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
+		self.CourseChar2 = nil
+	else
+	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		self.CourseChar3 = nil
+	else
+	if self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		self.CourseChar4 = nil
+	else
+	if self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		self.CourseChar5 = nil
+	end
+	end
     end
 
 
@@ -433,6 +468,9 @@ function TRAIN_SYSTEM:Think()
 
 
 end
+				
+
+	
 end
 
 function TRAIN_SYSTEM:AnnQueue(msg)
@@ -481,7 +519,5 @@ function TRAIN_SYSTEM:Play(dep,not_last)
             self:AnnQueue(ltbl.not_last)
         end
     end
-    self:AnnQueue{"buzz_end","click2"}
-    self:UpdateBoards()
 end
 
