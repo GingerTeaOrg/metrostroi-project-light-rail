@@ -899,19 +899,19 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 	---Door control
 
-	if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "left" then
+	if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "left" then --if the doors are cleared for opening and the side is left
 
 		
-		if self:GetNW2Int("Door1-2b",0) <=1 or self:GetNW2Int("Door3-4b",0) <=1 or self:GetNW2Int("Door5-6b",0) <=1 or self:GetNW2Int("Door7-8b",0) <= 1 then
+		if self:GetNW2Int("Door1-2b",0) <=1 or self:GetNW2Int("Door3-4b",0) <=1 or self:GetNW2Int("Door5-6b",0) <=1 or self:GetNW2Int("Door7-8b",0) <= 1 then --then either of the doors are less than fully opened
 		
 		
 		
-			self:DoorHandler(true,false,self.SelectedDoor)
-		elseif self:GetNW2Int("Door1-2b",0) == 1 or self:GetNW2Int("Door3-4b",0) == 1 or self:GetNW2Int("Door5-6b",0) == 1 or self:GetNW2Int("Door7-8b",0) == 1 then
+			self:DoorHandler(true,false,self.SelectedDoor) --give the command to open the doors
+		elseif self:GetNW2Int("Door1-2b",0) == 1 or self:GetNW2Int("Door3-4b",0) == 1 or self:GetNW2Int("Door5-6b",0) == 1 or self:GetNW2Int("Door7-8b",0) == 1 then --if they're all at 1 then don't do anything anymore
 			self:DoorHandler(false,false,self.SelectedDoor)
-			self:SetNW2Bool("DoorsJustOpened",true)
+			self:SetNW2Bool("DoorsJustOpened",true) --we've just opened the doors. This matters for simulating the departing procedure.
 		end
-	elseif self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "right" then
+	elseif self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "right" then --same thing for the right side
 
 		if self:GetNW2Int("Door1-2a",0) <= 1 or self:GetNW2Int("Door3-4a",0) <= 1 or self:GetNW2Int("Door5-6a",0) <= 1 or self:GetNW2Int("Door7-8a",0) <=1 then
 			self:DoorHandler(true,false,self.SelectedDoor)
@@ -923,26 +923,26 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 	
 
 
-	elseif self:GetNW2Bool("DoorsUnlocked") == false then
-		if self:GetNW2Int("Door1-2a",0) >= 1 or self:GetNW2Int("Door3-4a",0) >= 1 or self:GetNW2Int("Door5-6a",0) >= 1 or self:GetNW2Int("Door7-8a",0) >= 1 or self:GetNW2Int("Door1-2b",0) >=1 or self:GetNW2Int("Door3-4b",0) >= 1 or self:GetNW2Int("Door5-6b",0) >=1 or self:GetNW2Int("Door7-8b",0) >= 1 then
-			self:DoorHandler(false,true,self.SelectedDoor)
+	elseif self:GetNW2Bool("DoorsUnlocked") == false then --if we've just gotten the door close signal
+		if self:GetNW2Int("Door1-2a",0) >= 1 or self:GetNW2Int("Door3-4a",0) >= 1 or self:GetNW2Int("Door5-6a",0) >= 1 or self:GetNW2Int("Door7-8a",0) >= 1 or self:GetNW2Int("Door1-2b",0) >=1 or self:GetNW2Int("Door3-4b",0) >= 1 or self:GetNW2Int("Door5-6b",0) >=1 or self:GetNW2Int("Door7-8b",0) >= 1 then --if either door is already open
+			self:DoorHandler(false,true,self.SelectedDoor) --set them to close
 			--math.Clamp(self.SelectedDoor,0,1)
-		elseif self:GetNW2Int("Door1-2a",0) <=0 or self:GetNW2Int("Door3-4a",0) <=0 or self:GetNW2Int("Door5-6a",0) <=0 or self:GetNW2Int("Door7-8a",0) <=0 or self:GetNW2Int("Door1-2b",0) <=0 or self:GetNW2Int("Door3-4b",0) <=0 or self:GetNW2Int("Door5-6b",0) <=0 or self:GetNW2Int("Door7-8b",0) <= 0 then
-			self:DoorHandler(false,false)
+		elseif self:GetNW2Int("Door1-2a",0) <=0 or self:GetNW2Int("Door3-4a",0) <=0 or self:GetNW2Int("Door5-6a",0) <=0 or self:GetNW2Int("Door7-8a",0) <=0 or self:GetNW2Int("Door1-2b",0) <=0 or self:GetNW2Int("Door3-4b",0) <=0 or self:GetNW2Int("Door5-6b",0) <=0 or self:GetNW2Int("Door7-8b",0) <= 0 then --if they're already closed
+			self:DoorHandler(false,false) --stop controlling them
 			--math.Clamp(self.SelectedDoor,0,1)
-			if self:GetNW2Bool("DoorsJustOpened",false) == true then
+			if self:GetNW2Bool("DoorsJustOpened",false) == true then --if they were just open, reset that flag
 				self:SetNW2Bool("DoorsJustOpened",false)
-				self:SetNW2Bool("DoorsJustClosed",true)
+				self:SetNW2Bool("DoorsJustClosed",true) --say that we just closed the doors
 			end
 		end
 	end
 	--math.Clamp(self.DoorState,0,1)
 
-	if self:GetNW2Bool("DoorCloseCommand",false) == true and self:GetNW2Int("Door1-2a",0) == 0 and self:GetNW2Int("Door3-4a",0) == 0 and self:GetNW2Int("Door5-6a",0) == 0 and self:GetNW2Int("Door7-8a",0) == 0 and self:GetNW2Int("Door1-2b",0) == 0 and self:GetNW2Int("Door3-4b",0) == 0 and self:GetNW2Int("Door5-6b",0) == 0 and self:GetNW2Int("Door7-8b",0) == 0 then
-		self:SetNW2Bool("DoorAlarm",true)
+	if self:GetNW2Bool("DoorCloseCommand",false) == true and self:GetNW2Int("Door1-2a",0) == 0 and self:GetNW2Int("Door3-4a",0) == 0 and self:GetNW2Int("Door5-6a",0) == 0 and self:GetNW2Int("Door7-8a",0) == 0 and self:GetNW2Int("Door1-2b",0) == 0 and self:GetNW2Int("Door3-4b",0) == 0 and self:GetNW2Int("Door5-6b",0) == 0 and self:GetNW2Int("Door7-8b",0) == 0 then --if all doors are closed
+		self:SetNW2Bool("DoorAlarm",true) --set off the door closed confirmation
 
 	else
-		self:SetNW2Bool("DoorAlarm",false)
+		self:SetNW2Bool("DoorAlarm",false) --don't set it off yet if above condition isn't true, either not closed yet or confirmed departure button
 	end
 	
 end
