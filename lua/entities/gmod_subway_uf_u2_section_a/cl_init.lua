@@ -14,7 +14,8 @@ ENT.Lights = {
     [3] = { "light",        Vector(406,0,100), Angle(0,0,0), Color(216,161,92), fov=40,farz=450,brightness = 3, texture = "effects/flashlight/soft",shadows = 1,headlight=true},
     [4] = { "headlight",        Vector(545,38.5,40), Angle(-20,0,0), Color(255,0,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
 	[5] = { "headlight",        Vector(545,-38.5,40), Angle(-20,0,0), Color(255,0,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
-    [6] = { "headlight",        Vector(406,39,98), Angle(90,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.7, texture = "effects/flashlight/soft.vmt" },
+    [6] = { "headlight",        Vector(406,39,98), Angle(90,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.7, texture = "effects/flashlight/soft.vmt" }, --cab lights
+    [16] = { "headlight",        Vector(406,-39,98), Angle(90,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.7, texture = "effects/flashlight/soft.vmt" },
     [7] = { "headlight",        Vector(545,38.5,45), Angle(-20,0,0), Color(255,102,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
 	[8] = { "headlight",        Vector(545,-38.5,45), Angle(-20,0,0), Color(255,102,0), fov=50 ,brightness = 0.7, farz=50,texture = "models/metrostroi_train/equipment/headlight2",shadows = 0,backlight=true},
     [9] = { "dynamiclight",        Vector(400,30,490), Angle(90,0,0), Color(226,197,160), fov=100,    brightness = 0.9, scale = 1.0, texture = "effects/flashlight/soft.vmt" }, --passenger light front left
@@ -30,6 +31,12 @@ ENT.ClientProps["headlights_on"] = {
 	scale = 1,
 }
 
+ENT.ClientProps["cab"] = {
+    model ="models/lilly/uf/u2/u2-cabfront.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+}
 
 
 
@@ -138,6 +145,20 @@ ENT.ClientProps["Mirror"] = {
 ENT.ClientProps["Speedo"] = {
     model = "models/lilly/uf/u2/cab/speedo.mdl",
     pos = Vector(418.616,10.1868,54.6),
+    ang = Angle(-8.5,0,0),
+    hideseat = 0.2,
+}
+
+ENT.ClientProps["Voltage"] = {
+    model = "models/lilly/uf/u2/cab/gauge.mdl",
+    pos = Vector(418.17,18.9,54.75),
+    ang = Angle(-12,0,0),
+    hideseat = 0.2,
+}
+
+ENT.ClientProps["Amps"] = {
+    model = "models/lilly/uf/u2/cab/gauge.mdl",
+    pos = Vector(418.616,-21.3744,54.6),
     ang = Angle(-8.5,0,0),
     hideseat = 0.2,
 }
@@ -542,6 +563,8 @@ function ENT:Initialize()
     	self.CabLight = 0
 
     	self.SpeedoAnim = 0
+        self.VoltAnim = 0
+        self.AmpAnim = 0
 	
     	--self:ShowHide("headlights_on",false,0)
 	
@@ -614,7 +637,10 @@ function ENT:Think()
 
     self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
 
-    --local JustLocked 
+
+    self.VoltAnim = self:GetNW2Float("BatteryCharge",0) / 46
+
+    self:Animate("Voltage",self.VoltAnim,0,100,1,0,false)
 
     if self:GetNW2Bool("BatteryOn",false) == true then
         
@@ -623,8 +649,10 @@ function ENT:Think()
 
         if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
             self:SetLightPower(6,true)
+            self:SetLightPower(16,true)
         elseif self:GetNW2Bool("Cablight",false) == false then
             self:SetLightPower(6,false)
+            self:SetLightPower(16,false)
         end
 
         
