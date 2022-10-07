@@ -489,12 +489,12 @@ ENT.ButtonMap["LastStation"] = {
 ENT.ButtonMap["Blinds"] = {
     pos = Vector(415,40,100),
     ang = Angle(0,280,90),
-    width = 780,
+    width = 50,
     height = 800,
     scale = 0.0625,
     buttons = {
-        {ID = "Blinds+",x=000,y=200,w=800,h=205, tooltip="Pull the blinds up"},
-        {ID = "Blinds-",x=0,y=400,w=800,h=205, tooltip="Pull the blinds down"},
+        {ID = "Blinds+",x=000,y=200,w=50,h=205, tooltip="Pull the blinds up"},
+        {ID = "Blinds-",x=0,y=400,w=50,h=205, tooltip="Pull the blinds down"},
     }
 }
 --[[]
@@ -605,7 +605,9 @@ function ENT:Think()
     	end
 
 
-    
+    self:Animate("Door_fr2",self:GetNW2Int("Door1-2a"),0,100,1,1,false)
+
+
     if self:GetNW2Bool("Microphone",false) == true then
         self:SetNW2Bool("Microphone",false)
         self:PlayOnce(self.Nags[1],"cabin",1,1)
