@@ -293,8 +293,8 @@ function ENT:Initialize()
 
 	
 	self.DoorSideUnlocked = "None"
-	self:SetNW2Bool("DepartureConfirmed",true)
-	self:SetNW2Bool("DoorsUnlocked",false)
+	--self:SetNW2Bool("DepartureConfirmed",true)
+	--self:SetNW2Bool("DoorsUnlocked",false)
 
 
 	self:SetPackedBool("FlickBatterySwitchOn",false)
@@ -468,26 +468,6 @@ function ENT:Think(dT)
 	
 
 
-	PrintMessage(HUD_PRINTTALK, "Door Front right")
-	PrintMessage(HUD_PRINTTALK, self:GetNW2Int("Door1-2a"))
-
-	PrintMessage(HUD_PRINTTALK, "Door middle1 right")
-	PrintMessage(HUD_PRINTTALK, self:GetNW2Int("Door3-4a"))
-
-	PrintMessage(HUD_PRINTTALK, "Door middle2 right")
-	PrintMessage(HUD_PRINTTALK, self:GetNW2Int("Door5-6a"))
-
-	PrintMessage(HUD_PRINTTALK, "Door rear right")
-	PrintMessage(HUD_PRINTTALK, self:GetNW2Int("Door7-8a"))
-
-	print("DoorState1")
-	print(self.DoorState1)
-	print("DoorState2")
-	print(self.DoorState2)
-	print("DoorState3")
-	print(self.DoorState3)
-	print("DoorState4")
-	print(self.DoorState4)
 
 	self.u2sectionb:TrainSpawnerUpdate()
 	--self:SetNW2Entity("U2a",self)
@@ -702,7 +682,7 @@ function ENT:Think(dT)
 
 		end
 
-			if self:GetNWString("DoorSide","none") == "left" and (self:GetNW2Int("Door1-2b",0) == 1 or self:GetNW2Int("Door3-4b",0)  == 1 or self:GetNW2Int("Door5-6b",0) == 1 or self:GetNW2Int("Door7-8b",0)) then
+			if self:GetNWString("DoorSide","none") == "left" and (self:GetNW2Float("Door1-2b",0) == 1 or self:GetNW2Float("Door3-4b",0)  == 1 or self:GetNW2Float("Door5-6b",0) == 1 or self:GetNW2Float("Door7-8b",0)) then
 				self.LeftDoorsOpen = true
 				self.RightDoorsOpen = false
 			
@@ -710,7 +690,7 @@ function ENT:Think(dT)
 				self.LeftDoorsOpen = false
 				self.RightDoorsOpen = false
 		
-			elseif self:GetNWString("DoorSide","none") == "right" and (self:GetNW2Int("Door1-2a",0) == 1 or self:GetNW2Int("Door3-4a",0)  == 1 or self:GetNW2Int("Door5-6a",0) == 1 or self:GetNW2Int("Door7-8a",0)) then
+			elseif self:GetNWString("DoorSide","none") == "right" and (self:GetNW2Float("Door1-2a",0) == 1 or self:GetNW2Float("Door3-4a",0)  == 1 or self:GetNW2Float("Door5-6a",0) == 1 or self:GetNW2Float("Door7-8a",0)) then
 				self.LeftDoorsOpen = false
 				self.RightDoorsOpen = true
 			
@@ -932,78 +912,86 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 	local DoorR3
 	local DoorR4
 
-	DoorL4 = math.Clamp(self:GetNW2Int("Door7-8b",0),0,1)
-	self:SetNW2Int("Door7-8b",DoorL4)
+	--[[DoorL4 = math.Clamp(self:GetNW2Float("Door7-8b",0),0,1)
+	self:SetNW2Float("Door7-8b",DoorL4)
 
-	DoorL3 = math.Clamp(self:GetNW2Int("Door5-6b",0),0,1)
-	self:SetNW2Int("Door5-6b",DoorL3)
+	DoorL3 = math.Clamp(self:GetNW2Float("Door5-6b",0),0,1)
+	self:SetNW2Float("Door5-6b",DoorL3)
 
-	DoorL2 = math.Clamp(self:GetNW2Int("Door3-4b",0),0,1)
-	self:SetNW2Int("Door3-4b",DoorL2)
+	DoorL2 = math.Clamp(self:GetNW2Float("Door3-4b",0),0,1)
+	self:SetNW2Float("Door3-4b",DoorL2)
 
-	DoorL1 = math.Clamp(self:GetNW2Int("Door1-2b",0),0,1)
-	self:SetNW2Int("Door1-2b",DoorL1)
+	DoorL1 = math.Clamp(self:GetNW2Float("Door1-2b",0),0,1)
+	self:SetNW2Float("Door1-2b",DoorL1)
 
-	DoorR1 = math.Clamp(self:GetNW2Int("Door1-2a",0),0,1)
-	self:SetNW2Int("Door1-2a",DoorR1)
+	DoorR1 = math.Clamp(self:GetNW2Float("Door1-2a",0),0,1)
+	self:SetNW2Float("Door1-2a",DoorR1)
 
-	DoorR2 = math.Clamp(self:GetNW2Int("Door3-4a",0),0,1)
-	self:SetNW2Int("Door3-4a",DoorR2)
+	PrintMessage(HUD_PRINTTALK,self:GetNW2Float("Door1-2a",0))
 
-	DoorR3 = math.Clamp(self:GetNW2Int("Door5-6a",0),0,1)
-	self:SetNW2Int("Door5-6a",DoorR3)
+	PrintMessage(HUD_PRINTTALK,self:GetNW2Float("Door3-4a",0))
 
-	DoorR4 = math.Clamp(self:GetNW2Int("Door7-8a",0),0,1)
-	self:SetNW2Int("Door7-8a",DoorR4)
+	DoorR2 = math.Clamp(self:GetNW2Float("Door3-4a",0),0,1)
+	self:SetNW2Float("Door3-4a",DoorR2)
+
+	DoorR3 = math.Clamp(self:GetNW2Float("Door5-6a",0),0,1)
+	self:SetNW2Float("Door5-6a",DoorR3)
+
+	DoorR4 = math.Clamp(self:GetNW2Float("Door7-8a",0),0,1)
+	self:SetNW2Float("Door7-8a",DoorR4)]]
 
 	---Door control
 
 	if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "left" then --if the doors are cleared for opening and the side is left
 
 		
-		if self:GetNW2Int("Door1-2b",0) <=1 or self:GetNW2Int("Door3-4b",0) <=1 or self:GetNW2Int("Door5-6b",0) <=1 or self:GetNW2Int("Door7-8b",0) <= 1 then --then either of the doors are less than fully opened
-		
-		
+		if self:GetNW2Float("Door1-2b",0) <=1 or self:GetNW2Float("Door3-4b",0) <=1 or self:GetNW2Float("Door5-6b",0) <=1 or self:GetNW2Float("Door7-8b",0) <= 1 then --then either of the doors are less than fully opened
+			self:SetNW2Bool("DoorsJustOpened",true)
+			self.CommandClose = false
 			self.CommandOpen = true
 			--self:DoorHandler(true,false) --give the command to open the doors
-		elseif self:GetNW2Int("Door1-2b",0) == 1 or self:GetNW2Int("Door3-4b",0) == 1 or self:GetNW2Int("Door5-6b",0) == 1 or self:GetNW2Int("Door7-8b",0) == 1 then --if they're all at 1 then don't do anything anymore
-			self:DoorHandler(false,false)
+		elseif self:GetNW2Float("Door1-2b",0) >= 1 or self:GetNW2Float("Door3-4b",0) >= 1 or self:GetNW2Float("Door5-6b",0) >= 1 or self:GetNW2Float("Door7-8b",0) >= 1 then --if they're all at 1 then don't do anything anymore
+			self.CommandOpen = false
+			--self.CommandClose = false
 			self:SetNW2Bool("DoorsJustOpened",true) --we've just opened the doors. This matters for simulating the departing procedure.
 		end
 	elseif self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "right" then --same thing for the right side
 
-		if self:GetNW2Int("Door1-2a",0) <= 1 or self:GetNW2Int("Door3-4a",0) <= 1 or self:GetNW2Int("Door5-6a",0) <= 1 or self:GetNW2Int("Door7-8a",0) <=1 then
-			self:DoorHandler(true,false)
-
-		elseif self:GetNW2Int("Door1-2a",0) == 1 or self:GetNW2Int("Door3-4a",0) == 1 or self:GetNW2Int("Door5-6a",0) == 1 or self:GetNW2Int("Door7-8a",0) == 1 then
-			self:DoorHandler(false,false)
+		if self:GetNW2Float("Door1-2a",0) < 1 or self:GetNW2Float("Door3-4a",0) < 1 or self:GetNW2Float("Door5-6a",0) < 1 or self:GetNW2Float("Door7-8a",0) < 1 then
+			self.CommandOpen = true
+			self.CommandClose = false
+			self:SetNW2Bool("DoorsJustOpened",true)
+		elseif self:GetNW2Float("Door1-2a",0) >= 1 or self:GetNW2Float("Door3-4a",0) >= 1 or self:GetNW2Float("Door5-6a",0) >= 1 or self:GetNW2Float("Door7-8a",0) >= 1 then
+			self.CommandOpen = false
 			self:SetNW2Bool("DoorsJustOpened",true)
 		end
 	
 
 
-	elseif self:GetNW2Bool("DoorsUnlocked") == false then --if we've just gotten the door close signal
-		if self:GetNW2Int("Door1-2a",0) >= 1 or self:GetNW2Int("Door3-4a",0) >= 1 or self:GetNW2Int("Door5-6a",0) >= 1 or self:GetNW2Int("Door7-8a",0) >= 1 or self:GetNW2Int("Door1-2b",0) >=1 or self:GetNW2Int("Door3-4b",0) >= 1 or self:GetNW2Int("Door5-6b",0) >=1 or self:GetNW2Int("Door7-8b",0) >= 1 then --if either door is already open
-			self:DoorHandler(false,true) --set them to close
+	elseif self:GetNW2Bool("DoorCloseCommand",false) == true then --if we've just gotten the door close signal
+			self.CommandClose = true --set them to close
 			
-		elseif self:GetNW2Int("Door1-2a",0) <=0 or self:GetNW2Int("Door3-4a",0) <=0 or self:GetNW2Int("Door5-6a",0) <=0 or self:GetNW2Int("Door7-8a",0) <=0 or self:GetNW2Int("Door1-2b",0) <=0 or self:GetNW2Int("Door3-4b",0) <=0 or self:GetNW2Int("Door5-6b",0) <=0 or self:GetNW2Int("Door7-8b",0) <= 0 then --if they're already closed
-			self:DoorHandler(false,false) --stop controlling them
-			
+		if self:GetNW2Float("Door1-2a",0) <=0 or self:GetNW2Float("Door3-4a",0) <=0 or self:GetNW2Float("Door5-6a",0) <=0 or self:GetNW2Float("Door7-8a",0) <=0 or self:GetNW2Float("Door1-2b",0) <=0 or self:GetNW2Float("Door3-4b",0) <=0 or self:GetNW2Float("Door5-6b",0) <=0 or self:GetNW2Float("Door7-8b",0) <= 0 then --if they're already closed
+			--self.CommandOpen = false --stop controlling them
+			self.CommandClose = false
 			if self:GetNW2Bool("DoorsJustOpened",false) == true then --if they were just open, reset that flag
 				self:SetNW2Bool("DoorsJustOpened",false)
+				self.CommandClose = false
 				self:SetNW2Bool("DoorsJustClosed",true) --say that we just closed the doors
 			end
 		end
 	end
 	--math.Clamp(self.DoorState,0,1)
 
-	if self:GetNW2Bool("DoorCloseCommand",false) == true and self:GetNW2Int("Door1-2a",0) == 0 and self:GetNW2Int("Door3-4a",0) == 0 and self:GetNW2Int("Door5-6a",0) == 0 and self:GetNW2Int("Door7-8a",0) == 0 and self:GetNW2Int("Door1-2b",0) == 0 and self:GetNW2Int("Door3-4b",0) == 0 and self:GetNW2Int("Door5-6b",0) == 0 and self:GetNW2Int("Door7-8b",0) == 0 then --if all doors are closed
+	if self:GetNW2Bool("DoorCloseCommand",false) == true and self:GetNW2Float("Door1-2a",0) <= 0 and self:GetNW2Float("Door3-4a",0) <= 0 and self:GetNW2Float("Door5-6a",0) <= 0 and self:GetNW2Float("Door7-8a",0) <= 0 and self:GetNW2Float("Door1-2b",0) <= 0 and self:GetNW2Float("Door3-4b",0) <= 0 and self:GetNW2Float("Door5-6b",0) <= 0 and self:GetNW2Float("Door7-8b",0) <= 0 then --if all doors are closed
 		self:SetNW2Bool("DoorAlarm",true) --set off the door closed confirmation
 
 	else
 		self:SetNW2Bool("DoorAlarm",false) --don't set it off yet if above condition isn't true, either not closed yet or confirmed departure button
 	end
 
+	--print(self:GetNW2Float("Door1-2a",0))
+	--print(self:GetNW2Float("Door1-2b",0))
 
 	--TEMPORARY
 
@@ -1017,67 +1005,67 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 	
 					
 	
-			if self.DoorRandomness1 == 1 then
+			if self.DoorRandomness1 > 0 then
 	
 				
-					if self:GetNW2Int("Door1-2b",0) <= 1 then -- If state less than 1, open them
+					if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
 	
-						if self:GetNW2Int("Door1-2b",0) != 1 then
-							self.DoorState1 = self:GetNW2Int("Door1-2b",0) + 0.1
+						if self:GetNW2Float("Door1-2b",0) != 1 then
+							self.DoorState1 = self:GetNW2Float("Door1-2b",0) + 0.1
 							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-							self:SetNW2Int("Door1-2b",self.DoorState1)
-							self.LastDoorTick = CurTime()
+							self:SetNW2Float("Door1-2b",self.DoorState1)
+							
 						end
-					elseif self:GetNW2Int("Door1-2b",0) >= 1 then
-						self:SetNW2Int("Door1-2b",1)
+					elseif self:GetNW2Float("Door1-2b",0) >= 1 then
+						self:SetNW2Float("Door1-2b",1)
 					end
 			end
 	
-			if self.DoorRandomness2 == 1 then
+			if self.DoorRandomness2 > 0 then
 	
 				
-				if self:GetNW2Int("Door3-4b",0) <= 1 then -- If state less than 1, open them
+				if self:GetNW2Float("Door3-4b",0) <= 1 then -- If state less than 1, open them
 	
-					if self:GetNW2Int("Door3-4b",0) != 1 then
-						self.DoorState2 = self:GetNW2Int("Door3-4b",0) + 0.1
+					if self:GetNW2Float("Door3-4b",0) != 1 then
+						self.DoorState2 = self:GetNW2Float("Door3-4b",0) + 0.1
 						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Int("Door3-4b",self.DoorState2)
-						self.LastDoorTick = CurTime()
+						self:SetNW2Float("Door3-4b",self.DoorState2)
+						
 					end
-				elseif self:GetNW2Int("Door3-4b",0) >= 1 then
-					self:SetNW2Int("Door3-4b",1)
+				elseif self:GetNW2Float("Door3-4b",0) >= 1 then
+					self:SetNW2Float("Door3-4b",1)
 				end
 			end
 	
-			if self.DoorRandomness3 == 1 then
+			if self.DoorRandomness3 > 0 then
 	
 				
-				if self:GetNW2Int("Door5-6b",0) <= 1 then -- If state less than 1, open them
+				if self:GetNW2Float("Door5-6b",0) <= 1 then -- If state less than 1, open them
 	
-					if self:GetNW2Int("Door5-6b",0) != 1 then
-						self.DoorState2 = self:GetNW2Int("Door5-6b",0) + 0.1
+					if self:GetNW2Float("Door5-6b",0) != 1 then
+						self.DoorState2 = self:GetNW2Float("Door5-6b",0) + 0.1
 						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Int("Door5-6b",self.DoorState2)
-						self.LastDoorTick = CurTime()
+						self:SetNW2Float("Door5-6b",self.DoorState2)
+						
 					end
-				elseif self:GetNW2Int("Door5-6b",0) >= 1 then
-					self:SetNW2Int("Door5-6b",1)
+				elseif self:GetNW2Float("Door5-6b",0) >= 1 then
+					self:SetNW2Float("Door5-6b",1)
 				end
 			end
 	
-			if self.DoorRandomness4 == 1 then
+			if self.DoorRandomness4 > 0 then
 	
 				
-				if self:GetNW2Int("Door7-8b",0) <= 1 then -- If state less than 1, open them
+				if self:GetNW2Float("Door7-8b",0) <= 1 then -- If state less than 1, open them
 	
-					if self:GetNW2Int("Door7-8b",0) != 1 then
-						self.DoorState2 = self:GetNW2Int("Door7-8b",0) + 0.1
+					if self:GetNW2Float("Door7-8b",0) != 1 then
+						self.DoorState2 = self:GetNW2Float("Door7-8b",0) + 0.1
 						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Int("Door7-8b",self.DoorState2)
-						self.LastDoorTick = CurTime()
+						self:SetNW2Float("Door7-8b",self.DoorState2)
+						
 					end
-				elseif self:GetNW2Int("Door7-8b",0) >= 1 then
-					self:SetNW2Int("Door7-8b",1)
+				elseif self:GetNW2Float("Door7-8b",0) >= 1 then
+					self:SetNW2Float("Door7-8b",1)
 				end
 			end
 	
@@ -1086,71 +1074,69 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 		if self.CommandClose == true and self.CommandOpen == false then
 	
 				
-				if self.DoorRandomness1 == 1 then
+				
 	
 				
-					if self:GetNW2Int("Door1-2b",0) <= 1 then -- If state less than 1, open them
+					if self:GetNW2Float("Door1-2b",0) > 0 then -- If state 1, close them
 	
-						if self:GetNW2Int("Door1-2b",0) != 1 then
-							self.DoorState1 = self:GetNW2Int("Door1-2b",0) - 0.1
+						if self:GetNW2Float("Door1-2b",0) != 0 then
+							self.DoorState1 = self:GetNW2Float("Door1-2b",0) - 0.1
 							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-							self:SetNW2Int("Door1-2b",self.DoorState1)
-							self.LastDoorTick = CurTime()
+							self:SetNW2Float("Door1-2b",self.DoorState1)
 						end
-					elseif self:GetNW2Int("Door1-2b",0) >= 1 then
-						self:SetNW2Int("Door1-2b",1)
+					elseif self:GetNW2Float("Door1-2b",0) <= 0 then
+						self:SetNW2Float("Door1-2b",0)
 					end
+				
 			
 	
-				if self.DoorRandomness2 == 1 then
+				
 	
 				
-					if self:GetNW2Int("Door3-4b",0) <= 1 then -- If state less than 1, open them
+					if self:GetNW2Float("Door3-4b",0) > 0 then -- If state 1, close them
 	
-						if self:GetNW2Int("Door3-4b",0) != 1 then
-							self.DoorState2 = self:GetNW2Int("Door3-4b",0) - 0.1
+						if self:GetNW2Float("Door3-4b",0) != 0 then
+							self.DoorState2 = self:GetNW2Float("Door3-4b",0) - 0.1
 							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-							self:SetNW2Int("Door3-4b",self.DoorState2)
-							self.LastDoorTick = CurTime()
+							self:SetNW2Float("Door3-4b",self.DoorState2)
 						end
-					elseif self:GetNW2Int("Door3-4b",0) >= 1 then
-						self:SetNW2Int("Door3-4b",1)
+					elseif self:GetNW2Float("Door3-4b",0) <= 0 then
+						self:SetNW2Float("Door3-4b",1)
 					end
-				end
-	
-				if self.DoorRandomness3 == 1 then
+				
 	
 				
-					if self:GetNW2Int("Door5-6b",0) <= 1 then -- If state less than 1, open them
-	
-						if self:GetNW2Int("Door5-6b",0) != 1 then
-							self.DoorState2 = self:GetNW2Int("Door5-6b",0) - 0.1
-							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-							self:SetNW2Int("Door5-6b",self.DoorState2)
-							self.LastDoorTick = CurTime()
-						end
-					elseif self:GetNW2Int("Door5-6b",0) >= 1 then
-						self:SetNW2Int("Door5-6b",1)
-					end
-				end
-	
-				if self.DoorRandomness4 == 1 then
 	
 				
-					if self:GetNW2Int("Door7-8b",0) <= 1 then -- If state less than 1, open them
+					if self:GetNW2Float("Door5-6b",0) > 0 then -- If state less than 1, open them
 	
-						if self:GetNW2Int("Door7-8b",0) != 1 then
-							self.DoorState2 = self:GetNW2Int("Door7-8b",0) - 0.1
+						if self:GetNW2Float("Door5-6b",0) != 0 then
+							self.DoorState2 = self:GetNW2Float("Door5-6b",0) - 0.1
 							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-							self:SetNW2Int("Door7-8b",self.DoorState2)
-							self.LastDoorTick = CurTime()
+							self:SetNW2Float("Door5-6b",self.DoorState2)
+							
 						end
-					elseif self:GetNW2Int("Door7-8b",0) >= 1 then
-						self:SetNW2Int("Door7-8b",1)
+					elseif self:GetNW2Float("Door5-6b",0) <= 0 then
+						self:SetNW2Float("Door5-6b",1)
 					end
-				end
-			else
-			end
+				
+	
+				
+	
+				
+					if self:GetNW2Float("Door7-8b",0) > 0 then -- If state less than 1, open them
+	
+						if self:GetNW2Float("Door7-8b",0) != 0 then
+							self.DoorState2 = self:GetNW2Float("Door7-8b",0) - 0.1
+							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
+							self:SetNW2Float("Door7-8b",self.DoorState2)
+							
+						end
+					elseif self:GetNW2Float("Door7-8b",0) <= 0 then
+						self:SetNW2Float("Door7-8b",0)
+					end
+				
+			
 	
 		end
 	end
@@ -1167,71 +1153,75 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 	
 					
 	
-			if self.DoorRandomness1 == 1 then
+			if self.DoorRandomness1 > 0 then
 	
 				
-					if self:GetNW2Int("Door1-2a",0) <= 1 then -- If state less than 1, open them
+					if self:GetNW2Float("Door1-2a",0) <= 1 then -- If state less than 1, open them
 	
-						if self:GetNW2Int("Door1-2a",0) != 1 then
-							self.DoorState1 = self:GetNW2Int("Door1-2a",0) + 0.1
+						if self:GetNW2Float("Door1-2a",0) != 1 then
+							self.DoorState1 = self:GetNW2Float("Door1-2a",0) + 0.1
 							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-							self:SetNW2Int("Door1-2a",self.DoorState1)
-							self.LastDoorTick = CurTime()
+							self:SetNW2Float("Door1-2a",self.DoorState1)
+							
 						end
-					elseif self:GetNW2Int("Door1-2a",0) >= 1 then
-						self:SetNW2Int("Door1-2a",1)
-						print("Door 12a open")
+					elseif self:GetNW2Float("Door1-2a",0) >= 1 then
+						--self:SetNW2Float("Door1-2a",1)
+						PrintMessage(HUD_PRINTTALK, "Door1-2a open")
+						
 					end
 			end
 	
-			if self.DoorRandomness2 == 1 then
+			if self.DoorRandomness2 > 0 then
 	
 				
-				if self:GetNW2Int("Door3-4a",0) <= 1 then -- If state less than 1, open them
+				if self:GetNW2Float("Door3-4a",0) <= 1 then -- If state less than 1, open them
 	
-					if self:GetNW2Int("Door3-4a",0) != 1 then
-						self.DoorState2 = self:GetNW2Int("Door3-4a",0) + 0.1
+					if self:GetNW2Float("Door3-4a",0) != 1 then
+						self.DoorState2 = self:GetNW2Float("Door3-4a",0) + 0.1
 						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Int("Door3-4a",self.DoorState2)
-						self.LastDoorTick = CurTime()
+						self:SetNW2Float("Door3-4a",self.DoorState2)
+						
 					end
-				elseif self:GetNW2Int("Door3-4a",0) >= 1 then
-					self:SetNW2Int("Door3-4a",1)
-					print("Door 34a open")
+				elseif self:GetNW2Float("Door3-4a",0) >= 1 then
+					--self:SetNW2Float("Door3-4a",1)
+					PrintMessage(HUD_PRINTTALK, "Door3-4a open")
+					
 				end
 			end
 	
-			if self.DoorRandomness3 == 1 then
+			if self.DoorRandomness3 > 0 then
 	
 				
-				if self:GetNW2Int("Door5-6a",0) <= 1 then -- If state less than 1, open them
+				if self:GetNW2Float("Door5-6a",0) <= 1 then -- If state less than 1, open them
 	
-					if self:GetNW2Int("Door5-6a",0) != 1 then
-						self.DoorState3 = self:GetNW2Int("Door5-6a",0) + 0.1
+					if self:GetNW2Float("Door5-6a",0) != 1 then
+						self.DoorState3 = self:GetNW2Float("Door5-6a",0) + 0.1
 						self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-						self:SetNW2Int("Door5-6a",self.DoorState3)
-						self.LastDoorTick = CurTime()
+						self:SetNW2Float("Door5-6a",self.DoorState3)
+						
 					end
-				elseif self:GetNW2Int("Door5-6a",0) >= 1 then
-					self:SetNW2Int("Door5-6a",1)
-					print("Door 56a open")
+				elseif self:GetNW2Float("Door5-6a",0) >= 1 then
+					--self:SetNW2Float("Door5-6a",1)
+					PrintMessage(HUD_PRINTTALK, "Door5-6a open")
+					
 				end
 			end
 	
-			if self.DoorRandomness4 == 1 then
+			if self.DoorRandomness4 > 0 then
 	
 				
-				if self:GetNW2Int("Door7-8a",0) <= 1 then -- If state less than 1, open them
+				if self:GetNW2Float("Door7-8a",0) <= 1 then -- If state less than 1, open them
 	
-					if self:GetNW2Int("Door7-8a",0) != 1 then
-						self.DoorState4 = self:GetNW2Int("Door7-8a",0) + 0.1
+					if self:GetNW2Float("Door7-8a",0) != 1 then
+						self.DoorState4 = self:GetNW2Float("Door7-8a",0) + 0.1
 						self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-						self:SetNW2Int("Door7-8a",self.DoorState4)
-						self.LastDoorTick = CurTime()
+						self:SetNW2Float("Door7-8a",self.DoorState4)
+						
 					end
-				elseif self:GetNW2Int("Door7-8a",0) >= 1 then
-					self:SetNW2Int("Door7-8a",1)
-					print("Door 78a open")
+				elseif self:GetNW2Float("Door7-8a",0) >= 1 then
+					--self:SetNW2Float("Door7-8a",1)
+					PrintMessage(HUD_PRINTTALK, "Door7-8a open")
+					
 				end
 			end
 	
@@ -1240,75 +1230,72 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 		if self.CommandClose == true and self.CommandOpen == false then
 	
 				
-				if self.DoorRandomness1 == 1 then
+				
 	
 				
-					if self:GetNW2Int("Door1-2a",0) <= 1 then -- If state less than 1, open them
+					if self:GetNW2Float("Door1-2a",0) > 0 then -- If state less than 1, open them
 	
-						if self:GetNW2Int("Door1-2a",0) != 1 then
-							self.DoorState1 = self:GetNW2Int("Door1-2a",0) - 0.1
-							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-							self:SetNW2Int("Door1-2a",self.DoorState1)
-							self.LastDoorTick = CurTime()
-						end
-					elseif self:GetNW2Int("Door1-2a",0) >= 1 then
-						self:SetNW2Int("Door1-2a",1)
-						print("Door 12a closed")
+						--if self:GetNW2Float("Door1-2a",0) != 0 then
+							self.DoorState1 = self:GetNW2Float("Door1-2a",0) - 0.1
+							--self.DoorState1 = math.Clamp(self.DoorState1,0,1)
+							self:SetNW2Float("Door1-2a",self.DoorState1)
+							
+						--end
+					elseif self:GetNW2Float("Door1-2a",0) < 0 then
+						--self:SetNW2Float("Door1-2a",0)
 					end
 			
 	
-				if self.DoorRandomness2 == 1 then
+				
 	
 				
-					if self:GetNW2Int("Door3-4a",0) <= 1 then -- If state less than 1, open them
+					if self:GetNW2Float("Door3-4a",0) > 0 then -- If state less than 1, open them
 	
-						if self:GetNW2Int("Door3-4a",0) != 1 then
-							self.DoorState2 = self:GetNW2Int("Door3-4a",0) - 0.1
-							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-							self:SetNW2Int("Door3-4a",self.DoorState2)
-							self.LastDoorTick = CurTime()
-						end
-					elseif self:GetNW2Int("Door3-4a",0) >= 1 then
-						self:SetNW2Int("Door3-4a",1)
-						print("Door 34a closed")
+						--if self:GetNW2Float("Door3-4a",0) != 0 then
+							self.DoorState2 = self:GetNW2Float("Door3-4a",0) - 0.1
+							--self.DoorState2 = math.Clamp(self.DoorState2,0,1)
+							self:SetNW2Float("Door3-4a",self.DoorState2)
+							
+						--end
+					elseif self:GetNW2Float("Door3-4a",0) < 0 then
+						--self:SetNW2Float("Door3-4a",0)
 					end
-				end
-	
-				if self.DoorRandomness3 == 1 then
+				
 	
 				
-					if self:GetNW2Int("Door5-6a",0) <= 1 then -- If state less than 1, open them
 	
-						if self:GetNW2Int("Door5-6a",0) != 1 then
-							self.DoorState3 = self:GetNW2Int("Door5-6a",0) - 0.1
+				
+					if self:GetNW2Float("Door5-6a",0) > 0 then -- If state less than 1, open them
+	
+						--if self:GetNW2Float("Door5-6a",0) != 0 then
+							self.DoorState3 = self:GetNW2Float("Door5-6a",0) - 0.1
 							self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-							self:SetNW2Int("Door5-6a",self.DoorState3)
-							self.LastDoorTick = CurTime()
-						end
-					elseif self:GetNW2Int("Door5-6a",0) >= 1 then
-						self:SetNW2Int("Door5-6a",1)
-						print("Door 56a closed")
+							self:SetNW2Float("Door5-6a",self.DoorState3)
+							
+						--end
+					elseif self:GetNW2Float("Door5-6a",0) < 0 then
+						--self:SetNW2Float("Door5-6a",0)
+						
 					end
-				end
-	
-				if self.DoorRandomness4 == 1 then
+				
 	
 				
-					if self:GetNW2Int("Door7-8a",0) <= 1 then -- If state less than 1, open them
 	
-						if self:GetNW2Int("Door7-8a",0) != 1 then
-							self.DoorState4 = self:GetNW2Int("Door7-8a",0) - 0.1
+				
+					if self:GetNW2Float("Door7-8a",0) > 0 then -- If state less than 1, open them
+	
+						--if self:GetNW2Float("Door7-8a",0) != 0 then
+							self.DoorState4 = self:GetNW2Float("Door7-8a",0) - 0.1
 							self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-							self:SetNW2Int("Door7-8a",self.DoorState4)
-							self.LastDoorTick = CurTime()
-						end
-					elseif self:GetNW2Int("Door7-8a",0) >= 1 then
-						self:SetNW2Int("Door7-8a",1)
-						print("Door 78a closed")
+							self:SetNW2Float("Door7-8a",self.DoorState4)
+							
+						--end
+					elseif self:GetNW2Float("Door7-8a",0) < 0 then
+						--self:SetNW2Float("Door7-8a",0)
+						
 					end
-				end
-			else
-			end
+				
+				
 	
 		end
 	end
@@ -1317,15 +1304,6 @@ end
 
 
 
-
-
-function ENT:Wait(seconds)
-
-	local time = seconds or 1
-    local start = os.time()
-    repeat until os.time() == start + time
-
-end
 
 function ENT:OnButtonPress(button,ply)
 
@@ -1345,18 +1323,6 @@ function ENT:OnButtonPress(button,ply)
 	if self.Duewag_U2.ThrottleRate == 0 then
 		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
 	end
-
-	if button == "door_test_open" then
-
-		self:SetNW2Int("DoorTest",1)
-	end
-
-	if button == "door_test_close" then
-
-		self:SetNW2Int("DoorTest",0)
-	end
-
-
 
 	if button == "PantoUp" then
 		if self.PantoUp == false then
@@ -1712,10 +1678,13 @@ function ENT:OnButtonRelease(button,ply)
 						self:SetNW2Bool("DoorsUnlocked",true)
 						self:SetNW2Bool("DepartureConfirmed",false)
 						self:SetNW2Bool("DoorCloseCommand",false)
-						self.DoorRandomness1 = math.random(0)
-						self.DoorRandomness2 = math.random(0)
-						self.DoorRandomness3 = math.random(0)
-						self.DoorRandomness4 = math.random(0)
+						self.DoorRandomness1 = math.random(0,2)
+						self.DoorRandomness2 = math.random(0,2)
+						--self.DoorRandomness3 = math.random(0,2)
+						--self.DoorRandomness4 = math.random(0,2)
+
+						PrintMessage(HUD_PRINTTALK,self.DoorRandomness1)
+						PrintMessage(HUD_PRINTTALK,self.DoorRandomness2)
 					
 					
 				end
@@ -1836,321 +1805,9 @@ function ENT:Blink(enable, left, right)
 
 end
 
-function ENT:DoorHandler(CommandOpen,CommandClose,ChosenDoor)
-
+function ENT:DoorHandler(CommandOpen,CommandClose)
+end
 
 
 	
 
-if self.DoorSideUnlocked == "Left" then
-
-
-
-	if CommandOpen == true and CommandClose == false then
-
-		
-
-				
-
-		if self.DoorRandomness1 == 1 then
-
-			
-				if self:GetNW2Int("Door1-2b",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door1-2b",0) != 1 then
-						self.DoorState1 = self:GetNW2Int("Door1-2b",0) + 0.1
-						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-						self:SetNW2Int("Door1-2b",self.DoorState1)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door1-2b",0) >= 1 then
-					self:SetNW2Int("Door1-2b",1)
-				end
-		end
-
-		if self.DoorRandomness2 == 1 then
-
-			
-			if self:GetNW2Int("Door3-4b",0) <= 1 then -- If state less than 1, open them
-
-				if self:GetNW2Int("Door3-4b",0) != 1 then
-					self.DoorState2 = self:GetNW2Int("Door3-4b",0) + 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Int("Door3-4b",self.DoorState2)
-					self.LastDoorTick = CurTime()
-				end
-			elseif self:GetNW2Int("Door3-4b",0) >= 1 then
-				self:SetNW2Int("Door3-4b",1)
-			end
-		end
-
-		if self.DoorRandomness3 == 1 then
-
-			
-			if self:GetNW2Int("Door5-6b",0) <= 1 then -- If state less than 1, open them
-
-				if self:GetNW2Int("Door5-6b",0) != 1 then
-					self.DoorState2 = self:GetNW2Int("Door5-6b",0) + 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Int("Door5-6b",self.DoorState2)
-					self.LastDoorTick = CurTime()
-				end
-			elseif self:GetNW2Int("Door5-6b",0) >= 1 then
-				self:SetNW2Int("Door5-6b",1)
-			end
-		end
-
-		if self.DoorRandomness4 == 1 then
-
-			
-			if self:GetNW2Int("Door7-8b",0) <= 1 then -- If state less than 1, open them
-
-				if self:GetNW2Int("Door7-8b",0) != 1 then
-					self.DoorState2 = self:GetNW2Int("Door7-8b",0) + 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Int("Door7-8b",self.DoorState2)
-					self.LastDoorTick = CurTime()
-				end
-			elseif self:GetNW2Int("Door7-8b",0) >= 1 then
-				self:SetNW2Int("Door7-8b",1)
-			end
-		end
-
-	end
-
-	if CommandClose == true and CommandOpen == false then
-
-			
-			if self.DoorRandomness1 == 1 then
-
-			
-				if self:GetNW2Int("Door1-2b",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door1-2b",0) != 1 then
-						self.DoorState1 = self:GetNW2Int("Door1-2b",0) - 0.1
-						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-						self:SetNW2Int("Door1-2b",self.DoorState1)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door1-2b",0) >= 1 then
-					self:SetNW2Int("Door1-2b",1)
-				end
-		
-
-			if self.DoorRandomness2 == 1 then
-
-			
-				if self:GetNW2Int("Door3-4b",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door3-4b",0) != 1 then
-						self.DoorState2 = self:GetNW2Int("Door3-4b",0) - 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Int("Door3-4b",self.DoorState2)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door3-4b",0) >= 1 then
-					self:SetNW2Int("Door3-4b",1)
-				end
-			end
-
-			if self.DoorRandomness3 == 1 then
-
-			
-				if self:GetNW2Int("Door5-6b",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door5-6b",0) != 1 then
-						self.DoorState2 = self:GetNW2Int("Door5-6b",0) - 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Int("Door5-6b",self.DoorState2)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door5-6b",0) >= 1 then
-					self:SetNW2Int("Door5-6b",1)
-				end
-			end
-
-			if self.DoorRandomness4 == 1 then
-
-			
-				if self:GetNW2Int("Door7-8b",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door7-8b",0) != 1 then
-						self.DoorState2 = self:GetNW2Int("Door7-8b",0) - 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Int("Door7-8b",self.DoorState2)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door7-8b",0) >= 1 then
-					self:SetNW2Int("Door7-8b",1)
-				end
-			end
-		else
-		end
-
-	end
-end
-
-if self.DoorSideUnlocked == "Right" then
-
-
-		
-
-
-	if CommandOpen == true and CommandClose == false then
-
-		
-
-				
-
-		if self.DoorRandomness1 == 1 then
-
-			
-				if self:GetNW2Int("Door1-2a",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door1-2a",0) != 1 then
-						self.DoorState1 = self:GetNW2Int("Door1-2a",0) + 0.1
-						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-						self:SetNW2Int("Door1-2a",self.DoorState1)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door1-2a",0) >= 1 then
-					self:SetNW2Int("Door1-2a",1)
-					print("Door 12a open")
-				end
-		end
-
-		if self.DoorRandomness2 == 1 then
-
-			
-			if self:GetNW2Int("Door3-4a",0) <= 1 then -- If state less than 1, open them
-
-				if self:GetNW2Int("Door3-4a",0) != 1 then
-					self.DoorState2 = self:GetNW2Int("Door3-4a",0) + 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Int("Door3-4a",self.DoorState2)
-					self.LastDoorTick = CurTime()
-				end
-			elseif self:GetNW2Int("Door3-4a",0) >= 1 then
-				self:SetNW2Int("Door3-4a",1)
-				print("Door 34a open")
-			end
-		end
-
-		if self.DoorRandomness3 == 1 then
-
-			
-			if self:GetNW2Int("Door5-6a",0) <= 1 then -- If state less than 1, open them
-
-				if self:GetNW2Int("Door5-6a",0) != 1 then
-					self.DoorState3 = self:GetNW2Int("Door5-6a",0) + 0.1
-					self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-					self:SetNW2Int("Door5-6a",self.DoorState3)
-					self.LastDoorTick = CurTime()
-				end
-			elseif self:GetNW2Int("Door5-6a",0) >= 1 then
-				self:SetNW2Int("Door5-6a",1)
-				print("Door 56a open")
-			end
-		end
-
-		if self.DoorRandomness4 == 1 then
-
-			
-			if self:GetNW2Int("Door7-8a",0) <= 1 then -- If state less than 1, open them
-
-				if self:GetNW2Int("Door7-8a",0) != 1 then
-					self.DoorState4 = self:GetNW2Int("Door7-8a",0) + 0.1
-					self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-					self:SetNW2Int("Door7-8a",self.DoorState4)
-					self.LastDoorTick = CurTime()
-				end
-			elseif self:GetNW2Int("Door7-8a",0) >= 1 then
-				self:SetNW2Int("Door7-8a",1)
-				print("Door 78a open")
-			end
-		end
-
-	end
-
-	if CommandClose == true and CommandOpen == false then
-
-			
-			if self.DoorRandomness1 == 1 then
-
-			
-				if self:GetNW2Int("Door1-2a",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door1-2a",0) != 1 then
-						self.DoorState1 = self:GetNW2Int("Door1-2a",0) - 0.1
-						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-						self:SetNW2Int("Door1-2a",self.DoorState1)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door1-2a",0) >= 1 then
-					self:SetNW2Int("Door1-2a",1)
-					print("Door 12a closed")
-				end
-		
-
-			if self.DoorRandomness2 == 1 then
-
-			
-				if self:GetNW2Int("Door3-4a",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door3-4a",0) != 1 then
-						self.DoorState2 = self:GetNW2Int("Door3-4a",0) - 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Int("Door3-4a",self.DoorState2)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door3-4a",0) >= 1 then
-					self:SetNW2Int("Door3-4a",1)
-					print("Door 34a closed")
-				end
-			end
-
-			if self.DoorRandomness3 == 1 then
-
-			
-				if self:GetNW2Int("Door5-6a",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door5-6a",0) != 1 then
-						self.DoorState3 = self:GetNW2Int("Door5-6a",0) - 0.1
-						self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-						self:SetNW2Int("Door5-6a",self.DoorState3)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door5-6a",0) >= 1 then
-					self:SetNW2Int("Door5-6a",1)
-					print("Door 56a closed")
-				end
-			end
-
-			if self.DoorRandomness4 == 1 then
-
-			
-				if self:GetNW2Int("Door7-8a",0) <= 1 then -- If state less than 1, open them
-
-					if self:GetNW2Int("Door7-8a",0) != 1 then
-						self.DoorState4 = self:GetNW2Int("Door7-8a",0) - 0.1
-						self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-						self:SetNW2Int("Door7-8a",self.DoorState4)
-						self.LastDoorTick = CurTime()
-					end
-				elseif self:GetNW2Int("Door7-8a",0) >= 1 then
-					self:SetNW2Int("Door7-8a",1)
-					print("Door 78a closed")
-				end
-			end
-		else
-		end
-
-	end
-end
-	--self.DoorState = State
-
-	--print(self.DoorState)
-
-	
-
-end

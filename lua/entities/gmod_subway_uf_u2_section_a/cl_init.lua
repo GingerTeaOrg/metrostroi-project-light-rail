@@ -69,15 +69,15 @@ ENT.ClientProps["Door_fl2"] = {
 }
 
 ENT.ClientProps["Door_rr1"] = {
-	model = "models/lilly/uf/u2/door_h_rr1.mdl",
-	pos = Vector(0,0,0),
+	model = "models/lilly/uf/u2/door_h_fr1.mdl",
+	pos = Vector(-243,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
 
 ENT.ClientProps["Door_rr2"] = {
-	model = "models/lilly/uf/u2/door_h_rr2.mdl",
-	pos = Vector(0,0,0),
+	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector(-243,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
@@ -606,6 +606,10 @@ function ENT:Think()
 
 
     self:Animate("Door_fr2",self:GetNW2Int("Door1-2a"),0,100,1,1,false)
+    self:Animate("Door_fr1",self:GetNW2Int("Door1-2a"),0,50,1,1,false)
+
+    self:Animate("Door_rr2",self:GetNW2Int("Door3-4a"),0,100,1,1,false)
+    self:Animate("Door_rr1",self:GetNW2Int("Door3-4a"),0,50,1,1,false)
 
 
     if self:GetNW2Bool("Microphone",false) == true then
