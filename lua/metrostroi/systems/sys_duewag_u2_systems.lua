@@ -8,7 +8,11 @@ function TRAIN_SYSTEM:Initialize()
 	self.DeltaTime = 0
 	self.Speed = 0
 	self.ThrottleState = 0
+
+	self.Voltage = 0
 	
+	self.ResistorBank = 0
+
 	self.DoorFLState = 100
 	self.DoorRLState = 100
 	self.DoorFRState = 100
@@ -109,9 +113,12 @@ end]]
 --------------------------------------------------------------------------------
 function TRAIN_SYSTEM:Think(Train)
 	--local train = self.Train 
-	--self.TriggerInput()
-	--self.TriggerOutput()
-	
+	self:TriggerInput()
+	self:TriggerOutput()
+	self:U2Engine()
+
+
+
 	self.PrevTime = self.PrevTime or RealTime()-0.33
     	self.DeltaTime = (RealTime() - self.PrevTime)
     	self.PrevTime = RealTime()
@@ -398,4 +405,54 @@ end
 
 
 function TRAIN_SYSTEM:U2Engine()
+
+	local Percentage
+
+	if self.ThrottleState >= 0 then
+		Percentage = self.ThrottleState
+	elseif self.ThrottleState < 0 then
+		Percentage = self.ThrottleState * -1
+	end
+
+	if Percentage <= 5 and Percentage > 0 then
+		self.ResistorBank = 1
+	elseif Percentage >= 10 and Percentage < 15 then
+		self.ResistorBank = 2
+	elseif Percentage >= 15 and Percentage < 20 then
+		self.ResistorBank = 3
+	elseif Percentage >= 20 and Percentage < 25 then
+		self.ResistorBank = 4
+	elseif Percentage >= 25 and Percentage < 30 then
+		self.ResistorBank = 5
+	elseif Percentage >= 30 and Percentage < 35 then
+		self.ResistorBank = 6
+	elseif Percentage >= 35 and Percentage < 40 then
+		self.ResistorBank = 7
+	elseif Percentage >= 40 and Percentage < 45 then
+		self.ResistorBank = 8
+	elseif Percentage >= 45 and Percentage < 50 then
+		self.ResistorBank = 9
+	elseif Percentage >= 50 and Percentage < 55 then
+		self.ResistorBank = 10
+	elseif Percentage >= 55 and Percentage < 60 then
+		self.ResistorBank = 11
+	elseif Percentage >= 60 and Percentage < 65 then
+		self.ResistorBank = 12
+	elseif Percentage >= 65 and Percentage < 70 then
+		self.ResistorBank = 13
+	elseif Percentage >= 70 and Percentage < 75 then
+		self.ResistorBank = 14
+	elseif Percentage >= 75 and Percentage < 80 then
+		self.ResistorBank = 15
+	elseif Percentage >= 80 and Percentage < 85 then
+		self.ResistorBank = 16
+	elseif Percentage >= 85 and Percentage < 90 then
+		self.ResistorBank = 17
+	elseif Percentage >= 90 and Percentage < 95 then
+		self.ResistorBank = 18
+	elseif Percentage >= 95 and Percentage < 100 then
+		self.ResistorBank = 19
+	elseif Percentage == 100 then
+		self.ResistorBank = 100
+	end
 end

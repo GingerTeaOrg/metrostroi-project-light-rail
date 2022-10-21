@@ -2,9 +2,11 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
+util.AddNetworkString("uf_contact")
+
 ENT.Types = {
     ["diamond"] = {
-        "models/lilly/uf/common/diamond.mdl",
+        "models/lilly/uf/common/pantograph.mdl",
         Vector(0,0.0,-7),Angle(0,90,0),
     },
 }
@@ -12,7 +14,7 @@ ENT.Types = {
 
 function ENT:SetParameters()
     local type = self.Types[self.PantoType or "Diamond"]
-    self:SetModel(typ and typ[1] or "models/lilly/uf/common/diamond.mdl")
+    self:SetModel(type[1] or "models/lilly/uf/common/pantograph.mdl")
 end
 
 function ENT:Initialize()
@@ -26,9 +28,21 @@ function ENT:Initialize()
         })
     end
 
+    if IsValid(self:GetPhysicsObject()) then
+        self:GetPhysicsObject():SetNoCollide(true)
+    end
+
     self.Raised = false
 
-    self.height = 0
+    self.Height = 0
+    self.Voltage = 0
+    self.ContactStates = { false, false }
+    self.NextStates = { false }
+    self.PantoPos = Vector(0,0,255)
+    self.VoltageDrop = 0
+    self.DropByPeople = 0
+    self.VotageDropByTouch = 0
+    self.CheckTimeout = 0
 end
 
 
@@ -36,7 +50,8 @@ function ENT:TriggerInput(iname, value)
     if iname == "Raise" then self.PantographRaised = value end
 end
 
-
+function ENT:Think()
+end
 
 
 function ENT:CheckContact(pos,dir,id,cpos)
@@ -71,7 +86,7 @@ function ENT:CheckVoltage(dT)
     -- Check contact states
     if (CurTime() - self.CheckTimeout) <= 0.25 then return end
     self.CheckTimeout = CurTime()
-    local supported = C_Reqiure3rdRail:GetInt() > 0 and UF.MapHasFullSupport()
+    --local supported = C_Reqiure3rdRail:GetInt() > 0 and UF.MapHasFullSupport()
     local feeder = self.Feeder and UF.Voltages[self.Feeder]
     local volt = feeder or UF.Voltage or 750
 
@@ -85,16 +100,14 @@ function ENT:CheckVoltage(dT)
 
 
     self.NextStates[1] = not self.DisableContacts and not self.DisableContactsManual
-                        and self:CheckContact(self.PantLPos,Vector(0,-1,0),1,self.PantLCPos)
-    self.NextStates[2] = not self.DisableContacts and not self.DisableContactsManual
-                        and self:CheckContact(self.PantRPos,Vector(0, 1,0),2,self.PantRCPos)
+                        and self:CheckContact(self.PantLPos,Vector(0,-1,0),1,self.PantoPos)
 
     -- Detect changes in contact states
-    for i=1,2 do
+    local i=1
         local state = self.NextStates[i]
         if state ~= self.ContactStates[i] then
             self.ContactStates[i] = state
-            if not state then continue end
+            if not state then return end
 
             self.VoltageDrop = -40*(0.5 + 0.5*math.random())
 
@@ -131,20 +144,20 @@ function ENT:CheckVoltage(dT)
                 --self.Train:PlayOnce("zap",sound_source,0.7*volume,50+math.random(90,120))
             end
         end
-    end
+    
     -- Voltage spikes
     self.VoltageDrop = math.max(-30,math.min(30,self.VoltageDrop + (0 - self.VoltageDrop)*10*dT))
 
     -- Detect voltage
     self.Voltage = 0
     self.DropByPeople = 0
-    for i=1,2 do
+    
         if self.ContactStates[i] then
             self.Voltage = volt + self.VoltageDrop
         elseif IsValid(self.Connectors[i]) and self.Connectors[i].Coupled == self then
             self.Voltage = self.Connectors[i].Power and UF.Voltage or 0
         end
-    end
+
     if self.VoltageDropByTouch > 0 then
         local Rperson = 0.613
         local Iperson = UF.Voltage / (Rperson/(self.VoltageDropByTouch + 1e-9))
@@ -200,7 +213,6 @@ function ENT:SpawnFunction(ply, tr)
     ent:Spawn()
     ent:Activate()
 
-    if not inhibitrerail then Metrostroi.RerailBogey(ent) end
     return ent
 end
 

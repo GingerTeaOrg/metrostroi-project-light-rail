@@ -36,6 +36,7 @@ ENT.ClientProps["cab"] = {
     pos = Vector(0,0,0),
     ang = Angle(0,0,0),
     scale = 1,
+    hideseat = 1000000,
 }
 
 
@@ -45,6 +46,7 @@ ENT.ClientProps["Door_fr1"] = {
 	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
+    hideseat = 1000000,
 }
 
 ENT.ClientProps["Door_fr2"] = {
@@ -52,20 +54,23 @@ ENT.ClientProps["Door_fr2"] = {
 	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
+    hideseat = 1000000,
 }
 
 ENT.ClientProps["Door_fl1"] = {
-	model = "models/lilly/uf/u2/door_h_fl1.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
+	model = "models/lilly/uf/u2/door_h_fr1.mdl",
+	pos = Vector(721.5,0,0),
+	ang = Angle(0,180,0),
 	scale = 1,
+    hideseat = 1000000,
 }
 
 ENT.ClientProps["Door_fl2"] = {
-	model = "models/lilly/uf/u2/door_h_fl2.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
+	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector(721.5,0,0),
+	ang = Angle(0,180,0),
 	scale = 1,
+    hideseat = 1000000,
 }
 
 ENT.ClientProps["Door_rr1"] = {
@@ -73,6 +78,7 @@ ENT.ClientProps["Door_rr1"] = {
 	pos = Vector(-243,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
+    hideseat = 1000000,
 }
 
 ENT.ClientProps["Door_rr2"] = {
@@ -80,37 +86,39 @@ ENT.ClientProps["Door_rr2"] = {
 	pos = Vector(-243,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
+    hideseat = 1000000,
 }
 
 ENT.ClientProps["Door_rl1"] = {
-	model = "models/lilly/uf/u2/door_h_rl1.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
+	model = "models/lilly/uf/u2/door_h_fr1.mdl",
+	pos = Vector(478,0,0),
+	ang = Angle(0,180,0),
 	scale = 1,
+    hideseat = 1000000,
 }
 
 ENT.ClientProps["Door_rl2"] = {
-	model = "models/lilly/uf/u2/door_h_rl2.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
+	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector(478,0,0),
+	ang = Angle(0,180,0),
 	scale = 1,
+    hideseat = 1000000,
 }
 
 
 ENT.ClientProps["IBIS"] = {
 	model = "models/lilly/uf/u2/IBIS.mdl",
-	--pos = Vector(530,-20.5,78),
-    	pos = Vector(0,0,0),
+    pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
 
-ENT.ClientProps["Pantograph"] = {
+--[[ENT.ClientProps["Pantograph"] = {
 	model = "models/lilly/uf/common/pantograph.mdl",
 	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
-}
+}]]
 
 
 
@@ -592,9 +600,9 @@ end
 function ENT:Think()
 	self.BaseClass.Think(self)
 	
-    	self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,false)
-    	self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
-        self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,1,false)
+    self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,false)
+    self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
+    self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,1,false)
 	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,1,false)
 
@@ -718,10 +726,10 @@ function ENT:Think()
         	self.IBISKickStart = true	--remember that we are doing now
 		    self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
 	    end
-	    if self.ElectricOnMoment - CurTime() > 5 then --if it's been five seconds
+	    if CurTime() - self.ElectricOnMoment > 5 then --if it's been five seconds
 		    if self.IBISStarted == false then --and if we haven't fully started the IBIS yet
 			    self.IBISStarted = true --say that we have started it
-			    self:PlayOnce("IBIS_bootup") --play the chime
+			    self:PlayOnce("IBIS_bootup",Vector(412,-12,55),1,1) --play the chime
 		    end
 	    end
 	
@@ -873,3 +881,7 @@ function ENT:Think()
 	
 end
 Metrostroi.GenerateClientProps()
+
+function ENT:U2SoundEngine()
+
+end

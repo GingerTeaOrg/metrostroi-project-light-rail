@@ -114,7 +114,6 @@ function ENT:Initialize()
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
     end
-    self:SetUseType(SIMPLE_USE)
 
     -- Set proper parameters for the bogey
     if IsValid(self:GetPhysicsObject()) then
@@ -309,16 +308,7 @@ end
 
 
 
--- Used to decouple
-function ENT:Use(ply)
-    net.Start("metrostroi-bogey-menu")
-        net.WriteEntity(self)
-        net.WriteBool(game.SinglePlayer() or not self.CPPICanUse or self:CPPICanUse(ply))
-        net.WriteBool(self.DisableContactsManual)
-        net.WriteBool(self.ParkingBrakePressure~=nil)
-        net.WriteBool(self.DisableParking)
-    net.Send(ply)
-end
+
 
 
 

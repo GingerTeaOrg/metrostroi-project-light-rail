@@ -133,12 +133,12 @@ function TRAIN_SYSTEM:Trigger(name,value)
        if name == "Number9" then
           self.KeyInput = 9
         end
-      if name == "Destination" then
-        self.Menu = 1
-      end
-       if name == "Delete" then
+        if name == "Destination" then
+            self.Menu = 1
+        end
+        if name == "Delete" then
           self.KeyInput = "Delete"
-      end
+        end
 
     end
 
@@ -168,46 +168,45 @@ end
 
 
 if CLIENT then
-    local function createFont(name,font,size)
-        surface.CreateFont("IBIS", {
-            font = "Liquid Crystal Display", -- main text font
-            size = size,
-            weight = 500,
-            blursize = false,
-            antialias = true,
-            underline = false,
-            italic = false,
-            strikeout = false,
-            symbol = false,
-            rotary = false,
-            shadow = true,
-            additive = false,
-            outline = false,
-            extended = true,
-            scanlines = false,
-        })
-	surface.CreateFont("IBIS_Glow", { -- background glow font
-	font = "Liquid Crystal Display",
-	size = 42,
-	weight = 0,
-	blursize = 3,
-	scanlines = 0,
-	antialias = true,
-	underline = false,
-	italic = false,
-	strikeout = false,
-	symbol = false,
-	rotary = false,
-	shadow = true,
-	additive = true,
-	outline = true,
-	extended = true
+    surface.CreateFont("IBIS", { -- main text font
+		font = "Liquid Crystal Display",
+		size = 42,
+		weight = 400,
+		blursize = false,
+		antialias = false, --can be disabled for pixel perfect font, but at low resolution the font is looks corrupted
+		underline = false,
+		italic = false,
+		strikeout = false,
+		symbol = false,
+		rotary = false,
+		shadow = false,
+		additive = false,
+		outline = false,
+		extended = true,
+		scanlines = false,
+	})
+	surface.CreateFont("IBIS_background", { -- background glow font
+		font = "Liquid Crystal Display",
+		size = 42,
+		weight = 0,
+		blursize = 3,
+		scanlines = 0,
+		antialias = true,
+		underline = false,
+		italic = false,
+		strikeout = false,
+		symbol = false,
+		rotary = false,
+		shadow = true,
+		additive = true,
+		outline = true,
+		extended = true
 	})
 end
 
 
 
-createFont("ASNP","Liquid Crystal Display",30,200)
+--createFont("IBIS","Liquid Crystal Display",30,200)
 
 
 
@@ -402,62 +401,52 @@ function TRAIN_SYSTEM:Think()
 	if self.KeyInput ~= "Menu" or self.KeyInput ~= "Delete" or self.KeyInput ~= "Destination" and self.KeyInput ~=nil then
         if not self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 
-	    if not self.CourseChar5 then
 		self.CourseChar5 = self.KeyInput
-	    end
 
 
-        else
 
-        if self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+        elseif self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 
             
 		self.CourseChar4 = self.CourseChar5
 		self.CourseChar5 = self.KeyInput
 		
 	    
-	else
-	if self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+	    elseif self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 	   
 		self.CourseChar3 = self.CourseChar4
 		self.CourseChar4 = self.CourseChar5
 		self.CourseChar5 = self.KeyInput
-	else
-	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+	    elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 		
 		self.CourseChar2 = self.CourseChar3						
 		self.CourseChar3 = self.CourseChar4
 		self.CourseChar4 = self.CourseChar5
 		self.CourseChar5 = self.KeyInput
-	end
-	else
-	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
+
+	    elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
 		
 		self.CourseChar1 = self.CourseChar2
 		self.CourseChar2 = self.CourseChar3						
 		self.CourseChar3 = self.CourseChar4
 		self.CourseChar4 = self.CourseChar5
 		self.CourseChar5 = self.KeyInput
-	end
+	    end
 	end
 
-	if self.KeyInput = "Delete" then
-	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and self.CourseChar1 then
-		self.CourseChar1 = nil
-	else
-	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
-		self.CourseChar2 = nil
-	else
-	if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-		self.CourseChar3 = nil
-	else
-	if self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-		self.CourseChar4 = nil
-	else
-	if self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-		self.CourseChar5 = nil
-	end
-	end
+	if self.KeyInput == "Delete" then
+	    if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and self.CourseChar1 then
+		    self.CourseChar1 = nil
+	    elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
+		    self.CourseChar2 = nil
+	    elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		    self.CourseChar3 = nil
+	    elseif self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		    self.CourseChar4 = nil
+	    elseif self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+		    self.CourseChar5 = nil
+        end
+
     end
 
 

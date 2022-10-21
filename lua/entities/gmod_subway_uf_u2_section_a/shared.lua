@@ -23,11 +23,7 @@ function ENT:GetStandingArea()
     return Vector(465,-20,35),Vector(60,20,35) -- TWEAK: NEEDS TESTING INGAME
 end
 
-local function GetDoorPosition(i,k)
 
-	--math.random
-    return Vector(450,0)
-end
 
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
@@ -105,6 +101,12 @@ ENT.AnnouncerPositions = {
     {Vector(-3,60 ,62),300,0.2},
 }
 
+local function GetDoorPosition(i,k)
+
+	--math.random
+    return Vector(450,0)
+end
+
 ENT.LeftDoorPositions = {}
 ENT.RightDoorPositions = {}
 for i=0,3 do
@@ -122,7 +124,7 @@ ENT.Cameras = {
     {Vector(570,0,70),Angle(80,0,0),"Train.Common.CouplerCamera"},
 }
 ENT.MirrorCams = {
-    {Vector(407.5+30,40,5) ,Angle(30,10,0),"Train.U2.Left"},
+    {Vector(407.5+30,40,5),Angle(30,10,0),"Train.U2.Left"},
     {Vector(450+13,0,26),Angle(60,0,0),"Train.U2.Right"},
 }
 
