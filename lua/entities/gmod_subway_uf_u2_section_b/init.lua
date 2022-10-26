@@ -32,9 +32,8 @@ function ENT:Initialize()
 
 	self.Bogeys = {}
 	-- Create bogeys
-	--self.FrontBogey = self:CreateBogey(Vector( 0,0,0),Angle(0,0,0),true,"u2")--103,0,-80
-	table.insert(self.Bogeys,self.FrontBogey)	
-	self.RearBogey  = self:CreateBogeyUF(Vector( -300,0,0),Angle(0,180,0),true,"duewag_motor")
+	--table.insert(self.Bogeys,self.FrontBogey)	
+	--self.RearBogey = self:CreateBogeyUF(Vector( -300,0,0),Angle(0,180,0),true,"duewag_motor")
 	
 	self.CabEnabled = false
 	self.BatteryOn = false
@@ -96,7 +95,7 @@ function ENT:Initialize()
 							[KEY_PAD_MINUS] = "TimeAndDate",
 		},
 	}
-	self.RearCouple = self:CreateCoupleUF(Vector( -415,0,2),Angle(0,180,0),true,"u2")	
+	self.RearCouple = self.ParentTrain.RearCouple
     --self.FrontCouple = self:CreateCoupleUF(Vector( 0,0,23),Angle(0,180,0),true,"u2")	
 	
     --self.RearBogey:SetRenderMode(RENDERMODE_TRANSALPHA)
@@ -104,9 +103,9 @@ function ENT:Initialize()
 
 	--self.Timer = CurTime()	
 	--self.Timer2 = CurTime()
-	self:SetNW2Entity("RearBogey",self.ParentTrain.RearBogey)
+	--[[self:SetNW2Entity("RearBogey",self.ParentTrain.RearBogey)
 	self:SetNW2Entity("MiddleBogey",self.ParentTrain.MiddleBogey)
-	self:SetNW2Entity("FrontBogey",self.ParentTrain.FrontBogey)
+	self:SetNW2Entity("FrontBogey",self.ParentTrain.FrontBogey)]]
 	undo.Create(self.ClassName)	
 	undo.AddEntity(self)	
 	undo.SetPlayer(self.Owner)
@@ -280,7 +279,7 @@ end
 function ENT:OnButtonPress(button,ply)
 
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
-	if self.ThrottleRate == 0 then
+	--[[if self.ThrottleRate == 0 then
 		if button == "ThrottleUp" then self.ThrottleRate = 2 end
 		if button == "ThrottleDown" then self.ThrottleRate = -2 end
 	end
@@ -292,10 +291,10 @@ function ENT:OnButtonPress(button,ply)
 
 	if self.ThrottleRate == 0 then
 		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
-	end
+	end]]
 
 	
-	if button == "PantoUp" then
+	--[[if button == "PantoUp" then
 		if self.PantoUp == false then
 			self.PantoUp = true 
 			self.Duewag_U2:TriggerInput("PantoUp",self.KeyPantoUp)
@@ -374,7 +373,7 @@ function ENT:OnButtonPress(button,ply)
 			
 		end
 			
-	end
+	end]]
 	
 	
 	if button == "Deadman" then
@@ -451,11 +450,11 @@ function ENT:OnButtonPress(button,ply)
 		self.IBIS:Trigger("Enter")
 	end
 
-	if button == "ThrowCouplerSet" then
+	--[[if button == "ThrowCouplerSet" then
 		if self.Duewag_U2.BrakePressure > 1 and self.Duewag_U2.Speed < 1 then
 			self.RearCouple:Decouple()
 		end
-	end
+	end]]
 end
 
 
@@ -500,11 +499,11 @@ function ENT:TrainSpawnerUpdate()
 	--local num = self.WagonNumber
 	--math.randomseed(num+400)
 	
-	self.RearCouple:SetParameters()
+	--self.RearCouple:SetParameters()
 	--local tex = "Def_U2"
 	--self:UpdateTextures()
 	--self:UpdateLampsColors()
-	self.RearCouple.CoupleType = "U2"
+	--self.RearCouple.CoupleType = "U2"
 	--self:SetNW2String("Texture", self.ParentTrain:GetNW2String("Texture"))
 	--self:SetNW2String("Texture", self.ParentTrain:GetNW2String("Texture").."_b")
 	self:SetNW2String("Texture",self.ParentTrain:GetNW2String("Texture").."_b")
@@ -552,7 +551,7 @@ function ENT:Think()
 
 
 
-	if self.RearCouple.CoupledEnt ~= nil then
+	if self.ParentTrain.RearCouple.CoupledEnt ~= nil then
 		self:SetNW2Bool("BIsCoupled", true)
 	else
 		self:SetNW2Bool("BIsCoupled",false)

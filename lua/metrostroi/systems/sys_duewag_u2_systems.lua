@@ -9,26 +9,28 @@ function TRAIN_SYSTEM:Initialize()
 	self.Speed = 0
 	self.ThrottleState = 0
 
+	self.ThrottleNotchTraction = false
+	self.ThrottleNotchBraking = false
+	self.ThrottleNotchEmergency = false
+
+	self.ActualThrottleState = 0
+
 	self.Voltage = 0
 	
 	self.ResistorBank = 0
-
+	--self.PrevResistorBank = nil
 	self.DoorFLState = 100
 	self.DoorRLState = 100
 	self.DoorFRState = 100
 	self.DoorRRState = 100
 
-	self.DoorAnimationStepFL = 0
-	self.DoorAnimationStepRL = 0
-	self.DoorAnimationStepFR = 0
-	self.DoorAnimationStepRR = 0
+
 
 	self.Traction = 0
 	
 	self.Drive = 0
 	self.Brake = 0
 	self.Reverse = 0
-	self.Igbt74 = 0
 	self.Bell = 0
 	self.BitteZuruecktreten = 0
 	self.Horn = 0
@@ -43,8 +45,8 @@ function TRAIN_SYSTEM:Initialize()
 	self.ReverserState = 0
 	self.ReverserLeverState = 0 --for the reverser lever setting. -1 is reverse, 0 is neutral, 1 is startup, 2 is single unit, 3 is multiple unit
 
-	self.VZ = false
-	self.VE = false
+	self.VZ = false --single unit mode
+	self.VE = false --multiple unit mode
 	
 	self.BlinkerOnL = 0
 	self.BlinkerOnR = 0
@@ -54,12 +56,16 @@ function TRAIN_SYSTEM:Initialize()
 	self.TractionConditionFulfilled = false
 	self.BrakePressure = 0
 	self.TractionCutOut = false
-	self.Haltebremse = 0
+	
 	self.ThrottleStateAnim = 0 --whether to stop listening to the throttle input
 
 	self.ThrottleCutOut = 0
 
-	self.Haltebremse = false
+	self.DynamicBraking = false --First stage of braking
+	self.TrackBrake = false --Electromagnetic brake
+	self.DiscBrake = false --physical friction brake
+
+
 
 	self.CloseDoorsButton = false
 
@@ -128,8 +134,27 @@ function TRAIN_SYSTEM:Think(Train)
 	self.ThrottleState = self.ThrottleState + self.ThrottleRate --* dT * 2 --todo: enable deltaTime correction
 	
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
-	
+
+	--[[if self.ThrottleState >= 1 and self.ThrottleState <= 5 then
+		self.ThrottleNotchTraction = true
+		self.ActualThrottleState = 6
+	elseif self.ThrottleState > 5 then
+		self.ThrottleNotchTraction = false
+		self.ActualThrottleState = self.ThrottleState
+	elseif self.ThrottleState <= -1 and self.ThrottleState >= -5 then
+		self.ThrottleNotchBraking = true
+		self.ActualThrottleState = -6
+	elseif self.ThrottleState <= -6 and self.ThrottleState =< -89 then
+		self.ActualThrottleState = self.ThrottleState
+	elseif self.ThrottleState <= -90 and self.ThrottleState >= -100 then
+		self.ThrottleNotchEmergency = true
+		self.ActualThrottleState = -100
+	end]]
+
+
 	--print(#self.Train.WagonList)
+
+	--print(self.Train)
 
 
 	--Is the throttle engaged? We need to know that for a few things!
@@ -286,7 +311,7 @@ function TRAIN_SYSTEM:Think(Train)
 		
 	if self.TractionConditionFulfilled == true then
 		--self.Traction = 15000*self.ThrottleState / 20
-		if not self.Train:GetNW2Bool("DeadmanTripped",false) == true then
+		if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
 			--if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
 				self.Traction = math.Clamp(self.ThrottleState * 0.01 * 800,-800,800) --right now it's coupled directly to the throttle. This needs a somewhat realistic custom simulation, if we don't get schematics
 				if self.VZ == true then
@@ -337,11 +362,16 @@ function TRAIN_SYSTEM:Think(Train)
 
 			
 			--end
-		elseif 
-			self.Train:GetNW2Bool("DeadmanTripped",false) == true then
-			self.Traction = 0 
-			self.BrakePressure = 2.7
-			self.Train:WriteTrainWire(1,self.Traction)
+		elseif self.Train:GetNW2Bool("DeadmanTripped",false) == true then
+			if self.Speed > 5 then
+				self.Traction = -1000 
+				self.BrakePressure = 2.7
+				self.Train:WriteTrainWire(1,self.Traction)
+			elseif self.Speed < 5 then
+				self.BrakePressure = 2.7
+				self.Traction = 0
+				self.Train:WriteTrainWire(1,self.Traction)
+			end
 		end
 	end		
 	
@@ -454,5 +484,20 @@ function TRAIN_SYSTEM:U2Engine()
 		self.ResistorBank = 19
 	elseif Percentage == 100 then
 		self.ResistorBank = 100
+	end
+
+	self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
+
+
+	if self.PrevResistorBank ~=  self.ResistorBank then
+		self.Train:SetNW2Bool("CamshaftMove",true)
+		self.Train:SetNW2Bool("CamshaftMove",false)
+		--print("CamshaftMove")
+		--self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
+		self.PrevResistorBank = self.ResistorBank
+	end
+
+	if self.Train:GetNW2Bool("CamshaftMove",false) == true then
+		print("CamshaftMove")
 	end
 end

@@ -36,7 +36,7 @@ ENT.ClientProps["cab"] = {
     pos = Vector(0,0,0),
     ang = Angle(0,0,0),
     scale = 1,
-    hideseat = 1000000,
+    --hideseat = 1000000,
 }
 
 
@@ -129,10 +129,24 @@ ENT.ClientProps["Dest"] = {
 	scale = 1,
 }
 
+ENT.ClientProps["window_cab_l"] = {
+	model = "models/lilly/uf/u2/window_cab_l.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
+ENT.ClientProps["window_cab_r"] = {
+	model = "models/lilly/uf/u2/window_cab_r.mdl",
+	pos = Vector(0,0,0),
+	ang = Angle(0,0,0),
+	scale = 1,
+}
+
 ENT.ClientProps["Throttle"] = {
     model = "models/lilly/uf/common/cab/throttle.mdl",
-    pos = Vector(413,31,55),
-    ang = Angle(0,-90,0),
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
     hideseat = 0.2,
 }
 
@@ -157,6 +171,41 @@ ENT.ClientProps["Speedo"] = {
     hideseat = 0.2,
 }
 
+ENT.ClientProps["BatterySwitch"] = {
+    model = "models/lilly/uf/u2/cab/battery_switch.mdl",
+    pos = Vector(413.8,-7,54.1),
+    ang = Angle(-8.5,0,0),
+    hideseat = 0.2,
+}
+
+ENT.ClientProps["DoorSwitch"] = {
+    model = "models/lilly/uf/u2/cab/battery_switch.mdl",
+    pos = Vector(418.8,-2.35,54.86),
+    ang = Angle(-8.5,0,0),
+    hideseat = 0.2,
+}
+
+ENT.ClientProps["BlinkerSwitch"] = {
+    model = "models/lilly/uf/u2/cab/battery_switch.mdl",
+    pos = Vector(413.9,6.35,54),
+    ang = Angle(-8.5,0,0),
+    hideseat = 0.2,
+}
+
+ENT.ClientProps["HeadlightSwitch"] = {
+    model = "models/lilly/uf/u2/cab/battery_switch.mdl",
+    pos = Vector(418.9,23.7,54.75),
+    ang = Angle(-8.5,0,0),
+    hideseat = 0.2,
+}
+
+ENT.ClientProps["DriverLightSwitch"] = {
+    model = "models/lilly/uf/u2/cab/battery_switch.mdl",
+    pos = Vector(416,-7,54.5),
+    ang = Angle(-8.5,0,0),
+    hideseat = 0.2,
+}
+
 ENT.ClientProps["Voltage"] = {
     model = "models/lilly/uf/u2/cab/gauge.mdl",
     pos = Vector(418.17,18.9,54.75),
@@ -166,8 +215,8 @@ ENT.ClientProps["Voltage"] = {
 
 ENT.ClientProps["Amps"] = {
     model = "models/lilly/uf/u2/cab/gauge.mdl",
-    pos = Vector(418.616,-21.3744,54.6),
-    ang = Angle(-8.5,0,0),
+    pos = Vector(418.17,1.7,54.75),
+    ang = Angle(-12,0,0),
     hideseat = 0.2,
 }
 
@@ -218,6 +267,77 @@ ENT.ButtonMap["Drivers_Door2"] = {
     }
 }
 
+ENT.ButtonMap["Button1a"] = {
+    pos = Vector(396.3,-51,50.5),
+    ang = Angle(0,0,90),
+    width = 5,
+    height = 5,
+    scale = 0.4,
+    buttons = {
+        {ID = "Button1a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button1a",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
+
+ENT.ButtonMap["Button2a"] = {
+    pos = Vector(326,-51,50.5),
+    ang = Angle(0,0,90),
+    width = 5,
+    height = 5,
+    scale = 0.4,
+    buttons = {
+        {ID = "Button2a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button2a",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
+ENT.ButtonMap["Button3a"] = {
+    pos = Vector(150.6,-51,50.5),
+    ang = Angle(0,0,90),
+    width = 5,
+    height = 5,
+    scale = 0.4,
+    buttons = {
+        {ID = "Button3a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button3a",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
+
+ENT.ButtonMap["Button4a"] = {
+    pos = Vector(82.8,-51,50.5),
+    ang = Angle(0,0,90),
+    width = 5,
+    height = 5,
+    scale = 0.4,
+    buttons = {
+        {ID = "Button4a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button4a",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
+
 ENT.ButtonMap["Cab"] = {
     pos = Vector(420,25,55.1),
     ang = Angle(0,-90,8),
@@ -228,92 +348,98 @@ ENT.ButtonMap["Cab"] = {
     buttons = {
 		
     {ID = "WarningAnnouncementSet", x=265, y=18, radius=10, tooltip = "Please keep back announcement", model = {
-        model = "models/lilly/uf/common/cab/button_yellow.mdl", z=-2, ang=0,
+        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-4, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "ReleaseHoldingBrakeSet", x=21, y=92, radius=10, tooltip = "Release mechanical brake manually", model = {
-        model = "models/lilly/uf/common/cab/button_green.mdl", z=-1, ang=90,
+    {ID = "ReleaseHoldingBrakeSet", x=20, y=90, radius=10, tooltip = "Release mechanical brake manually", model = {
+        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=90,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SetHoldingBrakeSet", x=20, y=58, radius=10, tooltip = "set mechanical holding brake manually", model = {
-        model = "models/lilly/uf/common/cab/button_red.mdl", z=-1, ang=0,
+        model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "PassengerOvergroundSet", x=52, y=59, radius=10, tooltip = "Set passenger lights to overground mode", model = {
-        model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
+    {ID = "PassengerOvergroundSet", x=52.5, y=58, radius=10, tooltip = "Set passenger lights to overground mode", model = {
+        model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "PassengerUndergroundSet", x=52, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
-        model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
+    {ID = "PassengerUndergroundSet", x=52.5, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
+        model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "LightsToggle", x=39, y=21, radius=10, tooltip = "Enable Headlights", model = {
-        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=2,
+    {ID = "LightsToggle", x=20, y=21, radius=10, tooltip = "Enable Headlights", model = {
+        z=0, ang=2,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "Toggle" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "BatteryToggle", x=463, y=91, radius=10, tooltip = "Toggle Battery", model = {
-        model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=0, ang=0,
-        getfunc =  function(ent) return ent:GetPackedBool("FlickBatterySwitchOn") and 0 or (ent:GetPackedBool("FlickBatterySwitchOff") and 1 or 0.5) end,
+        --[[model = "models/lilly/uf/u2/cab/battery_switch.mdl",]] z=0, ang=0,
+        --[[getfunc =  function(ent) return ent:GetPackedBool("FlickBatterySwitchOn") and 0 or (ent:GetPackedBool("FlickBatterySwitchOff") and 1 or 0.5) end,]]
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "DriverLightToggle", x=589, y=83, radius=10, tooltip = "Toggle Cab Light", model = {
-        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+    {ID = "DriverLightToggle", x=463, y=58, radius=10, tooltip = "Toggle Cab Light", model = {
+        z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SetPointLeftSet", x=179, y=91, radius=10, tooltip = "Set track point to left", model = {
-        model = "models/lilly/uf/common/cab/button_left.mdl", z=-5, ang=90,
-        var="main",speed=1, vmin=0, vmax=1,
+        model = "models/lilly/uf/u2/cab/button_bulge_arrow_right.mdl", z=-4, ang=90, anim=true,
+        var="position",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "DoorsCloseConfirmSet", x=210, y=91, radius=10, tooltip = "Clear door closed alarm", model = {
-        model = "models/lilly/uf/common/cab/button_loeschen.mdl", z=-2, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
+        model = "models/lilly/uf/u2/cab/button_indent_orange.mdl", z=0, ang=0, anim=true,
+        var="position",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SetPointRightSet", x=241, y=91, radius=10, tooltip = "Set track point to right", model = {
-        model = "models/lilly/uf/common/cab/button_right.mdl", z=-5, ang=90,
+        model = "models/lilly/uf/u2/cab/button_bulge_arrow_left.mdl", z=-4, ang=90,anim=true,
+        var="position",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "BlinkerLeftToggle", x=260, y=88, radius=8, tooltip = "Indicators Left", model = {
+        z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "IndicatorLightsSwitchToggle", x=420, y=112, radius=10, tooltip = "Indicators Left/Right/Off", model = {
-        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+    {ID = "BlinkerRightToggle", x=280, y=88, radius=8, tooltip = "Indicators Right", model = {
+        z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "LowerPantographSet", x=449, y=112, radius=10, tooltip = "Lower pantograph", model = {
+    --[[{ID = "LowerPantographSet", x=449, y=112, radius=10, tooltip = "Lower pantograph", model = {
         model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
-    },
-    {ID = "ThrowCouplerSet", x=334, y=91, radius=10, tooltip = "Throw Coupler", model = {
-        model = "models/lilly/uf/common/cab/button_orange.mdl", z=-2, ang=0,
+    },]]
+    {ID = "ThrowCouplerSet", x=334.8, y=91, radius=10, tooltip = "Throw Coupler", model = {
+        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-4, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "OpenDoor1Set", x=363, y=91, radius=10, tooltip = "Open only door 1", model = {
-        model = "models/lilly/uf/common/cab/button_red.mdl", z=-2.5, ang=0,
+    {ID = "OpenDoor1Set", x=364, y=91, radius=10, tooltip = "Open only door 1", model = {
+        model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -324,26 +450,26 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "UnlockDoorsSet", x=396, y=91, radius=10, tooltip = "Toggle doors unlocked", model = {
-        model = "models/lilly/uf/common/cab/button_yellow.mdl", z=0, ang=0,
+    {ID = "UnlockDoorsSet", x=396, y=57.5, radius=10, tooltip = "Toggle doors unlocked", model = {
+        model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "RaisePantographSet", x=449, y=80, radius=10, tooltip = "Raise Pantograph", model = {
+    --[[{ID = "RaisePantographSet", x=449, y=80, radius=10, tooltip = "Raise Pantograph", model = {
         model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
-    },
+    },]]
     {ID = "DoorSideSelectToggle", x=531, y=46, radius=10, tooltip = "Select door set to unlock", model = {
         model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "DoorCloseSignalSet", x=531, y=112, radius=10, tooltip = "Set doors to close", model = {
-        model = "models/lilly/uf/common/cab/button_red.mdl", z=0, ang=0,
+    {ID = "DoorCloseSignalSet", x=396, y=91, radius=10, tooltip = "Set doors to close", model = {
+        model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -564,21 +690,28 @@ function ENT:Initialize()
 	self.IBIS = self:CreateRT("IBIS",512,128)
 	
 
-    	self.Locked = 0
+    self.Locked = 0
+
+    self.EngineSNDConfig = {}
+
+    self.SoundNames = {}
+
+    self.SoundNames["loop_main"] = "lilly/uf//u2/engineloop_test.wav"
+    self.SoundNames["loop_secondary"] = "lilly/uf//u2/engineloop_test.wav"
 
 
+    self.MotorPowerSound = 0
+    self.CabLight = 0
 
-    	self.CabLight = 0
-
-    	self.SpeedoAnim = 0
-        self.VoltAnim = 0
-        self.AmpAnim = 0
+    self.SpeedoAnim = 0
+    self.VoltAnim = 0
+    self.AmpAnim = 0
 	
-    	--self:ShowHide("headlights_on",false,0)
+    
 	
 	self.ThrottleLastEngaged = 0
 
-    	self.ElectricOnMoment = 0
+    self.ElectricOnMoment = 0
 	self.IBISKickStart = false
 	self.IBISStarted = false
 	self.StartupSoundPlayed = false
@@ -602,22 +735,47 @@ function ENT:Think()
 	
     self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,false)
     self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
-    self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,1,false)
-	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
-    self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,1,false)
+    self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,9,false)
+	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,50,8,false)
+    self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,9,false)
 
+    if self:GetNW2String("BlinkerDirection","none") == "none" then
+        self:Animate("BlinkerSwitch",0.5,0,100,100,10,false)
+    elseif self:GetNW2String("BlinkerDirection","none") == "left" then
+        self:Animate("BlinkerSwitch",1,0,100,100,10,false)
+    elseif self:GetNW2String("BlinkerDirection","none") == "right" then
+        self:Animate("BlinkerSwitch",0,0,100,100,10,false)
+    end
+
+    if self:GetNWString("DoorSide","none") == "left" then
+        self:Animate("DoorSwitch",1,0,100,100,10,false)
+    elseif self:GetNWString("DoorSide","none") == "none" then
+        self:Animate("DoorSwitch",0.5,0,100,100,10,false)
+    elseif self:GetNWString("DoorSide","none") == "right" then
+        self:Animate("DoorSwitch",0,0,100,100,10,false)
+    end
+
+    
     	if self:GetNW2Bool("ReverserInserted",false) == true then
         	self:ShowHide("reverser",true)
     	elseif self:GetNW2Bool("ReverserInserted",false) == false then
         	self:ShowHide("reverser",false,0)
     	end
+    if self:GetNW2Bool("BatteryToggleIsTouched",false) == true then
+        if self:GetNW2Bool("BatteryToggleOn",false) == true then
+            self:Animate("BatterySwitch",1,0,100,100,10,false)
+        elseif self:GetNW2Bool("BatteryToggleOff",false) == true then
+            self:Animate("BatterySwitch",0,0,100,100,10,false)
+        end
 
-
+    else
+        self:Animate("BatterySwitch",0.5,0,100,100,10,false)
+    end
     self:Animate("Door_fr2",self:GetNW2Int("Door1-2a"),0,100,1,1,false)
-    self:Animate("Door_fr1",self:GetNW2Int("Door1-2a"),0,50,1,1,false)
+    self:Animate("Door_fr1",self:GetNW2Int("Door1-2a"),0,100,1,1,false)
 
     self:Animate("Door_rr2",self:GetNW2Int("Door3-4a"),0,100,1,1,false)
-    self:Animate("Door_rr1",self:GetNW2Int("Door3-4a"),0,50,1,1,false)
+    self:Animate("Door_rr1",self:GetNW2Int("Door3-4a"),0,100,1,1,false)
 
 
     if self:GetNW2Bool("Microphone",false) == true then
@@ -625,11 +783,17 @@ function ENT:Think()
         self:PlayOnce(self.Nags[1],"cabin",1,1)
     end
 
+    if self:GetNW2Bool("CamshaftMove",false) == true then
+        self:PlayOnce("Switchgear"..math.random(1,7),"cabin",1,1)
+        PrintMessage(HUD_PRINTTALK,"Camshaft")
+    end
 
     	if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
         	self:ShowHide("headlights_on",true,0)
+            self:Animate("HeadlightSwitch",1,0,100,100,10,false)
     	elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
         	self:ShowHide("headlights_on",false,0)
+            self:Animate("HeadlightSwitch",0,0,100,100,10,false)
     	end
 
     	if self:GetNW2Bool("BlinkerShineLeft",false) == true then
@@ -655,6 +819,13 @@ function ENT:Think()
     self.VoltAnim = self:GetNW2Float("BatteryCharge",0) / 46
 
     self:Animate("Voltage",self.VoltAnim,0,100,1,0,false)
+    --self:Animate("Amps",0.5,0,100,1,0,false)
+
+    if self:GetNW2Bool("Cablight",false) == true then
+        self:Animate("DriverLightSwitch",1,0,100,100,10,false)
+    else
+        self:Animate("DriverLightSwitch",0.5,0,100,100,10,false)
+    end
 
     if self:GetNW2Bool("BatteryOn",false) == true then
         
@@ -678,7 +849,7 @@ function ENT:Think()
             if self:GetNW2Bool("BlinkerTick",false) == true and not self:GetNW2Bool("BlinkerTicked",false) == true then
 
         
-                self:PlayOnce("Blinker","cabin",1,1)   
+                self:PlayOnce("Blinker","cabin",5,1)   
                 self:SetNW2Bool("BlinkerTicked",true)
         
             elseif self:GetNW2Bool("BlinkerTick",false) == false then
@@ -740,7 +911,7 @@ function ENT:Think()
 		    end
 	    end
 		if self:GetNW2Bool("WarningAnnouncement") == true then
-            self:PlayOnce("WarningAnnouncement","cabin",1,1)
+            self:PlayOnce("WarningAnnouncement",Vector(350,-30,113),1,1)
     
         end
     elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
@@ -877,6 +1048,8 @@ function ENT:Think()
     local rol40p = Lerp((speed)/66,0.6,1.3)
     local rol70 = math.Clamp((speed-55)/20,0,1)--*(1-math.Clamp((speed-72)/5,0,1))
     local rol70p = Lerp((speed)/27,0.78,1.15)
+
+    --self:U2SoundEngine()
 	
 	
 end
@@ -884,4 +1057,97 @@ Metrostroi.GenerateClientProps()
 
 function ENT:U2SoundEngine()
 
+    self.PrevTime = self.PrevTime or RealTime()-0.33
+    self.DeltaTime = (RealTime() - self.PrevTime)
+    self.PrevTime = RealTime()
+
+    local speed = self:GetNW2Float("Speed")
+
+    local train = self
+
+    local rollingi = math.min(1,train.TunnelCoeff+math.Clamp((train.StreetCoeff-0.6)/0.3,0,1)*0.8)
+    --print(self:GetPos())
+    local rollings = train.StreetCoeff
+    local soundsmul = 1
+    local streetC,tunnelC = 0,1
+    if IsValid(train) then
+        streetC,tunnelC = train.StreetCoeff or 0,train.TunnelCoeff or 1
+        soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
+    end
+
+    local networked = self:GetNW2Entity("FrontBogey")
+    local motorPower = networked:GetMotorPower()
+
+    self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1,1)
+    local t = RealTime()*2.5
+    local modulation = (0.2 + 3.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp(speed/4,0,1)
+    local mod2 = 5.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
+    if (speed > -1.0) and (math.abs(self.MotorPowerSound)+modulation) >= 0.0 then
+        --local startVolRamp = 0.2 + 0.8*math.max(0.0,math.min(1.0,(speed - 1.0)*0.5))
+        local powerVolRamp
+
+        powerVolRamp = 0.2*modulation*mod2 + 6*math.abs(self.MotorPowerSound)--2.0*(math.abs(motorPower)^2)
+
+        math.max(0.3,math.min(1.0,math.abs(motorPower)))
+
+        --local k,x = 1.0,math.max(0,math.min(1.1,(speed-1.0)/80))
+        --local motorPchRamp = (k*x^3 - k*x^2 + x)
+        --local motorPitch = 0.03+1.85*motorPchRamp
+        local volumemul = math.min(1,(speed/4)^3)
+        local motorsnd = math.min(1.0,math.max(0.0,1.25*(math.abs(self.MotorPowerSound))))
+        local motorvol = (soundsmul^0.3)*math.Clamp(motorsnd + powerVolRamp,0,1)*volumemul
+        local motorsnd = math.min(1.0,math.max(0.0,1.25*(math.abs(self.MotorPowerSound)-0.15) ))
+
+        for i,snd in ipairs(self.EngineSNDConfig or {}) do
+            local prev = self.EngineSNDConfig[i-1]
+            local next = self.EngineSNDConfig[i+1]
+            local volume = 1
+            if prev and speed <= prev[4] then
+                volume = math.max(0,1-(prev[4]-speed)/(prev[4]-snd[3]))
+            elseif next  and speed > next[3] then
+                volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
+            end
+            local pitch = math.max(0,speed/snd[2])+0.1*streetC
+        end
+
+            self:SetSoundState("tedm_703",math.min(1,(soundsmul^0.3)*motorsnd*2)*math.Clamp((speed-20)/10,0,1)*(1-math.Clamp((speed-38)/20,0,1))*0.18,math.max(0,speed/35.4)+0.06*streetC)
+
+    else
+        for k,v in pairs(self.EngineSNDConfig) do
+            self:SetSoundState2(v[1].."1",0,0,v[1],false)
+        end
+        self:SetSoundState2(v[1].."2",0,0,v[1],true)
+    end
+end
+
+function ENT:SetSoundState2(sound,volume,pitch,name,level )
+    if not self.Sounds[sound] then
+        if self.SoundNames[name or sound] and (not wheels or IsValid(self:GetNW2Entity("TrainWheels"))) then
+            self.Sounds[sound] = CreateSound(wheels and self:GetNW2Entity("TrainWheels") or self, Sound(self.SoundNames[name or sound]))
+        else
+            return
+        end
+    end
+    local snd = self.Sounds[sound]
+    if (volume <= 0) or (pitch <= 0) then
+        if snd:IsPlaying() then
+            snd:ChangeVolume(0.0,0)
+            snd:Stop()
+        end
+        return
+    end
+    local pch = math.floor(math.max(0,math.min(255,100*pitch)) )
+    local vol = math.max(0,math.min(255,2.55*volume)) + (0.001/2.55) + (0.001/2.55)*math.random()
+    if name~=false and not snd:IsPlaying() or name==false and snd:GetVolume()==0 then
+    --if not self.Playing[sound] or name~=false and not snd:IsPlaying() or name==false and snd:GetVolume()==0 then
+        if level and snd:GetSoundLevel() ~= level then
+            snd:Stop()
+            snd:SetSoundLevel(level)
+        end
+        snd:PlayEx(vol,pch+1)
+    end
+    --snd:SetDSP(22)
+    snd:ChangeVolume(vol,0)
+    snd:ChangePitch(pch+1,0)
+    --snd:SetDSP(22)
 end

@@ -20,7 +20,7 @@ function ENT:PassengerCapacity()
 end
 
 function ENT:GetStandingArea()
-    return Vector(465,-20,35),Vector(60,20,35) -- TWEAK: NEEDS TESTING INGAME
+    return Vector(350,-20,25),Vector(60,20,25) -- TWEAK: NEEDS TESTING INGAME
 end
 
 
@@ -47,7 +47,10 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Nag1"] = {1100,1e9,Vector(350,-30,113),1}
 	
 	self.SoundNames["Door_open1"] = {"lilly/uf/u2/Door_open.mp3"}
-	self.SoundPositions["Door_open1"] = {400,1e9,Vector(300,100,120),1}
+	self.SoundPositions["Door_open1"] = {400,1e9,Vector(360,40.5,120),1}
+
+	self.SoundNames["Door_open2"] = {"lilly/uf/u2/Door_open.mp3"}
+	self.SoundPositions["Door_open2"] = {400,1e9,Vector(118,40.5,120),1}
 
 	self.SoundNames["Door_close1"] = {"lilly/uf/u2/Door_close.mp3"}
 	self.SoundPositions["Door_close1"] = {400,1e9,Vector(300,100,120),1}
@@ -80,15 +83,35 @@ function ENT:InitializeSounds()
 	self.SoundNames["Fan3"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
 	self.SoundPositions ["Fan3"] = {1100,1e9,Vector(100,0,70),0.035}
 
-	self.SoundNames["Switchgear1"] = {"lilly/uf/u2/Stuk01.wav"}
-	self.SoundPositions["Switchgear1"] = {1100,1e9,Vector(550,0,70),0.035}
+	self.SoundNames["Switchgear1"] = {"lilly/uf/u2/Stuk01.mp3"}
+	self.SoundPositions["Switchgear1"] = {1100,1e9,Vector(250,0,200),1}
 
+	self.SoundNames["Switchgear2"] = {"lilly/uf/u2/Stuk02.mp3"}
+	self.SoundPositions["Switchgear2"] = {1100,1e9,Vector(250,0,200),1}
+
+	self.SoundNames["Switchgear3"] = {"lilly/uf/u2/Stuk03.mp3"}
+	self.SoundPositions["Switchgear3"] = {1100,1e9,Vector(250,0,200),1}
+
+	self.SoundNames["Switchgear4"] = {"lilly/uf/u2/Stuk04.mp3"}
+	self.SoundPositions["Switchgear4"] = {1100,1e9,Vector(250,0,200),1}
+
+	self.SoundNames["Switchgear5"] = {"lilly/uf/u2/Stuk05.mp3"}
+	self.SoundPositions["Switchgear5"] = {1100,1e9,Vector(250,0,200),1}
+
+	self.SoundNames["Switchgear6"] = {"lilly/uf/u2/Stuk06.mp3"}
+	self.SoundPositions["Switchgear6"] = {1100,1e9,Vector(250,0,200),1}
+
+	self.SoundNames["Switchgear7"] = {"lilly/uf/u2/Stuk07.mp3"}
+	self.SoundPositions["Switchgear7"] = {1100,1e9,Vector(250,0,200),1}
+
+	self.SoundNames["Toggle"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
+	self.SoundPositions["Toggle"] = {1100,1e9,Vector(250,0,200),1}
 
 	self.SoundNames["Cruise"] = {loop=0.5,"lilly/uf/u2/cruise/cruise_medium_start.mp3","lilly/uf/u2/cruise/cruise_medium.mp3","lilly/uf/u2/cruise/cruise_medium_stop.mp3"}
 	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),1}
 
 	self.SoundNames["Blinker"] = {"lilly/uf/u2/blinker.mp3"}
-	self.SoundPositions["Blinker"] = {10,1e9,Vector(390,-5,200),1}
+	self.SoundPositions["Blinker"] = {10,1e9,Vector(400,-5,200),1}
 
 	self.SoundNames["MotorType1"] = {loop=5, "lilly/uf/bogeys/u2/test/engine_loop_primary_start.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary_end.mp3"}
 	self.SoundPositions["MotorType1"] = {1100,1e9,Vector(540,0,70),0.035}

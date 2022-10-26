@@ -93,9 +93,9 @@ function ENT:CreateBogeyUF(pos,ang,forward,typ)
     return bogey
 end
 
-function ENT:CreateBogeyUFInt(pos,ang,forward,typ)
+function ENT:CreateBogeyUF_b(pos,ang,forward,typ)
     -- Create bogey entity
-    local bogey = ents.Create("gmod_train_uf_bogey_int")
+    local bogey = ents.Create("gmod_train_uf_bogey")
     bogey:SetPos(self:LocalToWorld(pos))
     bogey:SetAngles(self:GetAngles() + ang)
     bogey.BogeyType = typ
@@ -124,7 +124,7 @@ function ENT:CreateBogeyUFInt(pos,ang,forward,typ)
     if self.NoPhysics then
         bogey:SetParent(self)
     else
-        constraint.Axis(bogey,self,0,0,
+        constraint.Axis(bogey,self.u2sectionb,0,0,
             Vector(0,0,0),Vector(0,0,0),
             0,0,0,1,Vector(0,0,1),false)
         if forward and IsValid(self.FrontCouple) then
@@ -202,6 +202,70 @@ function ENT:CreateCoupleUF(pos,ang,forward,typ)
     return coupler
 end
 
+function ENT:CreateCouplerUF_b(pos,ang,forward,typ)
+    -- Create bogey entity
+    local coupler = ents.Create("gmod_train_uf_couple")
+    coupler:SetPos(self:LocalToWorld(pos))
+    coupler:SetAngles(self:GetAngles() + ang)
+    coupler.CoupleType = typ
+    coupler:Spawn()
+
+    -- Assign ownership
+    if CPPI and IsValid(self:CPPIGetOwner()) then coupler:CPPISetOwner(self:CPPIGetOwner()) end
+
+    -- Some shared general information about the bogey
+    coupler:SetNW2Bool("IsForwardCoupler", forward)
+    coupler:SetNW2Entity("TrainEntity", self)
+    coupler.SpawnPos = pos
+    coupler.SpawnAng = ang
+    local index=1
+    local x = self:WorldToLocal(coupler:LocalToWorld(coupler.CouplingPointOffset)).x
+    for i,v in ipairs(self.JointPositions) do
+        if v>pos.x then index=i+1 else break end
+    end
+    table.insert(self.JointPositions,index,x)
+    -- Constraint bogey to the train
+    if self.NoPhysics then
+        bogey:SetParent(coupler)
+    else
+        constraint.AdvBallsocket(
+            self.u2sectionb,
+            coupler,
+            0, --bone
+            0, --bone
+            pos,
+            Vector(0,0,0),
+            1, --forcelimit
+            1, --torquelimit
+            -2, --xmin
+            -2, --ymin
+            -15, --zmin
+            2, --xmax
+            2, --ymax
+            15, --zmax
+            0.1, --xfric
+            0.1, --yfric
+            1, --zfric
+            0, --rotonly
+            1 --nocollide
+        )
+
+        if forward and IsValid(self.FrontBogey) then
+            constraint.NoCollide(self.FrontBogey,coupler,0,0)
+        elseif not forward and IsValid(self.RearBogey) then
+            constraint.NoCollide(self.RearBogey,coupler,0,0)
+        end
+        
+        constraint.Axis(coupler,self.u2sectionb,0,0,
+            Vector(0,0,0),Vector(0,0,0),
+            0,0,0,1,Vector(0,0,1),false)
+    end
+
+    -- Add to cleanup list
+    table.insert(self.TrainEntities,coupler)
+    return coupler
+end
+
 ENT.BogeyDistance = 1100
 
 
@@ -224,7 +288,6 @@ function ENT:Initialize()
 	self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.InstructorsSeat:SetColor(Color(0,0,0,0))
 	self.Debug = 1
-	self.CabEnabled = false
 	self.LeadingCab = 0
 	
 	self.WarningAnnouncement = 0
@@ -262,8 +325,8 @@ function ENT:Initialize()
 	
 	-- Create U2 Section B
 	self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
-	self.RearBogey = self.u2sectionb.RearBogey
-	self.RearCouple = self.u2sectionb.RearCouple --self:CreateCoupleUF(Vector( 100,50,50),Angle(0,0,0),false,"U2")	
+	self.RearBogey = self:CreateBogeyUF_b(Vector( -300,0,0),Angle(0,180,0),false,"duewag_motor")
+	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,2),Angle(0,180,0),true,"u2")	
 	self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
 	
 	self.PantoUp = 0
@@ -287,9 +350,9 @@ function ENT:Initialize()
 
 	self:SetNW2Float("Blinds",0.2)
 
-	self.FrontBogey.DisableSound = 3
-	self.MiddleBogey.DisableSound = 3
-    self.RearBogey.DisableSound = 3
+	--self.FrontBogey.DisableSound = 3
+	--self.MiddleBogey.DisableSound = 3
+    --self.RearBogey.DisableSound = 3
 
 
 	self.BlinkerOn = false
@@ -297,6 +360,8 @@ function ENT:Initialize()
 	self.BlinkerRight = false
 	self.Blinker = "Off"
 	self.LastTriggerTime = 0
+
+	self:SetNW2String("BlinkerDirection","none")
 
 	self.DoorRandomness1 = 0
 	self.DoorRandomness2 = 0
@@ -364,7 +429,8 @@ function ENT:Initialize()
 							[KEY_S] = "ThrottleZero",
 							[KEY_H] = "Horn",
 							[KEY_V] = "DriverLightToggle",
-							[KEY_COMMA] = "BlinkerRightToggle",},
+							[KEY_COMMA] = "BlinkerRightToggle",
+							[KEY_B] = "BatteryDisableToggle",},
 							
 		[KEY_LALT] = {
 							[KEY_PAD_1] = "Number1Set",
@@ -479,7 +545,11 @@ end
 
 
 
+--[[function ENT:GetMotorPower()
 
+	self.FrontBogey:GetMotorPower()
+	
+end]]
 
 
 
@@ -491,11 +561,11 @@ function ENT:Think(dT)
 	self.BaseClass.Think(self)
     
 	
-
+	--self:SetNW2Entity("FrontBogey",self.FrontBogey)
 
 
 	self.u2sectionb:TrainSpawnerUpdate()
-	--self:SetNW2Entity("U2a",self)
+	self:SetNW2Entity("U2a",self)
 
 	--PrintMessage(HUD_PRINTTALK, self:GetNW2String("Texture"))
 	if self:ReadTrainWire(7) == 1 then
@@ -507,7 +577,7 @@ function ENT:Think(dT)
 	self:SetNW2Bool("PantoUp",self.PantoUp)
 	self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
 
-	if self:ReadTrainWire(1) > 0 then
+	if self:ReadTrainWire(1) > 0 and self:ReadTrainWire(3) > 1 and self.Speed < 5 then
 		self:SetNW2Bool("Fans",true)
 	elseif self:ReadTrainWire(1) == 0  then
 		self:SetNW2Bool("Fans",false)
@@ -524,7 +594,7 @@ function ENT:Think(dT)
 	
 	
 	
-
+	--print(#self.Train.WagonList)
 	if self.FrontCouple.CoupledEnt ~= nil then
 		self:SetNW2Bool("AIsCoupled", true)
 	else
@@ -946,9 +1016,9 @@ end
 			self:SetNWBool("DoorAlarmAlreadyTriggered",false)
 			--self:DoorHandler(true,false) --give the command to open the doors
 		elseif self:GetNW2Float("Door1-2b",0) >= 1 or self:GetNW2Float("Door3-4b",0) >= 1 or self:GetNW2Float("Door5-6b",0) >= 1 or self:GetNW2Float("Door7-8b",0) >= 1 then --if they're all at 1 then don't do anything anymore
-			self.CommandOpen = false
+			--self.CommandOpen = false
 			--self.CommandClose = false
-			self:SetNW2Bool("DoorsJustOpened",true) --we've just opened the doors. This matters for simulating the departing procedure.
+			--self:SetNW2Bool("DoorsJustOpened",true) --we've just opened the doors. This matters for simulating the departing procedure.
 		end
 	elseif self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "right" then --same thing for the right side
 
@@ -957,8 +1027,8 @@ end
 			--self.CommandClose = false
 			self:SetNW2Bool("DoorsJustOpened",true)
 		elseif self:GetNW2Float("Door1-2a",0) >= 1 or self:GetNW2Float("Door3-4a",0) >= 1 or self:GetNW2Float("Door5-6a",0) >= 1 or self:GetNW2Float("Door7-8a",0) >= 1 then
-			self.CommandOpen = false
-			self:SetNW2Bool("DoorsJustOpened",true)
+			--self.CommandOpen = false
+			--self:SetNW2Bool("DoorsJustOpened",true)
 		end
 	
 
@@ -980,8 +1050,8 @@ end
 
 	if self:GetNW2Bool("DoorsJustClosed",false) == true then --if all doors are closed
 		if self:GetNWBool("DoorAlarmAlreadyTriggered",false) == false then
-			self:SetNW2Bool("DoorAlarm",true) --set off the door closed confirmation
 			self:SetNWBool("DoorAlarmAlreadyTriggered",true)
+			self:SetNW2Bool("DoorAlarm",true) --set off the door closed confirmation
 		end
 	else
 		--self:SetNW2Bool("DoorAlarm",false) --don't set it off yet if above condition isn't true, either not closed yet or confirmed departure button
@@ -1311,7 +1381,7 @@ function ENT:OnButtonPress(button,ply)
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
 	if self.Duewag_U2.ThrottleRate == 0 then
 		if button == "ThrottleUp" then self.Duewag_U2.ThrottleRate = 3 end
-		if button == "ThrottleDown" then self.Duewag_U2.ThrottleRate = 3 end
+		if button == "ThrottleDown" then self.Duewag_U2.ThrottleRate = -3 end
 	end
 
 	if self.Duewag_U2.ThrottleRate == 0 then
@@ -1352,6 +1422,9 @@ function ENT:OnButtonPress(button,ply)
 		self:SetNW2Float("Blinds",self:GetNW2Float("Blinds") +0.1)
 		self:SetNW2Float("Blinds",math.Clamp(self:GetNW2Float("Blinds"),0.2,1))
 	end
+
+
+
 
 	if button == "Blinds-" then
 
@@ -1409,27 +1482,22 @@ function ENT:OnButtonPress(button,ply)
 			self.Duewag_Battery:TriggerInput("Charge",1.3)
 			self:SetNW2Bool("BatteryOn",true)
 			PrintMessage(HUD_PRINTTALK, "Battery switch is ON")
+		end
+		self:SetNW2Bool("BatteryToggleIsTouched",true)
+		self:SetNW2Bool("BatteryToggleOn",true)
+	end
 
-			
-			
-			local delay
-			local startMoment
-			delay = 15
-			
-			startMoment = CurTime()
-			if startMoment - 15 > 15 then
-				self:SetNW2Bool("IBIS_impulse",true)
-			end
-			
-
-
-			elseif  self.BatteryOn == true and self.Duewag_U2.ReverserLeverState == 1 then
-				self.BatteryOn = false
-				self:SetNW2Bool("BatteryOn",false)
-				PrintMessage(HUD_PRINTTALK, "Battery switch is OFF")
-				self.Duewag_Battery:TriggerInput("Charge",0)
+	if button == "BatteryDisableToggle" then
+		if self.BatteryOn == true and self.Duewag_U2.ReverserLeverState == 1 then
+			self.BatteryOn = false
+			self.Duewag_Battery:TriggerInput("Charge",1.3)
+			self:SetNW2Bool("BatteryOn",true)
+			PrintMessage(HUD_PRINTTALK, "Battery switch is off")
+			self:SetNW2Bool("BatteryToggleIsTouched",true)
 			
 		end
+		self:SetNW2Bool("BatteryToggleIsTouched",true)
+		self:SetNW2Bool("BatteryToggleOff",true)
 			
 	end
 	
@@ -1449,10 +1517,12 @@ function ENT:OnButtonPress(button,ply)
 		self:ReadTrainWire(20) == 0 and self:ReadTrainWire(21) == 0 then -- If you press the button and the blinkers are off, set to left
 			self:WriteTrainWire(20,1)
 			self:WriteTrainWire(21,0)
+			self:SetNW2String("BlinkerDirection","left")
 		elseif
 		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 0 then -- If you press the button and the blinkers are already on, turn them off
 			self:WriteTrainWire(20,0)
 			self:WriteTrainWire(21,0)
+			self:SetNW2String("BlinkerDirection","none")
 		elseif
 		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 1 then
 			self:WriteTrainWire(20,1)
@@ -1466,6 +1536,7 @@ function ENT:OnButtonPress(button,ply)
 		if self:ReadTrainWire(20) == 0 and self:ReadTrainWire(21) == 1 then -- If you press the button and the blinkers are already set to right, turn them off
 			self:WriteTrainWire(20,0)
 			self:WriteTrainWire(21,0)
+			self:SetNW2String("BlinkerDirection","none")
 		elseif
 		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 0 then -- If you press the button and the blinkers are already set to left, do nothing
 			self:WriteTrainWire(20,1)
@@ -1474,6 +1545,7 @@ function ENT:OnButtonPress(button,ply)
 		self:ReadTrainWire(20) == 0 and self:ReadTrainWire(21) == 0 then
 			self:WriteTrainWire(20,0)
 			self:WriteTrainWire(21,1)
+			self:SetNW2String("BlinkerDirection","right")
 		elseif
 		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 1 then
 			self:WriteTrainWire(20,1)
@@ -1598,6 +1670,53 @@ function ENT:OnButtonPress(button,ply)
 		end
 	end
 
+	if button == "Button1a" then
+		if self.DoorSideUnlocked == "Right" then
+			if self.DoorRandomness1 == 0 then
+				self.DoorRandomness1 = 1
+			end
+		end
+	end
+
+	if button == "Button2a" then
+		if self.DoorSideUnlocked == "Right" then
+			if self.DoorRandomness1 == 0 then
+				self.DoorRandomness1 = 1
+			end
+		end
+	end
+
+	if button == "Button3a" then
+		if self.DoorSideUnlocked == "Right" then
+			if self.DoorRandomness2 == 0 then
+				self.DoorRandomness2 = 1
+			end
+		end
+	end
+
+	if button == "Button4a" then
+		if self.DoorSideUnlocked == "Right" then
+			if self.DoorRandomness2 == 0 then
+				self.DoorRandomness2 = 1
+			end
+		end
+	end
+
+	--[[if button == "Button5b" or "Button6b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness1 == 0 then
+				self.DoorRandomness1 = 1
+			end
+		end
+	end
+
+	if button == "Button3b" or "Button4b" then
+		if self.DoorRandomness2 == 0 then
+			self.DoorRandomness2 = 1
+		end
+	end]]
+
+
 	if button == "DoorsCloseConfirmSet" then
 
 		self:SetNW2Bool("DoorCloseCommand",false)
@@ -1619,20 +1738,20 @@ function ENT:OnButtonPress(button,ply)
 	if button == "DoorsSelectLeftToggle" then
 		if self:GetNWString("DoorSide","none") == "right" then
 			self:SetNWString("DoorSide","none")
-			PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
 		elseif self:GetNWString("DoorSide","none") == "none" then
 			self:SetNWString("DoorSide","left")
-			PrintMessage(HUD_PRINTTALK, "Door switch position left")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position left")
 		end
 	end
 
 	if button == "DoorsSelectRightToggle" then
 		if self:GetNWString("DoorSide","none") == "left" then
 			self:SetNWString("DoorSide","none")
-			PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
 		elseif self:GetNWString("DoorSide","none") == "none" then
 			self:SetNWString("DoorSide","right")
-			PrintMessage(HUD_PRINTTALK, "Door switch position right")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position right")
 		end
 	end
 
@@ -1667,7 +1786,16 @@ function ENT:OnButtonRelease(button,ply)
 				self.Duewag_U2.ThrottleRate = 0
 			end
 		
-		
+			if button == "BatteryToggle" then
+				self:SetNW2Bool("BatteryToggleIsTouched",false)
+				self:SetNW2Bool("BatteryToggleOn",false)
+			end
+
+			if button == "BatteryDisableToggle" then
+				self:SetNW2Bool("BatteryToggleIsTouched",false)
+			
+				self:SetNW2Bool("BatteryToggleOff",false)
+			end
 
 			if button == "DoorsUnlockSet"  then
 		
@@ -1678,14 +1806,16 @@ function ENT:OnButtonRelease(button,ply)
 						self:SetNW2Bool("DoorsUnlocked",true)
 						self:SetNW2Bool("DepartureConfirmed",false)
 						self:SetNW2Bool("DoorCloseCommand",false)
-						self.DoorRandomness1 = math.random(0,1)
-						self.DoorRandomness2 = math.random(0,1)
-						--self.DoorRandomness3 = math.random(0,2)
-						--self.DoorRandomness4 = math.random(0,2)
+						if self:GetNW2Bool("DoorRandomnessSet",false) == false then
+							self:SetNW2Bool("DoorRandomnessSet",true)
+							self.DoorRandomness1 = math.random(0,1)
+							self.DoorRandomness2 = math.random(0,1)
+							self.DoorRandomness3 = math.random(0,2)
+							self.DoorRandomness4 = math.random(0,2)
 
-						PrintMessage(HUD_PRINTTALK,self.DoorRandomness1)
-						PrintMessage(HUD_PRINTTALK,self.DoorRandomness2)
-					
+						--PrintMessage(HUD_PRINTTALK,self.DoorRandomness1)
+						--PrintMessage(HUD_PRINTTALK,self.DoorRandomness2)
+						end
 					
 				end
 			end
@@ -1703,10 +1833,7 @@ function ENT:OnButtonRelease(button,ply)
 						self.DoorRandomness2 = 0
 						self.DoorRandomness3 = 0
 						self.DoorRandomness4 = 0
-
-
-						PrintMessage(HUD_PRINTTALK,self.DoorRandomness1)
-						PrintMessage(HUD_PRINTTALK,self.DoorRandomness2)
+						self:SetNW2Bool("DoorRandomnessSet",false)
 					
 					
 				--end
@@ -1812,6 +1939,11 @@ function ENT:Blink(enable, left, right)
 	self:SetLightPower(59,self.BlinkerOn and right)
 	self:SetLightPower(49,self.BlinkerOn and right)
 	self.u2sectionb.BlinkerRight = self.BlinkerOn and right
+
+	if self.BlinkerOn and left and right then
+		self:SetLightPower(56,self.BlinkerOn and left)
+		self:SetLightPower(57,self.BlinkerOn and right)
+	end
 
 
 	self:SetNW2Bool("BlinkerTick",self.BlinkerOn) --one tick sound for the blinker relay

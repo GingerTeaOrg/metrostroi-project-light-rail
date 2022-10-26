@@ -757,4 +757,4 @@ net.Receive("metrostroi-signal", function(_, ply)
 	ent:SendUpdate(ply)
 end)
 
-Metrostroi.OptimisationPatch()
+//Metrostroi.OptimisationPatch()

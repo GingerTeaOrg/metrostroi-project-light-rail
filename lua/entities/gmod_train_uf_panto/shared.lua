@@ -1,6 +1,6 @@
 ENT.Type            = "anim"
 
-ENT.Author          = ""
+ENT.Author          = "LillyWho"
 ENT.Contact         = ""
 ENT.Purpose         = ""
 ENT.Instructions    = ""

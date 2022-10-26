@@ -121,7 +121,7 @@ Metrostroi.AddSkin("train","SVB",{
     textures = {
 		main_b = "models/lilly/uf/u2/u2h/svb-main_b",
         main = "models/lilly/uf/u2/u2h/svb-main",
-		
+		door_external = "models/lilly/uf/u2/u2h/door_external_svb",
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
 
     }
@@ -133,6 +133,7 @@ Metrostroi.AddSkin("train","SVB_b",{
         main_b = "models/lilly/uf/u2/u2h/svb-main_b",
         main = "models/lilly/uf/u2/u2h/svb-main",
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
+        door_external = "models/lilly/uf/u2/u2h/door_external_svb",
     }
 })
 
@@ -142,6 +143,7 @@ Metrostroi.AddSkin("train","OrEb",{
     textures = {
         main = "models/lilly/uf/u2/u2h/orange-main",
 		decals = "models/lilly/uf/u2/u2h/decals-modern-orange",
+        door_external = "models/lilly/uf/u2/u2h/door_external_orange",
 		
     }
 })
@@ -152,6 +154,7 @@ Metrostroi.AddSkin("train","OrEb_b",{
         main_b = "models/lilly/uf/u2/u2h/orange_main-b",
         main = "models/lilly/uf/u2/u2h/orange-main",
 		decals = "models/lilly/uf/u2/u2h/decals-modern-orange",
+        door_external = "models/lilly/uf/u2/u2h/door_external_orange",
     }
 })
 
@@ -161,6 +164,7 @@ Metrostroi.AddSkin("train","OrEbSW",{
     textures = {
         main = "models/lilly/uf/u2/u2h/orange-main",
 		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
+        door_external = "models/lilly/uf/u2/u2h/door_external_orange",
 		
     }
 })
@@ -171,6 +175,7 @@ Metrostroi.AddSkin("train","OrEbSW_b",{
         main_b = "models/lilly/uf/u2/u2h/orange_main-b",
         main = "models/lilly/uf/u2/u2h/orange-main",
 		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
+        door_external = "models/lilly/uf/u2/u2h/door_external_orange",
     }
 })
 
@@ -303,6 +308,25 @@ Metrostroi.AddSkin("train","yellow_b",{
     textures = {
         main_b = "models/lilly/uf/u2/u2h/Yellow",
         main = "models/lilly/uf/u2/u2h/Yellow",
+		decals = "models/lilly/uf/u2/u2h/decals-modern",
+    }
+})
+
+Metrostroi.AddSkin("train","hamburg",{
+    name = "Hamburg",
+    typ = "U2h",
+    textures = {
+        main = "models/lilly/uf/u2/u2h/repaints/main-hamburg",
+		decals = "models/lilly/uf/u2/u2h/decals-modern",
+
+    }
+})
+Metrostroi.AddSkin("train","hamburg_b",{
+    name = "Hamburg",
+    typ = "U2hb",
+    textures = {
+        main_b = "models/lilly/uf/u2/u2h/repaints/main-hamburg",
+        main = "models/lilly/uf/u2/u2h/repaints/main-hamburg",
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
     }
 })

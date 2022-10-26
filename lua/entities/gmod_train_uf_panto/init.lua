@@ -51,6 +51,7 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:Think()
+    self.BaseClass.Think(self)
 end
 
 

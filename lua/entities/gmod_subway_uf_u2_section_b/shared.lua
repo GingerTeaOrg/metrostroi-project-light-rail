@@ -14,10 +14,10 @@ ENT.SkinsType = "U2hb"
 
 ENT.DontAccelerateSimulation = true
 function ENT:InitializeSystems()
-	self:LoadSystem("Duewag_U2")
-	self:LoadSystem("Duewag_Deadman")
-	self:LoadSystem("IBIS")
-	self:LoadSystem("Duewag_Battery")
+	--self:LoadSystem("Duewag_U2")
+	--self:LoadSystem("Duewag_Deadman")
+	--self:LoadSystem("IBIS")
+	--self:LoadSystem("Duewag_Battery")
 end
 
 function ENT:InitializeSounds()
