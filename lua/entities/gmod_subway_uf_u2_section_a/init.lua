@@ -269,7 +269,7 @@ end
 ENT.BogeyDistance = 1100
 
 
-ENT.SyncTable = { "speed", "ThrottleState", "Drive", "Brake","Reverse","BellEngage","Horn","WarningAnnouncement", "PantoUp", "BatteryOn", "KeyTurnOn", "BlinkerState", "StationBrakeOn", "StationBrakeOff"}
+ENT.SyncTable = {"BellEngage","Horn","WarningAnnouncementSet", "PantoUp", "DoorsCloseConfirmSet", "PassengerLightsSet", "SetHoldingBrakeSet", "ReleaseHoldingBrakeSet", "PassengerOvergroundSet", "PassengerUndergroundSet", "DoorsCloseConfirmSet", "SetPointRightSet", "SetPointLeftSet", "ThrowCouplerSet", "OpenDoor1Set", "UnlockDoorsSet", "DoorCloseSignalSet"}
 
 
 function ENT:Initialize()

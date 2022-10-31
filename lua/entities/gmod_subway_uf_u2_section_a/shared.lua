@@ -104,6 +104,12 @@ function ENT:InitializeSounds()
 	self.SoundNames["Switchgear7"] = {"lilly/uf/u2/Stuk07.mp3"}
 	self.SoundPositions["Switchgear7"] = {1100,1e9,Vector(250,0,200),1}
 
+	self.SoundNames["button_on"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
+	self.SoundPositions["button_on"] = {1100,1e9,Vector(250,0,200),1}
+
+	self.SoundNames["button_off"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
+	self.SoundPositions["button_off"] = {1100,1e9,Vector(250,0,200),1}
+
 	self.SoundNames["Toggle"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
 	self.SoundPositions["Toggle"] = {1100,1e9,Vector(250,0,200),1}
 

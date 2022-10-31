@@ -349,129 +349,137 @@ ENT.ButtonMap["Cab"] = {
 		
     {ID = "WarningAnnouncementSet", x=265, y=18, radius=10, tooltip = "Please keep back announcement", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-4, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        getfunc = function(entity) return .7 end,var="WarningAnnouncementSet", speed=4,min=0,max=1,
+        var="WarningAnnouncement",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "VentilationSet", x=334, y=59, radius=10, tooltip = "Enable motor fans", model = {
+        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-3, ang=0,
+        getfunc = function(ent) return ent:GetPackedRatio("VentilationSet") end,var="VentilationSet", speed=4,min=0,max=1,
+        var="Ventilation",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "ReleaseHoldingBrakeSet", x=20, y=90, radius=10, tooltip = "Release mechanical brake manually", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=90,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="ReleaseHoldingBrake",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SetHoldingBrakeSet", x=20, y=58, radius=10, tooltip = "set mechanical holding brake manually", model = {
         model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="SetHoldingBrake",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "PassengerOvergroundSet", x=52.5, y=58, radius=10, tooltip = "Set passenger lights to overground mode", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="PassengerOverground",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "PassengerUndergroundSet", x=52.5, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="PassengerUnderground",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "LightsToggle", x=20, y=21, radius=10, tooltip = "Enable Headlights", model = {
         z=0, ang=2,
-        var="main",speed=1, vmin=0, vmax=1,
+        var="Lights",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "Toggle" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "BatteryToggle", x=463, y=91, radius=10, tooltip = "Toggle Battery", model = {
         --[[model = "models/lilly/uf/u2/cab/battery_switch.mdl",]] z=0, ang=0,
         --[[getfunc =  function(ent) return ent:GetPackedBool("FlickBatterySwitchOn") and 0 or (ent:GetPackedBool("FlickBatterySwitchOff") and 1 or 0.5) end,]]
-        var="main",speed=1, vmin=0, vmax=1,
+        var="Battery",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "DriverLightToggle", x=463, y=58, radius=10, tooltip = "Toggle Cab Light", model = {
         z=0, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="DriverLight",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SetPointLeftSet", x=179, y=91, radius=10, tooltip = "Set track point to left", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_arrow_right.mdl", z=-4, ang=90, anim=true,
-        var="position",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="SetPointLeft",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "DoorsCloseConfirmSet", x=210, y=91, radius=10, tooltip = "Clear door closed alarm", model = {
         model = "models/lilly/uf/u2/cab/button_indent_orange.mdl", z=0, ang=0, anim=true,
-        var="position",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="DoorsCloseConfirm",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SetPointRightSet", x=241, y=91, radius=10, tooltip = "Set track point to right", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_arrow_left.mdl", z=-4, ang=90,anim=true,
-        var="position",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="SetPointRight",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "BlinkerLeftToggle", x=260, y=88, radius=8, tooltip = "Indicators Left", model = {
         z=0, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="BlinkerLeft",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "BlinkerRightToggle", x=280, y=88, radius=8, tooltip = "Indicators Right", model = {
         z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     --[[{ID = "LowerPantographSet", x=449, y=112, radius=10, tooltip = "Lower pantograph", model = {
         model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },]]
     {ID = "ThrowCouplerSet", x=334.8, y=91, radius=10, tooltip = "Throw Coupler", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-4, ang=0,
-        var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        var="ThrowCoupler",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "OpenDoor1Set", x=364, y=91, radius=10, tooltip = "Open only door 1", model = {
         model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SanderToggle", x=561, y=112, radius=10, tooltip = "Toggle sanding", model = {
         model = "models/lilly/uf/common/cab/button_red.mdl", z=-2, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "UnlockDoorsSet", x=396, y=57.5, radius=10, tooltip = "Toggle doors unlocked", model = {
-        model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
+        model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-4, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     --[[{ID = "RaisePantographSet", x=449, y=80, radius=10, tooltip = "Raise Pantograph", model = {
         model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },]]
     {ID = "DoorSideSelectToggle", x=531, y=46, radius=10, tooltip = "Select door set to unlock", model = {
         model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "DoorCloseSignalSet", x=396, y=91, radius=10, tooltip = "Set doors to close", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
 }
@@ -508,85 +516,85 @@ ENT.ButtonMap["IBISScreen"] = {
         {ID = "Number2Set", x=40, y=50, radius=10, tooltip = "2", --[[model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
         },
         {ID = "Number3Set", x=40, y=27, radius=10, tooltip = "3", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
         },
         {ID = "Number4Set", x=65, y=72, radius=10, tooltip = "4", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "Number5Set", x=65, y=50, radius=10, tooltip = "5", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "Number6Set", x=65, y=27, radius=10, tooltip = "6", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "Number7Set", x=85, y=72, radius=10, tooltip = "7", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "Number8Set", x=85, y=50, radius=10, tooltip = "8", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "Number9Set", x=85, y=27, radius=10, tooltip = "9", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "DeleteSet", x=109, y=72, radius=10, tooltip = "Delete", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "Number0Set", x=109, y=50, radius=10, tooltip = "0", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "EnterSet", x=109, y=27, radius=10, tooltip = "Confirm", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "TimeAndDateSet", x=109, y=95, radius=10, tooltip = "Set time and date", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "SpecialAnnouncementsSet", x=109, y=118, radius=10, tooltip = "Special Annoucements", model = {
             model = "m", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
         {ID = "DestinationSet", x=85, y=95, radius=10, tooltip = "Destination", model = {
             model = "", z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
     }
@@ -642,12 +650,12 @@ ENT.ButtonMap["Left"] = {
         {ID = "ParrallelToggle", x=24, y=21, radius=3, tooltip = "Set engines to shunt mode (not yet implemented)", model = {
             model = "models/lilly/uf/u2/switch_flick.mdl", z=5, ang=90,
             var="Parrallel",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
         {ID = "WarnBlinkToggle", x=92, y=70, radius=3, tooltip = "Set indicators to warning mode", model = {
             model = "models/lilly/uf/u2/switch_flick.mdl", z=5, ang=0,
             var="Parrallel",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_press" or "button_release" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
+            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
         }
 }
@@ -739,6 +747,9 @@ function ENT:Think()
 	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,50,8,false)
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,9,false)
 
+    self:Animate("window_cab_r",0.5,0,100,50,9,false)
+    self:Animate("window_cab_l",0.5,0,100,50,9,false)
+
     if self:GetNW2String("BlinkerDirection","none") == "none" then
         self:Animate("BlinkerSwitch",0.5,0,100,100,10,false)
     elseif self:GetNW2String("BlinkerDirection","none") == "left" then
@@ -805,7 +816,7 @@ function ENT:Think()
 
     self.SpeedoAnim = math.Clamp(self:GetNW2Float("Speed"),0,80) / 100 * 1.5
 
-    self:Animate("Speedo",self.SpeedoAnim,0,100,32,1,false)
+    self:Animate("Speedo",self.SpeedoAnim,0,100,32,0,0)
     --self:Animate("Throttle",0,-45,45,3,0,false)
 	
     
@@ -912,7 +923,9 @@ function ENT:Think()
 	    end
 		if self:GetNW2Bool("WarningAnnouncement") == true then
             self:PlayOnce("WarningAnnouncement",Vector(350,-30,113),1,1)
-    
+            self:SetPackedRatio("WarningAnnouncement",1)
+        elseif self:GetNW2Bool("WarningAnnouncement") == false then
+            self:SetPackedRatio("WarningAnnouncement",0)
         end
     elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
 		self.StartupSoundPlayed = false	
