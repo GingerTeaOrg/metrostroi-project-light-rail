@@ -351,7 +351,7 @@ ENT.ButtonMap["Cab"] = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-4, ang=0,
         getfunc = function(entity) return .7 end,var="WarningAnnouncementSet", speed=4,min=0,max=1,
         var="WarningAnnouncement",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "VentilationSet", x=334, y=59, radius=10, tooltip = "Enable motor fans", model = {

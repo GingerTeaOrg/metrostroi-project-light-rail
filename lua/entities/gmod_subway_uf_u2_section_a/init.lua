@@ -21,29 +21,29 @@ ENT.SubwayTrain = {
 
 
 function ENT:CreatePanto(pos,ang,type)
-local panto = ents.Create("gmod_train_uf_panto")
+	local panto = ents.Create("gmod_train_uf_panto")
 
-panto:SetPos(self:LocalToWorld(pos))
-panto:SetAngles(self:GetAngles() + ang)
+	panto:SetPos(self:LocalToWorld(pos))
+	panto:SetAngles(self:GetAngles() + ang)
 
-panto.PantoType = type
-panto.NoPhysics = self.NoPhysics or true
-panto:Spawn()
+	panto.PantoType = type
+	panto.NoPhysics = self.NoPhysics or true
+	panto:Spawn()
 
-panto.SpawnPos = pos
-panto.SpawnAng = ang
+	panto.SpawnPos = pos
+	panto.SpawnAng = ang
 
 
-if self.NoPhysics then
-	bogey:SetParent(self)
-else
-	constraint.Axis(panto,self,0,0,
-		Vector(0,0,0),Vector(0,0,0),
-		0,0,0,1,Vector(0,0,1),false)
-end
+	if self.NoPhysics then
+		bogey:SetParent(self)
+	else
+		constraint.Axis(panto,self,0,0,
+			Vector(0,0,0),Vector(0,0,0),
+			0,0,0,1,Vector(0,0,1),false)
+	end
 
-table.insert(self.TrainEntities,panto)
-return panto
+	table.insert(self.TrainEntities,panto)
+	return panto
 
 end
 
@@ -188,8 +188,10 @@ function ENT:CreateCoupleUF(pos,ang,forward,typ)
 
         if forward and IsValid(self.FrontBogey) then
             constraint.NoCollide(self.FrontBogey,coupler,0,0)
+			constraint.NoCollide(self.FrontBogey,self,0,0)
         elseif not forward and IsValid(self.MiddleBogey) then
             constraint.NoCollide(self.MiddleBogey,coupler,0,0)
+			constraint.NoCollide(self.MiddleBogey,self,0,0)
         end
         
         constraint.Axis(coupler,self,0,0,
@@ -252,15 +254,17 @@ function ENT:CreateCouplerUF_b(pos,ang,forward,typ)
 
         if forward and IsValid(self.FrontBogey) then
             constraint.NoCollide(self.FrontBogey,coupler,0,0)
+			constraint.NoCollide(self.FrontBogey,self.u2sectionb,0,0)
         elseif not forward and IsValid(self.RearBogey) then
             constraint.NoCollide(self.RearBogey,coupler,0,0)
+			constraint.NoCollide(self.RearBogey,self.u2sectionb,0,0)
         end
         
         constraint.Axis(coupler,self.u2sectionb,0,0,
             Vector(0,0,0),Vector(0,0,0),
             0,0,0,1,Vector(0,0,1),false)
     end
-
+	
     -- Add to cleanup list
     table.insert(self.TrainEntities,coupler)
     return coupler
@@ -277,16 +281,17 @@ function ENT:Initialize()
 	-- Set model and initialize
 	self:SetModel("models/lilly/uf/u2/u2h.mdl")
 	self.BaseClass.Initialize(self)
-	self:SetPos(self:GetPos() + Vector(0,0,20))  --set to 200 if one unit spawns in ground
+	self:SetPos(self:GetPos() + Vector(0,0,10))  --set to 200 if one unit spawns in ground
 	
 	-- Create seat entities
     self.DriverSeat = self:CreateSeat("driver",Vector(395,15,34))
-	self.InstructorsSeat = self:CreateSeat("instructor",Vector(395,-20,30),Angle(0,90,0),"models/vehicles/prisoner_pod_inner.mdl")
+	self.InstructorsSeat = self:CreateSeat("instructor",Vector(395,-20,10),Angle(0,90,0),"models/vehicles/prisoner_pod_inner.mdl")
 	--self.HelperSeat = self:CreateSeat("instructor",Vector(505,-25,55))
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.DriverSeat:SetColor(Color(0,0,0,0))
 	self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.InstructorsSeat:SetColor(Color(0,0,0,0))
+	
 	self.Debug = 1
 	self.LeadingCab = 0
 	
@@ -328,7 +333,9 @@ function ENT:Initialize()
 	self.RearBogey = self:CreateBogeyUF_b(Vector( -300,0,0),Angle(0,180,0),false,"duewag_motor")
 	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,2),Angle(0,180,0),true,"u2")	
 	self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
-	
+	self:GetPhysicsObject():SetMass(50000)
+	self.u2sectionb:GetPhysicsObject():SetMass(50000)
+
 	self.PantoUp = 0
 	
 	self.ReverserInsert = false 
@@ -430,7 +437,8 @@ function ENT:Initialize()
 							[KEY_H] = "Horn",
 							[KEY_V] = "DriverLightToggle",
 							[KEY_COMMA] = "BlinkerRightToggle",
-							[KEY_B] = "BatteryDisableToggle",},
+							[KEY_B] = "BatteryDisableToggle",
+						},
 							
 		[KEY_LALT] = {
 							[KEY_PAD_1] = "Number1Set",
@@ -566,6 +574,11 @@ function ENT:Think(dT)
 
 	self.u2sectionb:TrainSpawnerUpdate()
 	self:SetNW2Entity("U2a",self)
+
+	--[[if self:GetPhysicsObject:GetMass() == 50000 and self.u2sectionb:GetPhysicsObject:GetMass() == 50000 then
+		self:GetPhysicsObject:SetMass(16000)
+		self.u2sectionb:GetPhysicsObject:SetMass(16000)
+	end]]
 
 	--PrintMessage(HUD_PRINTTALK, self:GetNW2String("Texture"))
 	if self:ReadTrainWire(7) == 1 then
@@ -816,8 +829,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 
 			if self.Duewag_U2.ThrottleState < 0 then
-				self.RearBogey.MotorForce  = -20000 
-				self.FrontBogey.MotorForce = -20000
+				self.RearBogey.MotorForce  = -60000 
+				self.FrontBogey.MotorForce = -60000
 				self:SetNW2Bool("Braking",true)
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -825,16 +838,16 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			elseif self.Duewag_U2.ThrottleState > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
-				self.RearBogey.MotorForce  = 20000
-				self.FrontBogey.MotorForce = 20000
+				self.RearBogey.MotorForce  = 60000
+				self.FrontBogey.MotorForce = 60000
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			elseif self:GetNW2Bool("Speedlimiter",false) == true then 
-				self.RearBogey.MotorForce  = -20000
-				self.FrontBogey.MotorForce = -20000
+				self.RearBogey.MotorForce  = -60000
+				self.FrontBogey.MotorForce = -60000
 				self:SetNW2Bool("Braking",true)
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -1909,7 +1922,7 @@ function ENT:CreateSectionB(pos)
 		1 --nocollide
 	)
 	
-	
+	constraint.NoCollide(self.MiddleBogey,u2sectionb,0,0)
 	-- Add to cleanup list
 	table.insert(self.TrainEntities,u2sectionb)
 	return u2sectionb

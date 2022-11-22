@@ -1,6 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/lilly/uf/u2/u2h/pult"
-	"$bumpmap"		"models/lilly/uf/u2/u2h/pult-n"
-	"$surfaceprop" "Metal"
-}

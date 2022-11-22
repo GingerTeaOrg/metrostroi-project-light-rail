@@ -298,7 +298,7 @@ Metrostroi.AddSkin("train","yellow",{
     typ = "U2h",
     textures = {
         main = "models/lilly/uf/u2/u2h/Yellow",
-		decals = "models/lilly/uf/u2/u2h/decals-modern",
+		decals = "models/lilly/uf/u2/u2h/decals-evag",
 
     }
 })
@@ -308,7 +308,7 @@ Metrostroi.AddSkin("train","yellow_b",{
     textures = {
         main_b = "models/lilly/uf/u2/u2h/Yellow",
         main = "models/lilly/uf/u2/u2h/Yellow",
-		decals = "models/lilly/uf/u2/u2h/decals-modern",
+		decals = "models/lilly/uf/u2/u2h/decals-evag",
     }
 })
 
