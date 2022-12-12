@@ -870,7 +870,7 @@ function ENT:Think()
         	self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
     
 
-            if self:GetNW2Bool("BlinkerTick",false) == true and self.BlinkerTicked = false then
+            if self:GetNW2Bool("BlinkerTick",false) == true and self.BlinkerTicked == false then
 
         
                 self:PlayOnce("Blinker","cabin",5,1)   
@@ -935,7 +935,7 @@ function ENT:Think()
 		    	self:PlayOnce("Startup","cabin",1,1)
 		    end
 	    end
-		if self:GetNW2Bool("WarningAnnouncement") == true and self.WarningAnnouncement = false then
+		if self:GetNW2Bool("WarningAnnouncement") == true and self.WarningAnnouncement == false then
             self:PlayOnce("WarningAnnouncement",Vector(350,-30,113),1,1)
             self.WarningAnnouncement = true
         elseif self:GetNW2Bool("WarningAnnouncement") == false then
