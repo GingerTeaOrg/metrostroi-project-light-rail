@@ -797,7 +797,7 @@ function ENT:Think()
 
 
     if self:GetNW2Bool("Microphone",false) == true then
-        if self.Microphone = false then
+        if self.Microphone == false then
             self.Microphone = true
             self:PlayOnce(self.Nags[1],"cabin",1,1)
         end
