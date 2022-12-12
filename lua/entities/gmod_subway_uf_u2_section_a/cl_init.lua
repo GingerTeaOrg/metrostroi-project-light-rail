@@ -705,7 +705,7 @@ function ENT:Initialize()
     self.SoundNames = {}
 
     self.SoundNames["loop_main"] = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["loop_secondary"] = "lilly/uf//u2/engineloop_test.wav"
+    self.SoundNames["loop_secondary"] = "lilly/uf/u2/engineloop_test.wav"
 
 
     self.MotorPowerSound = 0
@@ -715,7 +715,12 @@ function ENT:Initialize()
     self.VoltAnim = 0
     self.AmpAnim = 0
 	
-    
+    self.Microphone = false
+    self.BlinkerTicked = false
+    self.DoorOpenSoundPlayed = false
+    self.DoorCloseSoundPlayed = false
+    self.DoorsOpen = false
+
 	
 	self.ThrottleLastEngaged = 0
 
@@ -723,6 +728,8 @@ function ENT:Initialize()
 	self.IBISKickStart = false
 	self.IBISStarted = false
 	self.StartupSoundPlayed = false
+
+    self.WarningAnnouncement = false
 	
 	--self.LeftMirror = self:CreateRT("LeftMirror",512,256)
     --self.RightMirror = self:CreateRT("RightMirror",128,256)
@@ -790,8 +797,14 @@ function ENT:Think()
 
 
     if self:GetNW2Bool("Microphone",false) == true then
-        self:SetNW2Bool("Microphone",false)
-        self:PlayOnce(self.Nags[1],"cabin",1,1)
+        if self.Microphone = false then
+            self.Microphone = true
+            self:PlayOnce(self.Nags[1],"cabin",1,1)
+        end
+    end
+
+    if self:GetNW2Bool("Microphone",false) == false then
+        self.Microphone = false
     end
 
     if self:GetNW2Bool("CamshaftMove",false) == true then
@@ -857,16 +870,17 @@ function ENT:Think()
         	self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
     
 
-            if self:GetNW2Bool("BlinkerTick",false) == true and not self:GetNW2Bool("BlinkerTicked",false) == true then
+            if self:GetNW2Bool("BlinkerTick",false) == true and self.BlinkerTicked = false then
 
         
                 self:PlayOnce("Blinker","cabin",5,1)   
-                self:SetNW2Bool("BlinkerTicked",true)
-        
+                --self:SetNW2Bool("BlinkerTicked",true)
+                self.BlinkerTicked = true
             elseif self:GetNW2Bool("BlinkerTick",false) == false then
-                self:SetNW2Bool("BlinkerTicked",false)
-               --self:SetSoundState("Blinker",1,1,1)
-               --self:SetNW2Bool("BlinkerTick",false)
+                --self:SetNW2Bool("BlinkerTicked",false)
+                --self:SetSoundState("Blinker",1,1,1)
+                --self:SetNW2Bool("BlinkerTick",false)
+                self.BlinkerTicked = false
              end
 
 
@@ -889,18 +903,18 @@ function ENT:Think()
                 self:SetSoundState("Fan3",0,1,1 )
             end
         end
-        if self:GetNW2Bool("DoorsUnlocked",false) == true and self:GetNW2Bool("DoorOpenSoundPlayed",false) == false then
-            self:SetNW2Bool("DoorOpenSoundPlayed",true)
-            self:SetNW2Bool("DoorCloseSoundPlayed",false)
+        if self:GetNW2Bool("DoorsUnlocked",false) == true and self.DoorOpenSoundPlayed == false then
+            self.DoorOpenSoundPlayed = true
+            self.DoorCloseSoundPlayed = false
             self:PlayOnce("Door_open1","cabin",0.4,1)
-            self:SetNW2Bool("DoorsOpen",true)
+            self.DoorsOpen = true
         end
 
-        if self:GetNW2Bool("DoorsUnlocked",false) == false and self:GetNW2Bool("DoorsOpen",false) == true and self:GetNW2Bool("DoorCloseSoundPlayed",false) == false then
-            self:SetNW2Bool("DoorCloseSoundPlayed",true)
-            self:SetNW2Bool("DoorsOpen",false)
+        if self:GetNW2Bool("DoorsUnlocked",false) == false and self.DoorsOpen == true and self.DoorCloseSoundPlayed == false then
+            self.DoorCloseSoundPlayed = true
+            self.DoorsOpen = false
             self:PlayOnce("Door_close1","cabin",0.4,1)
-            self:SetNW2Bool("DoorOpenSoundPlayed",false)
+            self.DoorOpenSoundPlayed = false
         end
         
         
@@ -921,11 +935,11 @@ function ENT:Think()
 		    	self:PlayOnce("Startup","cabin",1,1)
 		    end
 	    end
-		if self:GetNW2Bool("WarningAnnouncement") == true then
+		if self:GetNW2Bool("WarningAnnouncement") == true and self.WarningAnnouncement = false then
             self:PlayOnce("WarningAnnouncement",Vector(350,-30,113),1,1)
-            self:SetPackedRatio("WarningAnnouncement",1)
+            self.WarningAnnouncement = true
         elseif self:GetNW2Bool("WarningAnnouncement") == false then
-            self:SetPackedRatio("WarningAnnouncement",0)
+            self.WarningAnnouncement = false
         end
     elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
 		self.StartupSoundPlayed = false	
@@ -1023,7 +1037,7 @@ function ENT:Think()
     
 
     if self:GetNW2Int("Speed") > 10 then
-        self:SetSoundState("Cruise",1,pitch,1)
+        self:SetSoundState("Cruise",1,pitch,volume)
     end
 
     if self:GetNW2Int("Speed") < 10 then
@@ -1053,7 +1067,7 @@ function ENT:Think()
 
 	local rol_motors = math.Clamp((speed-20)/40,0,1)
     --self:SetSoundState("MotorType1",math.max(rollingi,rollings*0.8)*rol_motors,self:GetNW2Int("Speed")/56)
-    self:SetSoundState("MotorType1",1,speed/56)
+    --self:SetSoundState("MotorType1",1,speed/56)
     --self:SetSoundState("MotorType1",10,1,1)
     --local rol10 = math.Clamp(speed/15,0,1)*(1-math.Clamp((speed)/35,0,1))
     --local rol10p = Lerp((speed)/14,0.6,0.78)

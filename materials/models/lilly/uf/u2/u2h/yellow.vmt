@@ -1,1 +1,7 @@
-repaints/yellow.vmt
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u2/u2h/repaints/yellow"
+	model 1
+	$alphatest 1
+	
+}

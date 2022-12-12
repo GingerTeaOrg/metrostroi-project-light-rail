@@ -273,7 +273,7 @@ end
 ENT.BogeyDistance = 1100
 
 
-ENT.SyncTable = {"BellEngage","Horn","WarningAnnouncementSet", "PantoUp", "DoorsCloseConfirmSet", "PassengerLightsSet", "SetHoldingBrakeSet", "ReleaseHoldingBrakeSet", "PassengerOvergroundSet", "PassengerUndergroundSet", "DoorsCloseConfirmSet", "SetPointRightSet", "SetPointLeftSet", "ThrowCouplerSet", "OpenDoor1Set", "UnlockDoorsSet", "DoorCloseSignalSet"}
+ENT.SyncTable = {"Microphone","BellEngage","Horn","WarningAnnouncementSet", "PantoUp", "DoorsCloseConfirmSet", "PassengerLightsSet", "SetHoldingBrakeSet", "ReleaseHoldingBrakeSet", "PassengerOvergroundSet", "PassengerUndergroundSet", "DoorsCloseConfirmSet", "SetPointRightSet", "SetPointLeftSet", "ThrowCouplerSet", "OpenDoor1Set", "UnlockDoorsSet", "DoorCloseSignalSet"}
 
 
 function ENT:Initialize()
@@ -1887,6 +1887,9 @@ function ENT:OnButtonRelease(button,ply)
 			end
 			
 		end]]
+		if button == "ComplaintSet" then
+			self:SetNW2Bool("Microphone",false)
+		end
 
 
 		

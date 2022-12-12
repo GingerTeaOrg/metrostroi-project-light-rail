@@ -1,1 +1,4 @@
-repaints/black.vmt
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u2/u2h/repaints/black"
+}
