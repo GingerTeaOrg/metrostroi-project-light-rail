@@ -401,6 +401,9 @@ function ENT:Initialize()
 	self.PrevTime = 0
 	self.DeltaTime = 0
 
+	self.RollsignModifier = 0
+	self.RollsignModifierRate = 0
+
 
 	--[[self:SetNW2Int("Door1-2a",0)
 	self:SetNW2Int("Door3-4a",0)
@@ -443,6 +446,8 @@ function ENT:Initialize()
 							[KEY_V] = "DriverLightToggle",
 							[KEY_COMMA] = "BlinkerRightToggle",
 							[KEY_B] = "BatteryDisableToggle",
+							[KEY_PAGEUP] = "Rollsign+",
+							[KEY_PAGEDOWN] = "Rollsign-",
 						},
 							
 		[KEY_LALT] = {
@@ -586,6 +591,8 @@ function ENT:Think(dT)
 	self:SetNW2Float("CabWindowL",self.CabWindowL)
 	self:SetNW2Float("CabWindowR",self.CabWindowR)
 
+	self.RollsignModifier = self.RollsignModifierRate + math.Clamp(self.RollsignModifier,0,1)
+	self:SetNW2Float("RollsignModifier",self.RollsignModifier)
 	
 
 
@@ -1432,6 +1439,17 @@ function ENT:OnButtonPress(button,ply)
 	end
 		
 	end
+	if self.RollsignModifierRate == 0 then
+		if button == "Rollsign+" then
+
+			self.RollsignModifierRate = 0.05
+		end
+		if button == "Rollsign-" then
+			self.RollsignModifierRate = -0.05
+		end
+	end
+
+	
 	
 	if button == "CabWindowR+" then
 		
@@ -1529,7 +1547,7 @@ function ENT:OnButtonPress(button,ply)
 			
 			self.Duewag_Battery:TriggerInput("Charge",1.3)
 			self:SetNW2Bool("BatteryOn",true)
-			PrintMessage(HUD_PRINTTALK, "Battery switch is ON")
+			--PrintMessage(HUD_PRINTTALK, "Battery switch is ON")
 		end
 		self:SetNW2Bool("BatteryToggleIsTouched",true)
 		self:SetNW2Bool("BatteryToggleOn",true)
@@ -1541,7 +1559,7 @@ function ENT:OnButtonPress(button,ply)
 			self.Duewag_Battery:TriggerInput("Charge",1.3)
 			self:SetNW2Bool("BatteryOn",true)
 			PrintMessage(HUD_PRINTTALK, "Battery switch is off")
-			self:SetNW2Bool("BatteryToggleIsTouched",true)
+			--self:SetNW2Bool("BatteryToggleIsTouched",true)
 			
 		end
 		self:SetNW2Bool("BatteryToggleIsTouched",true)
@@ -1832,6 +1850,14 @@ function ENT:OnButtonRelease(button,ply)
 			end
 			if (button == "ThrottleUpFast" and self.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDownFast" and self.Duewag_U2.ThrottleRate < 0) then
 				self.Duewag_U2.ThrottleRate = 0
+			end
+
+			if button == "Rollsign+" then
+
+				self.RollsignModifierRate = 0
+			end
+			if button == "Rollsign-" then
+				self.RollsignModifierRate = 0
 			end
 		
 			if button == "BatteryToggle" then

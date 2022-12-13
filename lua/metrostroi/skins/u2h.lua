@@ -106,6 +106,26 @@ Metrostroi.AddSkin("train","pride",{
         decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
     }
 })
+
+Metrostroi.AddSkin("train","Duesseldorf",{
+    name = "Düsseldorf",
+    typ = "U2h",
+    textures = {
+        main = "models/lilly/uf/u2/u2h/main-duesseldorf",
+        main_left = "models/lilly/uf/u2/u2h/main-duesseldorf-left",
+        decals = "models/lilly/uf/u2/u2h/decals",
+    }
+})
+
+Metrostroi.AddSkin("train","Duesseldorf_b",{
+    name = "Düsseldorf_b",
+    typ = "U2hb",
+    textures = {
+        main_b = "models/lilly/uf/u2/u2h/main-duesseldorf",
+        main_b_left = "models/lilly/uf/u2/u2h/main-duesseldorf-left",
+        decals = "models/lilly/uf/u2/u2h/decals",
+    }
+})
 Metrostroi.AddSkin("train","pride_b",{
     name = "LGBTQ Pride because fuck bigots",
     typ = "U2hb",

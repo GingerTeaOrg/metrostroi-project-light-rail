@@ -616,15 +616,15 @@ ENT.ButtonMap["Microphone"] = {
 
 
 
-ENT.ButtonMap["LastStation"] = {
-    pos = Vector(425.699,-25,110),
+ENT.ButtonMap["Rollsign"] = {
+    pos = Vector(424.79,-25,109),
     ang = Angle(0,90,90),
-    width = 840,
-    height = 205,
+    width = 800,
+    height = 160,
     scale = 0.0625,
     buttons = {
-        {ID = "LastStation-",x=000,y=0,w=400,h=205, tooltip=""},
-        {ID = "LastStation+",x=400,y=0,w=400,h=205, tooltip=""},
+        --{ID = "LastStation-",x=000,y=0,w=400,h=205, tooltip=""},
+        --{ID = "LastStation+",x=400,y=0,w=400,h=205, tooltip=""},
     }
 }
 
@@ -664,6 +664,8 @@ ENT.ButtonMap["CabWindowR"] = {
         {ID = "CabWindowR-",x=0,y=400,w=300,h=205, tooltip="Pull the window down"},
     }
 }
+
+
 --[[]
 ENT.ButtonMap["Left"] = {
     pos = Vector(527.7,39.5,74.5),
@@ -691,6 +693,8 @@ ENT.ButtonMap["Left"] = {
 	
 function ENT:Draw()
     self.BaseClass.Draw(self)
+
+    --cam.Start3D2D(Vector(450,0,300), Angle(0,0,0), 0.25)
 end
 
 
@@ -700,6 +704,12 @@ function ENT:DrawPost()
         surface.SetMaterial(self.RTMaterial)
         surface.SetDrawColor(255,255,255)
         surface.DrawTexturedRectRotated(55.5,12,108.5,25,0)
+    end)
+    local mat = Material("models/lilly/uf/u2/rollsigns/default.png")
+    self:DrawOnPanel("Rollsign",function(...)
+        surface.SetDrawColor( color_white )
+        surface.SetMaterial(mat)
+        surface.DrawTexturedRectUV(0,0,800,160,0,self:GetNW2Float("RollsignModifier",0.5),1,self:GetNW2Float("RollsignModifier",0.5) + 0.25)
     end)
 end
 
