@@ -314,7 +314,8 @@ function ENT:Initialize()
 	self.WagonNumber = 303
 
 	self.Haltebremse = 0
-
+	self.CabWindowR = 0
+	self.CabWindowL = 0
 	self.AlarmSound = 0
 
 	self.DoorsOpen = false
@@ -396,6 +397,10 @@ function ENT:Initialize()
 
 	self:SetPackedBool("FlickBatterySwitchOn",false)
 	self:SetPackedBool("FlickBatterySwitchOff",false)
+
+	self.PrevTime = 0
+	self.DeltaTime = 0
+
 
 	--[[self:SetNW2Int("Door1-2a",0)
 	self:SetNW2Int("Door3-4a",0)
@@ -567,9 +572,21 @@ end]]
 
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
+
+	self.PrevTime = self.PrevTime or CurTime()
+    self.DeltaTime = (CurTime() - self.PrevTime)
+    self.PrevTime = CurTime()
+
     
 	
 	--self:SetNW2Entity("FrontBogey",self.FrontBogey)
+
+	self.CabWindowL = math.Clamp(self.CabWindowL,0,1)
+	self.CabWindowR = math.Clamp(self.CabWindowR,0,1)
+	self:SetNW2Float("CabWindowL",self.CabWindowL)
+	self:SetNW2Float("CabWindowR",self.CabWindowR)
+
+	
 
 
 	self.u2sectionb:TrainSpawnerUpdate()
@@ -815,9 +832,9 @@ function ENT:Think(dT)
 if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 	
 	
-	self.FrontBogey.PneumaticBrakeForce = 10000.0
-	self.MiddleBogey.PneumaticBrakeForce = 10000.0
-	self.RearBogey.PneumaticBrakeForce = 10000.0  
+	--self.FrontBogey.PneumaticBrakeForce = 10000.0
+	--self.MiddleBogey.PneumaticBrakeForce = 10000.0
+	--self.RearBogey.PneumaticBrakeForce = 10000.0  
 
 
 	if self.Duewag_U2.ReverserLeverState == 3 or self:ReadTrainWire(6) < 1 then
@@ -829,8 +846,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 
 			if self.Duewag_U2.ThrottleState < 0 then
-				self.RearBogey.MotorForce  = -60000 
-				self.FrontBogey.MotorForce = -60000
+				self.RearBogey.MotorForce  = -30000 
+				self.FrontBogey.MotorForce = -30000
 				self:SetNW2Bool("Braking",true)
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -838,17 +855,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			elseif self.Duewag_U2.ThrottleState > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
-				self.RearBogey.MotorForce  = 60000
-				self.FrontBogey.MotorForce = 60000
-				self.RearBogey.MotorPower = self.Duewag_U2.Traction
-				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
-				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
-				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-			elseif self:GetNW2Bool("Speedlimiter",false) == true then 
-				self.RearBogey.MotorForce  = -60000
-				self.FrontBogey.MotorForce = -60000
-				self:SetNW2Bool("Braking",true)
+				self.RearBogey.MotorForce  = 20000
+				self.FrontBogey.MotorForce = 20000
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
@@ -910,8 +918,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 					self.FrontBogey.MotorForce = 20000
 					self:SetNW2Bool("Braking",false)
 				elseif self:ReadTrainWire(2) == 1 then 
-					self.RearBogey.MotorForce  = -20000 
-					self.FrontBogey.MotorForce = -20000
+					self.RearBogey.MotorForce  = -30000 
+					self.FrontBogey.MotorForce = -30000
 					self:SetNW2Bool("Braking",true)
 				end
 				self.RearBogey.MotorPower = self:ReadTrainWire(1)
@@ -957,7 +965,7 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 
 	end
-
+	self.FrontBogey.PneumaticBrakeForce = 130000
 
 	
 	
@@ -1425,6 +1433,33 @@ function ENT:OnButtonPress(button,ply)
 		
 	end
 	
+	if button == "CabWindowR+" then
+		
+			self.CabWindowR = self.CabWindowR - 0.1
+			--print(self:GetNW2Float("CabWindowR"))
+		
+	end
+
+	if button == "CabWindowR-" then
+		
+			self.CabWindowR = self.CabWindowR + 0.1
+			--print(self:GetNW2Float("CabWindowR"))
+		
+	end
+
+	if button == "CabWindowL+" then
+			self.CabWindowL = self.CabWindowL - 0.1
+			--print(self:GetNW2Float("CabWindowL"))
+		
+	end
+
+	if button == "CabWindowL-" then
+		
+			self.CabWindowL = self.CabWindowL + 0.1
+			--print(self:GetNW2Float("CabWindowL"))
+		
+	end
+
 	if button == "WarningAnnouncementSet" then
 			--self:Wait(1)
 			self:SetNW2Bool("WarningAnnouncement", true)

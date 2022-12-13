@@ -639,6 +639,31 @@ ENT.ButtonMap["Blinds"] = {
         {ID = "Blinds-",x=0,y=400,w=50,h=205, tooltip="Pull the blinds down"},
     }
 }
+
+
+ENT.ButtonMap["CabWindowL"] = {
+    pos = Vector(397,45,95),
+    ang = Angle(0,0,90),
+    width = 300,
+    height = 600,
+    scale = 0.0625,
+    buttons = {
+        {ID = "CabWindowL+",x=000,y=200,w=300,h=205, tooltip="Pull the Window up"},
+        {ID = "CabWindowL-",x=0,y=400,w=300,h=205, tooltip="Pull the window down"},
+    }
+}
+
+ENT.ButtonMap["CabWindowR"] = {
+    pos = Vector(415,-45,95),
+    ang = Angle(0,180,90),
+    width = 300,
+    height = 600,
+    scale = 0.0625,
+    buttons = {
+        {ID = "CabWindowR+",x=000,y=200,w=300,h=205, tooltip="Pull the Window up"},
+        {ID = "CabWindowR-",x=0,y=400,w=300,h=205, tooltip="Pull the window down"},
+    }
+}
 --[[]
 ENT.ButtonMap["Left"] = {
     pos = Vector(527.7,39.5,74.5),
@@ -730,6 +755,9 @@ function ENT:Initialize()
 	self.StartupSoundPlayed = false
 
     self.WarningAnnouncement = false
+
+    self.CabWindowL = 0
+    self.CabWindowR = 0
 	
 	--self.LeftMirror = self:CreateRT("LeftMirror",512,256)
     --self.RightMirror = self:CreateRT("RightMirror",128,256)
@@ -753,9 +781,13 @@ function ENT:Think()
     self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,9,false)
 	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,50,8,false)
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,9,false)
+    self.CabWindowL = self:GetNW2Float("CabWindowL",0)
+    self.CabWindowR = self:GetNW2Float("CabWindowR",0)
+    self:Animate("window_cab_r",self:GetNW2Float("CabWindowR",0),0,100,50,9,false)
+    self:Animate("window_cab_l",self:GetNW2Float("CabWindowL",0),0,100,50,9,false)
 
-    self:Animate("window_cab_r",0.5,0,100,50,9,false)
-    self:Animate("window_cab_l",0.5,0,100,50,9,false)
+    --player:PrintMessage(HUD_PRINTTALK,self:GetNW2Float("CabWindowL",0))
+
 
     if self:GetNW2String("BlinkerDirection","none") == "none" then
         self:Animate("BlinkerSwitch",0.5,0,100,100,10,false)
