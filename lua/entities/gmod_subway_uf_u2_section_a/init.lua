@@ -846,8 +846,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 
 			if self.Duewag_U2.ThrottleState < 0 then
-				self.RearBogey.MotorForce  = -30000 
-				self.FrontBogey.MotorForce = -30000
+				self.RearBogey.MotorForce  = -49772.7 
+				self.FrontBogey.MotorForce = -49772.7
 				self:SetNW2Bool("Braking",true)
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -855,16 +855,16 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			elseif self.Duewag_U2.ThrottleState > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
-				self.RearBogey.MotorForce  = 20000
-				self.FrontBogey.MotorForce = 20000
+				self.RearBogey.MotorForce  = 49772.7
+				self.FrontBogey.MotorForce = 49772.7 
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			elseif self.Duewag_U2.ThrottleState == 0 then 
-				self.RearBogey.MotorForce  = 20000
-				self.FrontBogey.MotorForce = 20000
+				self.RearBogey.MotorForce  = 0--199141405525
+				self.FrontBogey.MotorForce = 0--199141405525
 				self:SetNW2Bool("Braking",false)
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -911,15 +911,15 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
     		self.FrontBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
 			self.MiddleBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
 			self.RearBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
-		
+		--PrintMessage(HUD_PRINTTALK,self.FrontBogey.Acceleration)
 			if self:ReadTrainWire(9) > 0 then
 				if self:ReadTrainWire(2) == 0 then
-					self.RearBogey.MotorForce  = 20000
-					self.FrontBogey.MotorForce = 20000
+					self.RearBogey.MotorForce  = 49772.7
+					self.FrontBogey.MotorForce = 49772.7 
 					self:SetNW2Bool("Braking",false)
 				elseif self:ReadTrainWire(2) == 1 then 
-					self.RearBogey.MotorForce  = -30000 
-					self.FrontBogey.MotorForce = -30000
+					self.RearBogey.MotorForce  = -49772.7
+					self.FrontBogey.MotorForce = -49772.7
 					self:SetNW2Bool("Braking",true)
 				end
 				self.RearBogey.MotorPower = self:ReadTrainWire(1)

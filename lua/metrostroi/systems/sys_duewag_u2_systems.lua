@@ -123,7 +123,7 @@ function TRAIN_SYSTEM:Think(Train)
 	self:TriggerOutput()
 	self:U2Engine()
 
-
+	
 
 	self.PrevTime = self.PrevTime or RealTime()-0.33
     	self.DeltaTime = (RealTime() - self.PrevTime)
@@ -313,11 +313,11 @@ function TRAIN_SYSTEM:Think(Train)
 		--self.Traction = 15000*self.ThrottleState / 20
 		if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
 			--if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
-				self.Traction = math.Clamp(self.ThrottleState * 0.01 * 800,-800,800) --right now it's coupled directly to the throttle. This needs a somewhat realistic custom simulation, if we don't get schematics
+				self.Traction = math.Clamp(self.ThrottleState * 0.01,-100,100)  --right now it's coupled directly to the throttle. This needs a somewhat realistic custom simulation, if we don't get schematics
 				if self.VZ == true then
 					if self.Traction > 0 then
 						self.Train:WriteTrainWire(2,0)
-						self.Train:WriteTrainWire(1,math.Clamp(self.Traction,0,600))
+						self.Train:WriteTrainWire(1,math.Clamp(self.Traction,0,100))
 						self.Train:SetNW2Bool("ElectricBrakes",false)
 						self.Train:SetNW2Int("BrakePressure",0)
 						self.BrakePressure = 0
