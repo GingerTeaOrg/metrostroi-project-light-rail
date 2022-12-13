@@ -846,8 +846,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 
 			if self.Duewag_U2.ThrottleState < 0 then
-				self.RearBogey.MotorForce  = -49772.7 
-				self.FrontBogey.MotorForce = -49772.7
+				self.RearBogey.MotorForce  = -59727.24 
+				self.FrontBogey.MotorForce = -59727.24
 				self:SetNW2Bool("Braking",true)
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -918,8 +918,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 					self.FrontBogey.MotorForce = 49772.7 
 					self:SetNW2Bool("Braking",false)
 				elseif self:ReadTrainWire(2) == 1 then 
-					self.RearBogey.MotorForce  = -49772.7
-					self.FrontBogey.MotorForce = -49772.7
+					self.RearBogey.MotorForce  = -59727.24
+					self.FrontBogey.MotorForce = -59727.24
 					self:SetNW2Bool("Braking",true)
 				end
 				self.RearBogey.MotorPower = self:ReadTrainWire(1)
