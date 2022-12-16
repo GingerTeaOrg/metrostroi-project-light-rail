@@ -122,12 +122,12 @@ ENT.ClientProps["IBIS"] = {
 
 
 
-ENT.ClientProps["Dest"] = {
+--[[ENT.ClientProps["Dest"] = {
 	model = "models/lilly/uf/u2/dest_a.mdl",
 	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
-}
+}]]
 
 ENT.ClientProps["window_cab_l"] = {
 	model = "models/lilly/uf/u2/window_cab_l.mdl",
@@ -495,10 +495,10 @@ ENT.ButtonMap["Cab"] = {
 }]]
 
 ENT.ButtonMap["IBISScreen"] = {
-    pos = Vector(416.65,-14.8,59.6),
+    pos = Vector(416.63,-14.8,59.6),
     ang = Angle(0,45,-48.5,0),
-    width = 2,
-    height = 2,
+    width = 110,
+    height = 25,
     scale = 0.0311,
 }
 --[[ENT.ButtonMap["IBIS"] = {
@@ -619,7 +619,7 @@ ENT.ButtonMap["Microphone"] = {
 ENT.ButtonMap["Rollsign"] = {
     pos = Vector(424.79,-25,109),
     ang = Angle(0,90,90),
-    width = 800,
+    width = 780,
     height = 160,
     scale = 0.0625,
     buttons = {
@@ -693,8 +693,6 @@ ENT.ButtonMap["Left"] = {
 	
 function ENT:Draw()
     self.BaseClass.Draw(self)
-
-    --cam.Start3D2D(Vector(450,0,300), Angle(0,0,0), 0.25)
 end
 
 
@@ -702,14 +700,15 @@ function ENT:DrawPost()
     self.RTMaterial:SetTexture("$basetexture",self.IBIS)
     self:DrawOnPanel("IBISScreen",function(...)
         surface.SetMaterial(self.RTMaterial)
-        surface.SetDrawColor(255,255,255)
+        surface.SetDrawColor(0,65,11)
         surface.DrawTexturedRectRotated(55.5,12,108.5,25,0)
     end)
-    local mat = Material("models/lilly/uf/u2/rollsigns/default.png")
+    local mat = Material("models/lilly/uf/u2/rollsigns/frankfurt_stock.png")
+    local matid surface.GetTextureID("models/lilly/uf/u2/rollsigns/frankfurt_stock.png")
     self:DrawOnPanel("Rollsign",function(...)
         surface.SetDrawColor( color_white )
         surface.SetMaterial(mat)
-        surface.DrawTexturedRectUV(0,0,800,160,0,self:GetNW2Float("RollsignModifier",0.5),1,self:GetNW2Float("RollsignModifier",0.5) + 0.25)
+        surface.DrawTexturedRectUV(0,0,780,160,0,self:GetNW2Float("RollsignModifier",0.5),1,self:GetNW2Float("RollsignModifier",0.5) + 0.015)
     end)
 end
 
@@ -849,7 +848,7 @@ function ENT:Think()
         self.Microphone = false
     end
 
-    if self:GetNW2Bool("CamshaftMove",false) == true then
+    if self:GetNW2Bool("CamshaftMoved",false) == true then
         self:PlayOnce("Switchgear"..math.random(1,7),"cabin",1,1)
         PrintMessage(HUD_PRINTTALK,"Camshaft")
     end
@@ -960,23 +959,20 @@ function ENT:Think()
         end
         
         
-	    if self.IBISKickStart == false then	--if we haven't kicked off starting the IBIS yet
-        	self.IBISKickStart = true	--remember that we are doing now
-		    self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
-	    end
-	    if CurTime() - self.ElectricOnMoment > 5 then --if it's been five seconds
-		    if self.IBISStarted == false then --and if we haven't fully started the IBIS yet
-			    self.IBISStarted = true --say that we have started it
-			    self:PlayOnce("IBIS_bootup",Vector(412,-12,55),1,1) --play the chime
-		    end
-	    end
+	    if self.IBISStarted == false then
+            if self:GetNW2Bool("IBISChime",false) == true then
+                self.IBISStarted = true
+                self:PlayOnce("IBISChime","cabin",1,1)
+
+            end
+        end
 	
-	    if self.ElectricOnMoment != 0 then
-		    if self.StartupSoundPlayed == false then
-		    	self.StartupSoundPlayed = true
-		    	self:PlayOnce("Startup","cabin",1,1)
-		    end
-	    end
+	    
+		if self.StartupSoundPlayed == false then
+		    self.StartupSoundPlayed = true
+		    self:PlayOnce("Startup","cabin",1,1)
+		end    
+	    
 		if self:GetNW2Bool("WarningAnnouncement") == true and self.WarningAnnouncement == false then
             self:PlayOnce("WarningAnnouncement",Vector(350,-30,113),1,1)
             self.WarningAnnouncement = true
@@ -985,10 +981,6 @@ function ENT:Think()
         end
     elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
 		self.StartupSoundPlayed = false	
-		self.ElectricOnMoment = 0
-		
-		self.IBISKickStart = false
-		self.IBISStarted = false
 
     end
 

@@ -327,7 +327,10 @@ function ENT:Initialize()
 	-- Create couples
     self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,2),Angle(0,0,0),true,"u2")	
     
-	
+
+	self.ElectricOnMoment = 0
+	self.ElectricKickStart = false
+	self.ElectricStarted = false 
 	
 	-- Create U2 Section B
 	self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
@@ -403,6 +406,9 @@ function ENT:Initialize()
 
 	self.RollsignModifier = 0
 	self.RollsignModifierRate = 0
+	self.ScrollMoment = 0
+	self.ScrollMomentDelta = 0
+	self.ScrollMomentRecorded = false
 
 
 	--[[self:SetNW2Int("Door1-2a",0)
@@ -591,7 +597,8 @@ function ENT:Think(dT)
 	self:SetNW2Float("CabWindowL",self.CabWindowL)
 	self:SetNW2Float("CabWindowR",self.CabWindowR)
 
-	self.RollsignModifier = self.RollsignModifierRate + math.Clamp(self.RollsignModifier,0,1)
+	self.ScrollMomentDelta = self.ScrollMoment - CurTime()
+	self.RollsignModifier = self.RollsignModifierRate * self.ScrollMomentDelta + math.Clamp(self.RollsignModifier,0,0.7)
 	self:SetNW2Float("RollsignModifier",self.RollsignModifier)
 	
 
@@ -632,15 +639,34 @@ function ENT:Think(dT)
 	
 	
 	--print(#self.Train.WagonList)
+
+	--Check if the A section is coupled
 	if self.FrontCouple.CoupledEnt ~= nil then
 		self:SetNW2Bool("AIsCoupled", true)
 	else
 		self:SetNW2Bool("AIsCoupled",false)
 	end
-	
-	self:SetNW2Float("BatteryCharge",self.Duewag_Battery.Voltage)
+	--Check if the B section is coupled
+	if self.RearCouple.CoupledEnt ~= nil then
+		self:SetNW2Bool("BIsCoupled", true)
+	else
+		self:SetNW2Bool("BIsCoupled",false)
+	end
 
+
+
+
+	self:SetNW2Float("BatteryCharge",self.Duewag_Battery.Voltage)
+	--If either of the sections are coupled, consider the unit coupled.
+	--[[if self.RearCouple.CoupledEnt ~= nil or self.RearCouple.CoupledEnt ~= nil then
+		self:SetNW2Bool("UnitCoupled",true)
+	else
+		self:SetNW2Bool("UnitCoupled",false)
+	end]]
 	
+
+
+
 	if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
         self:SetLightPower(50,true)
 		self:SetLightPower(60,true)
@@ -656,6 +682,20 @@ function ENT:Think(dT)
 		self:SetNW2Float("BatteryCharge", self.Duewag_Battery.Voltage)
 		
 	self:SetNW2Bool("BatteryOn",true)
+
+		if self.ElectricKickStart == false then	--if we haven't kicked off starting the IBIS yet
+			self.ElectricKickStart = true	--remember that we are doing now
+			self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
+			self.ElectricStarted = true
+			self:SetNW2Bool("ElectricOnMoment",self.ElectricOnMoment)
+		end
+
+		
+		if self.IBIS.BootupComplete = true then
+			self:SetNW2Bool("IBISChime",true)
+		end
+	    
+
 		if self.Duewag_U2.ReverserLeverState == 2 then
 			self:WriteTrainWire(7,1)
 			self.Duewag_Battery:TriggerInput("Charge",0.05)
@@ -1439,13 +1479,23 @@ function ENT:OnButtonPress(button,ply)
 	end
 		
 	end
-	if self.RollsignModifierRate == 0 then
-		if button == "Rollsign+" then
 
-			self.RollsignModifierRate = 0.05
+	
+	if self.RollsignModifierRate == 0 then
+		
+		if button == "Rollsign+" then
+			if self.ScrollMomentRecorded == false then
+				self.ScrollMomentRecorded = true
+				self.ScrollMoment = CurTime()
+			end
+			self.RollsignModifierRate = 0.01
 		end
 		if button == "Rollsign-" then
-			self.RollsignModifierRate = -0.05
+			if self.ScrollMomentRecorded == false then
+				self.ScrollMomentRecorded = true
+				self.ScrollMoment = CurTime()
+			end
+			self.RollsignModifierRate = -0.01
 		end
 	end
 
@@ -1853,11 +1903,12 @@ function ENT:OnButtonRelease(button,ply)
 			end
 
 			if button == "Rollsign+" then
-
+				self.ScrollMomentRecorded = false
 				self.RollsignModifierRate = 0
 			end
 			if button == "Rollsign-" then
 				self.RollsignModifierRate = 0
+				self.ScrollMomentRecorded = false
 			end
 		
 			if button == "BatteryToggle" then

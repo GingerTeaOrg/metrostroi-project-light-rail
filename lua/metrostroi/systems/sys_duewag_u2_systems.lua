@@ -70,6 +70,8 @@ function TRAIN_SYSTEM:Initialize()
 	self.CloseDoorsButton = false
 
 	self.DoorsOpenButton = false
+
+	self.Percentage = 0
 	
 	
 
@@ -123,7 +125,7 @@ function TRAIN_SYSTEM:Think(Train)
 	self:TriggerOutput()
 	self:U2Engine()
 
-	
+	--PrintMessage(HUD_PRINTTALK,self.ResistorBank)
 
 	self.PrevTime = self.PrevTime or RealTime()-0.33
     	self.DeltaTime = (RealTime() - self.PrevTime)
@@ -261,7 +263,7 @@ function TRAIN_SYSTEM:Think(Train)
 
 	
 
-	--self.BrakePressure = math.Clamp(self.ThrottleState,-100,0)  * -0.01 * 2.7 --convert to positive value and put in percentage relation of maximum brake value
+	--self.BrakePressure = math.Clamp(self.ThrottleState,-100,0)  * -0.01 * 2.7 --convert to positive value and put in self.Percentage relation of maximum brake value
 
 
 
@@ -436,64 +438,61 @@ end
 
 function TRAIN_SYSTEM:U2Engine()
 
-	local Percentage
 
 	if self.ThrottleState >= 0 then
-		Percentage = self.ThrottleState
+		self.Percentage = self.ThrottleState
 	elseif self.ThrottleState < 0 then
-		Percentage = self.ThrottleState * -1
+		self.Percentage = self.ThrottleState * -1
 	end
 
-	if Percentage <= 5 and Percentage > 0 then
+	if self.Percentage <= 5 and self.Percentage > 0 then
 		self.ResistorBank = 1
-	elseif Percentage >= 10 and Percentage < 15 then
+	elseif self.Percentage >= 10 and self.Percentage < 15 then
 		self.ResistorBank = 2
-	elseif Percentage >= 15 and Percentage < 20 then
+	elseif self.Percentage >= 15 and self.Percentage < 20 then
 		self.ResistorBank = 3
-	elseif Percentage >= 20 and Percentage < 25 then
+	elseif self.Percentage >= 20 and self.Percentage < 25 then
 		self.ResistorBank = 4
-	elseif Percentage >= 25 and Percentage < 30 then
+	elseif self.Percentage >= 25 and self.Percentage < 30 then
 		self.ResistorBank = 5
-	elseif Percentage >= 30 and Percentage < 35 then
+	elseif self.Percentage >= 30 and self.Percentage < 35 then
 		self.ResistorBank = 6
-	elseif Percentage >= 35 and Percentage < 40 then
+	elseif self.Percentage >= 35 and self.Percentage < 40 then
 		self.ResistorBank = 7
-	elseif Percentage >= 40 and Percentage < 45 then
+	elseif self.Percentage >= 40 and self.Percentage < 45 then
 		self.ResistorBank = 8
-	elseif Percentage >= 45 and Percentage < 50 then
+	elseif self.Percentage >= 45 and self.Percentage < 50 then
 		self.ResistorBank = 9
-	elseif Percentage >= 50 and Percentage < 55 then
+	elseif self.Percentage >= 50 and self.Percentage < 55 then
 		self.ResistorBank = 10
-	elseif Percentage >= 55 and Percentage < 60 then
+	elseif self.Percentage >= 55 and self.Percentage < 60 then
 		self.ResistorBank = 11
-	elseif Percentage >= 60 and Percentage < 65 then
+	elseif self.Percentage >= 60 and self.Percentage < 65 then
 		self.ResistorBank = 12
-	elseif Percentage >= 65 and Percentage < 70 then
+	elseif self.Percentage >= 65 and self.Percentage < 70 then
 		self.ResistorBank = 13
-	elseif Percentage >= 70 and Percentage < 75 then
+	elseif self.Percentage >= 70 and self.Percentage < 75 then
 		self.ResistorBank = 14
-	elseif Percentage >= 75 and Percentage < 80 then
+	elseif self.Percentage >= 75 and self.Percentage < 80 then
 		self.ResistorBank = 15
-	elseif Percentage >= 80 and Percentage < 85 then
+	elseif self.Percentage >= 80 and self.Percentage < 85 then
 		self.ResistorBank = 16
-	elseif Percentage >= 85 and Percentage < 90 then
+	elseif self.Percentage >= 85 and self.Percentage < 90 then
 		self.ResistorBank = 17
-	elseif Percentage >= 90 and Percentage < 95 then
+	elseif self.Percentage >= 90 and self.Percentage < 95 then
 		self.ResistorBank = 18
-	elseif Percentage >= 95 and Percentage < 100 then
+	elseif self.Percentage >= 95 and self.Percentage < 100 then
 		self.ResistorBank = 19
-	elseif Percentage == 100 then
-		self.ResistorBank = 100
+	elseif self.Percentage == 100 then
+		self.ResistorBank = 20
 	end
 
 	self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
 
 
 	if self.PrevResistorBank ~=  self.ResistorBank then
-		self.Train:SetNW2Bool("CamshaftMove",true)
-		self.Train:SetNW2Bool("CamshaftMove",false)
-		--print("CamshaftMove")
-		--self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
+		self.Train:SetNW2Bool("CamshaftMoved",true)
+		self.Train:SetNW2Bool("CamshaftMoved",false)
 		self.PrevResistorBank = self.ResistorBank
 	end
 

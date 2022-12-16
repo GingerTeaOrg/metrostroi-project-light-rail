@@ -6,9 +6,10 @@ function TRAIN_SYSTEM:Initialize()
     self.RouteChar1 = nil
     self.RouteChar2 = nil
 
-    self.PowerOn = 1
-    self.Debug = 1
+    self.PowerOn = 0
+    self.Debug = 0
     
+    self.BootupComplete = false
     self.Course = 0 --Course index number, format is LLLSS
     self.CourseChar1 = nil
     self.CourseChar2 = nil
@@ -31,17 +32,17 @@ function TRAIN_SYSTEM:Initialize()
         	"Number4",
         	"Number5",
         	"Number6",
-		"Number7",
-		"Number8",
-		"Number9",
-		"Number0",
-		"Destination",
+		    "Number7",
+		    "Number8",
+		    "Number9",
+		    "Number0",
+		    "Destination",
         	"Delete",
         	"Enter",
         	"SpecialAnnouncements",
         	"TimeAndDate"
     }
-    self.State = -2 -- -2 is debug, -1 is no data, 0 is off, 1 is on
+    self.State = 0
 
     self.Menu = 0 -- which menu are we in
     self.Announce = false
@@ -90,11 +91,11 @@ function TRAIN_SYSTEM:Trigger(name,value)
 
         end
 
-            if name == "Number7" then --Number 7 in idle means Route button, Menu Index 3
-                if self.Menu == 0 then
-                    self.Menu = 3
-                end
+        if name == "Number7" then --Number 7 in idle means Route button, Menu Index 3
+            if self.Menu == 0 then
+                self.Menu = 3
             end
+        end
 
 
         
@@ -107,31 +108,31 @@ function TRAIN_SYSTEM:Trigger(name,value)
         --refactor for the correct input method, in train script use self.Train.IBIS.[TriggerName]
     
        if name == "Number0" then
-            self.KeyInput = 0
+            self.KeyInput = "0"
         end
         if name == "Number1" then
-            self.KeyInput = 1
+            self.KeyInput = "1"
         end
        if name == "Number2" then
-           self.KeyInput = 2
+           self.KeyInput = "2"
         end
         if name == "Number3" then
-            self.KeyInput = 3
+            self.KeyInput = "3"
         end
         if name == "Number4" then
-            self.KeyInput = 4
+            self.KeyInput = "4"
        end
        if name == "Number5" then
-           self.KeyInput = 5
+           self.KeyInput = "5"
        end
       if name == "Number6" then
-          self.KeyInput = 6
+          self.KeyInput = "6"
       end
       if name == "Number8" then
-          self.KeyInput = 8
+          self.KeyInput = "8"
         end
        if name == "Number9" then
-          self.KeyInput = 9
+          self.KeyInput = "9"
         end
         if name == "Destination" then
             self.Menu = 1
@@ -149,11 +150,6 @@ end
 
 function TRAIN_SYSTEM:TriggerInput(name,value)
 	if self[name] then self[name] = value end
-    
-    
- 
-
-
 end
 
 function TRAIN_SYSTEM:TriggerOutput(name,value)
@@ -220,7 +216,7 @@ function TRAIN_SYSTEM:ClientThink()
         if self.DrawTimer and CurTime()-self.DrawTimer < 0.1 then return end
         self.DrawTimer = CurTime()
         render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
-        --render.Clear(0, 0, 0, 0)
+        render.Clear(0, 0, 0, 0)
         cam.Start2D()
             self:IBISScreen(self.Train)
         cam.End2D()
@@ -313,7 +309,13 @@ end
 
 function TRAIN_SYSTEM:Think()
 
-    
+    if self.Train.BatteryOn == true then
+        self.PowerOn = 1
+        if self.Train.ElectricOnMoment - CurTime() > 5 then
+            self.BootupComplete = true
+            print("IBIS Booted!")
+        end
+    end
     
     local Train = self.Train
 
@@ -323,9 +325,7 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:Course",self.Course)
     Train:SetNW2Int("IBIS:MenuState",self.Menu)
 
-    if self.Train:GetNW2Bool("BatteryOn",false) == true then
-    	self.PowerOn = 1
-    end
+    
 
     --Add together all variables to one string
 

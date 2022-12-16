@@ -150,6 +150,7 @@ ENT.Cameras = {
     {Vector(300,6,100),Angle(0,180+5,0),"Train.UF_U2.PassengerStanding"},
 	{Vector(70.5+10,6,100),Angle(0,0,0),"Train.UF_U2.PassengerStanding2"},
     {Vector(490.5,0,100),Angle(0,180,0),"Train.Common.RouteNumber"},
+	{Vector(388,-30,80),Angle(0,-90,0),"Train.UF_U2.RouteList"},
     {Vector(450,0,70),Angle(80,0,0),"Train.Common.CouplerCamera"},
 }
 
@@ -162,7 +163,7 @@ ENT.MirrorCams = {
 function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
 	self:LoadSystem("Duewag_Deadman")
-	--self:LoadSystem("IBIS")
+	self:LoadSystem("IBIS")
 	self:LoadSystem("Duewag_Battery")
 	
 	--self:LoadSystem("duewag_electric")
@@ -189,5 +190,7 @@ ENT.Spawner = {
     interim = "gmod_subway_uf_u2_section_a",
     Metrostroi.Skins.GetTable("Texture","Spawner.Texture",false,"train"),
 	Metrostroi.Skins.GetTable("Texture","Spawner.Texture",false,"cab"),
+
+	{"SpawnMode","Spawner.Common.SpawnMode","List",{"Test",},nil,function(ent,val,rollsign,subtype)end},
 
 }
