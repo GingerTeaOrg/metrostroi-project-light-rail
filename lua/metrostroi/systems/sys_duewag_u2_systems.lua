@@ -18,7 +18,8 @@ function TRAIN_SYSTEM:Initialize()
 	self.Voltage = 0
 	
 	self.ResistorBank = 0
-	--self.PrevResistorBank = nil
+	self.PrevResistorBank = nil
+	self.ResistorChangeRegistered = false
 	self.DoorFLState = 100
 	self.DoorRLState = 100
 	self.DoorFRState = 100
@@ -72,6 +73,8 @@ function TRAIN_SYSTEM:Initialize()
 	self.DoorsOpenButton = false
 
 	self.Percentage = 0
+
+	self.Amps = 0
 	
 	
 
@@ -445,7 +448,9 @@ function TRAIN_SYSTEM:U2Engine()
 		self.Percentage = self.ThrottleState * -1
 	end
 
-	if self.Percentage <= 5 and self.Percentage > 0 then
+	if self.Percentage == 0 then
+		self.ResistorBank = 0
+	elseif self.Percentage <= 5 and self.Percentage > 0 then
 		self.ResistorBank = 1
 	elseif self.Percentage >= 10 and self.Percentage < 15 then
 		self.ResistorBank = 2
@@ -487,10 +492,16 @@ function TRAIN_SYSTEM:U2Engine()
 		self.ResistorBank = 20
 	end
 
-	self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
+	--self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
 
+	if self.ResistorBank > 0 then
+		if self.ResistorBank != self.PrevResistorBank and self.ResistorChangeRegistered == false then
+			self.PrevResistorBank = self.ResistorBank
+			self.ResistorChangeRegistered = true
+		end
+	end
 
-	if self.PrevResistorBank ~=  self.ResistorBank then
+	if self.PrevResistorBank ~= self.ResistorBank then
 		self.Train:SetNW2Bool("CamshaftMoved",true)
 		self.Train:SetNW2Bool("CamshaftMoved",false)
 		self.PrevResistorBank = self.ResistorBank
@@ -499,4 +510,8 @@ function TRAIN_SYSTEM:U2Engine()
 	if self.Train:GetNW2Bool("CamshaftMove",false) == true then
 		print("CamshaftMove")
 	end
+
+	self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,2)
+	self.Train:SetNW2Float("Amps",self.Amps)
+	--print(self.Amps)
 end

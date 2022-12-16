@@ -166,7 +166,7 @@ end
 if CLIENT then
     surface.CreateFont("IBIS", { -- main text font
 		font = "Liquid Crystal Display",
-		size = 42,
+		size = 30,
 		weight = 400,
 		blursize = false,
 		antialias = false, --can be disabled for pixel perfect font, but at low resolution the font is looks corrupted
@@ -183,7 +183,7 @@ if CLIENT then
 	})
 	surface.CreateFont("IBIS_background", { -- background glow font
 		font = "Liquid Crystal Display",
-		size = 42,
+		size = 30,
 		weight = 0,
 		blursize = 3,
 		scanlines = 0,
@@ -240,42 +240,54 @@ function TRAIN_SYSTEM:PrintText(x,y,text,inverse)
             draw.SimpleText(string.char(0x7f),"IBIS",(x+i)*20.5+5,y*40+40,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
             draw.SimpleText(char,"IBIS",(x+i)*20.5+5,y*40+40,Color(140,190,0,150),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
         else
-            draw.SimpleText(char,"IBIS",(x+i)*20.5+5,y*40+40,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            draw.SimpleText(char,"IBIS",(x+i)*19,y*15+20,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
         end
     end
 end
 
 function TRAIN_SYSTEM:IBISScreen(Train)
     
+    local Menu = self.Train:GetNW2Int("IBIS:Menu")
+    local State = self.Train:GetNW2Int("IBIS:State")
 		
+	--self.State = 1
 		
-	if self.PowerOn == 1 then
-		self.State = 1
-	end
-		
-    if self.PowerOn == 1 then
+    local PowerOn = self.Train:GetNW2Bool("IBISPowerOn",false) == true
+
+    if PowerOn == true then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
+        surface.DrawRect(0,0,512,128)
         self.Warm = true
+
+        if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
+            self.State = 1
+        end
+
+        --self:PrintText(0,0,"IFIS TEST")
+        --self:PrintText(0,0,"")
+
+        --draw.DrawText( "", "IBIS_background", 21, 12, Color(22,78,0,0), TEXT_ALIGN_LEFT )
+		--draw.DrawText( "", "IBIS_background", 21, 60, Color(22,78,0,0), TEXT_ALIGN_LEFT )
     end
 
-    if self.PowerOn == 0 then 
-        surface.SetDrawColor(20,50,0,230)
+    if PowerOn == false then 
+        surface.SetDrawColor(37,94,0,230)
+        surface.DrawRect(0,0,512,128)
         self.Warm = false
+        
     end
 
-    surface.DrawRect(0,0,512,128)
+    
 
 
-    if self.State == -2 then
+    if State == -2 then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
         self.Warm = true
         self:PrintText(0,0,"IFIS ERROR")
         self:PrintText(0,1,"Map is missing dataset")
         return
     end
-
-    local Menu = self.Menu
-
+    
     if State == 1 then
 
         if Menu == 1 then
@@ -294,9 +306,10 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         end
 
         if Menu == 0 then
-        self:PrintText(2,1,self.Destination)
-        self:PrintText(4,1,self.Course)
-        self:PrintText(8,1,self.Route)
+        self:PrintText(2,1,self.Train:GetNW2Int("IBIS:Destination"))
+        self:PrintText(4,1,self.Train:GetNW2Int("IBIS:Course"))
+        self:PrintText(8,1,self.Train:GetNW2Int("IBIS:Route"))
+        print(self.Train:GetNW2Int("IBIS:Route"))
         return 
         end
     end
@@ -311,11 +324,19 @@ function TRAIN_SYSTEM:Think()
     --print("IBIS loaded")
     if self.Train.BatteryOn == true then
         self.PowerOn = 1
+        self.Train:SetNW2Bool("IBISPowerOn",true)
         --print("IBIS powered")
         if CurTime() - self.Train.ElectricOnMoment > 5 then
             self.BootupComplete = true
+            self.Train:SetNW2Bool("IBISBootupComplete",true)
             --print("IBIS Booted!")
+        else
+            self.BootupComplete = false
+            self.Train:SetNW2Bool("IBISBootupComplete",false)
         end
+    else
+        self.PowerOn = 0
+        self.Train:SetNW2Bool("IBISPowerOn",false)
     end
     
 
@@ -324,9 +345,11 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:Destination",self.Destination)
     Train:SetNW2Int("IBIS:Course",self.Course)
     Train:SetNW2Int("IBIS:MenuState",self.Menu)
+    Train:SetNW2Int("IBIS:Menu",self.Menu)
+    Train:SetNW2Int("IBIS:PowerOn")
 
     
-
+    --print(self.Menu)
     --Add together all variables to one string
 
     if self.PowerOn == 1 and self.BootupComplete == true then

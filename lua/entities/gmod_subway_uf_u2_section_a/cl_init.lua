@@ -495,10 +495,10 @@ ENT.ButtonMap["Cab"] = {
 }]]
 
 ENT.ButtonMap["IBISScreen"] = {
-    pos = Vector(416.6,-14.9,59.65),
-    ang = Angle(0,44.5,-47.9),
-    width = 116,
-    height = 27,
+    pos = Vector(419.6,-12.75,60.31),
+    ang = Angle(0,-135,48),--(0,44.5,-47.9),
+    width = 117,
+    height = 29,
     scale = 0.0311,
 }
 --[[ENT.ButtonMap["IBIS"] = {
@@ -701,10 +701,10 @@ function ENT:DrawPost()
     self:DrawOnPanel("IBISScreen",function(...)
         surface.SetMaterial(self.RTMaterial)
         surface.SetDrawColor(0,65,11)
-        surface.DrawTexturedRectRotated(55.5,12,108.5,25,0)
+        surface.DrawTexturedRectRotated(59,16,116,25,0)
     end)
 
-    
+
     local mat = Material("models/lilly/uf/u2/rollsigns/frankfurt_stock.png")
     self:DrawOnPanel("Rollsign",function(...)
         surface.SetDrawColor( color_white )
@@ -885,8 +885,9 @@ function ENT:Think()
     self.VoltAnim = self:GetNW2Float("BatteryCharge",0) / 46
 
     self:Animate("Voltage",self.VoltAnim,0,100,1,0,false)
-    --self:Animate("Amps",0.5,0,100,1,0,false)
-
+    self.AmpAnim = self:GetNW2Float("Amps",0) / 0.5 * 100
+    self:Animate("Amps",self.AmpAnim,0,100,1,0,false)
+        print(self.AmpAnim)
     if self:GetNW2Bool("Cablight",false) == true then
         self:Animate("DriverLightSwitch",1,0,100,100,10,false)
     else
