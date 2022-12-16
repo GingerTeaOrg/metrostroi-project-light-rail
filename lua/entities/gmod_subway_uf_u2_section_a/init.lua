@@ -690,8 +690,9 @@ function ENT:Think(dT)
 			self:SetNW2Bool("ElectricOnMoment",self.ElectricOnMoment)
 		end
 
+		--print(self.ElectricOnMoment)
 		
-		if self.IBIS.BootupComplete = true then
+		if self.IBIS.BootupComplete == true then
 			self:SetNW2Bool("IBISChime",true)
 		end
 	    

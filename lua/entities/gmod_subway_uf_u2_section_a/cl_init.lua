@@ -495,10 +495,10 @@ ENT.ButtonMap["Cab"] = {
 }]]
 
 ENT.ButtonMap["IBISScreen"] = {
-    pos = Vector(416.63,-14.8,59.6),
-    ang = Angle(0,45,-48.5,0),
-    width = 110,
-    height = 25,
+    pos = Vector(416.6,-14.9,59.65),
+    ang = Angle(0,44.5,-47.9),
+    width = 116,
+    height = 27,
     scale = 0.0311,
 }
 --[[ENT.ButtonMap["IBIS"] = {
@@ -703,8 +703,9 @@ function ENT:DrawPost()
         surface.SetDrawColor(0,65,11)
         surface.DrawTexturedRectRotated(55.5,12,108.5,25,0)
     end)
+
+    
     local mat = Material("models/lilly/uf/u2/rollsigns/frankfurt_stock.png")
-    local matid surface.GetTextureID("models/lilly/uf/u2/rollsigns/frankfurt_stock.png")
     self:DrawOnPanel("Rollsign",function(...)
         surface.SetDrawColor( color_white )
         surface.SetMaterial(mat)

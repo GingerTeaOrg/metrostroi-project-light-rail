@@ -24,7 +24,7 @@ function TRAIN_SYSTEM:Initialize()
     self.DestinationChar3 = nil
 	
     self.KeyInput = nil
-
+    self.Triggers = {}
     self.TriggerNames = {
         	"Number1",
         	"Number2",
@@ -210,13 +210,13 @@ function TRAIN_SYSTEM:ClientThink()
 
         if not self.DrawTimer then
             render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
-            render.Clear(0, 0, 0, 0)
+            --render.Clear(0, 0, 0, 0)
             render.PopRenderTarget()
         end
         if self.DrawTimer and CurTime()-self.DrawTimer < 0.1 then return end
         self.DrawTimer = CurTime()
         render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
-        render.Clear(0, 0, 0, 0)
+        --render.Clear(0, 0, 0, 0)
         cam.Start2D()
             self:IBISScreen(self.Train)
         cam.End2D()
@@ -232,11 +232,7 @@ function TRAIN_SYSTEM:ClientThink()
 end
 
 function TRAIN_SYSTEM:PrintText(x,y,text,inverse)
-    if text == "II" then
-        self:PrintText(x-0.2,y,"I",inverse)
-        self:PrintText(x+0.2,y,"I",inverse)
-        return
-    end
+
     local str = {utf8.codepoint(text,1,-1)}
     for i=1,#str do
         local char = utf8.char(str[i])
@@ -257,12 +253,12 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 		self.State = 1
 	end
 		
-    if self.State == 1 then
+    if self.PowerOn == 1 then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
         self.Warm = true
     end
 
-    if self.State == 0 then 
+    if self.PowerOn == 0 then 
         surface.SetDrawColor(20,50,0,230)
         self.Warm = false
     end
@@ -309,15 +305,19 @@ end
 
 function TRAIN_SYSTEM:Think()
 
+
+    local Train = self.Train
+    
+    --print("IBIS loaded")
     if self.Train.BatteryOn == true then
         self.PowerOn = 1
-        if self.Train.ElectricOnMoment - CurTime() > 5 then
+        --print("IBIS powered")
+        if CurTime() - self.Train.ElectricOnMoment > 5 then
             self.BootupComplete = true
-            print("IBIS Booted!")
+            --print("IBIS Booted!")
         end
     end
     
-    local Train = self.Train
 
     Train:SetNW2Int("IBIS:State",self.State)
     Train:SetNW2Int("IBIS:Route",self.Route)
@@ -329,7 +329,7 @@ function TRAIN_SYSTEM:Think()
 
     --Add together all variables to one string
 
-
+    if self.PowerOn == 1 and self.BootupComplete == true then
     if self.Menu == 1 then
 
         if self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
@@ -398,7 +398,7 @@ function TRAIN_SYSTEM:Think()
     end
 
     if self.Menu == 2 then
-	if self.KeyInput ~= "Menu" or self.KeyInput ~= "Delete" or self.KeyInput ~= "Destination" and self.KeyInput ~=nil then
+	if self.KeyInput ~= "Menu" or self.KeyInput ~= "Delete" or self.KeyInput ~= "Destination" then
         if not self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 
 		self.CourseChar5 = self.KeyInput
@@ -454,7 +454,7 @@ function TRAIN_SYSTEM:Think()
     if not self.CourseChar1 == nil and not self.CourseChar2 == nil and not self.CourseChar3 == nil and not self.CourseChar4 == nil then self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4 end
     if not self.DestinationChar1 == nil and not self.DestinationChar2 == nil and not self.DestinationChar3 == nil then self.Destination = self.DestinationChar1..self.DestinationChar2..self.DestinationChar3 end
 
-
+    end
 
 end
 				
