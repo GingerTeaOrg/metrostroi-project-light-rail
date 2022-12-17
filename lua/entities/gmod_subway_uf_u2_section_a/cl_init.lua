@@ -887,7 +887,7 @@ function ENT:Think()
     self:Animate("Voltage",self.VoltAnim,0,100,1,0,false)
     self.AmpAnim = self:GetNW2Float("Amps",0) / 0.5 * 100
     self:Animate("Amps",self.AmpAnim,0,100,1,0,false)
-        print(self.AmpAnim)
+        --print(self.AmpAnim)
     if self:GetNW2Bool("Cablight",false) == true then
         self:Animate("DriverLightSwitch",1,0,100,100,10,false)
     else
@@ -965,6 +965,7 @@ function ENT:Think()
             if self:GetNW2Bool("IBISChime",false) == true then
                 self.IBISStarted = true
                 self:PlayOnce("IBISChime","cabin",1,1)
+                print("IBIS bootup complete")
 
             end
         end

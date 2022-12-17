@@ -14,7 +14,7 @@ Metrostroi.AddSkin("train","Def_U2b",{
 })
 
 Metrostroi.AddSkin("train","Def_U2SW",{
-    name = "Default Stadtwerke",
+    name = "1978 Stadtwerke",
     typ = "U2h",
     textures = {
         main = "models/lilly/uf/u2/u2h/main",
@@ -24,7 +24,7 @@ Metrostroi.AddSkin("train","Def_U2SW",{
 })
 
 Metrostroi.AddSkin("train","Def_U2FVV",{
-    name = "Default FVV",
+    name = "1978 FVV",
     typ = "U2h",
     textures = {
         main = "models/lilly/uf/u2/u2h/main",
@@ -33,68 +33,11 @@ Metrostroi.AddSkin("train","Def_U2FVV",{
     }
 })
 Metrostroi.AddSkin("train","Def_U2FVV_b",{
-    name = "Default FVV",
+    name = "1978 FVV",
     typ = "U2hb",
     textures = {
         main_b = "models/lilly/uf/u2/u2h/main_b",
         decals = "models/lilly/uf/u2/u2h/decals-FVV",
-    }
-})
-
-Metrostroi.AddSkin("train","Def_Fahrschule_U2SW",{
-    name = "Stadtwerke Fahrschule",
-    typ = "U2h",
-    textures = {
-        main = "models/lilly/uf/u2/u2h/main",
-        decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
-        dest_01 = "models/lilly/uf/common/destinations/u2/22",
-    }
-})
-Metrostroi.AddSkin("train","Def_Fahrschule_U2SW_b",{
-    name = "Stadtwerke Fahrschule",
-    typ = "U2hb",
-    textures = {
-        main_b = "models/lilly/uf/u2/u2h/main_b",
-        decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
-        dest_01 = "models/lilly/uf/common/destinations/u2/22",
-    }
-})
-
-Metrostroi.AddSkin("train","Def_U1G_U2SW",{
-    name = "Stadtwerke U1 Ginnheim",
-    typ = "U2h",
-    textures = {
-        main = "models/lilly/uf/u2/u2h/main",
-        decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
-        dest_01 = "models/lilly/uf/common/destinations/u2/03",
-    }
-})
-Metrostroi.AddSkin("train","Def_U1G_U2SW_b",{
-    name = "Stadtwerke U1 Ginnheim",
-    typ = "U2hb",
-    textures = {
-        main_b = "models/lilly/uf/u2/u2h/main_b",
-        decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
-        dest_01 = "models/lilly/uf/common/destinations/u2/03",
-    }
-})
-
-Metrostroi.AddSkin("train","Def_A1R_U2SW",{
-    name = "Stadtwerke A1 Römerberg",
-    typ = "U2h",
-    textures = {
-        main = "models/lilly/uf/u2/u2h/main",
-        decals = "models/lilly/uf/u2/u2h/decals-FVV",
-        dest_01 = "models/lilly/uf/u2/rollerblinds/a1-roemerstadt",
-    }
-})
-Metrostroi.AddSkin("train","Def_A1R_U2SW_b",{
-    name = "Stadtwerke A1 Römerberg",
-    typ = "U2hb",
-    textures = {
-        main_b = "models/lilly/uf/u2/u2h/main_b",
-        decals = "models/lilly/uf/u2/u2h/decals-FVV",
-        dest_01 = "models/lilly/uf/u2/rollerblinds/a1-roemerstadt",
     }
 })
 

@@ -511,7 +511,7 @@ function TRAIN_SYSTEM:U2Engine()
 		print("CamshaftMove")
 	end
 
-	self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,2)
+	self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
 	self.Train:SetNW2Float("Amps",self.Amps)
 	--print(self.Amps)
 end

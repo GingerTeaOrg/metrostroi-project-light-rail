@@ -261,13 +261,11 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 
         if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
             self.State = 1
+        elseif self.Train:GetNW2Bool("IBISBootupComplete",false) == false then
+            self:PrintText(0,0,"-------------------------")
+            self:PrintText(0,4,"-------------------------")
         end
 
-        --self:PrintText(0,0,"IFIS TEST")
-        --self:PrintText(0,0,"")
-
-        --draw.DrawText( "", "IBIS_background", 21, 12, Color(22,78,0,0), TEXT_ALIGN_LEFT )
-		--draw.DrawText( "", "IBIS_background", 21, 60, Color(22,78,0,0), TEXT_ALIGN_LEFT )
     end
 
     if PowerOn == false then 
@@ -334,9 +332,10 @@ function TRAIN_SYSTEM:Think()
             self.BootupComplete = false
             self.Train:SetNW2Bool("IBISBootupComplete",false)
         end
-    else
+    elseif self.Train.BatteryOn == false then
         self.PowerOn = 0
         self.Train:SetNW2Bool("IBISPowerOn",false)
+        self.Train:SetNW2Bool("IBISBootupComplete",false)
     end
     
 
