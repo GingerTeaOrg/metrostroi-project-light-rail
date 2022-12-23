@@ -324,7 +324,7 @@ function TRAIN_SYSTEM:Think()
         self.PowerOn = 1
         self.Train:SetNW2Bool("IBISPowerOn",true)
         --print("IBIS powered")
-        if CurTime() - self.Train.ElectricOnMoment > 5 then
+        if self.Train.ElectricOnMoment - CurTime() > 5 then
             self.BootupComplete = true
             self.Train:SetNW2Bool("IBISBootupComplete",true)
             --print("IBIS Booted!")

@@ -36,7 +36,7 @@ ENT.ClientProps["cab"] = {
     pos = Vector(0,0,0),
     ang = Angle(0,0,0),
     scale = 1,
-    --hideseat = 1000000,
+    nohide=true,
 }
 
 
@@ -350,7 +350,7 @@ ENT.ButtonMap["Cab"] = {
     {ID = "WarningAnnouncementSet", x=265, y=18, radius=10, tooltip = "Please keep back announcement", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-4, ang=0,
         getfunc = function(entity) return .7 end,var="WarningAnnouncementSet", speed=4,min=0,max=1,
-        var="WarningAnnouncement",speed=1, vmin=0, vmax=1,
+        var="WarningAnnouncementSet",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
@@ -495,110 +495,112 @@ ENT.ButtonMap["Cab"] = {
 }]]
 
 ENT.ButtonMap["IBISScreen"] = {
-    pos = Vector(419.6,-12.75,60.31),
-    ang = Angle(0,-135,48),--(0,44.5,-47.9),
+    pos = Vector(419.62,-12.75,60.31),
+    ang = Angle(0,-135,48.5),--(0,44.5,-47.9),
     width = 117,
     height = 29,
     scale = 0.0311,
 }
---[[ENT.ButtonMap["IBIS"] = {
-    pos = Vector(531,-23,84.9),
+ENT.ButtonMap["IBIS"] = {
+    pos = Vector(415.2,-18,61),
     ang = Angle(48,-225,0),
-    width = 133,
-    height = 230,
+    width = 100,
+    height = 210,
     scale = 0.04,
 
     buttons = {
-        {ID = "Number1Set", x=41, y=72, radius=10, tooltip = "1",
-        sndvol = 0.5, snd = function(val) return val and "IBIS_beep" or "IBIS_beep" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        {ID = "Number1Set", x=28, y=60, radius=10, tooltip = "1/RBL/Radio",
+        getfunc = function(entity) return .7 end,var="Number1Set", speed=4,min=0,max=1,
+        var="Number1",speed=1, vmin=0, vmax=1,
+        sndvol = 0.5, snd = function(val) return val and "IBIS_beep" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             
         },
-        {ID = "Number2Set", x=40, y=50, radius=10, tooltip = "2", --[[model = {
-            model = "", z=0, ang=0,
+        {ID = "Number2Set", x=28, y=42, radius=10, tooltip = "2/Special Character", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
         },
-        {ID = "Number3Set", x=40, y=27, radius=10, tooltip = "3", model = {
-            model = "", z=0, ang=0,
+        {ID = "Number3Set", x=28, y=24, radius=10, tooltip = "3/Advance current stop silently", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
         },
-        {ID = "Number4Set", x=65, y=72, radius=10, tooltip = "4", model = {
-            model = "", z=0, ang=0,
+        {ID = "Number4Set", x=46, y=60, radius=10, tooltip = "4", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number5Set", x=65, y=50, radius=10, tooltip = "5", model = {
-            model = "", z=0, ang=0,
+        {ID = "Number5Set", x=46, y=42, radius=10, tooltip = "5", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number6Set", x=65, y=27, radius=10, tooltip = "6", model = {
-            model = "", z=0, ang=0,
+        {ID = "Number6Set", x=46, y=24, radius=10, tooltip = "6/Rewind current stop silently", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number7Set", x=85, y=72, radius=10, tooltip = "7", model = {
-            model = "", z=0, ang=0,
+        {ID = "Number7Set", x=65, y=60, radius=10, tooltip = "IBIS_beep", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number8Set", x=85, y=50, radius=10, tooltip = "8", model = {
-            model = "", z=0, ang=0,
+        {ID = "Number8Set", x=65, y=42, radius=10, tooltip = "8/Disable Passenger Information System", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number9Set", x=85, y=27, radius=10, tooltip = "9", model = {
-            model = "", z=0, ang=0,
+        {ID = "Number9Set", x=65, y=24, radius=10, tooltip = "9/Announce stop manually", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "DeleteSet", x=109, y=72, radius=10, tooltip = "Delete", model = {
-            model = "", z=0, ang=0,
+        {ID = "DeleteSet", x=85, y=60, radius=10, tooltip = "Delete", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number0Set", x=109, y=50, radius=10, tooltip = "0", model = {
-            model = "", z=0, ang=0,
+        {ID = "Number0Set", x=85, y=42, radius=10, tooltip = "0/Line/Course", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "EnterSet", x=109, y=27, radius=10, tooltip = "Confirm", model = {
-            model = "", z=0, ang=0,
+        {ID = "EnterSet", x=85, y=24, radius=10, tooltip = "Confirm", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "TimeAndDateSet", x=109, y=95, radius=10, tooltip = "Set time and date", model = {
-            model = "", z=0, ang=0,
+        {ID = "TimeAndDateSet", x=85, y=78, radius=10, tooltip = "Set time and date", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "SpecialAnnouncementsSet", x=109, y=118, radius=10, tooltip = "Special Annoucements", model = {
-            model = "m", z=0, ang=0,
+        {ID = "SpecialAnnouncementsSet", x=85, y=96, radius=10, tooltip = "Special Annoucements", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "DestinationSet", x=85, y=95, radius=10, tooltip = "Destination", model = {
-            model = "", z=0, ang=0,
+        {ID = "DestinationSet", x=65, y=78, radius=10, tooltip = "Destination", model = {
+            z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
     }
-}]]--
+}
 
 ENT.ButtonMap["Microphone"] = {
     pos = Vector(417.4,0.6,73),
@@ -963,9 +965,11 @@ function ENT:Think()
         
 	    if self.IBISStarted == false then
             if self:GetNW2Bool("IBISChime",false) == true then
-                self.IBISStarted = true
-                self:PlayOnce("IBISChime","cabin",1,1)
-                print("IBIS bootup complete")
+                if self:GetNW2Bool("IBISBootupComplete",false) == true then
+                    self.IBISStarted = true
+                    self:PlayOnce("IBIS_bootup",Vector(416,-13,58),1,1)
+                    print("IBIS bootup complete")
+                end
 
             end
         end

@@ -273,7 +273,7 @@ end
 ENT.BogeyDistance = 1100
 
 
-ENT.SyncTable = {"Microphone","BellEngage","Horn","WarningAnnouncementSet", "PantoUp", "DoorsCloseConfirmSet", "PassengerLightsSet", "SetHoldingBrakeSet", "ReleaseHoldingBrakeSet", "PassengerOvergroundSet", "PassengerUndergroundSet", "DoorsCloseConfirmSet", "SetPointRightSet", "SetPointLeftSet", "ThrowCouplerSet", "OpenDoor1Set", "UnlockDoorsSet", "DoorCloseSignalSet"}
+ENT.SyncTable = {"Microphone","BellEngage","Horn","WarningAnnouncementSet", "PantoUp", "DoorsCloseConfirmSet", "PassengerLightsSet", "SetHoldingBrakeSet", "ReleaseHoldingBrakeSet", "PassengerOvergroundSet", "PassengerUndergroundSet", "DoorsCloseConfirmSet", "SetPointRightSet", "SetPointLeftSet", "ThrowCouplerSet", "OpenDoor1Set", "UnlockDoorsSet", "DoorCloseSignalSet", "Number1Set", "Number2Set", "Number3Set", "Number4Set", "Number6Set", "Number7Set", "Number8Set", "Number9Set", "Number0Set", "DestinationSet","DeleteSet","RouteSet","DateAndTimeSet","SpecialAnnouncementsSet"}
 
 
 function ENT:Initialize()
@@ -681,13 +681,14 @@ function ENT:Think(dT)
 
 		self:SetNW2Float("BatteryCharge", self.Duewag_Battery.Voltage)
 		
-	self:SetNW2Bool("BatteryOn",true)
+		self:SetNW2Bool("BatteryOn",true)
 
 		if self.ElectricKickStart == false then	--if we haven't kicked off starting the IBIS yet
 			self.ElectricKickStart = true	--remember that we are doing now
 			self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
 			self.ElectricStarted = true
-			self:SetNW2Bool("ElectricOnMoment",self.ElectricOnMoment)
+			print(self.ElectricOnMoment)
+			self:SetNW2Float("ElectricOnMoment",self.ElectricOnMoment)
 		end
 
 		--print(self.ElectricOnMoment)
