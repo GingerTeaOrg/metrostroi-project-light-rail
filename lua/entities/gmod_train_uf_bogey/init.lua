@@ -175,14 +175,14 @@ function ENT:InitializeWheelsUF()
         --print(1)
         local wheels = ents.Create("gmod_train_uf_wheels")
         local typ = self.Types[self.BogeyType or "def"]
-        wheels.Model = typ[4]
+        --wheels.Model = typ[4]
         if typ and typ[3] then wheels:SetAngles(self:LocalToWorldAngles(typ[3])) end
         if typ and typ[2] then wheels:SetPos(self:LocalToWorld(typ[2])) end
 
         --wheels = ents.Create("gmod_subway_wheels")
         --wheels:SetPos(self:LocalToWorld(Vector(0,0.0,-10)))
         --wheels:SetAngles(self:GetAngles() + Angle(0,90,0))
-        wheels.WheelType = self.BogeyType
+        --wheels.WheelType = self.BogeyType
         wheels.NoPhysics = self.NoPhysics
         wheels:Spawn()
 
