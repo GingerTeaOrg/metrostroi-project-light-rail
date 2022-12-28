@@ -410,7 +410,7 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "DoorsCloseConfirmSet", x=210, y=91, radius=10, tooltip = "Clear door closed alarm", model = {
+    {ID = "DoorsCloseConfirmSet", x=211, y=91, radius=10, tooltip = "Clear door closed alarm", model = {
         model = "models/lilly/uf/u2/cab/button_indent_orange.mdl", z=0, ang=0, anim=true,
         var="DoorsCloseConfirm",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
@@ -967,7 +967,7 @@ function ENT:Think()
             if self:GetNW2Bool("IBISChime",false) == true then
                 if self:GetNW2Bool("IBISBootupComplete",false) == true then
                     self.IBISStarted = true
-                    self:PlayOnce("IBIS_bootup",Vector(416,-13,58),1,1)
+                    self:PlayOnce("IBIS_bootup",Vector(412,-12,55),1,1)
                     print("IBIS bootup complete")
                 end
 

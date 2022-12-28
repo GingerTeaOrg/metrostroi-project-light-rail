@@ -146,12 +146,14 @@ end
 
 
 ENT.Cameras = {
-    {Vector(480.5+17,-40,110),Angle(0,-90,0),"Train.UF_U2.Destinations"},
+    {Vector(400,-55,90),Angle(0,-170,0),"Train.UF_U2.OutTheWindowRight"},
+	{Vector(400,55,90),Angle(0,170,0),"Train.UF_U2.OutTheWindowLeft"},
     {Vector(300,6,90),Angle(0,180+5,0),"Train.UF_U2.PassengerStanding"},
 	{Vector(70.5+10,6,90),Angle(0,0,0),"Train.UF_U2.PassengerStanding2"},
     {Vector(490.5,0,100),Angle(0,180,0),"Train.Common.RouteNumber"},
 	{Vector(388,-30,80),Angle(0,-90,0),"Train.UF_U2.RouteList"},
     {Vector(450,0,70),Angle(80,0,0),"Train.Common.CouplerCamera"},
+	{Vector(350,60,5),Angle(10,-80,0),"Train.UF_U2.Bogey"},
 }
 
 ENT.MirrorCams = {

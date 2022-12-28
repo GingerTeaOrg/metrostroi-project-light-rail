@@ -28,9 +28,9 @@ function ENT:Initialize()
         })
     end
 
-    if IsValid(self:GetPhysicsObject()) then
+    --[[if IsValid(self:GetPhysicsObject()) then
         self:GetPhysicsObject():SetNoCollide(true)
-    end
+    end]]
 
     self.Raised = false
 
@@ -43,6 +43,8 @@ function ENT:Initialize()
     self.DropByPeople = 0
     self.VotageDropByTouch = 0
     self.CheckTimeout = 0
+    self.NoPhysics = false
+    self.PantoType = {}
 end
 
 

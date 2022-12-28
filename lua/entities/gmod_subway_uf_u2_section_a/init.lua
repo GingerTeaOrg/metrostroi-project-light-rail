@@ -34,13 +34,13 @@ function ENT:CreatePanto(pos,ang,type)
 	panto.SpawnAng = ang
 
 
-	if self.NoPhysics then
-		bogey:SetParent(self)
-	else
-		constraint.Axis(panto,self,0,0,
+	--if self.NoPhysics then
+	--	panto:SetParent(self)
+	--else
+		constraint.Weld(panto,self,0,0,
 			Vector(0,0,0),Vector(0,0,0),
-			0,0,0,1,Vector(0,0,1),false)
-	end
+			0,0,0,1,Vector(0,0,1),true)
+	--end
 
 	table.insert(self.TrainEntities,panto)
 	return panto
@@ -336,9 +336,9 @@ function ENT:Initialize()
 	self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
 	self.RearBogey = self:CreateBogeyUF_b(Vector( -300,0,0),Angle(0,180,0),false,"duewag_motor")
 	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,2),Angle(0,180,0),true,"u2")	
-	self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
-	self:GetPhysicsObject():SetMass(50000)
-	self.u2sectionb:GetPhysicsObject():SetMass(50000)
+	--self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
+	--self:GetPhysicsObject():SetMass(50000)
+	--self.u2sectionb:GetPhysicsObject():SetMass(50000)
 
 	self.PantoUp = 0
 	
@@ -683,14 +683,18 @@ function ENT:Think(dT)
 		
 		self:SetNW2Bool("BatteryOn",true)
 
-		if self.ElectricKickStart == false then	--if we haven't kicked off starting the IBIS yet
+		if self.ElectricKickStart == false then	--if we haven't kicked off starting the power yet
 			self.ElectricKickStart = true	--remember that we are doing now
 			self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
 			self.ElectricStarted = true
-			print(self.ElectricOnMoment)
-			self:SetNW2Float("ElectricOnMoment",self.ElectricOnMoment)
+			--print(self.ElectricOnMoment)
+			--self:SetNW2Float("ElectricOnMoment",self.ElectricOnMoment)
 		end
 
+		if CurTime() - self.ElectricOnMoment > 5 then
+			self:SetNW2Bool("IBISChime",true)
+			self:SetNW2Bool("IBISBootupComplete",true)
+		end
 		--print(self.ElectricOnMoment)
 		
 		if self.IBIS.BootupComplete == true then

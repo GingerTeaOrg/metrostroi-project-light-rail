@@ -7,6 +7,7 @@ function TRAIN_SYSTEM:Initialize()
     self.RouteChar2 = nil
 
     self.PowerOn = 0
+    self.IBISBootupComplete = 0
     self.Debug = 0
     
     self.BootupComplete = false
@@ -49,7 +50,7 @@ function TRAIN_SYSTEM:Initialize()
 
 
     --if not self.Train:GetNW2Int("CabActive",0) == 1 then
-        self.Train:LoadSystem("Number1","Relay","Switch",{bass = true })
+        --[[self.Train:LoadSystem("Number1","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Number2","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Number3","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Number4","Relay","Switch",{bass = true })
@@ -64,7 +65,7 @@ function TRAIN_SYSTEM:Initialize()
         self.Train:LoadSystem("SpecialAnnouncements","Relay","Switch",{bass = true })
         self.Train:LoadSystem("TimeAndDate","Relay","Switch",{bass = true })
         self.Train:LoadSystem("Enter","Relay","Switch",{bass = true })
-    --end
+    --end]]
 
     
 
@@ -154,11 +155,6 @@ end
 
 function TRAIN_SYSTEM:TriggerOutput(name,value)
 	if self[name] then self[name] = value end
-    
-    
- 
-
-
 end
 
 
@@ -324,18 +320,10 @@ function TRAIN_SYSTEM:Think()
         self.PowerOn = 1
         self.Train:SetNW2Bool("IBISPowerOn",true)
         --print("IBIS powered")
-        if self.Train.ElectricOnMoment - CurTime() > 5 then
-            self.BootupComplete = true
-            self.Train:SetNW2Bool("IBISBootupComplete",true)
-            --print("IBIS Booted!")
-        else
-            self.BootupComplete = false
-            self.Train:SetNW2Bool("IBISBootupComplete",false)
-        end
     elseif self.Train.BatteryOn == false then
         self.PowerOn = 0
         self.Train:SetNW2Bool("IBISPowerOn",false)
-        self.Train:SetNW2Bool("IBISBootupComplete",false)
+        --self.Train:SetNW2Bool("IBISBootupComplete",false)
     end
     
 
@@ -345,7 +333,8 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:Course",self.Course)
     Train:SetNW2Int("IBIS:MenuState",self.Menu)
     Train:SetNW2Int("IBIS:Menu",self.Menu)
-    Train:SetNW2Int("IBIS:PowerOn")
+    Train:SetNW2Int("IBIS:PowerOn",self.PowerOn)
+    Train:SetNW2Int("IBIS:Booted",self.IBISBootupComplete)
 
     
     --print(self.Menu)
