@@ -220,7 +220,7 @@ function TRAIN_SYSTEM:ClientThink()
             self:IBISScreen(self.Train)
         cam.End2D()
         render.PopRenderTarget()
-        if self.DrawTimer and CurTime()-self.DrawTimer < 0.1 then return end
+        if self.DrawTimer and CurTime()-self.DrawTimer < 0.2 then return end
         self.DrawTimer = CurTime()
         render.PushRenderTarget(self.Train.IBIS,0,0,512, 128)
         --render.Clear(0, 0, 0, 0)
@@ -276,9 +276,9 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 
     
     if State == 2 then
-        self:BlinkText(true, "Ziel/Kurs:")
+        
         if Menu == 4 then
-            --self:PrintText(0,0,"Linie-Kurs:")
+            self:BlinkText(true, "Ziel/Kurs:")
             return
         end
 
@@ -497,9 +497,11 @@ if CLIENT then
 	function TRAIN_SYSTEM:BlinkText(enable,Text)
 		if not enable then
 			self.BlinkingText = false
-		elseif CurTime() - self.LastBlinkTime > 4 then
+		elseif CurTime() - self.LastBlinkTime > 1.5 then
 			self:PrintText(0,0,Text)
-			self.LastBlinkTime = CurTime()
+            if CurTime() - self.LastBlinkTime > 3 then
+			    self.LastBlinkTime = CurTime()
+            end
 		end
 	end
 end	
