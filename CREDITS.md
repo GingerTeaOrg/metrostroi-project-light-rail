@@ -27,4 +27,6 @@ Bogey model redux by "GregTame" https://twitter.com/Greg_Tame
 
 IBIS1 and IBIS+ Footage by Frederik Scheps, Historische Straßenbahn Leipzig
 
-IBIS scripting support by Anton Borisovic
+IBIS scripting support by Anton Borisovich
+
+Electrical Engineering insights by Fred Walter
