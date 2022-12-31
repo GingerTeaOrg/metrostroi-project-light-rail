@@ -167,6 +167,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_Deadman")
 	self:LoadSystem("IBIS")
 	self:LoadSystem("Duewag_Battery")
+	self:LoadSystem("Panel","U2_panel")
 	
 	--self:LoadSystem("duewag_electric")
 end

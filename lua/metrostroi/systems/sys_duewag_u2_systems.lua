@@ -494,18 +494,19 @@ function TRAIN_SYSTEM:U2Engine()
 
 	--self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
 
+	
+
 	if self.ResistorBank > 0 then
-		if self.ResistorBank != self.PrevResistorBank and self.ResistorChangeRegistered == false then
-			self.PrevResistorBank = self.ResistorBank
+		local CurrentResistor = self.ResistorBank
+		if self.ResistorBank ~= CurrentResistor then
 			self.ResistorChangeRegistered = true
+			self.Train:SetNW2Bool("CamshaftMoved",true)
+		elseif self.ResistorBank == CurrentResistor then
+			self.ResistorChangeRegistered = false
+			self.Train:SetNW2Bool("CamshaftMoved",false)
 		end
 	end
 
-	if self.PrevResistorBank ~= self.ResistorBank then
-		self.Train:SetNW2Bool("CamshaftMoved",true)
-		self.Train:SetNW2Bool("CamshaftMoved",false)
-		self.PrevResistorBank = self.ResistorBank
-	end
 
 	if self.Train:GetNW2Bool("CamshaftMove",false) == true then
 		print("CamshaftMove")
@@ -513,5 +514,4 @@ function TRAIN_SYSTEM:U2Engine()
 
 	self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
 	self.Train:SetNW2Float("Amps",self.Amps)
-	--print(self.Amps)
 end

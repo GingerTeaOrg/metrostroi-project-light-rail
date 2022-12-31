@@ -273,7 +273,7 @@ end
 ENT.BogeyDistance = 1100
 
 
-ENT.SyncTable = {"Microphone","BellEngage","Horn","WarningAnnouncementSet", "PantoUp", "DoorsCloseConfirmSet", "PassengerLightsSet", "SetHoldingBrakeSet", "ReleaseHoldingBrakeSet", "PassengerOvergroundSet", "PassengerUndergroundSet", "DoorsCloseConfirmSet", "SetPointRightSet", "SetPointLeftSet", "ThrowCouplerSet", "OpenDoor1Set", "UnlockDoorsSet", "DoorCloseSignalSet", "Number1Set", "Number2Set", "Number3Set", "Number4Set", "Number6Set", "Number7Set", "Number8Set", "Number9Set", "Number0Set", "DestinationSet","DeleteSet","RouteSet","DateAndTimeSet","SpecialAnnouncementsSet"}
+ENT.SyncTable = {"WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "PassengerLights", "SetHoldingBrake", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
 
 
 function ENT:Initialize()
@@ -514,6 +514,7 @@ function ENT:Initialize()
 	[35] = { "light",Vector(326.738,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
 	[36] = { "light",Vector(151.5,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
 	[37] = { "light",Vector(83.7,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
+	[38] = { "light",Vector(416.31,8.3445,54.4798), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
 }
 
 
@@ -588,10 +589,13 @@ function ENT:Think(dT)
     self.DeltaTime = (CurTime() - self.PrevTime)
     self.PrevTime = CurTime()
 
-    
-	
-	--self:SetNW2Entity("FrontBogey",self.FrontBogey)
+    local Panel = self.Panel
 
+	self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
+	self:SetPackedBool("WarningAnnouncement",Panel.WarningAnnouncement > 0)
+	--print(self:GetPackedBool("WarningAnnouncement"))
+	--self:SetNW2Entity("FrontBogey",self.FrontBogey)
+	--print(self.Panel.WarnBlink)
 	self.CabWindowL = math.Clamp(self.CabWindowL,0,1)
 	self.CabWindowR = math.Clamp(self.CabWindowR,0,1)
 	self:SetNW2Float("CabWindowL",self.CabWindowL)
@@ -2051,7 +2055,7 @@ end
 
 function ENT:Blink(enable, left, right)
 
-
+	if self.BatteryOn == true then
 	if not enable then
 
 		self.BlinkerOn = false
@@ -2072,16 +2076,25 @@ function ENT:Blink(enable, left, right)
 	self:SetLightPower(48,self.BlinkerOn and left)
 	self:SetLightPower(59,self.BlinkerOn and right)
 	self:SetLightPower(49,self.BlinkerOn and right)
+	--self:SetLightPower(38,self.BlinkerOn and right)
+	--self:SetLightPower(38,self.BlinkerOn and left)
 	self.u2sectionb.BlinkerRight = self.BlinkerOn and right
 
 	if self.BlinkerOn and left and right then
 		self:SetLightPower(56,self.BlinkerOn and left)
 		self:SetLightPower(57,self.BlinkerOn and right)
+		self:SetLightPower(38,self.BlinkerOn)
 	end
 
+	if self.BlinkerOn and left == true then
+		self:SetLightPower(38,self.BlinkerOn and left)
+	end
+	if self.BlinkerOn and right == true then
+		self:SetLightPower(38,self.BlinkerOn and right)
+	end
 
 	self:SetNW2Bool("BlinkerTick",self.BlinkerOn) --one tick sound for the blinker relay
-
+	end
 end
 
 function ENT:DoorHandler(CommandOpen,CommandClose)

@@ -9,6 +9,9 @@ function TRAIN_SYSTEM:Initialize()
     self.PowerOn = 0
     self.IBISBootupComplete = 0
     self.Debug = 0
+
+    self.BlinkText = false
+    self.LastBlinkTime = 0
     
     self.BootupComplete = false
     self.Course = 0 --Course index number, format is LLLSS
@@ -246,7 +249,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     local Menu = self.Train:GetNW2Int("IBIS:Menu")
     local State = self.Train:GetNW2Int("IBIS:State")
 		
-	--self.State = 1
+
 		
     local PowerOn = self.Train:GetNW2Bool("IBISPowerOn",false) == true
 
@@ -256,7 +259,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         self.Warm = true
 
         if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
-            self.State = 1
+            self.State = 2
         elseif self.Train:GetNW2Bool("IBISBootupComplete",false) == false then
             self:PrintText(0,0,"-------------------------")
             self:PrintText(0,4,"-------------------------")
@@ -272,7 +275,20 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     end
 
     
+    if State == 2 then
+        --self:BlinkText(true, "Ziel/Kurs:")
+        if Menu == 4 then
+            self:PrintText(0,0,"Linie-Kurs:")
+            return
+        end
 
+        if Menu == 5 then
+            self:PrintText(0,0,"Route:")
+            self:PrintText(4,1,self.Train:GetNW2Int("IBIS:Course"))
+            return
+        end
+        
+    end
 
     if State == -2 then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
@@ -290,7 +306,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         end
 
         if Menu == 2 then
-            self:PrintText(0,0,"Linie/Kurs:")
+            self:PrintText(0,0,"Linie-Kurs:")
             return 
         end
 
@@ -323,9 +339,15 @@ function TRAIN_SYSTEM:Think()
     elseif self.Train.BatteryOn == false then
         self.PowerOn = 0
         self.Train:SetNW2Bool("IBISPowerOn",false)
-        --self.Train:SetNW2Bool("IBISBootupComplete",false)
+        self.State = 0
+        self.Menu = 0
+        self.Train:SetNW2Bool("IBISBootupComplete",false)
     end
     
+    if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
+        self.State = 2
+        self.Menu = 4
+    end
 
     Train:SetNW2Int("IBIS:State",self.State)
     Train:SetNW2Int("IBIS:Route",self.Route)
@@ -468,7 +490,19 @@ function TRAIN_SYSTEM:Think()
     end
 
 end
-				
+
+if CLIENT then
+function TRAIN_SYSTEM:BlinkText(enable,Text)
+
+
+    if not enable then
+        self.BlinkText = false
+    elseif CurTime() - self.LastBlinkTime > 0.4 then
+        self:PrintText(0,0,Text)
+        self.LastBlinkTime = CurTime()
+    end
+end
+end	
 
 	
 end

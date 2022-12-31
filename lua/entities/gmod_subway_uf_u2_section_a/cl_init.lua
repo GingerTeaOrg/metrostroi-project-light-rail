@@ -166,42 +166,42 @@ ENT.ClientProps["Mirror"] = {
 
 ENT.ClientProps["Speedo"] = {
     model = "models/lilly/uf/u2/cab/speedo.mdl",
-    pos = Vector(418.616,10.1868,54.6),
-    ang = Angle(-8.5,0,0),
+    pos = Vector(418.192,10.148,54.66),
+    ang = Angle(-8.7,0,0),
     hideseat = 0.2,
 }
 
 ENT.ClientProps["BatterySwitch"] = {
     model = "models/lilly/uf/u2/cab/battery_switch.mdl",
-    pos = Vector(413.8,-7,54.1),
+    pos = Vector(413.5,-7,54.1),
     ang = Angle(-8.5,0,0),
     hideseat = 0.2,
 }
 
 ENT.ClientProps["DoorSwitch"] = {
     model = "models/lilly/uf/u2/cab/battery_switch.mdl",
-    pos = Vector(418.8,-2.35,54.86),
+    pos = Vector(418.5,-2.35,54.86),
     ang = Angle(-8.5,0,0),
     hideseat = 0.2,
 }
 
 ENT.ClientProps["BlinkerSwitch"] = {
     model = "models/lilly/uf/u2/cab/battery_switch.mdl",
-    pos = Vector(413.9,6.35,54),
+    pos = Vector(413.5,6.3,54),
     ang = Angle(-8.5,0,0),
     hideseat = 0.2,
 }
 
 ENT.ClientProps["HeadlightSwitch"] = {
     model = "models/lilly/uf/u2/cab/battery_switch.mdl",
-    pos = Vector(418.9,23.7,54.75),
+    pos = Vector(418.6,23.58,54.75),
     ang = Angle(-8.5,0,0),
     hideseat = 0.2,
 }
 
 ENT.ClientProps["DriverLightSwitch"] = {
     model = "models/lilly/uf/u2/cab/battery_switch.mdl",
-    pos = Vector(416,-7,54.5),
+    pos = Vector(415.7,-7,54.5),
     ang = Angle(-8.5,0,0),
     hideseat = 0.2,
 }
@@ -222,7 +222,7 @@ ENT.ClientProps["Amps"] = {
 
 ENT.ClientProps["reverser"] = {
     model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
-    pos = Vector(0,0,0),
+    pos = Vector(0,-0.15,0),
     ang = Angle(0,0,0),
     hideseat = 0.2,
 }
@@ -339,7 +339,7 @@ ENT.ButtonMap["Button4a"] = {
 
 
 ENT.ButtonMap["Cab"] = {
-    pos = Vector(420,25,55.1),
+    pos = Vector(419.6,25,55.2),
     ang = Angle(0,-90,8),
     width = 500,
     height = 120,
@@ -347,39 +347,39 @@ ENT.ButtonMap["Cab"] = {
 	
     buttons = {
 		
-    {ID = "WarningAnnouncementSet", x=265, y=18, radius=10, tooltip = "Please keep back announcement", model = {
-        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-4, ang=0,
-        getfunc = function(entity) return .7 end,var="WarningAnnouncementSet", speed=4,min=0,max=1,
-        var="WarningAnnouncementSet",speed=1, vmin=0, vmax=1,
+    {ID = "WarningAnnouncementSet", x=266, y=18, radius=10, tooltip = "Please keep back announcement", model = {
+        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
+        getfunc = function(ent) return ent:GetPackedBool("WarningAnnouncement") and 100 or 0 end,var="WarningAnnouncement", speed=4,min=0,max=1,
+        var="WarningAnnouncement",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "VentilationSet", x=334, y=59, radius=10, tooltip = "Enable motor fans", model = {
-        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-3, ang=0,
-        getfunc = function(ent) return ent:GetPackedRatio("VentilationSet") end,var="VentilationSet", speed=4,min=0,max=1,
+        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
+        getfunc = function(ent) return ent:GetPackedRatio("Ventilation") end,var="Ventilation", speed=4,min=0,max=1,
         var="Ventilation",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "ReleaseHoldingBrakeSet", x=20, y=90, radius=10, tooltip = "Release mechanical brake manually", model = {
+    {ID = "ReleaseHoldingBrakeSet", x=21.5, y=90, radius=10, tooltip = "Release mechanical brake manually", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=90,
         var="ReleaseHoldingBrake",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "SetHoldingBrakeSet", x=20, y=58, radius=10, tooltip = "set mechanical holding brake manually", model = {
+    {ID = "SetHoldingBrakeSet", x=21.5, y=58, radius=10, tooltip = "set mechanical holding brake manually", model = {
         model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
         var="SetHoldingBrake",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "PassengerOvergroundSet", x=52.5, y=58, radius=10, tooltip = "Set passenger lights to overground mode", model = {
+    {ID = "PassengerOvergroundSet", x=54, y=58, radius=10, tooltip = "Set passenger lights to overground mode", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
         var="PassengerOverground",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "PassengerUndergroundSet", x=52.5, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
+    {ID = "PassengerUndergroundSet", x=54, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
         var="PassengerUnderground",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
@@ -398,26 +398,26 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "DriverLightToggle", x=463, y=58, radius=10, tooltip = "Toggle Cab Light", model = {
+    {ID = "DriverLightToggle", x=463, y=70, radius=10, tooltip = "Toggle Cab Light", model = {
         z=0, ang=0,
         var="DriverLight",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SetPointLeftSet", x=179, y=91, radius=10, tooltip = "Set track point to left", model = {
-        model = "models/lilly/uf/u2/cab/button_bulge_arrow_right.mdl", z=-4, ang=90, anim=true,
+        model = "models/lilly/uf/u2/cab/button_bulge_arrow_right.mdl", z=-5, ang=90, anim=true,
         var="SetPointLeft",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "DoorsCloseConfirmSet", x=211, y=91, radius=10, tooltip = "Clear door closed alarm", model = {
-        model = "models/lilly/uf/u2/cab/button_indent_orange.mdl", z=0, ang=0, anim=true,
+        model = "models/lilly/uf/u2/cab/button_indent_orange.mdl", z=-2, ang=0, anim=true,
         var="DoorsCloseConfirm",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SetPointRightSet", x=241, y=91, radius=10, tooltip = "Set track point to right", model = {
-        model = "models/lilly/uf/u2/cab/button_bulge_arrow_left.mdl", z=-4, ang=90,anim=true,
+        model = "models/lilly/uf/u2/cab/button_bulge_arrow_left.mdl", z=-5, ang=90,anim=true,
         var="SetPointRight",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -441,7 +441,7 @@ ENT.ButtonMap["Cab"] = {
         }
     },]]
     {ID = "ThrowCouplerSet", x=334.8, y=91, radius=10, tooltip = "Throw Coupler", model = {
-        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-4, ang=0,
+        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
         var="ThrowCoupler",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -458,8 +458,8 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "UnlockDoorsSet", x=396, y=57.5, radius=10, tooltip = "Toggle doors unlocked", model = {
-        model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-4, ang=0,
+    {ID = "UnlockDoorsSet", x=396.4, y=57.7, radius=10, tooltip = "Toggle doors unlocked", model = {
+        model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -517,19 +517,19 @@ ENT.ButtonMap["IBIS"] = {
         },
         {ID = "Number2Set", x=28, y=42, radius=10, tooltip = "2/Special Character", model = {
             z=0, ang=0,
-            var="main",speed=1, vmin=0, vmax=1,
+            var="Number2",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
         },
         {ID = "Number3Set", x=28, y=24, radius=10, tooltip = "3/Advance current stop silently", model = {
             z=0, ang=0,
-            var="main",speed=1, vmin=0, vmax=1,
+            var="Number3",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
             }
         },
         {ID = "Number4Set", x=46, y=60, radius=10, tooltip = "4", model = {
             z=0, ang=0,
-            var="main",speed=1, vmin=0, vmax=1,
+            var="Number4",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
@@ -668,30 +668,34 @@ ENT.ButtonMap["CabWindowR"] = {
 }
 
 
---[[]
+
 ENT.ButtonMap["Left"] = {
-    pos = Vector(527.7,39.5,74.5),
+    pos = Vector(415,30,56),
     ang = Angle(0,180,0),
     width = 160,
     height = 80,
     scale = 0.1,
     buttons = {
-        {ID = "ParrallelToggle", x=24, y=21, radius=3, tooltip = "Set engines to shunt mode (not yet implemented)", model = {
-            model = "models/lilly/uf/u2/switch_flick.mdl", z=5, ang=90,
-            var="Parrallel",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
+        {ID = "ParrallelToggle", x=27, y=32, radius=7, tooltip = "Set engines to shunt mode (not yet implemented)", model = {
+            z=-5, ang=0,
+            var="ParrallelToggle",speed=1, vmin=0, vmax=1,
+            sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
-        {ID = "WarnBlinkToggle", x=92, y=70, radius=3, tooltip = "Set indicators to warning mode", model = {
-            model = "models/lilly/uf/u2/switch_flick.mdl", z=5, ang=0,
-            var="Parrallel",speed=1, vmin=0, vmax=1,
-            sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
+        {ID = "WarnBlinkToggle", x=79, y=71, radius=7, tooltip = "Set indicators to warning mode", model = { model="models/lilly/uf/u2/cab/switch_flick.mdl",
+            getfunc = function(ent) return ent:GetPackedBool("WarnBlink") and 1 or 0 end,
+            z=-3, ang=0,
+            var="WarnBlink",speed=16, --[[vmin=1, vmax=0,]]
+            sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
+        },
+        {ID = "ReduceBrakeSet", x=44, y=11.5, radius=7, tooltip = "Reduce track brake intensity", model = {
+            z=-5, ang=0,
+            var="ReduceBrakeSet",speed=1, vmin=0, vmax=1,
+            sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
         }
 }
 
 
-
-]]
 	
 function ENT:Draw()
     self.BaseClass.Draw(self)
