@@ -56,7 +56,7 @@ function TRAIN_SYSTEM:Initialize()
     self.DateAndTime = 0
     self.SpecialAnnouncements = 0
 
-    self.BellEngage = 0
+    self.Bell = 0
     self.Horn = 0
     self.WarningAnnouncement = 0
     self.PantoUp = 0

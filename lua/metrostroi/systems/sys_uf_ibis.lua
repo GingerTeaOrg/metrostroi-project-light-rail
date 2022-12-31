@@ -276,9 +276,9 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 
     
     if State == 2 then
-        --self:BlinkText(true, "Ziel/Kurs:")
+        self:BlinkText(true, "Ziel/Kurs:")
         if Menu == 4 then
-            self:PrintText(0,0,"Linie-Kurs:")
+            --self:PrintText(0,0,"Linie-Kurs:")
             return
         end
 
@@ -489,10 +489,15 @@ function TRAIN_SYSTEM:Think()
 end 
 
 if CLIENT then
+    function TRAIN_SYSTEM:ClientInitialize()
+
+        self.LastBlinkTime = 0
+        self.BlinkingText = false
+    end
 	function TRAIN_SYSTEM:BlinkText(enable,Text)
 		if not enable then
-			self.BlinkText = false
-		elseif CurTime() - self.LastBlinkTime > 0.4 then
+			self.BlinkingText = false
+		elseif CurTime() - self.LastBlinkTime > 4 then
 			self:PrintText(0,0,Text)
 			self.LastBlinkTime = CurTime()
 		end
