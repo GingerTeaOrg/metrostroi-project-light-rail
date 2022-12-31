@@ -363,149 +363,143 @@ function TRAIN_SYSTEM:Think()
     --Add together all variables to one string
 
     if self.PowerOn == 1 and self.BootupComplete == true then
-    if self.Menu == 1 then
+		if self.Menu == 1 then
+			if self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
 
-        if self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
+				if self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
+					self.DestinationChar3 = self.KeyInput
+				end
 
-            if self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
-                self.DestinationChar3 = self.KeyInput
-            end
+				if not self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
+					self.DestinationChar2 = self.DestinationChar3
+					self.DestinationChar3 = self.KeyInput
+				end
+				if not self.DestinationChar3 == nil and not self.DestinationChar2 == nil and self.DestinationChar1 == nil then
+				   self.DestinationChar2 = self.DestinationChar3
+					self.DestinationChar1 = self.DestinationChar2
+					self.DestinationChar3 = self.KeyInput
+				end
 
-            if not self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
-                self.DestinationChar2 = self.DestinationChar3
-                self.DestinationChar3 = self.KeyInput
-            end
-            if not self.DestinationChar3 == nil and not self.DestinationChar2 == nil and self.DestinationChar1 == nil then
-               self.DestinationChar2 = self.DestinationChar3
-                self.DestinationChar1 = self.DestinationChar2
-                self.DestinationChar3 = self.KeyInput
-            end
+			elseif not self.DestinationChar3 == nil and not self.DestinationChar2 == nil and not self.DestinationChar1 == nil then
+				
+				self.DestinationChar3 = nil 
+				self.DestinationChar2 = nil 
+				self.DestinationChar1 = nil 
 
-        elseif not self.DestinationChar3 == nil and not self.DestinationChar2 == nil and not self.DestinationChar1 == nil then
-            
-                self.DestinationChar3 = nil 
-                self.DestinationChar2 = nil 
-                self.DestinationChar1 = nil 
+				if self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
+					self.DestinationChar3 = self.KeyInput
+				end
 
-                if self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
-                    self.DestinationChar3 = self.KeyInput
-                end
-    
-                if not self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
-                    self.DestinationChar2 = self.DestinationChar3
-                    self.DestinationChar3 = self.KeyInput
-                end
-                if not self.DestinationChar3 == nil and not self.DestinationChar2 == nil and self.DestinationChar1 == nil then
-                   self.DestinationChar2 = self.DestinationChar3
-                    self.DestinationChar1 = self.DestinationChar2
-                    self.DestinationChar3 = self.KeyInput
-                end
-            
-        end
-    end    
+				if not self.DestinationChar3 == nil and self.DestinationChar2 == nil and self.DestinationChar1 == nil then
+					self.DestinationChar2 = self.DestinationChar3
+					self.DestinationChar3 = self.KeyInput
+				end
+				if not self.DestinationChar3 == nil and not self.DestinationChar2 == nil and self.DestinationChar1 == nil then
+				   self.DestinationChar2 = self.DestinationChar3
+					self.DestinationChar1 = self.DestinationChar2
+					self.DestinationChar3 = self.KeyInput
+				end
+				
+			end
+		end    
 
-    if self.Menu == 3 then
+		if self.Menu == 3 then
+			if  self.RouteChar2 == nil and self.RouteChar1 == nil then
+				if self.RouteChar2 == nil then
+					self.RouteChar2 = self.KeyInput
+				end
+				if not self.RouteChar2 == nil then
+					self.RouteChar1 = self.DestinationChar2
+					self.RouteChar2 = self.KeyInput
+				end
 
-        if  self.RouteChar2 == nil and self.RouteChar1 == nil then
-            if self.RouteChar2 == nil then
-                self.RouteChar2 = self.KeyInput
-            end
-            if not self.RouteChar2 == nil then
-                self.RouteChar1 = self.DestinationChar2
-                self.RouteChar2 = self.KeyInput
-            end
+			elseif not self.RouteChar2 == nil and not self.RouteChar1 == nil then
 
-        elseif not self.RouteChar2 == nil and not self.RouteChar1 == nil then
+				self.RouteChar2 = nil 
+				self.RouteChar1 = nil
 
-            self.RouteChar2 = nil 
-            self.RouteChar1 = nil
+				if self.RouteChar2 == nil then
+					self.RouteChar2 = self.KeyInput
+				end
+				if not self.RouteChar2 == nil then
+					self.RouteChar1 = self.DestinationChar2
+					self.RouteChar2 = self.KeyInput
+				end
+			end
+		end
 
-            if self.RouteChar2 == nil then
-                self.RouteChar2 = self.KeyInput
-            end
-            if not self.RouteChar2 == nil then
-                self.RouteChar1 = self.DestinationChar2
-                self.RouteChar2 = self.KeyInput
-            end
-        end
-    end
+		if self.Menu == 2 then
+			if self.KeyInput ~= "Menu" or self.KeyInput ~= "Delete" or self.KeyInput ~= "Destination" then
+				if not self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 
-    if self.Menu == 2 then
-	if self.KeyInput ~= "Menu" or self.KeyInput ~= "Delete" or self.KeyInput ~= "Destination" then
-        if not self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-
-		self.CourseChar5 = self.KeyInput
+				self.CourseChar5 = self.KeyInput
 
 
 
-        elseif self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+				elseif self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
 
-            
-		self.CourseChar4 = self.CourseChar5
-		self.CourseChar5 = self.KeyInput
-		
-	    
-	    elseif self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-	   
-		self.CourseChar3 = self.CourseChar4
-		self.CourseChar4 = self.CourseChar5
-		self.CourseChar5 = self.KeyInput
-	    elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-		
-		self.CourseChar2 = self.CourseChar3						
-		self.CourseChar3 = self.CourseChar4
-		self.CourseChar4 = self.CourseChar5
-		self.CourseChar5 = self.KeyInput
+					
+				self.CourseChar4 = self.CourseChar5
+				self.CourseChar5 = self.KeyInput
+				
+				
+				elseif self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+			   
+				self.CourseChar3 = self.CourseChar4
+				self.CourseChar4 = self.CourseChar5
+				self.CourseChar5 = self.KeyInput
+				elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+				
+				self.CourseChar2 = self.CourseChar3						
+				self.CourseChar3 = self.CourseChar4
+				self.CourseChar4 = self.CourseChar5
+				self.CourseChar5 = self.KeyInput
 
-	    elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
-		
-		self.CourseChar1 = self.CourseChar2
-		self.CourseChar2 = self.CourseChar3						
-		self.CourseChar3 = self.CourseChar4
-		self.CourseChar4 = self.CourseChar5
-		self.CourseChar5 = self.KeyInput
-	    end
+				elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
+				
+				self.CourseChar1 = self.CourseChar2
+				self.CourseChar2 = self.CourseChar3						
+				self.CourseChar3 = self.CourseChar4
+				self.CourseChar4 = self.CourseChar5
+				self.CourseChar5 = self.KeyInput
+				end
+			end
+
+			if self.KeyInput == "Delete" then
+				if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and self.CourseChar1 then
+					self.CourseChar1 = nil
+				elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
+					self.CourseChar2 = nil
+				elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+					self.CourseChar3 = nil
+				elseif self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+					self.CourseChar4 = nil
+				elseif self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
+					self.CourseChar5 = nil
+				end
+
+			end
+
+
+			if not self.RouteChar1 == nil and not self.RouteChar2 == nil then self.Route = self.Routechar1..self.RouteChar2 end
+			if not self.CourseChar1 == nil and not self.CourseChar2 == nil and not self.CourseChar3 == nil and not self.CourseChar4 == nil then self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4 end
+			if not self.DestinationChar1 == nil and not self.DestinationChar2 == nil and not self.DestinationChar3 == nil then self.Destination = self.DestinationChar1..self.DestinationChar2..self.DestinationChar3 end
+		end
 	end
-
-	if self.KeyInput == "Delete" then
-	    if self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and self.CourseChar1 then
-		    self.CourseChar1 = nil
-	    elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and self.CourseChar2 and not self.CourseChar1 then
-		    self.CourseChar2 = nil
-	    elseif self.CourseChar5 and self.CourseChar4 and self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-		    self.CourseChar3 = nil
-	    elseif self.CourseChar5 and self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-		    self.CourseChar4 = nil
-	    elseif self.CourseChar5 and not self.CourseChar4 and not self.CourseChar3 and not self.CourseChar2 and not self.CourseChar1 then
-		    self.CourseChar5 = nil
-        end
-
-    end
-
-
-    if not self.RouteChar1 == nil and not self.RouteChar2 == nil then self.Route = self.Routechar1..self.RouteChar2 end
-    if not self.CourseChar1 == nil and not self.CourseChar2 == nil and not self.CourseChar3 == nil and not self.CourseChar4 == nil then self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4 end
-    if not self.DestinationChar1 == nil and not self.DestinationChar2 == nil and not self.DestinationChar3 == nil then self.Destination = self.DestinationChar1..self.DestinationChar2..self.DestinationChar3 end
-
-    end
-
-end
+end 
 
 if CLIENT then
-function TRAIN_SYSTEM:BlinkText(enable,Text)
-
-
-    if not enable then
-        self.BlinkText = false
-    elseif CurTime() - self.LastBlinkTime > 0.4 then
-        self:PrintText(0,0,Text)
-        self.LastBlinkTime = CurTime()
-    end
-end
+	function TRAIN_SYSTEM:BlinkText(enable,Text)
+		if not enable then
+			self.BlinkText = false
+		elseif CurTime() - self.LastBlinkTime > 0.4 then
+			self:PrintText(0,0,Text)
+			self.LastBlinkTime = CurTime()
+		end
+	end
 end	
 
-	
-end
+
 
 function TRAIN_SYSTEM:AnnQueue(msg)
     local Announcer = self.Train.Announcer
@@ -554,4 +548,3 @@ function TRAIN_SYSTEM:Play(dep,not_last)
         end
     end
 end
-
