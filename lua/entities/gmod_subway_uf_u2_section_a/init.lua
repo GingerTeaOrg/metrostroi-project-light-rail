@@ -1705,43 +1705,43 @@ function ENT:OnButtonPress(button,ply)
 
 
 	if button == "DestinationSet" then
-		self.IBIS:Trigger("Destination")
+		self.IBIS:Trigger("Destination",1)
 	end
 
 
 	if button == "Number0Set" then
-		self.IBIS:Trigger("Number0")
+		self.IBIS:Trigger("Number0",1)
 	end
 
 	if button == "Number1Set" then
-		self.IBIS:Trigger("Number1")
+		self.IBIS:Trigger("Number1",1)
 	end
 	if button == "Number2Set" then
-		self.IBIS:Trigger("Number2")
+		self.IBIS:Trigger("Number2",1)
 	end
 	if button == "Number3Set" then
-		self.IBIS:Trigger("Number3")
+		self.IBIS:Trigger("Number3",1)
 	end
 	if button == "Number4Set" then
-		self.IBIS:Trigger("Number4")
+		self.IBIS:Trigger("Number4",1)
 	end
 	if button == "Number5Set" then
-		self.IBIS:Trigger("Number5")
+		self.IBIS:Trigger("Number5",1)
 	end
 	if button == "Number6Set" then
-		self.IBIS:Trigger("Number6")
+		self.IBIS:Trigger("Number6",1)
 	end
 	if button == "Number7Set" then
-		self.IBIS:Trigger("Number7")
+		self.IBIS:Trigger("Number7",1)
 	end
 	if button == "Number8Set" then
-		self.IBIS:Trigger("Number8")
+		self.IBIS:Trigger("Number8",1)
 	end
 	if button == "Number9Set" then
-		self.IBIS:Trigger("Number9")
+		self.IBIS:Trigger("Number9",1)
 	end
 	if button == "EnterSet" then
-		self.IBIS:Trigger("Enter")
+		self.IBIS:Trigger("Enter",1)
 	end
 
 	if button == "ThrowCouplerSet" then
@@ -2013,6 +2013,45 @@ function ENT:OnButtonRelease(button,ply)
 			self:SetNW2Bool("Microphone",false)
 		end
 
+		if button == "DestinationSet" then
+			self.IBIS:Trigger("Destination",0)
+		end
+	
+	
+		if button == "Number0Set" then
+			self.IBIS:Trigger("Number0",0)
+		end
+	
+		if button == "Number1Set" then
+			self.IBIS:Trigger("Number1",0)
+		end
+		if button == "Number2Set" then
+			self.IBIS:Trigger("Number2",0)
+		end
+		if button == "Number3Set" then
+			self.IBIS:Trigger("Number3",0)
+		end
+		if button == "Number4Set" then
+			self.IBIS:Trigger("Number4",0)
+		end
+		if button == "Number5Set" then
+			self.IBIS:Trigger("Number5",0)
+		end
+		if button == "Number6Set" then
+			self.IBIS:Trigger("Number6",0)
+		end
+		if button == "Number7Set" then
+			self.IBIS:Trigger("Number7",0)
+		end
+		if button == "Number8Set" then
+			self.IBIS:Trigger("Number8",0)
+		end
+		if button == "Number9Set" then
+			self.IBIS:Trigger("Number9",0)
+		end
+		if button == "EnterSet" then
+			self.IBIS:Trigger("Enter",0)
+		end
 
 		
 end

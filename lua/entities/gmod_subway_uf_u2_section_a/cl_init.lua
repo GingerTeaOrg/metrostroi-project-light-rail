@@ -495,10 +495,10 @@ ENT.ButtonMap["Cab"] = {
 }]]
 
 ENT.ButtonMap["IBISScreen"] = {
-    pos = Vector(419.54,-12.75,60.31),
+    pos = Vector(419.65,-12.75,60.35),
     ang = Angle(0,-135,48.5),--(0,44.5,-47.9),
     width = 117,
-    height = 29,
+    height = 29.9,
     scale = 0.0311,
 }
 ENT.ButtonMap["IBIS"] = {

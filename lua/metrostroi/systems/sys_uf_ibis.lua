@@ -1,5 +1,5 @@
 Metrostroi.DefineSystem("IBIS")
-TRAIN_SYSTEM.DontAccelerateSimulation = true
+TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 function TRAIN_SYSTEM:Initialize()
     self.Route = 0 --Route index number
@@ -8,7 +8,7 @@ function TRAIN_SYSTEM:Initialize()
 
     self.PowerOn = 0
     self.IBISBootupComplete = 0
-    self.Debug = 0
+    self.Debug = 1
 
     self.BlinkText = false
     self.LastBlinkTime = 0
@@ -85,64 +85,101 @@ end
 
 function TRAIN_SYSTEM:Trigger(name,value)
 
-    if self.State == 1 then
+    if self.State > 0 then
 
-        if name == "Destination" then --Destination button: Menu index 1
+
+        if name == "Number0" and value == 1 then
+            self.KeyInput = "0"
+        end
+        if name == "Number1" and value == 1 then
+            self.KeyInput = "1"
+        end
+        if name == "Number2" and value == 1 then
+           self.KeyInput = "2"
+        end
+        if name == "Number3" and value == 1 then
+            self.KeyInput = "3"
+        end
+        if name == "Number4" and value == 1 then
+            self.KeyInput = "4"
+        end
+        if name == "Number5" and value == 1 then
+           self.KeyInput = "5"
+        end
+        if name == "Number6" and value == 1 then
+          self.KeyInput = "6"
+        end
+        if name == "Number7" and value == 1 then
+            self.KeyInput = "7"
+        end
+        if name == "Number8" and value == 1 then
+          self.KeyInput = "8"
+        end
+        if name == "Number9" and value == 1 then
+          self.KeyInput = "9"
+        end
+        if name == "Number0" and value == 1 then
+            self.KeyInput = 0
+        end
+        if name == "Delete" and value == 1 then
+          self.KeyInput = "Delete"
+        end
+        if name == "Enter" and value == 1 then
+            self.KeyInput = "Enter"
+        end
+
+        if name == "Destination" and value == 1 then
             
-            if self.Menu == 0 then
-            self.Menu = 1
-            end
+            self.KeyInput = "Destination"
 
         end
 
-        if name == "Number7" then --Number 7 in idle means Route button, Menu Index 3
-            if self.Menu == 0 then
-                self.Menu = 3
-            end
-        end
+
 
 
         
-        if name == "Number0" then --Number 0 in idle means Course selection, Menu index 2
-            if self.Menu == 0 then
-                self.Menu = 2
-            end
-        end
 
-        --refactor for the correct input method, in train script use self.Train.IBIS.[TriggerName]
+
+        
     
-       if name == "Number0" then
-            self.KeyInput = "0"
+        if name == "Number0" and value == 0 then
+            self.KeyInput = nil
         end
-        if name == "Number1" then
-            self.KeyInput = "1"
+        if name == "Number1" and value == 0 then
+            self.KeyInput = nil
         end
-       if name == "Number2" then
-           self.KeyInput = "2"
+        if name == "Number2" and value == 0 then
+           self.KeyInput = nil
         end
-        if name == "Number3" then
-            self.KeyInput = "3"
+        if name == "Number3" and value == 0 then
+            self.KeyInput = nil
         end
-        if name == "Number4" then
-            self.KeyInput = "4"
-       end
-       if name == "Number5" then
-           self.KeyInput = "5"
-       end
-      if name == "Number6" then
-          self.KeyInput = "6"
-      end
-      if name == "Number8" then
-          self.KeyInput = "8"
+        if name == "Number4" and value == 0 then
+            self.KeyInput = nil
         end
-       if name == "Number9" then
-          self.KeyInput = "9"
+        if name == "Number5" and value == 0 then
+           self.KeyInput = nil
         end
-        if name == "Destination" then
-            self.Menu = 1
+        if name == "Number6" and value == 0 then
+          self.KeyInput = nil
         end
-        if name == "Delete" then
-          self.KeyInput = "Delete"
+        if name == "Number7" and value == 0 then
+            self.KeyInput = nil
+        end
+        if name == "Number8" and value == 0 then
+          self.KeyInput = nil
+        end
+        if name == "Number9" and value == 0 then
+          self.KeyInput = nil
+        end
+        if name == "Destination" and value == 0 then
+            self.KeyInput = nil
+        end
+        if name == "Delete" and value == 0 then
+          self.KeyInput = nil
+        end
+        if name == "Delete" and value == 0 then
+            self.KeyInput = nil
         end
 
     end
@@ -239,7 +276,7 @@ function TRAIN_SYSTEM:PrintText(x,y,text,inverse)
             draw.SimpleText(string.char(0x7f),"IBIS",(x+i)*20.5+5,y*40+40,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
             draw.SimpleText(char,"IBIS",(x+i)*20.5+5,y*40+40,Color(140,190,0,150),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
         else
-            draw.SimpleText(char,"IBIS",(x+i)*19,y*15+20,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            draw.SimpleText(char,"IBIS",(x+i)*19.5,y*15+20,Color(0,0,0),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
         end
     end
 end
@@ -248,10 +285,13 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     
     local Menu = self.Train:GetNW2Int("IBIS:Menu")
     local State = self.Train:GetNW2Int("IBIS:State")
+    local Route = self.Train:GetNW2String("IBIS:Route")
+    local Course = self.Train:GetNW2String("IBIS:Course")
+    local Destination = self.Train:GetNW2String("IBIS:Destination")
 		
 
 		
-    local PowerOn = self.Train:GetNW2Bool("IBISPowerOn",false) == true
+    local PowerOn = self.Train:GetNW2Bool("IBISPowerOn",false)
 
     if PowerOn == true then
         surface.SetDrawColor(140,190,0,self.Warm and 130 or 255)
@@ -259,7 +299,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         self.Warm = true
 
         if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
-            self.State = 2
+            --self.State = 2
         elseif self.Train:GetNW2Bool("IBISBootupComplete",false) == false then
             self:PrintText(0,0,"-------------------------")
             self:PrintText(0,4,"-------------------------")
@@ -276,15 +316,20 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 
     
     if State == 2 then
-        
+
         if Menu == 4 then
-            self:BlinkText(true, "Ziel/Kurs:")
+            --if self.Train:GetNW2Int("IBIS:Course",nil) == 0 then
+                self:BlinkText(true, "Linie-Kurs :")
+               -- self:PrintText(0,5,self.Train:GetNW2Int("IBIS:Course"))
+            --end
+
+            
             return
         end
 
         if Menu == 5 then
-            self:PrintText(0,0,"Route:")
-            self:PrintText(4,1,self.Train:GetNW2Int("IBIS:Course"))
+            self:PrintText(0,0,"Route :")
+            self:PrintText(0,5,self.Train:GetNW2Int("IBIS:Route"))
             return
         end
         
@@ -301,17 +346,17 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     if State == 1 then
 
         if Menu == 1 then
-            self:PrintText(0,0,"Ziel:")
+            self:PrintText(0,0,"Ziel :")
             return 
         end
 
         if Menu == 2 then
-            self:PrintText(0,0,"Linie-Kurs:")
+            self:PrintText(0,0,"Linie-Kurs :")
             return 
         end
 
         if Menu == 3 then
-            self:PrintText(0,0,"Route:")
+            self:PrintText(0,0,"Route :")
             return 
         end
 
@@ -328,6 +373,7 @@ end
 
 function TRAIN_SYSTEM:Think()
 
+    self:InputProcessor(self.KeyInput)
 
     local Train = self.Train
     
@@ -357,10 +403,14 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:Menu",self.Menu)
     Train:SetNW2Int("IBIS:PowerOn",self.PowerOn)
     Train:SetNW2Int("IBIS:Booted",self.IBISBootupComplete)
+    Train:SetNW2String("IBIS:KeyInput",self.KeyInput)
 
     
     --print(self.Menu)
     --Add together all variables to one string
+    if self.KeyInput ~= nil then
+        print(self.KeyInput)
+    end
 
     if self.PowerOn == 1 and self.BootupComplete == true then
 		if self.Menu == 1 then
@@ -553,5 +603,29 @@ function TRAIN_SYSTEM:Play(dep,not_last)
         else
             self:AnnQueue(ltbl.not_last)
         end
+    end
+end
+
+if SERVER then
+
+    function TRAIN_SYSTEM:InputProcessor(Input)
+        local course = ""
+        local route = ""
+        local destination = ""
+        if self.Menu == 4 then
+            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Route"  then
+                for i= 1,5 do
+                    course = course..Input
+                end
+            end
+        elseif self.Menu == 5 then
+            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Route" then
+                for i= 1,5 do
+                    route = route..Input
+                end
+            end
+        end
+        self.Course = course  
+        self.Route = route  
     end
 end
