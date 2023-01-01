@@ -5,11 +5,15 @@ function TRAIN_SYSTEM:Initialize()
     self.Route = 0 --Route index number
     self.RouteChar1 = -1
     self.RouteChar2 = -1
+    self.DisplayedRouteChar1 = 0
+    self.DisplayedRouteChar2 = 0
+
     self.JustBooted = false
     self.PowerOn = 0
     self.IBISBootupComplete = 0
     self.Debug = 1
-
+    self.BugCheck1 = false
+    self.BugCheck2 = false
     self.BlinkText = false
     self.LastBlinkTime = 0
 
@@ -22,14 +26,23 @@ function TRAIN_SYSTEM:Initialize()
     self.CourseChar3 = -1
     self.CourseChar4 = -1
     self.CourseChar5 = -1
-    self.DisplayedCourse = 0
+    self.DisplayedCourseChar1 = 0
+    self.DisplayedCourseChar2 = 0
+    self.DisplayedCourseChar3 = 0
+    self.DisplayedCourseChar4 = 0
+    self.DisplayedCourseChar5 = 0
 
 
     self.Destination = 0 --Destination index number
     self.DestinationChar1 = -1
     self.DestinationChar2 = -1
     self.DestinationChar3 = -1
-	
+    self.DisplayedDestinationChar1 = 0
+	self.DisplayedDestinationChar2 = 0
+    self.DisplayedDestinationChar3 = 0
+
+
+
     self.KeyInput = nil
     self.Triggers = {}
     self.TriggerNames = {
@@ -358,16 +371,12 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     
     local Menu = self.Train:GetNW2Int("IBIS:Menu")
     local State = self.Train:GetNW2Int("IBIS:State")
-    local Route = self.Train:GetNW2Int("IBIS:Route")
-    local Course = self.Train:GetNW2Int("IBIS:Course")
-    local Destination = self.Train:GetNW2Int("IBIS:Destination")
-    local CourseChar5 = self.Train:GetNW2String("IBIS:CourseChar5")
-	local CourseChar4 = self.Train:GetNW2String("IBIS:CourseChar4")
-    local CourseChar3 = self.Train:GetNW2String("IBIS:CourseChar3")
-    local CourseChar2 = self.Train:GetNW2String("IBIS:CourseChar2")
-    local CourseChar1 = self.Train:GetNW2String("IBIS:CourseChar1")
+    local Route = self.Train:GetNW2String("IBIS:RouteChar1")..self.Train:GetNW2String("IBIS:RouteChar2")
+    local Course = self.Train:GetNW2String("IBIS:CourseChar1")..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")..self.Train:GetNW2String("IBIS:CourseChar5")
+    local Destination = self.Train:GetNW2String("IBIS:DestinationChar1")..self.Train:GetNW2String("IBIS:DestinationChar2")..self.Train:GetNW2String("IBIS:DestinationChar3")
 
-
+    --print(Route)
+    --print(Course)
 
     local PowerOn = self.Train:GetNW2Bool("IBISPowerOn",false)
 
@@ -398,9 +407,9 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         if Menu == 4 then
             
             self:BlinkText(true, "Linie-Kurs :")
-            if Course ~= nil then
-                self:PrintText(20,0,tostring(Course))
-            end
+            
+            self:PrintText(20,0,Course)
+            
 
             
             return
@@ -408,7 +417,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 
         if Menu == 5 then
             self:BlinkText(true,"Route :")
-            self:PrintText(20,0,tostring(Route))
+            self:PrintText(20,0,Route)
             return
         end
         
@@ -426,27 +435,27 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 
         if Menu == 1 then
             self:PrintText(0,0,"Linie-Kurs :")
-            self:PrintText(20,0,tostring(Course))
+            self:PrintText(20,0,Course)
             return 
         end
 
         if Menu == 2 then
             self:PrintText(0,0,"Route :")
-            self:PrintText(20,0,tostring(Route))
+            self:PrintText(20,0,Route)
             return 
         end
 
         if Menu == 3 then
             self:PrintText(0,0,"Ziel :")
-            self:PrintText(20,0,tostring(Destination))
+            self:PrintText(20,0,Destination)
             return 
         end
 
         if Menu == 0 then
-        self:PrintText(6.5,5,tostring(Destination))
-        self:PrintText(10.5,5,tostring(Course))
-        self:PrintText(19.5,5,tostring(Route))
-        print(self.Train:GetNW2Int("IBIS:Route"))
+        self:PrintText(6.5,5,Destination)
+        self:PrintText(10.5,5,Course)
+        self:PrintText(19.5,5,Route)
+        --print(self.Train:GetNW2Int("IBIS:Route"))
         return 
         end
     end
@@ -455,10 +464,62 @@ end
 
 function TRAIN_SYSTEM:Think()
 
+    --Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
+    if self.RouteChar1 < 0 then
+        self.DisplayedRouteChar1 = " "
+    else
+        self.DisplayedRouteChar1 = tostring(self.RouteChar1) --Put it as string for later, if the number is greater than -1. Zero is a valid number.
+    end
+
+    if self.RouteChar2 < 0 then
+        self.DisplayedRouteChar2 = " "
+    else
+        self.DisplayedRouteChar2 = tostring(self.RouteChar2)
+    end
+
+    if self.DestinationChar1 < 0 then
+        self.DisplayedDestinationChar1 = " "
+    else self.DisplayedDestinationChar1 = tostring(self.DestinationChar1)
+    end
+    if self.DestinationChar2 < 0 then
+        self.DisplayedDestinationChar2 = " "
+    else self.DisplayedDestinationChar2 = tostring(self.DestinationChar2)
+    end
+    if self.DestinationChar3 < 0 then
+        self.DisplayedDestinationChar3 = " "
+    else self.DisplayedDestinationChar3 = tostring(self.DestinationChar3)
+    end
+
+    if self.CourseChar1 < 0 then
+        self.DisplayedCourseChar1 = " "
+    else self.DisplayedCourseChar1 = tostring(self.CourseChar1)
+    end
+
+    if self.CourseChar2 < 0 then
+        self.DisplayedCourseChar2 = " "
+    else self.DisplayedCourseChar2 = tostring(self.CourseChar2)
+    end
+
+    if self.CourseChar3 < 0 then
+        self.DisplayedCourseChar3 = " "
+    else self.DisplayedCourseChar3 = tostring(self.CourseChar3)
+    end
+
+    if self.CourseChar4 < 0 then
+        self.DisplayedCourseChar4 = " "
+    else self.DisplayedCourseChar4 = tostring(self.CourseChar4)
+    end
+
+    if self.CourseChar5 < 0 then
+        self.DisplayedCourseChar5 = " "
+    else self.DisplayedCourseChar5 = tostring(self.CourseChar5)
+    end
+
+
     if self.KeyInput ~= nil then
         print("Key Input"..self.KeyInput)
     end
-    print("Course Number:"..self.Course)
+    --print("Course Number:"..self.Train:GetNW2String("IBIS:CourseChar1",nil)..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")..self.Train:GetNW2String("IBIS:CourseChar5"))
     local Train = self.Train
     
     --print("IBIS loaded")
@@ -489,9 +550,13 @@ function TRAIN_SYSTEM:Think()
     end
 
     if self.State == 2 and self.Menu == 5 then
-        if self.KeyInput == "Enter" then
+        if self.KeyInput == "Enter" and self.BugCheck1 == false and self.BugCheck2 == false then
+            self.BugCheck1 = true
+        elseif self.KeyInput == "Enter" and self.BugCheck1 == true and self.BugCheck2 == false then
+            self.BugCheck2 = true
+        elseif self.KeyInput == "Enter" and self.BugCheck1 == true and self.BugCheck2 == true and self.Route < 0 then
             self.State = 1
-            self.Menu = 0
+            self.Menu  = 0
         end
     end
 
@@ -500,6 +565,8 @@ function TRAIN_SYSTEM:Think()
             self.Menu = 2
         elseif self.KeyInput == "0" then
             self.Menu = 1
+        elseif self.KeyInput == "Destination" then
+            self.Menu = 3
         end
     elseif self.State == 1 and self.Menu == 1 then
         if self.KeyInput == "Enter" then
@@ -531,11 +598,16 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:PowerOn",self.PowerOn)
     Train:SetNW2Int("IBIS:Booted",self.IBISBootupComplete)
     Train:SetNW2String("IBIS:KeyInput",self.KeyInput)
-    Train:SetNW2String("IBIS:CourseChar5",tonumber(self.CourseChar5))
-    Train:SetNW2String("IBIS:CourseChar4",tonumber(self.CourseChar4))
-    Train:SetNW2String("IBIS:CourseChar3",tonumber(self.CourseChar3))
-    Train:SetNW2String("IBIS:CourseChar2",tonumber(self.CourseChar2))
-    Train:SetNW2String("IBIS:CourseChar1",tonumber(self.CourseChar1))
+    Train:SetNW2String("IBIS:CourseChar5",self.DisplayedCourseChar5)
+    Train:SetNW2String("IBIS:CourseChar4",self.DisplayedCourseChar4)
+    Train:SetNW2String("IBIS:CourseChar3",self.DisplayedCourseChar3)
+    Train:SetNW2String("IBIS:CourseChar2",self.DisplayedCourseChar2)
+    Train:SetNW2String("IBIS:CourseChar1",self.DisplayedCourseChar1)
+    Train:SetNW2String("IBIS:RouteChar1",self.DisplayedRouteChar1)
+    Train:SetNW2String("IBIS:RouteChar2",self.DisplayedRouteChar2)
+    Train:SetNW2String("IBIS:DestinationChar1",self.DisplayedDestinationChar1)
+    Train:SetNW2String("IBIS:DestinationChar2",self.DisplayedDestinationChar2)
+    Train:SetNW2String("IBIS:DestinationChar3",self.DisplayedDestinationChar3)
 
     self:InputProcessor(self.KeyInput)
     if self.KeyInput ~= nil then
@@ -615,7 +687,7 @@ if SERVER then
 
     function TRAIN_SYSTEM:InputProcessor(Input)
         if self.Menu == 4 or self.Menu == 1 then
-            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Route"  then
+            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate"  then
                 if self.CourseChar5 == -1 and self.CourseChar4 == -1 and self.CourseChar3 == -1 and self.CourseChar2 == -1 and self.CourseChar1 == -1 then
 
                     self.CourseChar5 = tonumber(self.KeyInput)
@@ -671,11 +743,58 @@ if SERVER then
             elseif Input ~= nil and Input == "Delete" then
                 
             end
-        elseif self.Menu == 5 then
-            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Route" then
-                for i= 1,2 do
-                    route = route..Input
+        elseif self.Menu == 5 or self.Menu == 2 then
+            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" then
+                if self.RouteChar2 == -1 and self.RouteChar1 == -1 then
+
+                    self.RouteChar2 = tonumber(self.KeyInput)
+    
+    
+                elseif self.RouteChar2 ~= -1 and self.RouteChar1 == -1 then
+                    
+                    self.RouteChar1 = self.RouteChar2					
+                
+                    if self.KeyInput ~= nil then
+                        self.CourseChar2 = tonumber(self.KeyInput)
+                    end
+                elseif self.RouteChar2 ~= -1 and self.RouteChar1 ~= -1 then
+                    self.RouteChar1 = self.RouteChar2					
+                
+                    if self.KeyInput ~= nil then
+                        self.CourseChar2 = tonumber(self.KeyInput)
+                    end
                 end
+                self.Route = self.RouteChar1..self.RouteChar2
+            end
+        elseif self.Menu == 3 then
+            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" then
+                if self.DestinationChar3 == -1 self.DestinationChar2 == -1 and self.DestinationChar1 == -1 then
+
+                    self.DestinationChar3 = tonumber(self.KeyInput)
+    
+    
+                elseif self.DestinationChar3 ~= -1 self.DestinationChar2 == -1 and self.DestinationChar1 == -1 then
+
+                    self.DestinationChar2 = self.DestinationChar3					
+                
+                    if self.KeyInput ~= nil then
+                        self.DestinationChar3 = tonumber(self.KeyInput)
+                    end
+                elseif self.DestinationChar3 ~= -1 self.DestinationChar2 ~= -1 and self.DestinationChar1 == -1 then
+                    
+                    self.DestinationChar1 = self.DestinationChar2					
+                
+                    if self.KeyInput ~= nil then
+                        self.DestinationChar3 = tonumber(self.KeyInput)
+                    end
+                elseif self.DestinationChar3 ~= -1 self.DestinationChar2 ~= -1 and self.DestinationChar1 ~= -1 then
+                    self.DestinationChar1 = self.DestinationChar2					
+                    self.DestinationChar2 = self.DestinationChar3
+                    if self.KeyInput ~= nil then
+                        self.Destinationhar3 = tonumber(self.KeyInput)
+                    end
+                end
+                self.Route = self.RouteChar1..self.RouteChar2
             end
         end    
     end

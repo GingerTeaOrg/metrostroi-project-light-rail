@@ -349,9 +349,8 @@ ENT.ButtonMap["Cab"] = {
 		
     {ID = "WarningAnnouncementSet", x=266, y=18, radius=10, tooltip = "Please keep back announcement", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
-        getfunc = function(ent) return ent:GetPackedBool("WarningAnnouncement") and 100 or 0 end,var="WarningAnnouncement", speed=4,min=0,max=1,
-        var="WarningAnnouncement",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        getfunc = function(ent) return ent:GetPackedBool("WarningAnnouncement") and 1 or 0 end,var="WarningAnnouncement", speed=12,
+        sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "VentilationSet", x=334, y=59, radius=10, tooltip = "Enable motor fans", model = {
@@ -984,11 +983,8 @@ function ENT:Think()
 		    self:PlayOnce("Startup","cabin",1,1)
 		end    
 	    
-		if self:GetNW2Bool("WarningAnnouncement") == true and self.WarningAnnouncement == false then
-            self:PlayOnce("WarningAnnouncement",Vector(350,-30,113),1,1)
-            self.WarningAnnouncement = true
-        elseif self:GetNW2Bool("WarningAnnouncement") == false then
-            self.WarningAnnouncement = false
+		if self:GetPackedBool("WarningAnnouncement") == true then
+            self:PlayOnce("Keep Clear",Vector(350,-30,113),1,1)
         end
     elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
 		self.StartupSoundPlayed = false	

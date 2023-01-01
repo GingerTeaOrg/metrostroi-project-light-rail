@@ -40,8 +40,8 @@ function ENT:InitializeSounds()
 
 	self.SoundNames["horn"] = {loop=0.014,"lilly/uf/u2/U3_Hupe_Start.mp3","lilly/uf/u2/U3_Hupe_Loop.mp3", "lilly/uf/u2/U3_Hupe_Ende.mp3"}
 	self.SoundPositions["horn"] = {1100,1e9,Vector(520,0,70),1}
-	self.SoundNames["WarningAnnouncement"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
-	self.SoundPositions["WarningAnnouncement"] = {1100,1e9,Vector(350,-30,113),1}
+	self.SoundNames["Keep Clear"] = {"lilly/uf/u2/Bitte_Zuruecktreten_out.mp3"}
+	self.SoundPositions["Keep Clear"] = {1100,1e9,Vector(350,-30,113),1}
 
 	self.SoundNames["Nag1"] = {"lilly/uf/u2/PAsystem/door_complaints/clear_the_doors.mp3"}
 	self.SoundPositions["Nag1"] = {1100,1e9,Vector(350,-30,113),1}
@@ -105,7 +105,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Switchgear7"] = {1100,1e9,Vector(250,0,200),1}
 
 	self.SoundNames["button_on"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
-	self.SoundPositions["button_on"] = {1100,1e9,Vector(250,0,200),1}
+	self.SoundPositions["button_on"] = {1100,1e9,Vector(420,0,200),1}
 
 	self.SoundNames["button_off"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
 	self.SoundPositions["button_off"] = {1100,1e9,Vector(250,0,200),1}
