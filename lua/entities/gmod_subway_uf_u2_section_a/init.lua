@@ -410,6 +410,8 @@ function ENT:Initialize()
 	self.ScrollMomentDelta = 0
 	self.ScrollMomentRecorded = false
 
+	self.IBISKeyPassed = false
+
 
 	--[[self:SetNW2Int("Door1-2a",0)
 	self:SetNW2Int("Door3-4a",0)

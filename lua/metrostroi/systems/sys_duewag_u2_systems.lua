@@ -75,6 +75,8 @@ function TRAIN_SYSTEM:Initialize()
 	self.Percentage = 0
 
 	self.Amps = 0
+
+	self.LeadingCab = false
 	
 	
 
@@ -82,14 +84,6 @@ end
 
 if CLIENT then return end
 
-function TRAIN_SYSTEM:Wait(seconds)
-
-	local time = seconds or 1
-    local start = os.time()
-    repeat until os.time() == start + time
-
-
-end
 
 
 function TRAIN_SYSTEM:Inputs()

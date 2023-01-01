@@ -545,7 +545,7 @@ ENT.ButtonMap["IBIS"] = {
             sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "Number7Set", x=65, y=60, radius=10, tooltip = "IBIS_beep", model = {
+        {ID = "Number7Set", x=65, y=60, radius=10, tooltip = "7/Route", model = {
             z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),

@@ -1,6 +1,6 @@
 ENT.Type            = "anim"
 ENT.Base            = "gmod_subway_base"
-ENT.PrintName 		= "Duewag U2h"
+ENT.PrintName 		= "Düwag U2h"
 ENT.Author          = "LillyWho"
 ENT.Contact         = ""
 ENT.Purpose         = ""
