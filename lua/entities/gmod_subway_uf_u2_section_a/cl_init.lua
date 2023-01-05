@@ -1226,16 +1226,16 @@ function ENT:ScrollTracker()
     if self:GetNW2Bool("Rollsign+",false) == true then
         self.ScrollModifier = self.ScrollModifier + 0.0001
         self.ScrollMoment = CurTime()
-        print("Client Scroll up")
-        print(self.ScrollModifier)
+        self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     elseif self:GetNW2Bool("Rollsign-",false) == true then
         self.ScrollModifier = self.ScrollModifier - 0.0001
         self.ScrollMoment = CurTime()
-        print("Client scroll down")
-        print(self.ScrollModifier)
+        self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false then
         self.ScrollModifier = self.ScrollModifier
+        self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false and self.ScrollMoment - CurTime() > 20 then
         self.ScrollModifier = self:GetNW2Int("ActualScrollState")
+        self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     end
 end

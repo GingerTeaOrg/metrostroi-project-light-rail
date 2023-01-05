@@ -2540,14 +2540,13 @@ function ENT:RollsignSync()
 
 	if self:GetNW2Bool("Rollsign+",false) == true then
         self.ScrollModifier = self.ScrollModifier + 0.0001
-		print("Server scroll up")
-		print(self.ScrollModifier)
+		self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     elseif self:GetNW2Bool("Rollsign-",false) == true then
         self.ScrollModifier = self.ScrollModifier - 0.0001
-		print("Server scroll down")
-		print(self.ScrollModifier)
+		self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
 	elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false then
 		self.ScrollModifier = self.ScrollModifier
+		self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
 	end
 end
 
