@@ -1,18 +1,3 @@
-Metrostroi.AddSkin("train","Def_U2",{
-    name = "Default",
-    typ = "U2h",
-    textures = {
-        main = "models/lilly/uf/u2/u2h/main",
-    }
-})
-Metrostroi.AddSkin("train","Def_U2b",{
-    name = "Default",
-    typ = "U2hb",
-    textures = {
-        main_b = "models/lilly/uf/u2/u2h/main_b",
-    }
-})
-
 Metrostroi.AddSkin("train","Def_U2SW",{
     name = "1978 Stadtwerke",
     typ = "U2h",
@@ -27,7 +12,6 @@ Metrostroi.AddSkin("train","Def_U2FVV",{
     name = "1978 FVV",
     typ = "U2h",
     textures = {
-        main = "models/lilly/uf/u2/u2h/main",
         decals = "models/lilly/uf/u2/u2h/decals-FVV",
         
     }
@@ -36,7 +20,6 @@ Metrostroi.AddSkin("train","Def_U2FVV_b",{
     name = "1978 FVV",
     typ = "U2hb",
     textures = {
-        main_b = "models/lilly/uf/u2/u2h/main_b",
         decals = "models/lilly/uf/u2/u2h/decals-FVV",
     }
 })

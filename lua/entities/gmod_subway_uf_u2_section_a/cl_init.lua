@@ -26,7 +26,7 @@ ENT.Lights = {
 
 ENT.ClientProps["headlights_on"] = {
 	model = "models/lilly/uf/u2/headlights_on.mdl",
-	pos = Vector(0,0,0),
+	pos = Vector(-0.35,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
@@ -440,7 +440,7 @@ ENT.ButtonMap["Cab"] = {
         }
     },]]
     {ID = "ThrowCouplerSet", x=334.8, y=91, radius=10, tooltip = "Throw Coupler", model = {
-        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
+        model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl",getfunc = function(ent) return ent:GetPackedBool("ThrowCoupler") and 1 or 0 end, z=-5, ang=0,
         var="ThrowCoupler",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -508,11 +508,10 @@ ENT.ButtonMap["IBIS"] = {
     scale = 0.04,
 
     buttons = {
-        {ID = "Number1Set", x=28, y=60, radius=10, tooltip = "1/RBL/Radio",
-        getfunc = function(entity) return .7 end,var="Number1Set", speed=4,min=0,max=1,
+        {ID = "Number1Set", x=28, y=60, radius=10, tooltip = "1/RBL/Radio",var="Number1Set", model = { speed=4,min=0,max=1,
         var="Number1",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "IBIS_beep" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-            
+        }   
         },
         {ID = "Number2Set", x=28, y=42, radius=10, tooltip = "2/Special Character", model = {
             z=0, ang=0,
@@ -618,7 +617,7 @@ ENT.ButtonMap["Microphone"] = {
 
 
 ENT.ButtonMap["Rollsign"] = {
-    pos = Vector(424.79,-25,109),
+    pos = Vector(424.5,-25,109),
     ang = Angle(0,90,90),
     width = 780,
     height = 160,
@@ -714,7 +713,7 @@ function ENT:DrawPost()
     self:DrawOnPanel("Rollsign",function(...)
         surface.SetDrawColor( color_white )
         surface.SetMaterial(mat)
-        surface.DrawTexturedRectUV(0,0,780,160,0,self:GetNW2Float("RollsignModifier",0.5),1,self:GetNW2Float("RollsignModifier",0.5) + 0.015)
+        surface.DrawTexturedRectUV(0,0,780,160,0,self.ScrollModifier,1,self.ScrollModifier + 0.015)
     end)
 end
 
@@ -777,6 +776,8 @@ function ENT:Initialize()
 	--self.LeftMirror = self:CreateRT("LeftMirror",512,256)
     --self.RightMirror = self:CreateRT("RightMirror",128,256)
 
+    self.ScrollModifier = 0
+    self.ScrollMoment = 0
 
     self.Nags = {
         "Nag1",
@@ -1118,7 +1119,7 @@ function ENT:Think()
     local rol70p = Lerp((speed)/27,0.78,1.15)
 
     --self:U2SoundEngine()
-	
+	self:ScrollTracker()
 	
 end
 Metrostroi.GenerateClientProps()
@@ -1218,4 +1219,23 @@ function ENT:SetSoundState2(sound,volume,pitch,name,level )
     snd:ChangeVolume(vol,0)
     snd:ChangePitch(pch+1,0)
     --snd:SetDSP(22)
+end
+
+function ENT:ScrollTracker()
+
+    if self:GetNW2Bool("Rollsign+",false) == true then
+        self.ScrollModifier = self.ScrollModifier + 0.0001
+        self.ScrollMoment = CurTime()
+        print("Client Scroll up")
+        print(self.ScrollModifier)
+    elseif self:GetNW2Bool("Rollsign-",false) == true then
+        self.ScrollModifier = self.ScrollModifier - 0.0001
+        self.ScrollMoment = CurTime()
+        print("Client scroll down")
+        print(self.ScrollModifier)
+    elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false then
+        self.ScrollModifier = self.ScrollModifier
+    elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false and self.ScrollMoment - CurTime() > 20 then
+        self.ScrollModifier = self:GetNW2Int("ActualScrollState")
+    end
 end

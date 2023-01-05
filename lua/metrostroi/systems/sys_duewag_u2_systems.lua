@@ -25,7 +25,9 @@ function TRAIN_SYSTEM:Initialize()
 	self.DoorFRState = 100
 	self.DoorRRState = 100
 
+	self.IsLeadingCab = 0
 
+	self.ResetTrainWires = false
 
 	self.Traction = 0
 	
@@ -76,7 +78,6 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.Amps = 0
 
-	self.LeadingCab = false
 	
 	
 
@@ -121,6 +122,8 @@ function TRAIN_SYSTEM:Think(Train)
 	self:TriggerInput()
 	self:TriggerOutput()
 	self:U2Engine()
+
+	--self:IsLeadingCab()
 
 	--PrintMessage(HUD_PRINTTALK,self.ResistorBank)
 
@@ -508,4 +511,11 @@ function TRAIN_SYSTEM:U2Engine()
 
 	self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
 	self.Train:SetNW2Float("Amps",self.Amps)
+end
+
+function TRAIN_SYSTEM:IsLeadingCab()
+
+	if self.ReverserInserted == true and self.Train.FrontCouple.CoupledEnt == nil then
+		self.LeadingCab = 1
+	end
 end
