@@ -67,8 +67,11 @@ function ENT:InitializeSounds()
 	self.SoundPositions["rolling_10"] = {1200,1e9,Vector(0,0,0),1}
 	self.SoundPositions["rolling_70"] = self.SoundPositions["rolling_10"]
 	
-	self.SoundNames["rolling_motors"] = {loop=true,"lilly/uf/u2/Moto/engine_loop_start.wav"}
-	self.SoundPositions["rolling_motors"] = {480,1e12,Vector(0,0,0),.4}
+	self.SoundNames["rolling_motors_a"] = {loop=1,"lilly/uf/bogeys/u2/test/engine_loop_primary_start.mp3","lilly/uf/bogeys/u2/test/engine_loop_primary.mp3","lilly/uf/bogeys/u2/test/engine_loop_primary_end.mp3"}
+	self.SoundPositions["rolling_motors_a"] = {480,1e12,Vector(0,0,0),1}
+
+	self.SoundNames["rolling_motors_b"] = {loop=true,"lilly/uf/bogeys/u2/test/engine_loop_secondary.mp3"}
+	self.SoundPositions["rolling_motors_b"] = {480,1e12,Vector(0,0,0),1}
 
 	self.SoundNames["IBIS_beep"] = {"lilly/uf/IBIS/beep.wav"}
 	self.SoundPositions["IBIS_beep"] = {1100,1e9,Vector(531,-23,84.9),.4}

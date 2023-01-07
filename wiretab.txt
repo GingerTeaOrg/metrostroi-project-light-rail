@@ -7,6 +7,7 @@ Wire 6, Multi Traction signal
 Wire 7, Battery Power
 Wire 8, Deadman brake
 Wire 9, Doors unlocked, block traction and engage mechanical brake
+Wire 10, Emergency brake
 
 
 ***********Lighting***********************

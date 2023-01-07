@@ -463,6 +463,7 @@ function ENT:Think()
         end
     end
 
+    --print(self:GetMotorPower())
     -- Update timing
     self.PrevTime = self.PrevTime or CurTime()
     self.DeltaTime = (CurTime() - self.PrevTime)

@@ -208,14 +208,14 @@ ENT.ClientProps["DriverLightSwitch"] = {
 
 ENT.ClientProps["Voltage"] = {
     model = "models/lilly/uf/u2/cab/gauge.mdl",
-    pos = Vector(418.17,18.9,54.75),
+    pos = Vector(418,18.9,54.8),
     ang = Angle(-12,0,0),
     hideseat = 0.2,
 }
 
 ENT.ClientProps["Amps"] = {
     model = "models/lilly/uf/u2/cab/gauge.mdl",
-    pos = Vector(418.17,1.7,54.75),
+    pos = Vector(418,1.7,54.8),
     ang = Angle(-12,0,0),
     hideseat = 0.2,
 }
@@ -779,6 +779,10 @@ function ENT:Initialize()
     self.ScrollModifier = 0
     self.ScrollMoment = 0
 
+    self.PrevTime = 0
+    self.DeltaTime = 0
+    self.MotorPowerSound = 0
+
     self.Nags = {
         "Nag1",
         "Nag2",
@@ -795,7 +799,16 @@ function ENT:Think()
     self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,false)
     self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
     self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,9,false)
-	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,50,8,false)
+
+
+    if self:GetNW2Float("ThrottleStateAnim",0) >= 0.5 then
+	    self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,50,8,false)
+    elseif self:GetNW2Float("ThrottleStateAnim",0) <= 0.5 then
+        self:Animate("Throttle",math.Clamp(self:GetNWFloat("ThrottleStateAnim", 0.5),0.09,1),-45,45,50,8,false)
+    end
+
+
+
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,9,false)
     self.CabWindowL = self:GetNW2Float("CabWindowL",0)
     self.CabWindowR = self:GetNW2Float("CabWindowR",0)
@@ -884,8 +897,11 @@ function ENT:Think()
     self:SetSoundState("DoorsCloseAlarm", self:GetNW2Bool("DoorAlarm",false) and 1 or 0,1)
     
       
-
-    self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
+    if self:GetNW2Bool("DeadmanAlarmSound",false) == true or self:GetNW2Bool("TractionAppliedWhileStillNoDeadman",false) == true then
+        self:SetSoundState("Deadman", 1,1)
+    else
+        self:SetSoundState("Deadman", 0,1)
+    end
 
 
     self.VoltAnim = self:GetNW2Float("BatteryCharge",0) / 46
@@ -913,10 +929,21 @@ function ENT:Think()
             self:SetLightPower(16,false)
         end
 
-        
-	    	self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
-        	self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
-        	self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
+        if self:GetNW2Bool("Bell",false) == true or self:GetNW2Bool("EmergencyBrake",false) == true then
+	    	self:SetSoundState("bell",1,1)
+        	self:SetSoundState("bell_in",1,1)
+            if self:GetNW2Bool("EmergencyBrake",false) == true then
+                self:Animate("Throttle",-1,-45,45,50,8,false)
+            end
+        else
+            self:SetSoundState("bell",0,1)
+        	self:SetSoundState("bell_in",0,1)
+        end    
+
+
+
+
+        self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
     
 
             if self:GetNW2Bool("BlinkerTick",false) == true and self.BlinkerTicked == false then
@@ -1074,16 +1101,16 @@ function ENT:Think()
     local pitch
         
 
-        pitch = math.Clamp(math.Clamp(self:GetNW2Int("Speed"),0,80) / 80, 0.8, 1)
-        volume = math.Clamp(self:GetNW2Int("Speed"),0,100) / 100 + 0.5
+        pitch = math.Clamp(math.Clamp(self:GetNW2Int("Speed"),0,80) / 80, 0.5, 1)
+        volume = math.Clamp(self:GetNW2Int("Speed"),0,100) / 100 + 0.2
     
 
     if self:GetNW2Int("Speed") > 10 then
-        self:SetSoundState("Cruise",1,pitch,volume)
+        --self:SetSoundState("Cruise",1,pitch,volume)
     end
 
     if self:GetNW2Int("Speed") < 10 then
-        self:SetSoundState("Cruise",0,1,1)
+        --self:SetSoundState("Cruise",0,1,1)
     end
 	
     local rollingi = math.min(1,self.TunnelCoeff+math.Clamp((self.StreetCoeff-0.82)/0.3,0,1))
@@ -1118,8 +1145,9 @@ function ENT:Think()
     local rol70 = math.Clamp((speed-55)/20,0,1)--*(1-math.Clamp((speed-72)/5,0,1))
     local rol70p = Lerp((speed)/27,0.78,1.15)
 
-    --self:U2SoundEngine()
+    self:U2SoundEngine()
 	self:ScrollTracker()
+
 	
 end
 Metrostroi.GenerateClientProps()
@@ -1145,8 +1173,9 @@ function ENT:U2SoundEngine()
     end
 
     local networked = self:GetNW2Entity("FrontBogey")
-    local motorPower = networked:GetMotorPower()
-
+    --local motorPower = networked:GetMotorPower()
+    motorPower = networked:GetNW2Int("MotorPower")/50
+    --print(motorPower)
     self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1,1)
     local t = RealTime()*2.5
     local modulation = (0.2 + 3.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp(speed/4,0,1)
@@ -1166,7 +1195,7 @@ function ENT:U2SoundEngine()
         local motorsnd = math.min(1.0,math.max(0.0,1.25*(math.abs(self.MotorPowerSound))))
         local motorvol = (soundsmul^0.3)*math.Clamp(motorsnd + powerVolRamp,0,1)*volumemul
         local motorsnd = math.min(1.0,math.max(0.0,1.25*(math.abs(self.MotorPowerSound)-0.15) ))
-
+        self:SetSoundState("rolling_motors_a",math.min(1,(soundsmul^0.3)*motorsnd*2)*math.Clamp((speed-20)/10,0,1)*(1-math.Clamp((speed-38)/20,0,1))*0.18,math.max(0,speed/35.4)+0.06*streetC)
         for i,snd in ipairs(self.EngineSNDConfig or {}) do
             local prev = self.EngineSNDConfig[i-1]
             local next = self.EngineSNDConfig[i+1]
@@ -1179,13 +1208,7 @@ function ENT:U2SoundEngine()
             local pitch = math.max(0,speed/snd[2])+0.1*streetC
         end
 
-            self:SetSoundState("tedm_703",math.min(1,(soundsmul^0.3)*motorsnd*2)*math.Clamp((speed-20)/10,0,1)*(1-math.Clamp((speed-38)/20,0,1))*0.18,math.max(0,speed/35.4)+0.06*streetC)
-
-    else
-        for k,v in pairs(self.EngineSNDConfig) do
-            self:SetSoundState2(v[1].."1",0,0,v[1],false)
-        end
-        self:SetSoundState2(v[1].."2",0,0,v[1],true)
+        self:SetSoundState("rolling_motors_a",math.min(1,(soundsmul^0.3)*motorsnd*2)*math.Clamp((speed-20)/10,0,1)*(1-math.Clamp((speed-38)/20,0,1))*0.18,math.max(0,speed/35.4)+0.06*streetC)
     end
 end
 
@@ -1225,17 +1248,17 @@ function ENT:ScrollTracker()
 
     if self:GetNW2Bool("Rollsign+",false) == true then
         self.ScrollModifier = self.ScrollModifier + 0.0001
-        self.ScrollMoment = CurTime()
+        self.ScrollMoment = RealTime()
         self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     elseif self:GetNW2Bool("Rollsign-",false) == true then
         self.ScrollModifier = self.ScrollModifier - 0.0001
-        self.ScrollMoment = CurTime()
+        self.ScrollMoment = RealTime()
         self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false then
         self.ScrollModifier = self.ScrollModifier
         self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
-    elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false and self.ScrollMoment - CurTime() > 20 then
-        self.ScrollModifier = self:GetNW2Int("ActualScrollState")
+    elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false and self.ScrollMoment - RealTime() > 20 then
+        self.ScrollModifier = self:GetNW2Float("ActualScrollState")
         self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     end
 end

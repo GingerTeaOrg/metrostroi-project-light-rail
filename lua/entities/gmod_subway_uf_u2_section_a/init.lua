@@ -319,7 +319,7 @@ function ENT:Initialize()
 	-- Create bogeys
 	self.FrontBogey = self:CreateBogeyUF(Vector( 300,0,0),Angle(0,180,0),true,"duewag_motor")
     self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,0),Angle(0,0,0),false,"u2joint")
-    
+    self:SetNW2Entity("FrontBogey",self.FrontBogey)
 
 	-- Create couples
     self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,2),Angle(0,0,0),true,"u2")	
@@ -345,9 +345,9 @@ function ENT:Initialize()
 	self.FrontBogey:SetNWInt("MotorSoundType",0)
     self.MiddleBogey:SetNWInt("MotorSoundType",0)
 	self.RearBogey:SetNWInt("MotorSoundType",0)
-	self.FrontBogey:SetNWBool("Async",true)
-    self.MiddleBogey:SetNWBool("Async",true)
-	self.RearBogey:SetNWBool("Async",true)
+	self.FrontBogey:SetNWBool("Async",false)
+    self.MiddleBogey:SetNWBool("Async",false)
+	self.RearBogey:SetNWBool("Async",false)
 	--[[self.FrontBogey:TriggerInput("DisableSound",3)
 	self.MiddleBogey:TriggerInput("DisableSound",3)
 	self.RearBogey:TriggerInput("DisableSound",3)]]
@@ -474,6 +474,7 @@ function ENT:Initialize()
 							[KEY_PAD_MULTIPLY] = "SpecialAnnouncementsSet",
 							[KEY_PAD_MINUS] = "TimeAndDateSet",
 							[KEY_V] = "PassengerLightsSet",
+							[KEY_D] = "EmergencyBrakeSet",
 							
 							
 		},
@@ -587,12 +588,15 @@ function ENT:Think(dT)
 	self.BaseClass.Think(self)
 
 	self:RollsignSync()
-
+	self:SetNW2Entity("FrontBogey",self.FrontBogey)
 	self.PrevTime = self.PrevTime or CurTime()
     self.DeltaTime = (CurTime() - self.PrevTime)
     self.PrevTime = CurTime()
 
+	self:SetNW2Float("MotorPower",self.FrontBogey:GetMotorPower())
     local Panel = self.Panel
+
+	--print(self:GetNW2Float("MotorPower"))
 
 	self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
 	self:SetPackedBool("WarningAnnouncement",Panel.WarningAnnouncement > 0)
@@ -1494,23 +1498,11 @@ function ENT:OnButtonPress(button,ply)
 	end
 
 	
-	--[[if self.RollsignModifierRate == 0 then
-		
-		if button == "Rollsign+" then
-			if self.ScrollMomentRecorded == false then
-				self.ScrollMomentRecorded = true
-				self.ScrollMoment = CurTime()
-			end
-			self.RollsignModifierRate = 0.01
-		end
-		if button == "Rollsign-" then
-			if self.ScrollMomentRecorded == false then
-				self.ScrollMomentRecorded = true
-				self.ScrollMoment = CurTime()
-			end
-			self.RollsignModifierRate = -0.01
-		end
-	end]]
+	if button == "EmergencyBrakeSet" and self:GetNW2Bool("EmergencyBrake",false) == false then
+		self:SetNW2Bool("EmergencyBrake",true)
+	elseif button == "EmergencyBrakeSet" and self:GetNW2Bool("EmergencyBrake",false) == true then
+		self:SetNW2Bool("EmergencyBrake",false)
+	end
 
 	if button == "Rollsign+" then
 		self:SetNW2Bool("Rollsign+",true)
@@ -1914,6 +1906,13 @@ end
 
 
 function ENT:OnButtonRelease(button,ply)
+
+
+
+	if button == "EmergencyBrakeSet" then
+		--self:SetNW2Bool("EmergencyBrake",false)
+	end
+
 			if (button == "ThrottleUp" and self.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDown" and self.Duewag_U2.ThrottleRate < 0) then
 				self.Duewag_U2.ThrottleRate = 0
 			end
@@ -2535,14 +2534,14 @@ end
 function ENT:RollsignSync()
 
 	if self.ScrollMoment - CurTime() > 20 then
-		self:SetNW2Int("ActualScrollState",self.ScrollModifier)
+		self:SetNW2Float("ActualScrollState",self.ScrollModifier)
 	end 
 
 	if self:GetNW2Bool("Rollsign+",false) == true then
-        self.ScrollModifier = self.ScrollModifier + 0.0001
+        self.ScrollModifier = self.ScrollModifier + 0.0001 * self.DeltaTime
 		self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     elseif self:GetNW2Bool("Rollsign-",false) == true then
-        self.ScrollModifier = self.ScrollModifier - 0.0001
+        self.ScrollModifier = self.ScrollModifier - 0.0001 * self.DeltaTime
 		self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
 	elseif self:GetNW2Bool("Rollsign-",false) == false and self:GetNW2Bool("Rollsign+",false) == false then
 		self.ScrollModifier = self.ScrollModifier

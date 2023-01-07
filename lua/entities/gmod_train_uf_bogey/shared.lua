@@ -40,6 +40,7 @@ end
 function ENT:GetMotorPower()
 	return self:GetNW2Int("MotorPower")/50
 end
+
 function ENT:GetBrakeSqueal()
 	return self:GetNW2Int("BrakeSqueal")/10
 end

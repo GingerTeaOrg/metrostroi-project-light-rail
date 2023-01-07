@@ -68,7 +68,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.TrackBrake = false --Electromagnetic brake
 	self.DiscBrake = false --physical friction brake
 
-
+	self.EmergencyBrake = false
 
 	self.CloseDoorsButton = false
 
@@ -295,18 +295,57 @@ function TRAIN_SYSTEM:Think(Train)
 	self.ReverserInserted = self.Train:GetNW2Bool("ReverserInserted") --get from the train whether the reverser is present
 	
 	
+	if self.Train:GetNW2Bool("EmergencyBrake",false) == true then
+		self.EmergencyBrake = true
+	else
+		self.EmergencyBrake = false
+	end
 	
-	
+	if self.EmergencyBrake == true then
+		if self.TractionConditionFulfilled == true then
+			self.Train:WriteTrainWire(10,1)
+		end
+	else
+		self.Train:WriteTrainWire(10,0)
+	end
+
+	if self.Train:ReadTrainWire(10) > 0 then
+		if self.Speed >= 1 then
+			self.ThrottleState = -100
+			self.Traction = self.Traction + 10
+		end
+		self.Train.FrontBogey.BrakePressure = 2.7
+		self.Train.MiddleBogey.BrakePressure = 2.7
+		self.Train.RearBogey.BrakePressure = 2.7
+	else 
+		self.Train.FrontBogey.BrakePressure = self.Train.FrontBogey.BrakePressure
+		self.Train.MiddleBogey.BrakePressure = self.Train.MiddleBogey.BrakePressure
+		self.Train.RearBogey.BrakePressure = self.Train.RearBogey.BrakePressure
+
+		self.Traction = self.Traction
+	end
+
+
 	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) == 1 and self.Train:ReadTrainWire(7) == 1--[[and self.PantoUp == true]] then --if either the battery is on or the EMU cables signal multiple unit mode
 
-		if self.ReverserState == 1 then
+		if self.ReverserState == 1 and self.DeadmanIsPressed == 1 then
 			self.TractionConditionFulfilled = true
 		end
-		if self.ReverserState == -1 then
+		if self.ReverserState == -1 and self.DeadmanIsPressed == 1 then
 			self.TractionConditionFulfilled = true
 		end
 		if self.ReverserState == 0 then
 			self.TractionConditionFulfilled = false
+		end
+
+		if self.ReverserState == 1 and self.DeadmanIsPressed == 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
+		elseif self.ReverserState == -1 and self.DeadmanIsPressed == 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
+		elseif self.ReverserState == 1 and self.DeadmanIsPressed == 1 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+		elseif self.ReverserState == -1 and self.DeadmanIsPressed == 1 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
 		end
 	end
 		

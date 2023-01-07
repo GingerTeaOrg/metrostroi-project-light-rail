@@ -372,10 +372,11 @@ function ENT:Think()
 	self:SetSoundState("horn1",self:GetPackedBool("Bell",false) and 1 or 0,1)
 	local speed = self:GetNW2Int("Speed")/100
 	
-	
-	self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
-
-
+	if self:GetNW2Float("ThrottleStateAnim",0) >= 0 then
+	    self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
+    elseif self:GetNW2Float("ThrottleStateAnim",0) <= 0 then
+        self:Animate("Throttle",math.Clamp(self:GetNWFloat("ThrottleStateAnim", 0.5),0.1,1),-45,45,5,0.5,false)
+    end
 
     self.SpeedoAnim = math.Clamp(self:GetNW2Float("Speed"),0, 80) * 0.01 * 2
 
