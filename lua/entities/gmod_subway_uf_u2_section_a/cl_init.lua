@@ -898,9 +898,9 @@ function ENT:Think()
     
       
     if self:GetNW2Bool("DeadmanAlarmSound",false) == true or self:GetNW2Bool("TractionAppliedWhileStillNoDeadman",false) == true then
-        self:SetSoundState("Deadman", 1,1)
+        self:SetSoundState("Deadman",1,1)
     else
-        self:SetSoundState("Deadman", 0,1)
+        self:SetSoundState("Deadman",0,1)
     end
 
 

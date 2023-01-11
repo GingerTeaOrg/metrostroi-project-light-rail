@@ -317,41 +317,51 @@ function TRAIN_SYSTEM:Think(Train)
 		self.Train.FrontBogey.BrakePressure = 2.7
 		self.Train.MiddleBogey.BrakePressure = 2.7
 		self.Train.RearBogey.BrakePressure = 2.7
+		self.BrakePressure = 2.7
 	else 
 		self.Train.FrontBogey.BrakePressure = self.Train.FrontBogey.BrakePressure
 		self.Train.MiddleBogey.BrakePressure = self.Train.MiddleBogey.BrakePressure
 		self.Train.RearBogey.BrakePressure = self.Train.RearBogey.BrakePressure
 
-		self.Traction = self.Traction
+		--self.Traction = self.Traction
 	end
 
+	
+	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(7) > 0 then --if either the battery is on or the EMU cables signal multiple unit mode
 
-	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) == 1 and self.Train:ReadTrainWire(7) == 1--[[and self.PantoUp == true]] then --if either the battery is on or the EMU cables signal multiple unit mode
-
-		if self.ReverserState == 1 and self.DeadmanIsPressed == 1 then
+		if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 then
 			self.TractionConditionFulfilled = true
 		end
-		if self.ReverserState == -1 and self.DeadmanIsPressed == 1 then
+		if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 then
+			self.TractionConditionFulfilled = false
+		end
+		if self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 then
+			self.TractionConditionFulfilled = false
+		end
+		if self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 1 then
 			self.TractionConditionFulfilled = true
 		end
 		if self.ReverserState == 0 then
 			self.TractionConditionFulfilled = false
 		end
 
-		if self.ReverserState == 1 and self.DeadmanIsPressed == 0 then
+		if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState > 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
-		elseif self.ReverserState == -1 and self.DeadmanIsPressed == 0 then
+		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState > 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
-		elseif self.ReverserState == 1 and self.DeadmanIsPressed == 1 then
+		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
-		elseif self.ReverserState == -1 and self.DeadmanIsPressed == 1 then
+		elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+		elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 and self.ThrottleState < 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 1 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
 		end
 	end
 		
-		
+	
 	if self.TractionConditionFulfilled == true then
-		--self.Traction = 15000*self.ThrottleState / 20
 		if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
 			--if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
 				self.Traction = math.Clamp(self.ThrottleState * 0.01,-100,100)  --right now it's coupled directly to the throttle. This needs a somewhat realistic custom simulation, if we don't get schematics
@@ -405,7 +415,7 @@ function TRAIN_SYSTEM:Think(Train)
 			--end
 		elseif self.Train:GetNW2Bool("DeadmanTripped",false) == true then
 			if self.Speed > 5 then
-				self.Traction = -1000 
+				self.Traction = -100 
 				self.BrakePressure = 2.7
 				self.Train:WriteTrainWire(1,self.Traction)
 			elseif self.Speed < 5 then

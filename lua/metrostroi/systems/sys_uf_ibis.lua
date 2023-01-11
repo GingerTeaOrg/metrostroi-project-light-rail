@@ -390,8 +390,8 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
             --self.State = 2
         elseif self.Train:GetNW2Bool("IBISBootupComplete",false) == false then
-            self:PrintText(0,0,"-----------------------")
-            self:PrintText(0,4,"-----------------------")
+            self:PrintText(0,0,"-----------------")
+            self:PrintText(0,4,"-----------------")
         end
 
     end
