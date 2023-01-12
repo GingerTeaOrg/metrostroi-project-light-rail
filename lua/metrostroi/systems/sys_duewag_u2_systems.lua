@@ -254,33 +254,7 @@ function TRAIN_SYSTEM:Think(Train)
 		self.Train:WriteTrainWire(4,0)
 		self.Train:SetNW2Int("ReverserState",0)
 
-	end
-
-
-	
-
-
-
-	
-
-	--self.BrakePressure = math.Clamp(self.ThrottleState,-100,0)  * -0.01 * 2.7 --convert to positive value and put in self.Percentage relation of maximum brake value
-
-
-
-	--if self.ThrottleState < 0 then
-
-
-	
-
-
-
-
-
-
-
-
-
-	
+	end	
 
 
 	if self.BatteryStartUnlock == true then --if we're allowed to turn on the battery, turn it on
@@ -309,10 +283,12 @@ function TRAIN_SYSTEM:Think(Train)
 		self.Train:WriteTrainWire(10,0)
 	end
 
-	if self.Train:ReadTrainWire(10) > 0 then
-		if self.Speed >= 1 then
-			self.ThrottleState = -100
-			self.Traction = self.Traction + 10
+	if self.Train:ReadTrainWire(10) > 0 then --if the emergency brake is pulled high
+		if self.Speed >= 2 then --if the speed is greater than 2 (tolerances for inaccuracies registered due to wobble)
+			self.ThrottleState = -100 --Register the throttle to be all the way back
+			self.Traction = self.Traction - 10 --give a small bonus to reversal of the power
+		elseif self.Speed < 2 then
+			self.Traction = 0
 		end
 		self.Train.FrontBogey.BrakePressure = 2.7
 		self.Train.MiddleBogey.BrakePressure = 2.7
@@ -323,7 +299,7 @@ function TRAIN_SYSTEM:Think(Train)
 		self.Train.MiddleBogey.BrakePressure = self.Train.MiddleBogey.BrakePressure
 		self.Train.RearBogey.BrakePressure = self.Train.RearBogey.BrakePressure
 
-		--self.Traction = self.Traction
+		self.Traction = self.Traction
 	end
 
 	
@@ -374,14 +350,14 @@ function TRAIN_SYSTEM:Think(Train)
 						self.BrakePressure = 0
 						
 					
-					end
-					if self.Traction < 0 then
+					
+					elseif self.Traction < 0 then
 					
 						self.Train:WriteTrainWire(2,1)
 						self.Train:WriteTrainWire(1,self.Traction * -1)
 						if self.Speed < 2.5 and self.Train:ReadTrainWire(2) == 1 and self.Train:ReadTrainWire(5) == 2.7 then
 							self.Traction = 0
-						elseif self.Speed > 2 and self.Train:ReadTrainWire(2) == 1 and self.Train:ReadTrainWire(5) == 0 then
+						elseif self.Speed > 2.7 and self.Train:ReadTrainWire(2) == 1 and self.Train:ReadTrainWire(5) == 0 then
 							self.Traction = self.Traction
 						end
 					end
