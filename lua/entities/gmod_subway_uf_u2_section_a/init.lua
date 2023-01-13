@@ -521,7 +521,7 @@ function ENT:Initialize()
 
 
 	self.TrainWireCrossConnections = {
-        --[3] = 4, -- Reverser F<->B
+        [4] = 3, -- Reverser F<->B
 		--[21] = 20,
 
     }
@@ -657,6 +657,12 @@ function ENT:Think(dT)
 	else
 		self:SetNW2Bool("AIsCoupled",false)
 	end
+
+	if self.RearCouple.CoupledEnt ~= nil then
+		self:SetNW2Bool("BIsCoupled", true)
+	else
+		self:SetNW2Bool("BIsCoupled",false)
+	end
 	--Check if the B section is coupled
 	if self.RearCouple.CoupledEnt ~= nil then
 		self:SetNW2Bool("BIsCoupled", true)
@@ -747,7 +753,7 @@ function ENT:Think(dT)
 	
 	--if self:ReadTrainWire(7) == 1 then -- if the battery is on
 		
-		if self:GetNW2Bool("Braking",true) == true and not self:GetNW2Bool("AIsCoupled",false) == true and not self:ReadTrainWire(3) == 1 then
+		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 then
 			self:SetLightPower(56,true)
 			self:SetLightPower(57,true)
 			self:SetNW2Bool("BrakeLights",true)
@@ -1029,7 +1035,9 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 
 	end
-	self.FrontBogey.PneumaticBrakeForce = 130000
+	self.FrontBogey.PneumaticBrakeForce = 43.333
+	self.MiddleBogey.PneumaticBrakeForce = 43.333
+	self.RearBogey.PneumaticBrakeForce = 43.333
 
 	
 	

@@ -95,6 +95,7 @@ function ENT:Initialize()
 							[KEY_PAD_MINUS] = "TimeAndDate",
 		},
 	}
+	self.ParentTrain = self:GetNW2Entity("U2a")
 	self.RearCouple = self.ParentTrain.RearCouple
     --self.FrontCouple = self:CreateCoupleUF(Vector( 0,0,23),Angle(0,180,0),true,"u2")	
 	
@@ -138,13 +139,14 @@ function ENT:Initialize()
 
 
 
-	self.TrainWireCrossConnections = {
-        [4] = 3, -- Reverser F<->B
-		[21] = 20, --Blinkers
-	}
+	--[[self.TrainWireCrossConnections = {
+        --[4] = 3, -- Reverser F<->B
+		--[21] = 20, --Blinkers
+	}]]
     
 	self:SetNW2String("Texture",self.ParentTrain:GetNW2String("Texture").."_b")
 	self:TrainSpawnerUpdate()
+	self.U2SectionA = self:GetNW2Entity("U2a")
 end
 
 
@@ -152,116 +154,7 @@ end
 -- LOCAL FUNCTIONS FOR GETTING OUR OWN ENTITY SPAWNS
 
 
-function ENT:CreateBogeyUF(pos,ang,forward,typ)
-    -- Create bogey entity
-    local bogey = ents.Create("gmod_train_uf_bogey")
-    bogey:SetPos(self:LocalToWorld(pos))
-    bogey:SetAngles(self:GetAngles() + ang)
-    bogey.BogeyType = typ
-    bogey.NoPhysics = self.NoPhysics
-    bogey:Spawn()
 
-    -- Assign ownership
-    if CPPI and IsValid(self:CPPIGetOwner()) then bogey:CPPISetOwner(self:CPPIGetOwner()) end
-
-    -- Some shared general information about the bogey
-    self.SquealSound = self.SquealSound or math.floor(4*math.random())
-    self.SquealSensitivity = self.SquealSensitivity or math.random()
-    bogey.SquealSensitivity = self.SquealSensitivity
-    bogey:SetNW2Int("SquealSound",self.SquealSound)
-    bogey:SetNW2Bool("IsForwardBogey", forward)
-    bogey:SetNW2Entity("TrainEntity", self.ParentTrain)
-    bogey.SpawnPos = pos
-    bogey.SpawnAng = ang
-    local index=1
-    for i,v in ipairs(self.JointPositions) do
-        if v>pos.x then index=i+1 else break end
-    end
-    table.insert(self.JointPositions,index,pos.x+53.6)
-    table.insert(self.JointPositions,index+1,pos.x-53.6)
-    -- Constraint bogey to the train
-    if self.NoPhysics then
-        bogey:SetParent(self)
-    else
-        constraint.Axis(bogey,self,0,0,
-            Vector(0,0,0),Vector(0,0,0),
-            0,0,0,1,Vector(0,0,1),false)
-        if forward and IsValid(self.FrontCouple) then
-            constraint.NoCollide(bogey,self.FrontCouple,0,0)
-        elseif not forward and IsValid(self.RearCouple) then
-            constraint.NoCollide(bogey,self.RearCouple,0,0)
-        end
-    end
-	    -- Add to cleanup list
-    table.insert(self.TrainEntities,bogey)
-    return bogey
-end
-	
-	
-
-function ENT:CreateCoupleUF(pos,ang,forward,typ)
-    -- Create bogey entity
-    local coupler = ents.Create("gmod_train_uf_couple")
-    coupler:SetPos(self:LocalToWorld(pos))
-    coupler:SetAngles(self:GetAngles() + ang)
-    coupler.CoupleType = typ
-    coupler:Spawn()
-
-    -- Assign ownership
-    if CPPI and IsValid(self:CPPIGetOwner()) then coupler:CPPISetOwner(self:CPPIGetOwner()) end
-
-    -- Some shared general information about the bogey
-    coupler:SetNW2Bool("IsForwardCoupler", forward)
-    coupler:SetNW2Entity("TrainEntity", self.ParentTrain)
-    coupler.SpawnPos = pos
-    coupler.SpawnAng = ang
-    local index=1
-    local x = self:WorldToLocal(coupler:LocalToWorld(coupler.CouplingPointOffset)).x
-    for i,v in ipairs(self.JointPositions) do
-        if v>pos.x then index=i+1 else break end
-    end
-    table.insert(self.JointPositions,index,x)
-    -- Constraint bogey to the train
-    if self.NoPhysics then
-        bogey:SetParent(coupler)
-    else
-        constraint.AdvBallsocket(
-            self,
-            coupler,
-            0, --bone
-            0, --bone
-            pos,
-            Vector(0,0,0),
-            1, --forcelimit
-            1, --torquelimit
-            -2, --xmin
-            -2, --ymin
-            -15, --zmin
-            2, --xmax
-            2, --ymax
-            15, --zmax
-            0.1, --xfric
-            0.1, --yfric
-            1, --zfric
-            0, --rotonly
-            1 --nocollide
-        )
-
-        if forward and IsValid(self.FrontBogey) then
-            constraint.NoCollide(self.FrontBogey,coupler,0,0)
-        elseif not forward and IsValid(self.RearBogey) then
-            constraint.NoCollide(self.RearBogey,coupler,0,0)
-        end
-        
-        constraint.Axis(coupler,self,0,0,
-            Vector(0,0,0),Vector(0,0,0),
-            0,0,0,1,Vector(0,0,1),false)
-    end
-
-    -- Add to cleanup list
-    table.insert(self.TrainEntities,coupler)
-    return coupler
-end	
 
 
 
@@ -591,10 +484,10 @@ function ENT:Think()
 			end
 		end
 	
-	if self.ParentTrain:GetNW2Bool("Braking",true) == true and not self:GetNW2Bool("BIsCoupled",false) == true then
+	if self.ParentTrain:GetNW2Bool("Braking",true) == true and self.ParentTrain:GetNW2Bool("BIsCoupled",false) == false then
 		self:SetLightPower(66,true)
 		self:SetLightPower(67,true)
-	elseif self:GetNW2Bool("BIsCoupled",false) == true then
+	elseif self.ParentTrain:GetNW2Bool("BIsCoupled",false) == true then
 		self:SetLightPower(66,false)
 		self:SetLightPower(67,false)
 	elseif self.ParentTrain:GetNW2Bool("Braking",true) == false then 

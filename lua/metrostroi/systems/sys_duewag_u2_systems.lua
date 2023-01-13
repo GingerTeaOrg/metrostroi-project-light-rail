@@ -245,9 +245,11 @@ function TRAIN_SYSTEM:Think(Train)
 	-- Implement reverser state via two separate train wires, so that train wires can be crossed for proper MU setup
 	if self.ReverserState == 1 then
 		self.Train:WriteTrainWire(3,1)
+		self.Train:WriteTrainWire(4,0)
 		self.Train:SetNW2Int("ReverserState",1)
 	elseif self.ReverserState == -1 then
 		self.Train:WriteTrainWire(4,1)
+		self.Train:WriteTrainWire(3,0)
 		self.Train:SetNW2Int("ReverserState",-1)
 	elseif self.ReverserState == 1 then
 		self.Train:WriteTrainWire(3,0)

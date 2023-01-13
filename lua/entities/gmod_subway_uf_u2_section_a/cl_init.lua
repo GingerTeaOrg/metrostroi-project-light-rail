@@ -929,19 +929,17 @@ function ENT:Think()
             self:SetLightPower(16,false)
         end
 
-        if self:GetNW2Bool("Bell",false) == true or self:GetNW2Bool("EmergencyBrake",false) == true then
+        if self:GetNW2Bool("Bell",false) == true then
 	    	self:SetSoundState("bell",1,1)
         	self:SetSoundState("bell_in",1,1)
-            if self:GetNW2Bool("EmergencyBrake",false) == true then
-                self:Animate("Throttle",-1,-45,45,50,8,false)
-            end
         else
             self:SetSoundState("bell",0,1)
         	self:SetSoundState("bell_in",0,1)
         end    
 
-
-
+    if self:GetNW2Bool("EmergencyBrake",false) == true then
+        self:Animate("Throttle",-1,-45,45,50,8,false)
+    end
 
         self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
     
