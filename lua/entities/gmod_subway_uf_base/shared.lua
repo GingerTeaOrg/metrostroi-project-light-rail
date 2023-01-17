@@ -25,8 +25,8 @@ end
 --------------------------------------------------------------------------------
 function ENT:InitializeSystems()
 	--self:LoadSystem("DURA")
-	self:LoadSystem("ALSCoil")
-	self.ALSCoil:TriggerInput("Enabled",1)
+	--self:LoadSystem("ALSCoil") --We don't have an ALS coil, silly
+	--self.ALSCoil:TriggerInput("Enabled",1)
 end
 
 function ENT:PostInitializeSystems() end

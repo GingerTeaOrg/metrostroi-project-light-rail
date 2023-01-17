@@ -251,7 +251,7 @@ surface.CreateFont("Trebuchet24", { --Creating BUILTIN font (idk what happened w
 --------------------------------------------------------------------------------
 -- Console commands and convars
 --------------------------------------------------------------------------------
-concommand.Add("metrostroi_train_manual", function()--ply, _, args)
+--[[concommand.Add("metrostroi_train_manual", function()--ply, _, args)
 --[[    local w = ScrW() * 2/3
     local h = ScrH() * 2/3
     local browserWindow = vgui.Create("DFrame")
@@ -269,9 +269,9 @@ concommand.Add("metrostroi_train_manual", function()--ply, _, args)
     browser:SetSize(w - 20, h - 35)
 
     browser:OpenURL
-    ]]--
+    ]
     gui.OpenURL("http://phoenixblack.github.io/Metrostroi/manual.html")
-end)
+end)]]
 ENT.RTMaterial = CreateMaterial("MetrostroiRT1","UnlitGeneric",{
     ["$vertexcolor"] = 0,
     ["$vertexalpha"] = 1,
