@@ -1104,12 +1104,9 @@ function ENT:Think()
     
 
     if self:GetNW2Int("Speed") > 10 then
-        --self:SetSoundState("Cruise",1,pitch,volume)
+        self:SetSoundState("Cruise",1,pitch,volume)
     end
 
-    if self:GetNW2Int("Speed") < 10 then
-        --self:SetSoundState("Cruise",0,1,1)
-    end
 	
     local rollingi = math.min(1,self.TunnelCoeff+math.Clamp((self.StreetCoeff-0.82)/0.3,0,1))
     local rollings = math.max(self.TunnelCoeff*1,self.StreetCoeff)

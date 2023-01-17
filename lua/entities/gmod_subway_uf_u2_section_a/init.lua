@@ -500,10 +500,10 @@ function ENT:Initialize()
 	[51] = { "light",Vector(430,40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
 	[52] = { "light",Vector(430,-40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
 	[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
-	[54] = { "light",Vector(-426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
-	[55] = { "light",Vector(-426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-	[56] = { "light",Vector(-426.5,31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-	[57] = { "light",Vector(-426.5,-31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+	[54] = { "light",Vector(426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+	[55] = { "light",Vector(426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+	[56] = { "light",Vector(426.5,31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+	[57] = { "light",Vector(426.5,-31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
 	[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 	[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 	[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
@@ -933,8 +933,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			elseif self.Duewag_U2.ThrottleState == 0 then 
-				self.RearBogey.MotorForce  = 0--199141405525
-				self.FrontBogey.MotorForce = 0--199141405525
+				self.RearBogey.MotorForce  = 0
+				self.FrontBogey.MotorForce = 0
 				self:SetNW2Bool("Braking",false)
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction

@@ -1,7 +1,7 @@
 if not UF then
     -- Global library
     UF = {}
-
+    print("UF Library starting")
     -- Supported train classes
     UF.TrainClasses = {}
     UF.IsTrainClass = {}
@@ -67,7 +67,7 @@ function UF.AddIBISAnnouncer(name,soundtable,datatable)
             UF.AnnouncementsIBIS[k].name = name
             UF.IBISSetup[k] = datatable
             UF.IBISSetup[k].name = name
-            print("UF: Changed \""..name.."\" IBIS announcer.")
+            print("Light Rail: Changed \""..name.."\" IBIS announcer.")
             return
         end
     end
@@ -76,7 +76,7 @@ function UF.AddIBISAnnouncer(name,soundtable,datatable)
 
     local id = table.insert(UF.IBISSetup,datatable)
     UF.IBISSetup[id].name = name
-    print("UF: Added \""..name.."\" IBIS announcer.")
+    print("Light Rail: Added \""..name.."\" IBIS announcer.")
 end
 
 function UF.AddRollsignTex(id,stIndex,texture)
@@ -87,6 +87,7 @@ function UF.AddRollsignTex(id,stIndex,texture)
                 UF.Skins[id].default = defaults[id][1]
                 for i=2,#defaults[id] do
                     UF.AddRollsignTex(id:sub(1,-8),1000+(i-1),defaults[id][i])
+                    print("Light Rail: Added Rollsign texture")
                 end
             else
                 UF.Skins[id].default = defaults[id]

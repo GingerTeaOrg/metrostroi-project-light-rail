@@ -13,7 +13,6 @@ UF.AddIBISAnnouncer("Frankfurt",{
         Name = "U6",
         spec_last = {"terminates_here"},
         Loop = false,
-        BlockDoors = true,
         {
             110,"Международная",
             arrlast = {nil,{"arr_mejdunarodnaya_f",0.5,"last_f",2,"things_f",2,"deadlock_f"},"mejdunarodnaya_m"},
