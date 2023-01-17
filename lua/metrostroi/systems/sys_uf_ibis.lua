@@ -22,7 +22,7 @@ function TRAIN_SYSTEM:Initialize()
     self.KeyInputDone = false
     
     self.BootupComplete = false
-    self.Course = 0 --Course index number, format is LLLSS
+    self.Course = 0 --Course index number, format is LineLineCourseCourse
     self.CourseChar1 = -1
     self.CourseChar2 = -1
     self.CourseChar3 = -1
@@ -46,7 +46,7 @@ function TRAIN_SYSTEM:Initialize()
     self.TrainID = math.random(9999,1)
 
     self.KeyInput = nil
-    self.Triggers = {}
+
     self.TriggerNames = {
         	"Number1",
         	"Number2",
@@ -64,6 +64,7 @@ function TRAIN_SYSTEM:Initialize()
         	"SpecialAnnouncements",
         	"TimeAndDate"
     }
+    self.Triggers = {}
     self.State = 0
 
     self.Menu = 0 -- which menu are we in

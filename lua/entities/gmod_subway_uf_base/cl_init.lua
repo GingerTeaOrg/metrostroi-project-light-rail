@@ -1,6 +1,6 @@
 include("shared.lua")
 
---if LocalPlayer():GetName():find("iNok") then RunConsoleCommand("say","ЛВЗ говно, обажаю МВМ") end
+
 surface.CreateFont("MetrostroiSubway_LargeText", {
     font = "Arial",
     size = 100,
