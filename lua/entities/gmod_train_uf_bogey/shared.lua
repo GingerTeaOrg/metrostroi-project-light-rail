@@ -31,9 +31,6 @@ physenv.AddSurfaceData([[
 	"gamematerial"	"X"
 }
 ]])
-function ENT:SetupDataTables()
-	self._NetData = {}
-end
 function ENT:GetSpeed()
 	return self:GetNW2Int("Speed")/5
 end
@@ -47,17 +44,20 @@ end
 
 if SERVER then
 	function ENT:SetSpeed(val)
-		if self._NetData[1] == math.floor(val*5) then return end
-		self:SetNW2Int("Speed",math.floor(val*5))
+		if self.OldSpeed == math.floor(val*5) then return end
+		self.OldSpeed = math.floor(val*5)
+		self:SetNW2Int("Speed",self.OldSpeed)
 	end
 
 	function ENT:SetMotorPower(val)
-		if self._NetData[2] == math.floor(val*50) then return end
-		self:SetNW2Int("MotorPower",math.floor(val*50))
+		if self.OldMotorPower == math.floor(val*50) then return end
+		self.OldMotorPower = math.floor(val*50)
+		self:SetNW2Int("MotorPower",self.OldMotorPower)
 	end
 
 	function ENT:SetBrakeSqueal(val)
-		if self._NetData[4] == math.floor(val*10) then return end
-		self:SetNW2Int("BrakeSqueal",math.floor(val*10))
+		if self.OldBrakeSqueal == math.floor(val*10) then return end
+		self.OldBrakeSqueal = math.floor(val*10)
+		self:SetNW2Int("BrakeSqueal",self.OldBrakeSqueal)
 	end
 end

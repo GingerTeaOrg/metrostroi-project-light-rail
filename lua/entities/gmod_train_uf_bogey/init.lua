@@ -3,6 +3,7 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
+util.AddNetworkString("metrostroi_bogey_contact")
 
 local DECOUPLE_TIMEOUT      = 2     -- Time after decoupling furing wich a bogey cannot couple
 local COUPLE_MAX_DISTANCE   = 20    -- Maximum distance between couple offsets
@@ -14,22 +15,6 @@ COUPLE_MAX_DISTANCE = COUPLE_MAX_DISTANCE ^ 2
 COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
 
 --------------------------------------------------------------------------------
---[[ function ENT:PreEntityCopy()
-    local BogeyDupe = {}
-    if IsValid(self.Wheels) then
-        BogeyDupe.Wheels = self.Wheels:EntIndex()
-    end
-    BogeyDupe.BogeyType = self.BogeyType
-    if WireAddon then
-        BogeyDupe.WireData = WireLib.BuildDupeInfo( self.Entity )
-    end
-    BogeyDupe.NoPhysics = self.NoPhysics
-
-
-    duplicator.StoreEntityModifier(self, "BogeyDupe", BogeyDupe)
-end
-duplicator.RegisterEntityModifier( "BogeyDupe" , function() end)
---Model,WheelPos,WheelAng,WheelModel,PantLPos,PantRPos,BogeyOffset,{ConnectorPositions}--]]
 ENT.Types = {
 	u5={
         "models/lilly/uf/u5/bogey.mdl",
@@ -67,37 +52,7 @@ ENT.Types = {
         Vector(4.3,-63,-3.3),Vector(4.3,63,-3.3),
     },
 }
---[[ function ENT:PostEntityPaste(ply,ent,createdEntities)
-    local BogeyDupe = ent.EntityMods.BogeyDupe
-    if IsValid(self.Wheels) then
-        self.Wheels:SetParent()
-        self.Wheels:Remove()
-    end
-    self.Wheels = createdEntities[BogeyDupe.Wheels]
-    self.BogeyType = BogeyDupe.BogeyType
-    local typ = self.Types[self.BogeyType or "u2"]
-    self:SetModel(typ and typ[1] or "models/lilly/uf/bogey.mdl")
-    if IsValid(self.Wheels) then
-            self.Wheels:SetPos(self:LocalToWorld(Vector(0,0.0,-10)))
-            self.Wheels:SetAngles(self:GetAngles() + Angle(0,0,0))
-        self.Wheels.WheelType = self.BogeyType
-        self.Wheels.NoPhysics = BogeyDupe.NoPhysics
 
-        if self.NoPhysics then
-            self.Wheels:SetParent(self)
-        else
-            self.Wheels:PhysicsInit(SOLID_VPHYSICS)
-            self.Wheels:SetMoveType(MOVETYPE_VPHYSICS)
-            self.Wheels:SetSolid(SOLID_VPHYSICS)
-            constraint.Weld(self,self.Wheels,0,0,0,1,0)
-        end
-        if CPPI then self.Wheels:CPPISetOwner(self:CPPIGetOwner()) end
-        self.Wheels:SetNW2Entity("TrainBogey",self)
-    end
-end--]]
-
-ENT.SnakePos = Vector(-168.25,0,6.5)
-ENT.SnakeAng = Angle(0,90,0)
 function ENT:SetParameters()
     local typ = self.Types[self.BogeyType or "def"]
     self:SetModel(typ and typ[1] or "models/lilly/uf/bogey/duewag_motor.mdl")
@@ -114,10 +69,11 @@ function ENT:Initialize()
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
     end
+    self:SetUseType(SIMPLE_USE)
 
     -- Set proper parameters for the bogey
     if IsValid(self:GetPhysicsObject()) then
-        self:GetPhysicsObject():SetMass(6000)
+        self:GetPhysicsObject():SetMass(5000)
     end
 
     -- Store coupling point offset
@@ -144,8 +100,6 @@ function ENT:Initialize()
     self.PneumaticBrakeForce = 100000.0
     self.DisableSound = 0
 
-    self.Angle = 0
-
     self.Variables = {}
 
     -- Pressure in brake cylinder
@@ -154,9 +108,7 @@ function ENT:Initialize()
     self.Voltage = 0
     self.VoltageDrop = 0
     self.DropByPeople = 0
-    self.PlayTime = { 0, 0 }
     self.ContactStates = { false, false }
-    self.ContactDisables = {false,false}
     self.DisableContacts = false
     self.DisableContactsManual = false
     self.DisableParking = false
@@ -169,32 +121,27 @@ function ENT:Initialize()
     end
 end
 
-function ENT:InitializeWheelsUF()
+function ENT:InitializeWheels()
     -- Create missing wheels
-    if not IsValid(self.Wheels) then
-        --print(1)
-        local wheels = ents.Create("gmod_train_uf_wheels")
-        local typ = self.Types[self.BogeyType or "def"]
-        --wheels.Model = typ[4]
-        if typ and typ[3] then wheels:SetAngles(self:LocalToWorldAngles(typ[3])) end
-        if typ and typ[2] then wheels:SetPos(self:LocalToWorld(typ[2])) end
+    if IsValid(self.Wheels) then SafeRemoveEntity(self.Wheels) end
+    local wheels = ents.Create("gmod_train_uf_wheels")
+    local typ = self.Types[self.BogeyType or "def"]
+    wheels.Model = typ[4]
+    if typ and typ[3] then wheels:SetAngles(self:LocalToWorldAngles(typ[3])) end
+    if typ and typ[2] then wheels:SetPos(self:LocalToWorld(typ[2])) end
 
-        --wheels = ents.Create("gmod_subway_wheels")
-        --wheels:SetPos(self:LocalToWorld(Vector(0,0.0,-10)))
-        --wheels:SetAngles(self:GetAngles() + Angle(0,90,0))
-        --wheels.WheelType = self.BogeyType
-        wheels.NoPhysics = self.NoPhysics
-        wheels:Spawn()
+    wheels.WheelType = self.BogeyType
+    wheels.NoPhysics = self.NoPhysics
+    wheels:Spawn()
 
-        if self.NoPhysics then
-            wheels:SetParent(self)
-        else
-            constraint.Weld(self,wheels,0,0,0,1,0)
-        end
-        if CPPI then wheels:CPPISetOwner(self:CPPIGetOwner() or self:GetNW2Entity("TrainEntity"):GetOwner()) end
-        wheels:SetNW2Entity("TrainBogey",self)
-        self.Wheels = wheels
+    if self.NoPhysics then
+        wheels:SetParent(self)
+    else
+        constraint.Weld(self,wheels,0,0,0,1,0)
     end
+    if CPPI then wheels:CPPISetOwner(self:CPPIGetOwner() or self:GetNW2Entity("TrainEntity"):GetOwner()) end
+    wheels:SetNW2Entity("TrainBogey",self)
+    self.Wheels = wheels
 end
 
 function ENT:OnRemove()
@@ -222,7 +169,7 @@ function ENT:TriggerInput(iname, value)
     end
 end
 
--- Checks if there's an advballsocket between two entities
+--[[ Checks if there's an advballsocket between two entities
 local function AreCoupled(ent1,ent2)
     if ent1.CoupledBogey or ent2.CoupledBogey then return false end
     local constrainttable = constraint.FindConstraints(ent1,"AdvBallsocket")
@@ -236,7 +183,7 @@ local function AreCoupled(ent1,ent2)
     end
 
     return coupled
-end
+end]]
 
 -- Adv ballsockets ents by their CouplingPointOffset
 function ENT:Couple(ent)
@@ -268,10 +215,9 @@ function ENT:Couple(ent)
     end
 end
 
-local function AreInCoupleDistance(ent,self)
-    return self:LocalToWorld(self.CouplingPointOffset):DistToSqr(ent:LocalToWorld(ent.CouplingPointOffset)) < COUPLE_MAX_DISTANCE
+local function AreInCoupleDistance(ent1,ent2)
+    return ent2:LocalToWorld(ent2.CouplingPointOffset):DistToSqr(ent1:LocalToWorld(ent1.CouplingPointOffset)) < COUPLE_MAX_DISTANCE
 end
-
 
 local function AreFacingEachother(ent1,ent2)
     return ent1:GetForward():Dot(ent2:GetForward()) < -COUPLE_MAX_ANGLE
@@ -292,8 +238,8 @@ end
 local function CanCoupleTogether(ent1,ent2)
     if ent1.DontHaveCoupler or ent2.DontHaveCoupler then return false end
     if      ent2:GetClass() ~= ent1:GetClass() then return false end
-    if not (ent1.CanCouple and ent1:CanCouple()) then return false end
-    if not (ent2.CanCouple and ent2:CanCouple()) then return false end
+    --if not (ent1.CanCouple and ent1:CanCouple()) then return false end
+    --if not (ent2.CanCouple and ent2:CanCouple()) then return false end
     if not AreInCoupleDistance(ent1,ent2) then return false end
     if not AreFacingEachother(ent1,ent2) then return false end
     return true
@@ -305,12 +251,6 @@ function ENT:StartTouch(ent)
         self:Couple(ent)
     end
 end
-
-
-
-
-
-
 
 function ENT:ConnectDisconnect(status)
     local isfront = self:GetNW2Bool("IsForwardBogey")
@@ -393,88 +333,26 @@ function ENT:OnDecouple()
     end
 end
 
-
-
-function ENT:CheckVoltage(dT)
-    -- Check contact states
-    if (CurTime() - self.CheckTimeout) > 0.25 then
-        self.CheckTimeout = CurTime()
-        self.VoltageDropByTouch = 0
-        self.NextStates[1] = not self.DisableContacts and not self.DisableContactsManual and not self.ContactDisables[1] and self:CheckContact(self.PantLPos,Vector(0,-1,0),1,self.PantLCPos)
-        self.NextStates[2] = not self.DisableContacts and not self.DisableContactsManual and not self.ContactDisables[2] and self:CheckContact(self.PantRPos,Vector(0, 1,0),2,self.PantRCPos)
-        -- Detect changes in contact states
-        for i=1,2 do
-            local state = self.NextStates[i]
-            if state ~= self.ContactStates[i] then
-                self.ContactStates[i] = state
-
-                if state then
-                    self.VoltageDrop = -40*(0.5 + 0.5*math.random())
-
-                    local dt = CurTime() - self.PlayTime[i]
-                    self.PlayTime[i] = CurTime()
-
-                    local volume = 0.53
-                    if dt < 1.0 then volume = 0.43 end
-                    if i == 1 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".wav",self:LocalToWorld(self.PantLPos),65,math.random(90,120),volume) end
-                    if i == 2 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".wav",self:LocalToWorld(self.PantRPos),65,math.random(90,120),volume) end
-                end
-            end
-        end
-    end
-
-    -- Voltage spikes
-    self.VoltageDrop = math.max(-30,math.min(30,self.VoltageDrop + (0 - self.VoltageDrop)*10*dT))
-
-    local feeder = self.Feeder and UF.Voltages[self.Feeder]
-    local volt = feeder or UF.Voltage or 750
-    -- Non-metrostroi maps
-    if ((GetConVarNumber("metrostroi_train_requirethirdrail") <= 0)) then-- or
-       --(not UF.MapHasFullSupport()) then
-        self.Voltage = volt + self.VoltageDrop
-        return
-    end
-    -- Detect voltage
-    self.Voltage = 0
-    self.DropByPeople = 0
-    for i=1,2 do
-        if self.ContactStates[i] then self.Voltage = volt + self.VoltageDrop
-        elseif IsValid(self.Connectors[i]) and self.Connectors[i].Coupled == (i >  2 and self.Train.RearBogey or self) then
-            self.Voltage = self.Connectors[i].Power and UF.Voltage or 0
-        else self.Connectors[i] = nil end
-    end
-    if self.VoltageDropByTouch > 0 then
-        local Rperson = 0.613
-        local Iperson = UF.Voltage / (Rperson/(self.VoltageDropByTouch + 1e-9))
-        self.DropByPeople = Iperson
-    end
-end
-
 function ENT:Think()
     -- Re-initialize wheels
-    if (not self.Wheels) or
-        (not self.Wheels:IsValid()) or
-        (self.Wheels:GetNW2Entity("TrainBogey") ~= self) then
-        self:InitializeWheelsUF()
+    if not IsValid(self.Wheels) or self.Wheels:GetNW2Entity("TrainBogey") ~= self then
+        self:InitializeWheels()
 
+        constraint.NoCollide(self.Wheels,self,0,0)
         if IsValid(self:GetNW2Entity("TrainEntity")) then
             constraint.NoCollide(self.Wheels,self:GetNW2Entity("TrainEntity"),0,0)
-            constraint.NoCollide(self.Wheels,self,0,0)
         end
     end
 
-    --print(self:GetMotorPower())
     -- Update timing
     self.PrevTime = self.PrevTime or CurTime()
     self.DeltaTime = (CurTime() - self.PrevTime)
     self.PrevTime = CurTime()
-    self.Angle = self.Wheels.Angle
 
     self:SetNW2Entity("TrainWheels",self.Wheels)
-    --self:CheckVoltage(self.DeltaTime)
 
     -- Skip physics related stuff
-    if not IsValid(self.Wheels) or not self.Wheels:GetPhysicsObject():IsValid() or self.NoPhysics then
+    if self.NoPhysics or not self.Wheels:GetPhysicsObject():IsValid() then
         self:SetMotorPower(self.MotorPower or 0)
         self:SetSpeed(self.Speed or 0)
         self:NextThink(CurTime())
@@ -502,24 +380,19 @@ function ENT:Think()
     -- Calculate motor power
     local motorPower = 0.0
     if self.MotorPower > 0.0 then
-        motorPower = self.MotorPower
+        motorPower = math.Clamp(self.MotorPower, -1, 1)
     else
-        motorPower = self.MotorPower*sign
+        motorPower = math.Clamp(self.MotorPower*sign, -1, 1)
     end
-    motorPower = math.max(-1.0,motorPower)
-    motorPower = math.min(1.0,motorPower)
     -- Increace forces on slopes
-    local slopemul = 1--+math.Clamp(Train:GetAngles():Forward(),0,1)*0.2
-    local slopemulb = 1
+    local slopemul = 1
     local pitch = self:GetAngles().pitch*sign
     if motorPower < 0 and pitch > 3 then
-        slopemul = slopemul + math.Clamp((math.abs(pitch)-3)/3,0,1)--[[ *(math.Clamp((self.Speed-55)/5,0,1))--]] *1.5
+        slopemul = slopemul + math.Clamp((math.abs(pitch)-3)/3,0,1)
     else
         slopemul = slopemul + math.Clamp((pitch-3)/3,0,1)*1.5
     end
-    if -3 > pitch or pitch > 3 then
-        slopemulb = slopemulb + math.Clamp((math.abs(pitch)-3)/3,0,1)*0.7
-    end
+
     -- Final brake cylinder pressure
     local pneumaticPow = self.PneumaticPow or 1
     local pB = not self.DisableParking and self.ParkingBrakePressure or 0
@@ -532,10 +405,14 @@ function ENT:Think()
 
     -- Calculate forces
     local motorForce = self.MotorForce*motorPower*slopemul
-    local pneumaticFactor = math.max(0,math.min(1,0.5*self.Speed))*(1+(math.max(0,math.min(1,(2-self.Speed)/2)))*0.5)
+    local pneumaticFactor = math.Clamp(0.5*self.Speed,0,1)*(1+math.Clamp((2-self.Speed)/2,0,1)*0.5)
     local pneumaticForce = 0
     if BrakeCP >= 0.05 then
-        pneumaticForce = -sign*pneumaticFactor*self.PneumaticBrakeForce*BrakeCP*slopemulb
+        local slopemulBr = 1
+        if -3 > pitch or pitch > 3 then
+            slopemulBr = 1 + math.Clamp((math.abs(pitch)-3)/3,0,1)*0.7
+        end
+        pneumaticForce = -sign*pneumaticFactor*self.PneumaticBrakeForce*BrakeCP*slopemulBr
     end
 
     -- Compensate forward friction
@@ -567,13 +444,12 @@ function ENT:Think()
 
     -- Calculate brake squeal
     self.SquealSensitivity = 1
-    local k = ((self.SquealSensitivity or 0.5) - 0.5)*2
     local BCPress = math.abs(self.BrakeCylinderPressure)
     self.RattleRandom = self.RattleRandom or 0.5+math.random()*0.2
     local PnF1 = math.Clamp((BCPress-0.6)/0.6,0,2)
     local PnF2 = math.Clamp((BCPress-self.RattleRandom)/0.6,0,2)
-    --local PnF3 = math.Clamp((BCPress-self.RattleRandom+0.15)/0.6,0,1)
     local brakeSqueal1 = (PnF1*PnF2)*pneumaticFactor
+
     --local brakeSqueal2 = (PnF1*PnF3)*pneumaticFactor
     -- Send parameters to client
     if self.DisableSound < 1 then
@@ -581,20 +457,11 @@ function ENT:Think()
     end
 
     if self.DisableSound < 2 then
-        local brakeRamp = math.min(1.0,math.max(0.0,self.Speed/2.0))
-        if self.Speed > 2 then
-            --brakeRamp = 1 - math.min(1.0,math.max(0.0,(self.Speed-3)/10.0))
-        end
-    --  if brakeRamp > 0.01 and brakeSqueal > 0 then
         if self:GetNWBool("Async") then
-            local bcP = self.BrakeCylinderPressure
-            self:SetNW2Float("BrakeSqueal",(bcP-0.9)/1.7)--3/(absSpeed+bcP^3)*(bcP^3)*0.5)
+            self:SetNW2Float("BrakeSqueal",(self.BrakeCylinderPressure-0.9)/1.7)
         else
             self:SetNW2Float("BrakeSqueal1",brakeSqueal1)
-            --self:SetNW2Float("BrakeSqueal2",brakeSqueal2)
         end
-        --self:SetBrakeSqueal(self.BrakeSqueal or brakeSqueal)
---      end
     end
     if self.DisableSound < 3 then
         self:SetSpeed(absSpeed)
@@ -663,66 +530,4 @@ function ENT:SpawnFunction(ply, tr)
 
     if not inhibitrerail then Metrostroi.RerailBogey(ent) end
     return ent
-end
-
-function ENT:AcceptInput(inputName, activator, called, data)
-    if inputName == "OnFeederIn" then
-        self.Feeder = tonumber(data)
-        if self.Feeder and not Metrostroi.Voltages[self.Feeder] then
-            Metrostroi.Voltages[self.Feeder] = 0
-            Metrostroi.Currents[self.Feeder] = 0
-        end
-    elseif inputName == "OnFeederOut" then
-        self.Feeder = nil
-    end
-end
-
-
-function ENT:UpdateTextures()
-    local texture = Metrostroi.Skins["train"][self:GetNW2String("Texture")]
-    local passtexture = Metrostroi.Skins["pass"][self:GetNW2String("PassTexture")]
-    local cabintexture = Metrostroi.Skins["cab"][self:GetNW2String("CabTexture")]
-    if texture and texture.func then
-        self:SetNW2String("Texture",texture.func(self))
-    end
-    if passtexture and passtexture.func then
-        self:SetNW2String("PassTexture",passtexture.func(self))
-    end
-    if cabintexture and cabintexture.func then
-        self:SetNW2String("CabTexture",cabintexture.func(self))
-    end
-
-    self.Texture = self:GetNW2String("Texture")
-    self.PassTexture = self:GetNW2String("PassTexture")
-    self.CabTexture = self:GetNW2String("CabTexture")
-    local texture = Metrostroi.Skins["train"][self.Texture]
-    local passtexture = Metrostroi.Skins["pass"][self.PassTexture]
-    local cabintexture = Metrostroi.Skins["cab"][self.CabTexture]
-    for k in pairs(self:GetMaterials()) do self:SetSubMaterial(k-1,"") end
-    for k,v in pairs(self:GetMaterials()) do
-        local tex = v:gsub("^.+/","")
-        if self.GetAdditionalTextures then
-            local tex = self:GetAdditionalTextures(tex)
-            if tex then
-                self:SetSubMaterial(k-1,tex)
-                continue
-            end
-        end
-        if cabintexture and cabintexture.textures and cabintexture.textures[tex] then
-            self:SetSubMaterial(k-1,cabintexture.textures[tex])
-        end
-        if passtexture and passtexture.textures and passtexture.textures[tex] then
-            self:SetSubMaterial(k-1,passtexture.textures[tex])
-        end
-        if texture and texture.textures and texture.textures[tex] then
-            self:SetSubMaterial(k-1,texture.textures[tex])
-        end
-    end
-
-    if texture and texture.postfunc then texture.postfunc(self) end
-    if passtexture and passtexture.postfunc then passtexture.postfunc(self) end
-    if cabintexture and cabintexture.postfunc then cabintexture.postfunc(self) end
-
-    local level = math.random() > 0.95 and 0.7 or math.random() > 0.8 and 0.55 or math.random() > 0.35 and 0.25 or 0
-    self:SetNW2Vector("DirtLevel",math.Clamp(level+math.random()*0.2-0.1,0,1))
 end

@@ -389,7 +389,7 @@ function ENT:Initialize()
 	self.CommandOpen = false
 	self.CommandClose = false
 
-	
+	--self.Lights = {}
 	self.DoorSideUnlocked = "None"
 	self:SetNW2Bool("DepartureConfirmed",true)
 	self:SetNW2Bool("DoorsUnlocked",false)
@@ -558,7 +558,7 @@ function ENT:TrainSpawnerUpdate()
         self.RearCouple:SetParameters()
 		local tex = "Def_U2"
 		self:UpdateTextures()
-		self.MiddleBogey:UpdateTextures()
+		--self.MiddleBogey:UpdateTextures()
 		--self.MiddleBogey:UpdateTextures()
 		--self:UpdateLampsColors()
 		self.FrontCouple.CoupleType = "U2"
@@ -569,14 +569,6 @@ function ENT:TrainSpawnerUpdate()
 		
 
 end
-
-
-
---[[function ENT:GetMotorPower()
-
-	self.FrontBogey:GetMotorPower()
-	
-end]]
 
 
 
@@ -751,7 +743,7 @@ function ENT:Think(dT)
 		self:SetNW2Float("ReverserAnimate",0)
 	end
 	
-	--if self:ReadTrainWire(7) == 1 then -- if the battery is on
+	if self:ReadTrainWire(7) == 1 then -- if the battery is on
 		
 		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 then
 			self:SetLightPower(56,true)
@@ -782,6 +774,8 @@ function ENT:Think(dT)
 					self:SetLightPower(51,true)
     				self:SetLightPower(52,true)
 					self:SetLightPower(53,true)
+					self:SetLightPower(54,false)
+					self:SetLightPower(55,false)
 					self:SetNW2Bool("Taillights",false)
 					self:SetNW2Bool("Headlights",true)
 				elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
@@ -816,7 +810,7 @@ function ENT:Think(dT)
 				self:SetNW2Bool("Headlights",false)
 			end
 		end
-	--end
+	end
 	
 	
 
@@ -1117,7 +1111,7 @@ end
 
 		if self:GetNW2Float("Door1-2a",0) < 1 and self:GetNW2Float("Door3-4a",0) < 1 and self:GetNW2Float("Door5-6a",0) < 1 and self:GetNW2Float("Door7-8a",0) < 1 then
 			self.CommandOpen = true
-			--self.CommandClose = false
+			self.CommandClose = false
 			self:SetNW2Bool("DoorsJustOpened",true)
 		elseif self:GetNW2Float("Door1-2a",0) >= 1 or self:GetNW2Float("Door3-4a",0) >= 1 or self:GetNW2Float("Door5-6a",0) >= 1 or self:GetNW2Float("Door7-8a",0) >= 1 then
 			--self.CommandOpen = false
@@ -1165,15 +1159,15 @@ end
 	
 					
 	
-			if self.DoorRandomness1 > 0 then
+			if self.DoorRandomness4 > 0 then
 	
 				
 					if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
 	
 						if self:GetNW2Float("Door1-2b",0) != 1 then
-							self.DoorState1 = self:GetNW2Float("Door1-2b",0) + 0.1
-							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-							self:SetNW2Float("Door1-2b",self.DoorState1)
+							self.DoorState4 = self:GetNW2Float("Door1-2b",0) + 0.1
+							self.DoorState4 = math.Clamp(self.DoorState4,0,1)
+							self:SetNW2Float("Door1-2b",self.DoorState4)
 							
 						end
 					elseif self:GetNW2Float("Door1-2b",0) >= 1 then
@@ -1181,15 +1175,15 @@ end
 					end
 			end
 	
-			if self.DoorRandomness2 > 0 then
+			if self.DoorRandomness3 > 0 then
 	
 				
 				if self:GetNW2Float("Door3-4b",0) <= 1 then -- If state less than 1, open them
 	
 					if self:GetNW2Float("Door3-4b",0) != 1 then
-						self.DoorState2 = self:GetNW2Float("Door3-4b",0) + 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Float("Door3-4b",self.DoorState2)
+						self.DoorState3 = self:GetNW2Float("Door3-4b",0) + 0.1
+						self.DoorState3 = math.Clamp(self.DoorState3,0,1)
+						self:SetNW2Float("Door3-4b",self.DoorState3)
 						
 					end
 				elseif self:GetNW2Float("Door3-4b",0) >= 1 then
@@ -1197,7 +1191,7 @@ end
 				end
 			end
 	
-			if self.DoorRandomness3 > 0 then
+			if self.DoorRandomness2 > 0 then
 	
 				
 				if self:GetNW2Float("Door5-6b",0) <= 1 then -- If state less than 1, open them
@@ -1213,15 +1207,15 @@ end
 				end
 			end
 	
-			if self.DoorRandomness4 > 0 then
+			if self.DoorRandomness1 > 0 then
 	
 				
 				if self:GetNW2Float("Door7-8b",0) <= 1 then -- If state less than 1, open them
 	
 					if self:GetNW2Float("Door7-8b",0) != 1 then
-						self.DoorState2 = self:GetNW2Float("Door7-8b",0) + 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Float("Door7-8b",self.DoorState2)
+						self.DoorState1 = self:GetNW2Float("Door7-8b",0) + 0.1
+						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
+						self:SetNW2Float("Door7-8b",self.DoorState1)
 						
 					end
 				elseif self:GetNW2Float("Door7-8b",0) >= 1 then
@@ -1240,9 +1234,9 @@ end
 					if self:GetNW2Float("Door1-2b",0) > 0 then -- If state 1, close them
 	
 						if self:GetNW2Float("Door1-2b",0) != 0 then
-							self.DoorState1 = self:GetNW2Float("Door1-2b",0) - 0.1
-							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-							self:SetNW2Float("Door1-2b",self.DoorState1)
+							self.DoorState4 = self:GetNW2Float("Door1-2b",0) - 0.1
+							self.DoorState4 = math.Clamp(self.DoorState4,0,1)
+							self:SetNW2Float("Door1-2b",self.DoorState4)
 						end
 					elseif self:GetNW2Float("Door1-2b",0) <= 0 then
 						self:SetNW2Float("Door1-2b",0)
@@ -1256,9 +1250,9 @@ end
 					if self:GetNW2Float("Door3-4b",0) > 0 then -- If state 1, close them
 	
 						if self:GetNW2Float("Door3-4b",0) != 0 then
-							self.DoorState2 = self:GetNW2Float("Door3-4b",0) - 0.1
-							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-							self:SetNW2Float("Door3-4b",self.DoorState2)
+							self.DoorState3 = self:GetNW2Float("Door3-4b",0) - 0.1
+							self.DoorState3 = math.Clamp(self.DoorState3,0,1)
+							self:SetNW2Float("Door3-4b",self.DoorState3)
 						end
 					elseif self:GetNW2Float("Door3-4b",0) <= 0 then
 						self:SetNW2Float("Door3-4b",1)
@@ -1287,9 +1281,9 @@ end
 					if self:GetNW2Float("Door7-8b",0) > 0 then -- If state less than 1, open them
 	
 						if self:GetNW2Float("Door7-8b",0) != 0 then
-							self.DoorState2 = self:GetNW2Float("Door7-8b",0) - 0.1
-							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-							self:SetNW2Float("Door7-8b",self.DoorState2)
+							self.DoorState1 = self:GetNW2Float("Door7-8b",0) - 0.1
+							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
+							self:SetNW2Float("Door7-8b",self.DoorState1)
 							
 						end
 					elseif self:GetNW2Float("Door7-8b",0) <= 0 then
@@ -2140,8 +2134,8 @@ function ENT:Blink(enable, left, right)
 	self:SetLightPower(48,self.BlinkerOn and left)
 	self:SetLightPower(59,self.BlinkerOn and right)
 	self:SetLightPower(49,self.BlinkerOn and right)
-	--self:SetLightPower(38,self.BlinkerOn and right)
-	--self:SetLightPower(38,self.BlinkerOn and left)
+	self:SetLightPower(38,self.BlinkerOn and right)
+	self:SetLightPower(38,self.BlinkerOn and left)
 	self.u2sectionb.BlinkerRight = self.BlinkerOn and right
 
 	if self.BlinkerOn and left and right then

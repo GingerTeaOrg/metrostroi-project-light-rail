@@ -286,7 +286,16 @@ function TRAIN_SYSTEM:TriggerOutput(name,value)
 	if self[name] then self[name] = value end
 end
 
+function TRAIN_SYSTEM:SyncIBIS()
 
+    self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"Announce",self.Announce)
+    self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"PowerOn",self.PowerOn)
+    self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"TrainID",self.TrainID)
+    self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"Destination",self.Destination)
+    self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"Course",self.Course)
+    self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"Route",self.RouteNumber)
+    self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"State",self.State)
+end
 
 if CLIENT then
     surface.CreateFont("IBIS", { -- main text font
@@ -609,6 +618,8 @@ function TRAIN_SYSTEM:Think()
     if self.KeyInput ~= nil then
         print(self.KeyInput)
     end
+
+    --SetGlobal2Int("TrainID"..self.TrainID,self.Course..self.Route..self.TrainID)
 end 
 
 if CLIENT then

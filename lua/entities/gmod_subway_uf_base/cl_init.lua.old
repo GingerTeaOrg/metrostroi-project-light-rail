@@ -617,7 +617,7 @@ end
 hook.Add("PostDrawTranslucentRenderables", "metrostroi_base_draw", function(_,isDD)
     if isDD then return end
     local inSeat = LocalPlayer().InMetrostroiTrain
-    for ent in pairs(Metrostroi.SpawnedTrains) do
+    for ent in pairs(UF.SpawnedTrains) do
         if ent:IsDormant() then continue end
         if MetrostroiStarted and MetrostroiStarted~=true or ent.RenderBlock then
             if not inSeat then
@@ -2307,7 +2307,7 @@ hook.Add("Think","metrostroi-cabin-panel",function()
                         toolTipText = toolTipText..newTT
                         toolTipPosition = Metrostroi.GetPhrase(newTTpos)
                     end]]
-                    if GetConVar("metrostroi_disablehovertextpos"):GetInt() == 0 and button.tooltipState and button.tooltip then
+                    if GetConVar("uf_disablehovertextpos"):GetInt() == 0 and button.tooltipState and button.tooltip then
                         toolTipText = toolTipText..button.tooltipState(train)
                     end
                 end

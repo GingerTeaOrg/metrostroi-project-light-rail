@@ -44,8 +44,8 @@ local rareModels = { -- Less common special models
 
 
 function ENT:Initialize()
-    self.PassengerSounds = CreateSound(self,Sound( "subway_stations/announces/peoples.wav" ))
-    self.NonPassengerSounds = CreateSound(self,Sound( "ambient/levels/canals/tunnel_wind_loop1.wav" ))
+    self.PassengerSounds = CreateSound(self,Sound( "subway_stations/announces/peoples.mp3" ))
+    self.NonPassengerSounds = CreateSound(self,Sound( "ambient/levels/canals/tunnel_wind_loop1.mp3" ))
     self.ClientModels = {}
     self.CleanupModels = {}
 end

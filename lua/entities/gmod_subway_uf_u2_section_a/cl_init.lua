@@ -39,6 +39,14 @@ ENT.ClientProps["cab"] = {
     nohide=true,
 }
 
+ENT.ClientProps["switching_iron"] = {
+    model ="models/lilly/uf/u2/switching_iron.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide=true,
+}
+
 
 
 ENT.ClientProps["Door_fr1"] = {
@@ -229,7 +237,7 @@ ENT.ClientProps["reverser"] = {
 
 ENT.ClientProps["blinds_l"] = {
     model = "models/lilly/uf/u2/cab/blinds.mdl",
-    pos = Vector(0,0,0),
+    pos = Vector(-1,0,0),
     ang = Angle(0,0,0),
     hideseat = 8,
 }
@@ -743,8 +751,8 @@ function ENT:Initialize()
 
     self.SoundNames = {}
 
-    self.SoundNames["loop_main"] = "lilly/uf//u2/engineloop_test.wav"
-    self.SoundNames["loop_secondary"] = "lilly/uf/u2/engineloop_test.wav"
+    self.SoundNames["loop_main"] = "lilly/uf//u2/engineloop_test.mp3"
+    self.SoundNames["loop_secondary"] = "lilly/uf/u2/engineloop_test.mp3"
 
 
     self.MotorPowerSound = 0
@@ -760,6 +768,7 @@ function ENT:Initialize()
     self.DoorCloseSoundPlayed = false
     self.DoorsOpen = false
 
+    self.CamshaftMadeSound = false
 	
 	self.ThrottleLastEngaged = 0
 
@@ -856,6 +865,11 @@ function ENT:Think()
     self:Animate("Door_rr2",self:GetNW2Int("Door3-4a"),0,100,1,1,false)
     self:Animate("Door_rr1",self:GetNW2Int("Door3-4a"),0,100,1,1,false)
 
+    self:Animate("Door_fl2",self:GetNW2Int("Door7-8b"),0,100,1,1,false)
+    self:Animate("Door_fl1",self:GetNW2Int("Door7-8b"),0,100,1,1,false)
+    
+    self:Animate("Door_rl2",self:GetNW2Int("Door5-6b"),0,100,1,1,false)
+    self:Animate("Door_rl1",self:GetNW2Int("Door5-6b"),0,100,1,1,false)
 
     if self:GetNW2Bool("Microphone",false) == true then
         if self.Microphone == false then
@@ -868,9 +882,11 @@ function ENT:Think()
         self.Microphone = false
     end
 
-    if self:GetNW2Bool("CamshaftMoved",false) == true then
-        self:PlayOnce("Switchgear"..math.random(1,7),"cabin",1,1)
-        PrintMessage(HUD_PRINTTALK,"Camshaft")
+    if self:GetNW2Bool("CamshaftMoved",false) == true and self.CamshaftMadeSound == false then
+        self.CamshaftMadeSound = true
+        self:PlayOnce("Switchgear"..math.random(1,7),"cabin",0.05,1)
+    else
+        self.CamshaftMadeSound = false
     end
 
     	if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
@@ -1105,6 +1121,8 @@ function ENT:Think()
 
     if self:GetNW2Int("Speed") > 10 then
         self:SetSoundState("Cruise",1,pitch,volume)
+    else
+        self:SetSoundState("Cruise",0,pitch,volume)
     end
 
 	
@@ -1148,63 +1166,6 @@ end
 Metrostroi.GenerateClientProps()
 
 function ENT:U2SoundEngine()
-
-    self.PrevTime = self.PrevTime or RealTime()-0.33
-    self.DeltaTime = (RealTime() - self.PrevTime)
-    self.PrevTime = RealTime()
-
-    local speed = self:GetNW2Float("Speed")
-
-    local train = self
-
-    local rollingi = math.min(1,train.TunnelCoeff+math.Clamp((train.StreetCoeff-0.6)/0.3,0,1)*0.8)
-    --print(self:GetPos())
-    local rollings = train.StreetCoeff
-    local soundsmul = 1
-    local streetC,tunnelC = 0,1
-    if IsValid(train) then
-        streetC,tunnelC = train.StreetCoeff or 0,train.TunnelCoeff or 1
-        soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
-    end
-
-    local networked = self:GetNW2Entity("FrontBogey")
-    --local motorPower = networked:GetMotorPower()
-    motorPower = networked:GetNW2Int("MotorPower")/50
-    --print(motorPower)
-    self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1,1)
-    local t = RealTime()*2.5
-    local modulation = (0.2 + 3.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp(speed/4,0,1)
-    local mod2 = 5.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
-    if (speed > -1.0) and (math.abs(self.MotorPowerSound)+modulation) >= 0.0 then
-        --local startVolRamp = 0.2 + 0.8*math.max(0.0,math.min(1.0,(speed - 1.0)*0.5))
-        local powerVolRamp
-
-        powerVolRamp = 0.2*modulation*mod2 + 6*math.abs(self.MotorPowerSound)--2.0*(math.abs(motorPower)^2)
-
-        math.max(0.3,math.min(1.0,math.abs(motorPower)))
-
-        --local k,x = 1.0,math.max(0,math.min(1.1,(speed-1.0)/80))
-        --local motorPchRamp = (k*x^3 - k*x^2 + x)
-        --local motorPitch = 0.03+1.85*motorPchRamp
-        local volumemul = math.min(1,(speed/4)^3)
-        local motorsnd = math.min(1.0,math.max(0.0,1.25*(math.abs(self.MotorPowerSound))))
-        local motorvol = (soundsmul^0.3)*math.Clamp(motorsnd + powerVolRamp,0,1)*volumemul
-        local motorsnd = math.min(1.0,math.max(0.0,1.25*(math.abs(self.MotorPowerSound)-0.15) ))
-        self:SetSoundState("rolling_motors_a",math.min(1,(soundsmul^0.3)*motorsnd*2)*math.Clamp((speed-20)/10,0,1)*(1-math.Clamp((speed-38)/20,0,1))*0.18,math.max(0,speed/35.4)+0.06*streetC)
-        for i,snd in ipairs(self.EngineSNDConfig or {}) do
-            local prev = self.EngineSNDConfig[i-1]
-            local next = self.EngineSNDConfig[i+1]
-            local volume = 1
-            if prev and speed <= prev[4] then
-                volume = math.max(0,1-(prev[4]-speed)/(prev[4]-snd[3]))
-            elseif next  and speed > next[3] then
-                volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
-            end
-            local pitch = math.max(0,speed/snd[2])+0.1*streetC
-        end
-
-        self:SetSoundState("rolling_motors_a",math.min(1,(soundsmul^0.3)*motorsnd*2)*math.Clamp((speed-20)/10,0,1)*(1-math.Clamp((speed-38)/20,0,1))*0.18,math.max(0,speed/35.4)+0.06*streetC)
-    end
 end
 
 function ENT:SetSoundState2(sound,volume,pitch,name,level )

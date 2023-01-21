@@ -301,7 +301,7 @@ end
 
 function ENT:Decouple()
     if IsValid(self.CoupledEnt) then
-        sound.Play("buttons/lever8.wav",(self:GetPos()+self.CoupledEnt:GetPos())/2)
+        sound.Play("buttons/lever8.mp3",(self:GetPos()+self.CoupledEnt:GetPos())/2)
         removeAdvBallSocketBetweenEnts(self,self.CoupledEnt)
         self.CoupledEnt.CoupledEnt = nil
         self.CoupledEnt:Decouple()

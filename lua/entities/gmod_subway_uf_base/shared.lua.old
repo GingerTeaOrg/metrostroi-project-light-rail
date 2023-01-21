@@ -146,12 +146,12 @@ function ENT:InitializeSounds()
 	for i = 1,10 do
 		local id1 = Format("b1tunnel_%d",i)
 		local id2 = Format("b2tunnel_%d",i)
-		self.SoundNames[id1.."a"] = "subway_trains/bogey/st"..i.."a.wav"
-		self.SoundNames[id1.."b"] = "subway_trains/bogey/st"..i.."b.wav"
+		self.SoundNames[id1.."a"] = "subway_trains/bogey/st"..i.."a.mp3"
+		self.SoundNames[id1.."b"] = "subway_trains/bogey/st"..i.."b.mp3"
 		self.SoundPositions[id1.."a"] = {700,1e9,Vector( 317-5,0,-84),1}
 		self.SoundPositions[id1.."b"] = self.SoundPositions[id1.."a"]
-		self.SoundNames[id2.."a"] = "subway_trains/bogey/st"..i.."a.wav"
-		self.SoundNames[id2.."b"] = "subway_trains/bogey/st"..i.."b.wav"
+		self.SoundNames[id2.."a"] = "subway_trains/bogey/st"..i.."a.mp3"
+		self.SoundNames[id2.."b"] = "subway_trains/bogey/st"..i.."b.mp3"
 		self.SoundPositions[id2.."a"] = {700,1e9,Vector(-317+0,0,-84),1}
 		self.SoundPositions[id2.."b"] = self.SoundPositions[id2.."a"]
 	end
@@ -219,7 +219,7 @@ local function PauseBASS(snd)
 end
 function ENT:CreateBASSSound(name,callback,noblock,onerr)
 	if self.StopSounds or not self.ClientPropsInitialized or self.CreatingCSEnts then return end
-	--if self.SoundSpawned and name:find(".wav") then return end
+	--if self.SoundSpawned and name:find(".mp3") then return end
 	--self.SoundSpawned = true
 	sound.PlayFile(Sound("sound/"..name), "3d noplay mono"..(noblock and " noblock" or ""), function( snd,err,errName )
 		if not IsValid(self) then destroySound(snd) return end

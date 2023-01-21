@@ -78,7 +78,7 @@ function ENT:CheckContact(pos,dir,id,cpos)
         local effectdata = EffectData()
         effectdata:SetOrigin(pPos + Vector(0,0,-16+math.random()*(40+0)))
         util.Effect("cball_explode",effectdata,true,true)
-        sound.Play("ambient/energy/zap"..math.random(1,3)..".wav",pPos,75,math.random(100,150),1.0)
+        sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
         return
     end
     return result.Hit
@@ -119,8 +119,8 @@ function ENT:CheckVoltage(dT)
 
             local volume = 0.53
             if dt < 1.0 then volume = 0.43 end
-            if i == 1 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".wav",self:LocalToWorld(self.PantLPos),65,math.random(90,120),volume) end
-            if i == 2 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".wav",self:LocalToWorld(self.PantRPos),65,math.random(90,120),volume) end
+            if i == 1 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".mp3",self:LocalToWorld(self.PantLPos),65,math.random(90,120),volume) end
+            if i == 2 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".mp3",self:LocalToWorld(self.PantRPos),65,math.random(90,120),volume) end
 
             -- Sparking probability
             local probability = math.Clamp(1-(self.MotorPower/2),0,1)

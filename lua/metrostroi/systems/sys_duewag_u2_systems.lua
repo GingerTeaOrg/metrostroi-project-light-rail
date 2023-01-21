@@ -18,6 +18,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.Voltage = 0
 	
 	self.ResistorBank = 0
+	self.CurrentResistor = 0
 	self.PrevResistorBank = nil
 	self.ResistorChangeRegistered = false
 	self.DoorFLState = 100
@@ -518,25 +519,33 @@ function TRAIN_SYSTEM:U2Engine()
 
 	--self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
 
+	--print(self.CurrentResistor)
+
+	
+		
+		if self.ResistorBank != self.CurrentResistor then
+			self.ResistorChangeRegistered = true
+			self.CurrentResistor = self.ResistorBank
+		elseif self.ResistorBank == self.CurrentResistor then
+			self.ResistorChangeRegistered = false
+			
+		end
 	
 
-	if self.ResistorBank > 0 then
-		local CurrentResistor = self.ResistorBank
-		if self.ResistorBank ~= CurrentResistor then
-			self.ResistorChangeRegistered = true
-			self.Train:SetNW2Bool("CamshaftMoved",true)
-		elseif self.ResistorBank == CurrentResistor then
-			self.ResistorChangeRegistered = false
-			self.Train:SetNW2Bool("CamshaftMoved",false)
-		end
-	end
+	self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
 
-
-	if self.Train:GetNW2Bool("CamshaftMove",false) == true then
+	if self.Train:GetNW2Bool("CamshaftMoved",false) == true then
 		print("CamshaftMove")
 	end
+	--print(self.ResistorBank)
+	if math.abs(self.Train.FrontBogey.Acceleration) > 0 then
+		self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
 
-	self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
+	elseif math.abs(self.Train.FrontBogey.Acceleration) < 0 then
+		self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration*-1,1)
+	end
+
+
 	self.Train:SetNW2Float("Amps",self.Amps)
 end
 
