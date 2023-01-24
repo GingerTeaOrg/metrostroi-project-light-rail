@@ -177,4 +177,9 @@ function TRAIN_SYSTEM:Think()
 		self.Train:SetNW2Bool("DeadmanTripped",true)
 		self.Train:SetNW2Bool("OverspeedCutOut",true)
 	end
+
+	if self.Train:GetNW2Bool("BatteryOn",false) == false then
+		self.Train:SetNW2Bool("DeadmanTripped",false)
+		self.TrainHasReset = true
+	end
 end

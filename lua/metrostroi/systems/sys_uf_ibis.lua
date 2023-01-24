@@ -285,7 +285,7 @@ end
 function TRAIN_SYSTEM:TriggerOutput(name,value)
 	if self[name] then self[name] = value end
 end
-
+if SERVER then
 function TRAIN_SYSTEM:SyncIBIS()
 
     self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"Announce",self.Announce)
@@ -295,6 +295,7 @@ function TRAIN_SYSTEM:SyncIBIS()
     self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"Course",self.Course)
     self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"Route",self.RouteNumber)
     self.Train:CANWrite("IBIS",self.Train:GetWagonNumber(),"IBIS",nil,"State",self.State)
+end
 end
 
 if CLIENT then
@@ -400,8 +401,8 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
             --self.State = 2
         elseif self.Train:GetNW2Bool("IBISBootupComplete",false) == false then
-            self:PrintText(0,0,"-----------------")
-            self:PrintText(0,4,"-----------------")
+            self:PrintText(0,0,"---------------")
+            self:PrintText(0,4,"---------------")
         end
 
     end
@@ -620,6 +621,7 @@ function TRAIN_SYSTEM:Think()
     end
 
     --SetGlobal2Int("TrainID"..self.TrainID,self.Course..self.Route..self.TrainID)
+    self:SyncIBIS()
 end 
 
 if CLIENT then

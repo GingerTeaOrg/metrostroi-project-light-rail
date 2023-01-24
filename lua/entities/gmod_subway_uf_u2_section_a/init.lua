@@ -411,6 +411,11 @@ function ENT:Initialize()
 
 	self.ScrollModifier = 0
 
+	self.TrainWireCrossConnections = {
+        [4] = 3, -- Reverser F<->B
+		[21] = 20, --blinker
+
+    }
 
 	--[[self:SetNW2Int("Door1-2a",0)
 	self:SetNW2Int("Door3-4a",0)
@@ -520,11 +525,7 @@ function ENT:Initialize()
 }
 
 
-	self.TrainWireCrossConnections = {
-        [4] = 3, -- Reverser F<->B
-		--[21] = 20,
 
-    }
 
 	
 
@@ -579,6 +580,8 @@ end
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
 
+
+
 	self:RollsignSync()
 	self:SetNW2Entity("FrontBogey",self.FrontBogey)
 	self.PrevTime = self.PrevTime or CurTime()
@@ -615,12 +618,7 @@ function ENT:Think(dT)
 	end]]
 
 	--PrintMessage(HUD_PRINTTALK, self:GetNW2String("Texture"))
-	if self:ReadTrainWire(7) == 1 then
-		self:SetNW2Bool("BatteryOn",true)
 
-	elseif self:ReadTrainWire(7) == 0 then
-		self:SetNW2Bool("BatteryOn",false)
-	end
 	self:SetNW2Bool("PantoUp",self.PantoUp)
 	self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
 
@@ -743,7 +741,7 @@ function ENT:Think(dT)
 		self:SetNW2Float("ReverserAnimate",0)
 	end
 	
-	if self:ReadTrainWire(7) == 1 then -- if the battery is on
+	if self:ReadTrainWire(7) > 1 then -- if the battery is on
 		
 		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 then
 			self:SetLightPower(56,true)
@@ -760,7 +758,7 @@ function ENT:Think(dT)
 		end
 		
 		
-		if not self:GetNW2Bool("AIsCoupled",false) == true then
+		if self:GetNW2Bool("AIsCoupled",false) == false then
 			if self:ReadTrainWire(4) == 1 and self:ReadTrainWire(3) == 0 then
 				self:SetLightPower(51,false)
     			self:SetLightPower(52,false)
@@ -800,7 +798,7 @@ function ENT:Think(dT)
 				self:SetLightPower(55,false)
 				self:SetNW2Bool("Taillights",false)
 				self:SetNW2Bool("Headlights",false)
-			elseif self:ReadTrainWire(3) == 1 then
+			elseif self:ReadTrainWire(3) > 0 then
 				self:SetLightPower(51,false)
     			self:SetLightPower(52,false)
 				self:SetLightPower(53,false)
@@ -891,7 +889,7 @@ function ENT:Think(dT)
 	end
 	
 	
-	
+
 	
 if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 	
@@ -910,8 +908,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 
 			if self.Duewag_U2.ThrottleState < 0 then
-				self.RearBogey.MotorForce  = -59727.24 
-				self.FrontBogey.MotorForce = -59727.24
+				self.RearBogey.MotorForce  = -5972.724 
+				self.FrontBogey.MotorForce = -5972.724
 				self:SetNW2Bool("Braking",true)
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -919,8 +917,8 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			elseif self.Duewag_U2.ThrottleState > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
-				self.RearBogey.MotorForce  = 49772.7
-				self.FrontBogey.MotorForce = 49772.7 
+				self.RearBogey.MotorForce  = 4977.27
+				self.FrontBogey.MotorForce = 4977.27 
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
@@ -968,20 +966,19 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 
 	elseif self:ReadTrainWire(6) > 0 then
 
+	
+		if self:ReadTrainWire(8) < 1 then
 
-		if self:ReadTrainWire(8) ~= 1 then
+    		self.FrontBogey.BrakeCylinderPressure = self:ReadTrainWire(5) 
+			self.MiddleBogey.BrakeCylinderPressure = self:ReadTrainWire(5)
+			self.RearBogey.BrakeCylinderPressure = self:ReadTrainWire(5)
 
-
-    		self.FrontBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
-			self.MiddleBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
-			self.RearBogey.BrakeCylinderPressure = self:ReadTrainWire(5) or 0
-		--PrintMessage(HUD_PRINTTALK,self.FrontBogey.Acceleration)
-			if self:ReadTrainWire(9) > 0 then
-				if self:ReadTrainWire(2) == 0 then
+			if self:ReadTrainWire(9) < 1 then
+				if self:ReadTrainWire(2) < 1 then
 					self.RearBogey.MotorForce  = 49772.7
 					self.FrontBogey.MotorForce = 49772.7 
 					self:SetNW2Bool("Braking",false)
-				elseif self:ReadTrainWire(2) == 1 then 
+				elseif self:ReadTrainWire(2) > 0 then 
 					self.RearBogey.MotorForce  = -59727.24
 					self.FrontBogey.MotorForce = -59727.24
 					self:SetNW2Bool("Braking",true)
@@ -990,10 +987,10 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				self.FrontBogey.MotorPower = self:ReadTrainWire(1)
 		
 
-				if self:ReadTrainWire(3) == 1 then 
+				if self:ReadTrainWire(3) > 0 then 
 					self.FrontBogey.Reversed = false
 					self.RearBogey.Reversed = false 
-				elseif self:ReadTrainWire(4) == 1 then
+				elseif self:ReadTrainWire(4) > 0 then
 					self.FrontBogey.Reversed = true
 					self.RearBogey.Reversed = true
 				end
@@ -1042,7 +1039,7 @@ end
 	 --15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
 
 
-	
+	--PrintMessage(HUD_PRINTTALK,self:ReadTrainWire(3)..tostring(self))
 
 	--if self:GetNW2Bool("BatteryOn",false) == true or self:ReadTrainWire(7) == 1 then --blinker only works when electricity is on, duh
 		if self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) == 0 then
@@ -1093,7 +1090,7 @@ end
 		--PrintMessage(HUD_PRINTTALK, "Command to Open doors running")
 	end
 
-	if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "left" then --if the doors are cleared for opening and the side is left
+	--[[if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "left" then --if the doors are cleared for opening and the side is left
 
 		
 		if self:GetNW2Float("Door1-2b",0) <=1 and self:GetNW2Float("Door3-4b",0) <=1 and self:GetNW2Float("Door5-6b",0) <=1 and self:GetNW2Float("Door7-8b",0) <= 1 then --then either of the doors are less than fully opened
@@ -1455,7 +1452,7 @@ end
 				
 	
 		end
-	end
+	end]]
 	
 end
 
@@ -1472,8 +1469,8 @@ function ENT:OnButtonPress(button,ply)
 	end
 
 	if self.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpFast" then self.Duewag_U2.ThrottleRate = 5.5 end
-		if button == "ThrottleDownFast" then self.Duewag_U2.ThrottleRate = -5.5  end
+		if button == "ThrottleUpFast" then self.Duewag_U2.ThrottleRate = 5 end
+		if button == "ThrottleDownFast" then self.Duewag_U2.ThrottleRate = -5 end
 		
 	end
 
@@ -2178,9 +2175,9 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right)
 			self:SetNWBool("DoorAlarmAlreadyTriggered",false)
 			--self:DoorHandler(true,false) --give the command to open the doors
 		elseif self:GetNW2Float("Door1-2b",0) >= 1 or self:GetNW2Float("Door3-4b",0) >= 1 or self:GetNW2Float("Door5-6b",0) >= 1 or self:GetNW2Float("Door7-8b",0) >= 1 then --if they're all at 1 then don't do anything anymore
-			--CommandOpen = false
-			--CommandClose = false
-			--self:SetNW2Bool("DoorsJustOpened",true) --we've just opened the doors. This matters for simulating the departing procedure.
+			self.CommandOpen = false
+			self.CommandClose = false
+			self:SetNW2Bool("DoorsJustOpened",true) --we've just opened the doors. This matters for simulating the departing procedure.
 		end
 	elseif DoorsUnlocked == true and right == true then --same thing for the right side
 
@@ -2188,19 +2185,19 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right)
 			self.CommandOpen = true
 			self.CommandClose = false
 			self:SetNW2Bool("DoorsJustOpened",true)
+			self:SetNWBool("DoorAlarmAlreadyTriggered",false)
 		elseif self:GetNW2Float("Door1-2a",0) >= 1 or self:GetNW2Float("Door3-4a",0) >= 1 or self:GetNW2Float("Door5-6a",0) >= 1 or self:GetNW2Float("Door7-8a",0) >= 1 then
-			--CommandOpen = false
-			--self:SetNW2Bool("DoorsJustOpened",true)
+			self.CommandClose = false
+			self:SetNW2Bool("DoorsJustOpened",true)
 		end
 	
 
 
-	elseif CommandClose == true then --if we've just gotten the door close signal
+	elseif CommandClose == true and right == true then --if we've just gotten the door close signal
 			self.CommandClose = true --set them to close
 			self.CommandOpen = false
-		if self:GetNW2Float("Door1-2a",0) <=0 and self:GetNW2Float("Door3-4a",0) and self:GetNW2Float("Door5-6a",0) and self:GetNW2Float("Door7-8a",0) <=0 and self:GetNW2Float("Door1-2b",0) <=0 and self:GetNW2Float("Door3-4b",0) <=0 and self:GetNW2Float("Door5-6b",0) and self:GetNW2Float("Door7-8b",0) then --if they're already closed
-			--CommandOpen = false --stop controlling them
-			self.CommandClose = false
+		if self:GetNW2Float("Door1-2a",0) <= 0 and self:GetNW2Float("Door3-4a",0) <= 0 and self:GetNW2Float("Door5-6a",0) <= 0 and self:GetNW2Float("Door7-8a",0) <= 0 and self:GetNW2Float("Door1-2b",0) <= 0 and self:GetNW2Float("Door3-4b",0) <= 0 and self:GetNW2Float("Door5-6b",0) <= 0 and self:GetNW2Float("Door7-8b",0) <= 0 then --if they're already closed
+			self.CommandClose = false --stop controlling them
 			if self:GetNW2Bool("DoorsJustOpened",false) == true then --if they were just open, reset that flag
 				self:SetNW2Bool("DoorsJustOpened",false)
 				self.CommandClose = false

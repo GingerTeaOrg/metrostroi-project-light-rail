@@ -1,7 +1,7 @@
 UF.AddIBISAnnouncer("Frankfurt",{
     delay_due_to_malfunction = {"lilly/uf/IBIS/announcements/special/imn/delay_due_to_malfunction.mp3",1},
     delay_due_to_malfunction_further_info_pending = {"lilly/uf/IBIS/announcements/special/imn/delay_due_to_malfunction_further_info_pending.mp3",1},
-    diversion_due_to_malfunction = 
+    diversion_due_to_malfunction = {"lilly/uf/IBIS/announcements/special/imn/diversion_due_to_malfunction.mp3",1},
     escorted_by_security = {"lilly/uf/IBIS/announcements/special/imn/escorted_by_security.mp3",1},
     signal_delay = {"lilly/uf/IBIS/announcements/special/imn/signal_delay.mp3",1},
     this_train_terminates_due_to_malfunction = {"lilly/uf/IBIS/announcements/special/imn/this_train_terminates_due_to_malfunction.mp3",1},

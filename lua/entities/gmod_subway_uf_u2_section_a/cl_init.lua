@@ -859,17 +859,17 @@ function ENT:Think()
     else
         self:Animate("BatterySwitch",0.5,0,100,100,10,false)
     end
-    self:Animate("Door_fr2",self:GetNW2Int("Door1-2a"),0,100,1,1,false)
-    self:Animate("Door_fr1",self:GetNW2Int("Door1-2a"),0,100,1,1,false)
+    self:Animate("Door_fr2",self:GetNW2Int("Door1-2a"),0,100,1,.3,false)
+    self:Animate("Door_fr1",self:GetNW2Int("Door1-2a"),0,100,1,.3,false)
 
-    self:Animate("Door_rr2",self:GetNW2Int("Door3-4a"),0,100,1,1,false)
-    self:Animate("Door_rr1",self:GetNW2Int("Door3-4a"),0,100,1,1,false)
+    self:Animate("Door_rr2",self:GetNW2Int("Door3-4a"),0,100,1,.3,false)
+    self:Animate("Door_rr1",self:GetNW2Int("Door3-4a"),0,100,1,.3,false)
 
-    self:Animate("Door_fl2",self:GetNW2Int("Door7-8b"),0,100,1,1,false)
-    self:Animate("Door_fl1",self:GetNW2Int("Door7-8b"),0,100,1,1,false)
+    self:Animate("Door_fl2",self:GetNW2Int("Door7-8b"),0,100,1,.3,false)
+    self:Animate("Door_fl1",self:GetNW2Int("Door7-8b"),0,100,1,.3,false)
     
-    self:Animate("Door_rl2",self:GetNW2Int("Door5-6b"),0,100,1,1,false)
-    self:Animate("Door_rl1",self:GetNW2Int("Door5-6b"),0,100,1,1,false)
+    self:Animate("Door_rl2",self:GetNW2Int("Door5-6b"),0,100,1,.3,false)
+    self:Animate("Door_rl1",self:GetNW2Int("Door5-6b"),0,100,1,.3,false)
 
     if self:GetNW2Bool("Microphone",false) == true then
         if self.Microphone == false then

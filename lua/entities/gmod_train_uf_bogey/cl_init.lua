@@ -12,7 +12,7 @@ ENT.SoundNames["ted2_703"]  = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_com
 --*1.025
 ENT.SoundNames["flangea"]      = "lilly/uf/bogeys/u2/curvesqueal_a.mp3"
 ENT.SoundNames["flangeb"]      = "lilly/uf/bogeys/u2/curvesqueal_b.mp3"
-ENT.SoundNames["flange1"]      = "lilly/uf/bogeys/u2/curvehighspeed.mp3"
+ENT.SoundNames["flange1"]      = "lilly/uf/bogeys/u2/curvesqueal.mp3"
 ENT.SoundNames["flange2"]      = "lilly/uf/bogeys/u2/curvesqueal2.mp3"
 ENT.SoundNames["brakea_loop1"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 ENT.SoundNames["brakea_loop2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
