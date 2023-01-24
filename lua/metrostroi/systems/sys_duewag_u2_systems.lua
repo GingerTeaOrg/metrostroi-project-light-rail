@@ -282,7 +282,7 @@ function TRAIN_SYSTEM:Think(Train)
 	if self.TractionConditionFulfilled == true then
 		if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
 			--if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
-				self.Traction = math.Clamp(self.ThrottleState * 0.1,-100,100)  --right now it's coupled directly to the throttle. This needs a somewhat realistic custom simulation, if we don't get schematics
+				self.Traction = math.Clamp(self.ThrottleState * 0.01,-100,100)  --right now it's coupled directly to the throttle. This needs a somewhat realistic custom simulation, if we don't get schematics
 				if self.VZ == true then
 					if self.Traction > 0 then
 						self.Train:WriteTrainWire(2,0)
