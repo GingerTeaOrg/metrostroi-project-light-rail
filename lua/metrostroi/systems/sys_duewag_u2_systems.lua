@@ -44,7 +44,9 @@ function TRAIN_SYSTEM:Initialize()
 	self.CabLights = 0
 	self.HeadLights = 0
 	self.StopLights = 0
-	
+	self.FanTimer = 0
+
+
 	self.ReverserInserted = false
 	self.ReverserState = 0 --internal registry for forwards, neutral, backwards
 	self.ReverserLeverState = 0 --for the reverser lever setting. -1 is reverse, 0 is neutral, 1 is startup, 2 is single unit, 3 is multiple unit
@@ -156,9 +158,9 @@ function TRAIN_SYSTEM:Think(Train)
 	end]]
 
 
-	--print(#self.Train.WagonList)
+	----print(#self.Train.WagonList)
 
-	--print(self.Train)
+	----print(self.Train)
 
 
 	--Is the throttle engaged? We need to know that for a few things!
@@ -213,7 +215,7 @@ function TRAIN_SYSTEM:Think(Train)
 
 	end]]
 
-	--print("MU Wire:"..self.Train:ReadTrainWire(6))
+	----print("MU Wire:"..self.Train:ReadTrainWire(6))
 
 
 
@@ -240,7 +242,7 @@ function TRAIN_SYSTEM:Think(Train)
 	end
 
 
-
+	--print(#self.Train.WagonList)
 	
 	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(7) > 0 then --if either the battery is on or the EMU cables signal multiple unit mode
 
@@ -277,7 +279,7 @@ function TRAIN_SYSTEM:Think(Train)
 		end
 	end
 		
-	--print(tostring(self.VZ).."VZ")
+	----print(tostring(self.VZ).."VZ")
 	
 	if self.TractionConditionFulfilled == true then
 		if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
@@ -291,10 +293,10 @@ function TRAIN_SYSTEM:Think(Train)
 						self.Train:SetNW2Int("BrakePressure",0)
 						self.BrakePressure = 0
 						
-					--print("traction applied")
+					----print("traction applied")
 					
 					elseif self.Traction < 0 then
-						--print("braking applied")
+						----print("braking applied")
 						self.Train:WriteTrainWire(2,1)
 						if self.Speed > 3.5 and self.Train:ReadTrainWire(2) > 0 then
 							self.Train:WriteTrainWire(1,self.Traction * -1)
@@ -338,7 +340,7 @@ function TRAIN_SYSTEM:Think(Train)
 				self.Traction = -100 
 				self.BrakePressure = 2.7
 				self.Train:WriteTrainWire(1,self.Traction)
-				--print("Deadman tripped and braking")
+				----print("Deadman tripped and braking")
 			elseif self.Speed < 5 then
 				self.BrakePressure = 2.7
 				self.Traction = 0
@@ -359,7 +361,7 @@ function TRAIN_SYSTEM:Think(Train)
  
 			if self.Train:ReadTrainWire(6) == 1 then --in MU mode we write that to the train wire for the train script to handle
 				self.Train:WriteTrainWire(5,2.7)
-				--print("Brake applied")
+				----print("Brake applied")
 
 			elseif self.Train:ReadTrainWire(6) == 0 then --in single unit mode we write that directly to the brake pressure
 				self.BrakePressure = 2.7
@@ -369,7 +371,7 @@ function TRAIN_SYSTEM:Think(Train)
 	elseif self.ThrottleState > 0 then
 		if self.Train:ReadTrainWire(6) > 1 then --in MU mode we write that to the train wire for the train script to handle
 			self.Train:WriteTrainWire(5,0)
-			--print("brake released")
+			----print("brake released")
 
 		elseif self.Train:ReadTrainWire(6) < 1 then --in single unit mode we write that directly to the brake pressure
 			self.BrakePressure = 0
@@ -393,7 +395,7 @@ function TRAIN_SYSTEM:Think(Train)
 
 	if self.Train:GetNW2Bool("DepartureConfirmed",false) == true then
 		self.Train:WriteTrainWire(9,0)
-		--print("Departure confirmed")
+		----print("Departure confirmed")
 	elseif
 		self.Train:GetNW2Bool("DepartureConfirmed",false) == false then
 			self.Train:WriteTrainWire(9,1)
@@ -460,7 +462,7 @@ function TRAIN_SYSTEM:U2Engine()
 
 	--self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
 
-	--print(self.CurrentResistor)
+	----print(self.CurrentResistor)
 
 	
 		
@@ -475,7 +477,7 @@ function TRAIN_SYSTEM:U2Engine()
 
 	self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
 
-	--print(self.ResistorBank)
+	----print(self.ResistorBank)
 	if math.abs(self.Train.FrontBogey.Acceleration) > 0 then
 		self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
 
@@ -494,7 +496,7 @@ function TRAIN_SYSTEM:IsLeadingCab()
 	elseif self.ReverserInserted == false and self.VZ == true then
 		self.LeadingCab = 0
 	end
-	--print("leadingcab"..self.LeadingCab)
+	----print("leadingcab"..self.LeadingCab)
 end
 
 function TRAIN_SYSTEM:MUHandler()
@@ -513,8 +515,8 @@ function TRAIN_SYSTEM:MUHandler()
 
 
 ---------------------------------------------------------------------------------------------------------
---print(self.Train.FrontBogey.MotorPower)
---print(self.Train.FrontBogey.Reversed)
+----print(self.Train.FrontBogey.MotorPower)
+----print(self.Train.FrontBogey.Reversed)
 
 
 	--Set reverser logic directly if we're the leading unit
@@ -548,7 +550,7 @@ function TRAIN_SYSTEM:MUHandler()
 			self.Train:WriteTrainWire(3,1)
 			self.Train:WriteTrainWire(4,0)
 			self.Train:WriteTrainWire(6,1)
-			--print(self.Train.FrontBogey.BrakeCylinderPressure)
+			----print(self.Train.FrontBogey.BrakeCylinderPressure)
 		elseif self.ReverserLeverState == 3 then --We're at position 3 of the reverser forwards, that means we don't talk to coupled units.
 			self.VZ = false
 			self.VE = true
@@ -573,7 +575,7 @@ function TRAIN_SYSTEM:MUHandler()
 		self.VZ = false
 	end
 
---print("MUWire"..self.Train:ReadTrainWire(6))
+----print("MUWire"..self.Train:ReadTrainWire(6))
 
 ---------------------------------------------------------------------------------------
 
@@ -594,5 +596,17 @@ function TRAIN_SYSTEM:MUHandler()
 		self.Train.RearBogey.BrakePressure = self.Train.RearBogey.BrakePressure
 
 		self.Traction = self.Traction
+	end
+
+	
+	if self.ThrottleState > 0 or self.ThrottleState < 0 and self.ReverserState ~= 0 and self.Train.Speed > 4 then
+		self.FanTimer = CurTime()
+		self.Train:SetNW2Bool("Fans",true)
+	elseif self.ThrottleState == 0 and self.Train.Speed < 2 then
+		self.FanTimer = 0
+	end
+
+	if CurTime() - self.FanTimer > 5 and self.Train:GetNW2Bool("Fans",false) == true then
+		self.Train:SetNW2Bool("Fans",false)
 	end
 end

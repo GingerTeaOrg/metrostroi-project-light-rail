@@ -1115,15 +1115,15 @@ function ENT:Think()
     local pitch
         
 
-        pitch = math.Clamp(math.Clamp(self:GetNW2Int("Speed"),0,80) / 80, 0.5, 1)
-        volume = math.Clamp(self:GetNW2Int("Speed"),0,100) / 100 + 0.2
+        
+        volume = math.Clamp(self:GetNW2Int("Speed"),0,80) / 8
     
 
-    if self:GetNW2Int("Speed") > 10 then
-        self:SetSoundState("Cruise",1,pitch,volume)
-    else
-        self:SetSoundState("Cruise",0,pitch,volume)
-    end
+    
+        self:SetSoundState("Cruise",volume,1,0,2)
+    
+        
+    
 
 	
     local rollingi = math.min(1,self.TunnelCoeff+math.Clamp((self.StreetCoeff-0.82)/0.3,0,1))

@@ -452,7 +452,7 @@ function ENT:Think()
 	--self:SetNW2Bool("BIsCoupled",self.RearCouple:AreCoupled(self.RearCouple))
     
 	
-		if not self:GetNW2Bool("BIsCoupled",false) == true then
+		if self.ParentTrain:GetNW2Bool("BIsCoupled",false) == false then
 			if self.ParentTrain:ReadTrainWire(3) == 1 then
 				self:SetLightPower(61,false)
     			self:SetLightPower(62,false)
@@ -468,7 +468,7 @@ function ENT:Think()
 				self:SetLightPower(64,false)
 				self:SetLightPower(65,false)
 			end
-		elseif self:GetNW2Bool("BIsCoupled",false) == true then
+		elseif self.ParentTrain:GetNW2Bool("BIsCoupled",false) == true then
 			if self.ParentTrain:ReadTrainWire(3) == 1 then
 				self:SetLightPower(61,false)
    		 		self:SetLightPower(62,false)

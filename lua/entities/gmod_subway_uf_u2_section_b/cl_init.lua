@@ -382,7 +382,7 @@ function ENT:Think()
 
     self:Animate("Speedo",self.SpeedoAnim,0,200,1,0.1,false)
     --self:Animate("Throttle",0,-45,45,3,0,false)
-	if not self.ParentTrain:GetNW2Bool("Headlights",false) == true and self:GetNW2Bool("Headlights",false) == true then
+	if self.ParentTrain:GetNW2Bool("Headlights",false) == true and self:GetNW2Bool("Headlights",false) == true then
         self:ShowHide("headlights_on",true)
     else
         self:ShowHide("headlights_on",false)

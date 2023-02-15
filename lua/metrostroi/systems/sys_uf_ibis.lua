@@ -621,7 +621,10 @@ function TRAIN_SYSTEM:Think()
     end
 
     --SetGlobal2Int("TrainID"..self.TrainID,self.Course..self.Route..self.TrainID)
-    self:SyncIBIS()
+    if self.Train.Duewag_U2.LeadingCab == 1 then
+        self:SyncIBIS()
+    else
+    end
 end 
 
 if CLIENT then

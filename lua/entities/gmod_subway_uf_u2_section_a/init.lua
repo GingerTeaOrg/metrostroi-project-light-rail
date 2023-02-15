@@ -444,6 +444,15 @@ function ENT:Initialize()
 		[KEY_B] = "BatteryToggle",
 		[KEY_V] = "LightsToggle",
 		[KEY_M] = "Mirror",
+		[KEY_1] = "Throttle10Pct",
+		[KEY_2] = "Throttle20Pct",
+		[KEY_3] = "Throttle30Pct",
+		[KEY_4] = "Throttle40Pct",
+		[KEY_5] = "Throttle50Pct",
+		[KEY_6] = "Throttle60Pct",
+		[KEY_7] = "Throttle70Pct",
+		[KEY_8] = "Throttle80Pct",
+		[KEY_9] = "Throttle90Pct",
 		[KEY_PERIOD] = "WarnBlinkToggle",
 		
 		[KEY_COMMA] = "BlinkerLeftToggle",
@@ -591,13 +600,13 @@ function ENT:Think(dT)
 	self:SetNW2Float("MotorPower",self.FrontBogey:GetMotorPower())
     local Panel = self.Panel
 
-	--print(self:GetNW2Float("MotorPower"))
+	----print(self:GetNW2Float("MotorPower"))
 
 	self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
 	self:SetPackedBool("WarningAnnouncement",Panel.WarningAnnouncement > 0)
-	--print(self:GetPackedBool("WarningAnnouncement"))
+	----print(self:GetPackedBool("WarningAnnouncement"))
 	--self:SetNW2Entity("FrontBogey",self.FrontBogey)
-	--print(self.Panel.WarnBlink)
+	----print(self.Panel.WarnBlink)
 	self.CabWindowL = math.Clamp(self.CabWindowL,0,1)
 	self.CabWindowR = math.Clamp(self.CabWindowR,0,1)
 	self:SetNW2Float("CabWindowL",self.CabWindowL)
@@ -622,11 +631,6 @@ function ENT:Think(dT)
 	self:SetNW2Bool("PantoUp",self.PantoUp)
 	self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
 
-	if self:ReadTrainWire(1) > 0 and self:ReadTrainWire(3) > 1 and self.Speed < 5 then
-		self:SetNW2Bool("Fans",true)
-	elseif self:ReadTrainWire(1) == 0  then
-		self:SetNW2Bool("Fans",false)
-	end
 	
 
 	self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
@@ -639,7 +643,7 @@ function ENT:Think(dT)
 	
 	
 	
-	--print(#self.Train.WagonList)
+	
 
 	--Check if the A section is coupled
 	if self.FrontCouple.CoupledEnt ~= nil then
@@ -694,7 +698,7 @@ function ENT:Think(dT)
 			self.ElectricKickStart = true	--remember that we are doing now
 			self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
 			self.ElectricStarted = true
-			--print(self.ElectricOnMoment)
+			----print(self.ElectricOnMoment)
 			--self:SetNW2Float("ElectricOnMoment",self.ElectricOnMoment)
 		end
 
@@ -702,7 +706,7 @@ function ENT:Think(dT)
 			self:SetNW2Bool("IBISChime",true)
 			self:SetNW2Bool("IBISBootupComplete",true)
 		end
-		--print(self.ElectricOnMoment)
+		----print(self.ElectricOnMoment)
 		
 		if self.IBIS.BootupComplete == true then
 			self:SetNW2Bool("IBISChime",true)
@@ -893,7 +897,7 @@ function ENT:Think(dT)
 	
 if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 	
-	
+	----print(#self.WagonList)
 	--self.FrontBogey.PneumaticBrakeForce = 10000.0
 	--self.MiddleBogey.PneumaticBrakeForce = 10000.0
 	--self.RearBogey.PneumaticBrakeForce = 10000.0  
@@ -1057,7 +1061,7 @@ end
 		end
 	--end
 	
-	--print(self.Blinker)
+	----print(self.Blinker)
 
 
 	--if self.Duewag_U2.VZ == true then
@@ -1141,8 +1145,8 @@ end
 		--self:SetNW2Bool("DoorAlarm",false) --don't set it off yet if above condition isn't true, either not closed yet or confirmed departure button
 	end
 
-	--print(self:GetNW2Float("Door1-2a",0))
-	--print(self:GetNW2Float("Door1-2b",0))
+	----print(self:GetNW2Float("Door1-2a",0))
+	----print(self:GetNW2Float("Door1-2b",0))
 
 	--TEMPORARY
 
@@ -1390,8 +1394,8 @@ end
 							self.DoorState1 = self:GetNW2Float("Door1-2a",0) - 0.1
 							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 							self:SetNW2Float("Door1-2a",self.DoorState1)
-							print("Door1-2a")
-							print(self.DoorState1)
+							--print("Door1-2a")
+							--print(self.DoorState1)
 						--end
 					elseif self:GetNW2Float("Door1-2a",0) < 0 then
 						--self:SetNW2Float("Door1-2a",0)
@@ -1407,8 +1411,8 @@ end
 							self.DoorState2 = self:GetNW2Float("Door3-4a",0) - 0.1
 							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 							self:SetNW2Float("Door3-4a",self.DoorState2)
-							print("Door3-4a")
-							print(self.DoorState2)
+							--print("Door3-4a")
+							--print(self.DoorState2)
 							
 						--end
 					elseif self:GetNW2Float("Door3-4a",0) < 0 then
@@ -1478,6 +1482,36 @@ function ENT:OnButtonPress(button,ply)
 		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
 	end
 
+	if button == "Throttle10Pct" then
+		self.Duewag_U2.ThrottleState = 10
+	end
+
+	if button == "Throttle20Pct" then
+		self.Duewag_U2.ThrottleState = 20
+	end
+
+	if button == "Throttle30Pct" then
+		self.Duewag_U2.ThrottleState = 30
+	end
+	if button == "Throttle40Pct" then
+		self.Duewag_U2.ThrottleState = 40
+	end
+	if button == "Throttle50Pct" then
+		self.Duewag_U2.ThrottleState = 50
+	end
+	if button == "Throttle60Pct" then
+		self.Duewag_U2.ThrottleState = 60
+	end
+	if button == "Throttle70Pct" then
+		self.Duewag_U2.ThrottleState = 70
+	end
+	if button == "Throttle80Pct" then
+		self.Duewag_U2.ThrottleState = 80
+	end
+	if button == "Throttle90Pct" then
+		self.Duewag_U2.ThrottleState = 90
+	end
+
 	if button == "PantoUp" then
 		if self.PantoUp == false then
 			self.PantoUp = true 
@@ -1517,27 +1551,27 @@ function ENT:OnButtonPress(button,ply)
 	if button == "CabWindowR+" then
 		
 			self.CabWindowR = self.CabWindowR - 0.1
-			--print(self:GetNW2Float("CabWindowR"))
+			----print(self:GetNW2Float("CabWindowR"))
 		
 	end
 
 	if button == "CabWindowR-" then
 		
 			self.CabWindowR = self.CabWindowR + 0.1
-			--print(self:GetNW2Float("CabWindowR"))
+			----print(self:GetNW2Float("CabWindowR"))
 		
 	end
 
 	if button == "CabWindowL+" then
 			self.CabWindowL = self.CabWindowL - 0.1
-			--print(self:GetNW2Float("CabWindowL"))
+			----print(self:GetNW2Float("CabWindowL"))
 		
 	end
 
 	if button == "CabWindowL-" then
 		
 			self.CabWindowL = self.CabWindowL + 0.1
-			--print(self:GetNW2Float("CabWindowL"))
+			----print(self:GetNW2Float("CabWindowL"))
 		
 	end
 
@@ -1630,7 +1664,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "DeadmanSet" then
 			self.Duewag_Deadman:TriggerInput("IsPressed", 1)
-			--print("DeadmanPressedYes")
+			----print("DeadmanPressedYes")
 	end
 	
 
@@ -1992,7 +2026,7 @@ function ENT:OnButtonRelease(button,ply)
 		
 		if button == "DeadmanSet" then
 			self.Duewag_Deadman:TriggerInput("IsPressed", 0)
-			--print("DeadmanPressedNo")
+			----print("DeadmanPressedNo")
 		end
 	
 		if button == "WarningAnnouncementSet" then
@@ -2111,44 +2145,44 @@ end
 function ENT:Blink(enable, left, right)
 
 	if self.BatteryOn == true then
-	if not enable then
+		if not enable then
 
-		self.BlinkerOn = false
-		self.LastTriggerTime = CurTime()
-
-
-	elseif CurTime() - self.LastTriggerTime > 0.4 then
-			self.BlinkerOn = not self.BlinkerOn
-			
+			self.BlinkerOn = false
 			self.LastTriggerTime = CurTime()
 
-	end
 
-	self:SetLightPower(58,self.BlinkerOn and left)
+		elseif CurTime() - self.LastTriggerTime > 0.4 then
+				self.BlinkerOn = not self.BlinkerOn
+				
+				self.LastTriggerTime = CurTime()
 
-	self.u2sectionb.BlinkerLeft = self.BlinkerOn and left
-	
-	self:SetLightPower(48,self.BlinkerOn and left)
-	self:SetLightPower(59,self.BlinkerOn and right)
-	self:SetLightPower(49,self.BlinkerOn and right)
-	self:SetLightPower(38,self.BlinkerOn and right)
-	self:SetLightPower(38,self.BlinkerOn and left)
-	self.u2sectionb.BlinkerRight = self.BlinkerOn and right
+		end
 
-	if self.BlinkerOn and left and right then
-		self:SetLightPower(56,self.BlinkerOn and left)
-		self:SetLightPower(57,self.BlinkerOn and right)
-		self:SetLightPower(38,self.BlinkerOn)
-	end
+		self:SetLightPower(58,self.BlinkerOn and left)
 
-	if self.BlinkerOn and left == true then
-		self:SetLightPower(38,self.BlinkerOn and left)
-	end
-	if self.BlinkerOn and right == true then
+		self.u2sectionb.BlinkerLeft = self.BlinkerOn and left
+		
+		self:SetLightPower(48,self.BlinkerOn and left)
+		self:SetLightPower(59,self.BlinkerOn and right)
+		self:SetLightPower(49,self.BlinkerOn and right)
 		self:SetLightPower(38,self.BlinkerOn and right)
-	end
+		self:SetLightPower(38,self.BlinkerOn and left)
+		self.u2sectionb.BlinkerRight = self.BlinkerOn and right
 
-	self:SetNW2Bool("BlinkerTick",self.BlinkerOn) --one tick sound for the blinker relay
+		if self.BlinkerOn and left and right then
+			self:SetLightPower(56,self.BlinkerOn and left)
+			self:SetLightPower(57,self.BlinkerOn and right)
+			self:SetLightPower(38,self.BlinkerOn)
+		end
+
+		if self.BlinkerOn and left == true then
+			self:SetLightPower(38,self.BlinkerOn and left)
+		end
+		if self.BlinkerOn and right == true then
+			self:SetLightPower(38,self.BlinkerOn and right)
+		end
+
+		self:SetNW2Bool("BlinkerTick",self.BlinkerOn) --one tick sound for the blinker relay
 	end
 end
 
@@ -2216,8 +2250,8 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right)
 		--self:SetNW2Bool("DoorAlarm",false) --don't set it off yet if above condition isn't true, either not closed yet or confirmed departure button
 	end
 
-	--print(self:GetNW2Float("Door1-2a",0))
-	--print(self:GetNW2Float("Door1-2b",0))
+	----print(self:GetNW2Float("Door1-2a",0))
+	----print(self:GetNW2Float("Door1-2b",0))
 
 	--TEMPORARY
 
@@ -2465,8 +2499,8 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right)
 							self.DoorState1 = self:GetNW2Float("Door1-2a",0) - 0.1
 							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 							self:SetNW2Float("Door1-2a",self.DoorState1)
-							print("Door1-2a")
-							print(self.DoorState1)
+							--print("Door1-2a")
+							--print(self.DoorState1)
 						--end
 					elseif self:GetNW2Float("Door1-2a",0) < 0 then
 						--self:SetNW2Float("Door1-2a",0)
@@ -2482,8 +2516,8 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right)
 							self.DoorState2 = self:GetNW2Float("Door3-4a",0) - 0.1
 							self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 							self:SetNW2Float("Door3-4a",self.DoorState2)
-							print("Door3-4a")
-							print(self.DoorState2)
+							--print("Door3-4a")
+							--print(self.DoorState2)
 							
 						--end
 					elseif self:GetNW2Float("Door3-4a",0) < 0 then
