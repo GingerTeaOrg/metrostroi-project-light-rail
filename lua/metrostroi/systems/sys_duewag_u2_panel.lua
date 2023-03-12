@@ -12,7 +12,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("DoorsSelectRight","Relay","Switch", {bass = true})
     self.Train:LoadSystem("DoorsSelectLeft","Relay","Switch", {bass = true})
     self.Train:LoadSystem("Battery","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("Lights","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("Headlights","Relay","Switch", {bass = true})
     self.Train:LoadSystem("WarnBlink","Relay","Switch", {bass = true, normally_closed = false})
     self.Train:LoadSystem("DriverLight","Relay","Switch", {bass = true})
     self.Train:LoadSystem("BatteryDisable","Relay","Switch", {bass = true})
@@ -72,10 +72,12 @@ function TRAIN_SYSTEM:Initialize()
     self.OpenDoor1 = 0
     self.UnlockDoors = 0
     self.DoorCloseSignal = 0
+
+    self.Headlights = 0
     
 
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return {"WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "PassengerLights", "SetHoldingBrake", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
+    return {"WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "PassengerLights", "SetHoldingBrake", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements","Headlights"}
 end

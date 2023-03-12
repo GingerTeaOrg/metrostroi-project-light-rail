@@ -116,7 +116,7 @@ ENT.ClientProps["Door_rl2"] = {
 
 ENT.ClientProps["IBIS"] = {
 	model = "models/lilly/uf/u2/IBIS.mdl",
-    pos = Vector(0,0,0),
+    pos = Vector(0.1,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
 }
@@ -392,7 +392,7 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "LightsToggle", x=20, y=21, radius=10, tooltip = "Enable Headlights", model = {
+    {ID = "HeadlightsToggle", x=20, y=21, radius=10, tooltip = "Enable Headlights", model = {
         z=0, ang=2,
         var="Lights",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "Toggle" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
@@ -797,6 +797,7 @@ function ENT:Initialize()
         "Nag2",
         "Nag3"
     }
+    self.Speed = 0
 end
 
 
@@ -804,8 +805,10 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
+
+    self.Speed = self:GetNW2Int("Speed")
 	
-    self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,false)
+    self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,0)
     self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
     self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,9,false)
 
@@ -889,13 +892,14 @@ function ENT:Think()
         self.CamshaftMadeSound = false
     end
 
-    	if self:GetNW2Bool("HeadlightsSwitch",false) == true and self:GetNW2Int("ReverserState",0) == 1 and self:GetNW2Bool("BatteryOn",false) then
+    	if self:GetPackedBool("HeadlightsSwitch",false) == true then
         	self:ShowHide("headlights_on",true,0)
             self:Animate("HeadlightSwitch",1,0,100,100,10,false)
-    	elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
+    	elseif self:GetPackedBool("HeadlightsSwitch",false) == false then
         	self:ShowHide("headlights_on",false,0)
             self:Animate("HeadlightSwitch",0,0,100,100,10,false)
     	end
+        print(self:GetPackedBool("HeadlightsSwitch"))
 
     	if self:GetNW2Bool("BlinkerShineLeft",false) == true then
         	self:SetLightPower(11,true)
@@ -904,7 +908,7 @@ function ENT:Think()
     	end
 
 
-    self.SpeedoAnim = math.Clamp(self:GetNW2Float("Speed"),0,80) / 100 * 1.5
+    self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"),0,80) / 100 * 1.5
 
     self:Animate("Speedo",self.SpeedoAnim,0,100,32,0,0)
     --self:Animate("Throttle",0,-45,45,3,0,false)
@@ -976,9 +980,6 @@ function ENT:Think()
 
              	-- Fan handler
 
-        if self:GetNW2Bool("Fans",false) == true then
-            self.ThrottleLastEngaged = CurTime()
-        end
 
         if self:GetNW2Bool("Fans",false) == true and self:GetNW2Bool("BatteryOn",false) == true then
             self:SetSoundState("Fan1",1,1,1)
@@ -986,13 +987,14 @@ function ENT:Think()
             self:SetSoundState("Fan3",1,1,1)
         end
 
-        if self:GetNW2Bool("Fans",false) == false and self:GetNW2Int("Speed",0) < 3 then
-            if CurTime() - self.ThrottleLastEngaged > 2 then
+        if self:GetNW2Bool("Fans",false) == false then
+            
                 self:SetSoundState("Fan1",0,1,1 )
                 self:SetSoundState("Fan2",0,1,1 )
                 self:SetSoundState("Fan3",0,1,1 )
-            end
+            
         end
+
         if self:GetNW2Bool("DoorsUnlocked",false) == true and self.DoorOpenSoundPlayed == false then
             self.DoorOpenSoundPlayed = true
             self.DoorCloseSoundPlayed = false
@@ -1039,39 +1041,39 @@ function ENT:Think()
     self:SetLightPower(9,true)
     self:SetLightPower(10,true)
 
-    if self:GetNW2Bool("Headlights",false) == true then
+    if self:GetPackedBool("Headlights",false) == true then
             
-		    if self:GetNW2Bool("Headlights",false) == true then
+		    if self:GetPackedBool("Headlights",false) == true then
                 
                     self:SetLightPower(1,true)
                     self:SetLightPower(2,true)
                     self:SetLightPower(4,false)
                     self:SetLightPower(5,false)
             elseif
-            self:GetNW2Bool("Headlights",false) == false then
+            self:GetPackedBool("Headlights",false) == false then
                 
                 self:SetLightPower(1,false)
                 self:SetLightPower(2,false)
             elseif
-                self:GetNW2Bool("Taillights") == true then
+                self:GetPackedBool("Taillights") == true then
                     self:SetLightPower(1,false)
                     self:SetLightPower(2,false)
                     self:SetLightPower(4,true)
                     self:SetLightPower(5,true)
             elseif
-                self:GetNW2Bool("Taillights") == false and self:GetNW2Bool("Headlights",false) == true  then
+                self:GetPackedBool("Taillights") == false and self:GetPackedBool("Headlights",false) == true  then
                     self:SetLightPower(1,true)
                     self:SetLightPower(2,true)
                     self:SetLightPower(4,false,100)
                     self:SetLightPower(5,false,100)
             end
 
-    elseif self:GetNW2Bool("Headlights",false) == false then
+    elseif self:GetPackedBool("Headlights",false) == false then
             self:SetLightPower(1,false)
             self:SetLightPower(2,false)
             
 
-    elseif self:GetNW2Bool("Taillights") == true then
+    elseif self:GetPackedBool("Taillights") == true then
             self:SetLightPower(1,false)
             self:SetLightPower(2,false)
             self:SetLightPower(4,true)
@@ -1105,58 +1107,21 @@ function ENT:Think()
 	
 	
     local dT = self.DeltaTime
-	local speed = self:GetNW2Int("Speed")/100
 
 	local nxt = 35
 
 	
 
-    local volume
-    local pitch
         
 
-        
-        volume = math.Clamp(self:GetNW2Int("Speed"),0,80) / 8
+   
     
-
     
-        self:SetSoundState("Cruise",volume,1,0,2)
-    
-        
+    --print(self.Speed)
     
 
 	
-    local rollingi = math.min(1,self.TunnelCoeff+math.Clamp((self.StreetCoeff-0.82)/0.3,0,1))
-    local rollings = math.max(self.TunnelCoeff*1,self.StreetCoeff)
 	
-	local rol5 = math.Clamp(speed/1,0,1)*(1-math.Clamp((speed)/8,0,1))
-    local rol10 = math.Clamp(speed/12,0,1)*(1-math.Clamp((speed)/8,0,1))
-    local rol40p = Lerp((speed)/12,0.6,1)
-    local rol40 = math.Clamp((speed)/8,0,1)*(1-math.Clamp((speed)/8,0,1))
-    local rol40p = Lerp((speed)/50,0.6,1)
-    local rol70 = math.Clamp((speed)/8,0,1)*(1-math.Clamp((speed)/5,0,1))
-    local rol70p = Lerp(0.8+(speed)/25*0.2,0.8,1.2)
-    local rol80 = math.Clamp((speed)/5,0,1)
-    local rol80p = Lerp(0.8+(speed)/15*0.2,0.8,1.2)
-	
-	
-	
-	--self:SetSoundState("rolling_10",math.min(1,rollingi*(1-rollings)+rollings*0.8)*rol5,1)
-    --self:SetSoundState("rolling_10",rollingi*rol10,1)
-    --self:SetSoundState("rolling_40",rollingi*rol40,rol40p)
-    --self:SetSoundState("rolling_70",rollingi*rol70,rol70p)
-    --self:SetSoundState("rolling_80",rollingi*rol80,rol80p)
-
-	local rol_motors = math.Clamp((speed-20)/40,0,1)
-    --self:SetSoundState("MotorType1",math.max(rollingi,rollings*0.8)*rol_motors,self:GetNW2Int("Speed")/56)
-    --self:SetSoundState("MotorType1",1,speed/56)
-    --self:SetSoundState("MotorType1",10,1,1)
-    --local rol10 = math.Clamp(speed/15,0,1)*(1-math.Clamp((speed)/35,0,1))
-    --local rol10p = Lerp((speed)/14,0.6,0.78)
-    local rol40 = math.Clamp((speed-18)/35,0,1)*(1-math.Clamp((speed)/40,0,1))
-    local rol40p = Lerp((speed)/66,0.6,1.3)
-    local rol70 = math.Clamp((speed-55)/20,0,1)--*(1-math.Clamp((speed-72)/5,0,1))
-    local rol70p = Lerp((speed)/27,0.78,1.15)
 
     self:U2SoundEngine()
 	self:ScrollTracker()
@@ -1166,6 +1131,7 @@ end
 Metrostroi.GenerateClientProps()
 
 function ENT:U2SoundEngine()
+    self:SetSoundState("Cruise",self.Speed / 80,1,1,1)
 end
 
 function ENT:SetSoundState2(sound,volume,pitch,name,level )

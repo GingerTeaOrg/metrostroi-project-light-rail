@@ -173,7 +173,7 @@ function TRAIN_SYSTEM:Think()
 		--print("Emergency cutoff true")
 	end
 
-	if self.Speed > 80 then
+	if self.Speed > 81 then
 		self.Train:SetNW2Bool("DeadmanTripped",true)
 		self.Train:SetNW2Bool("OverspeedCutOut",true)
 	end

@@ -88,6 +88,7 @@ Metrostroi.AddSkin("train","OrEb",{
     typ = "U2h",
     textures = {
         main = "models/lilly/uf/u2/u2h/orange-main",
+        main_left = "models/lilly/uf/u2/u2h/orange-main-left",
 		decals = "models/lilly/uf/u2/u2h/decals-modern-orange",
         door_external = "models/lilly/uf/u2/u2h/door_external_orange",
 		

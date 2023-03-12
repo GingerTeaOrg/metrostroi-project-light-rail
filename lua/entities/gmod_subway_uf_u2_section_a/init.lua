@@ -270,7 +270,7 @@ end
 ENT.BogeyDistance = 1100
 
 
-ENT.SyncTable = {"WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "PassengerLights", "SetHoldingBrake", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
+ENT.SyncTable = {"Headlights","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "PassengerLights", "SetHoldingBrake", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
 
 
 function ENT:Initialize()
@@ -442,7 +442,7 @@ function ENT:Initialize()
 		[KEY_J] = "DoorsSelectLeftToggle",
 		[KEY_L] = "DoorsSelectRightToggle",
 		[KEY_B] = "BatteryToggle",
-		[KEY_V] = "LightsToggle",
+		[KEY_V] = "HeadlightsToggle",
 		[KEY_M] = "Mirror",
 		[KEY_1] = "Throttle10Pct",
 		[KEY_2] = "Throttle20Pct",
@@ -591,6 +591,8 @@ function ENT:Think(dT)
 
 
 
+	print(self.Duewag_U2.HeadlightsSwitch)
+
 	self:RollsignSync()
 	self:SetNW2Entity("FrontBogey",self.FrontBogey)
 	self.PrevTime = self.PrevTime or CurTime()
@@ -604,6 +606,25 @@ function ENT:Think(dT)
 
 	self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
 	self:SetPackedBool("WarningAnnouncement",Panel.WarningAnnouncement > 0)
+
+
+	self:SetPackedBool("Headlights",self.Panel.Headlights > 0)
+	
+
+	--temporary, move to electrical system later
+
+	if self.Duewag_U2.ReverserState > 0 and self.Duewag_U2.BatteryOn == true then
+		if self.Duewag_U2.HeadlightsSwitch == true then
+			self.Panel.Headlights = 1
+		else
+			self.Panel.Headlights = 0
+		end
+		
+	else
+		self.Panel.Headlights = 0
+	end
+
+
 	----print(self:GetPackedBool("WarningAnnouncement"))
 	--self:SetNW2Entity("FrontBogey",self.FrontBogey)
 	----print(self.Panel.WarnBlink)
@@ -634,8 +655,7 @@ function ENT:Think(dT)
 	
 
 	self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
-	self:SetNW2Float("Speed",self.Speed)
-	self.Duewag_U2:TriggerInput("Speed",self.Speed*150)
+	self:SetNW2Int("Speed",self.Speed)
  
 	--PrintMessage(HUD_PRINTTALK,"Current Speed")
 	--PrintMessage(HUD_PRINTTALK,self.Speed)
@@ -678,13 +698,7 @@ function ENT:Think(dT)
 
 
 
-	if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
-        self:SetLightPower(50,true)
-		self:SetLightPower(60,true)
-    elseif self:GetNW2Bool("Cablight",false) == false then
-        self:SetLightPower(50,false)
-		self:SetLightPower(60,false)
-    end
+	
 
 	if self.BatteryOn == true then
 		--self.Duewag_Battery.Charging = 1
@@ -694,6 +708,13 @@ function ENT:Think(dT)
 		
 		self:SetNW2Bool("BatteryOn",true)
 
+		if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
+    	    self:SetLightPower(50,true)
+			self:SetLightPower(60,true)
+    	elseif self:GetNW2Bool("Cablight",false) == false then
+    	    self:SetLightPower(50,false)
+			self:SetLightPower(60,false)
+    	end
 		if self.ElectricKickStart == false then	--if we haven't kicked off starting the power yet
 			self.ElectricKickStart = true	--remember that we are doing now
 			self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
@@ -745,7 +766,7 @@ function ENT:Think(dT)
 		self:SetNW2Float("ReverserAnimate",0)
 	end
 	
-	if self:ReadTrainWire(7) > 1 then -- if the battery is on
+	if self:ReadTrainWire(7) > 1 or self.Duewag_U2.BatteryOn == true then -- if the battery is on
 		
 		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 then
 			self:SetLightPower(56,true)
@@ -755,7 +776,7 @@ function ENT:Think(dT)
 			self:SetLightPower(56,false)
 			self:SetLightPower(57,false)
 			self:SetNW2Bool("BrakeLights",false)
-		elseif self:GetNW2Bool("Headlights",false) == true then
+		elseif self:GetPackedBool("Headlights",false) == true then
 			self:SetLightPower(56,false)
 			self:SetLightPower(57,false)
 			self:SetNW2Bool("BrakeLights",false)
@@ -763,53 +784,49 @@ function ENT:Think(dT)
 		
 		
 		if self:GetNW2Bool("AIsCoupled",false) == false then
-			if self:ReadTrainWire(4) == 1 and self:ReadTrainWire(3) == 0 then
+			
+			if self:ReadTrainWire(4) > 0 and self:ReadTrainWire(3) < 0 then
 				self:SetLightPower(51,false)
     			self:SetLightPower(52,false)
 				self:SetLightPower(53,false)
 				self:SetLightPower(54,true)
 				self:SetLightPower(55,true)
-				self:SetNW2Bool("Taillights",true) --send it off as an NW2 Bool, so that we don't need more logic in cl_init
-				self:SetNW2Bool("Headlights",false)
-			elseif self:ReadTrainWire(3) == 1 and self:ReadTrainWire(4) == 0 then
-				if self:GetNW2Bool("HeadlightsSwitch",false) == true then
+			elseif self:ReadTrainWire(3) > 0 then
+				if self:GetPackedBool("Headlights",false) == true then
 					self:SetLightPower(51,true)
     				self:SetLightPower(52,true)
 					self:SetLightPower(53,true)
 					self:SetLightPower(54,false)
 					self:SetLightPower(55,false)
-					self:SetNW2Bool("Taillights",false)
-					self:SetNW2Bool("Headlights",true)
-				elseif self:GetNW2Bool("HeadlightsSwitch",false) == false then
+
+				elseif self:GetPackedBool("Headlights",false) == false then
 					self:SetLightPower(51,false)
     				self:SetLightPower(52,false)
 					self:SetLightPower(53,false)
-					self:SetNW2Bool("Taillights",false)
-					self:SetNW2Bool("Headlights",false)
+					self:SetLightPower(54,false)
+					self:SetLightPower(55,false)
+
 
 				end
-				--[[self:SetLightPower(54,false)
-				self:SetLightPower(55,false)
-				self:SetNW2Bool("Taillights",false)]]
 
 			end
 		elseif self:GetNW2Bool("AIsCoupled",false) == true then
-			if self:ReadTrainWire(4) == 1 then
+			if self:ReadTrainWire(4) > 0 then
 				self:SetLightPower(51,false)
    		 		self:SetLightPower(52,false)
 				self:SetLightPower(53,false)
 				self:SetLightPower(54,false)
 				self:SetLightPower(55,false)
-				self:SetNW2Bool("Taillights",false)
-				self:SetNW2Bool("Headlights",false)
+				--self:SetNW2Bool("Taillights",false)
+				--self:SetNW2Bool("Headlights",false)
 			elseif self:ReadTrainWire(3) > 0 then
 				self:SetLightPower(51,false)
     			self:SetLightPower(52,false)
 				self:SetLightPower(53,false)
 				self:SetLightPower(54,false)
 				self:SetLightPower(55,false)
-				self:SetNW2Bool("Taillights",false)
-				self:SetNW2Bool("Headlights",false)
+				--self:SetNW2Bool("Taillights",false)
+				--self:SetNW2Bool("Headlights",false)
 			end
 		end
 	end
@@ -822,7 +839,7 @@ function ENT:Think(dT)
 	
 
 	
-
+	
 
 	
 	local N = math.Clamp(self.Duewag_U2.Traction, 0, 100)
@@ -1792,12 +1809,16 @@ function ENT:OnButtonPress(button,ply)
 			self:SetNW2Bool("Cablight",false)
 		end
 	end
-	if button == "LightsToggle" then
-		if self:GetNW2Bool("HeadlightsSwitch",false) == false then
-			self:SetNW2Bool("HeadlightsSwitch",true)
-		elseif self:GetNW2Bool("HeadlightsSwitch",false) == true then
-			self:SetNW2Bool("HeadlightsSwitch",false)
+	if button == "HeadlightsToggle" then
+		
+		if self.Duewag_U2.HeadlightsSwitch == false then
+			self.Duewag_U2.HeadlightsSwitch = true
+			self:SetPackedBool("HeadlightsSwitch",self.Duewag_U2.HeadlightsSwitch)
+		else
+			self.Duewag_U2.HeadlightsSwitch = false
+			self:SetPackedBool("HeadlightsSwitch",self.Duewag_U2.HeadlightsSwitch)
 		end
+		print(self.Duewag_U2.HeadlightsSwitch)
 	end
 
 	if button == "DoorsSelectLeftToggle" then

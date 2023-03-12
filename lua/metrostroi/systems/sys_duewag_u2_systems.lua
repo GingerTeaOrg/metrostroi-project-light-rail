@@ -81,6 +81,8 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.Amps = 0
 
+	self.HeadlightsSwitch = false
+
 	
 	
 
@@ -91,7 +93,7 @@ if CLIENT then return end
 
 
 function TRAIN_SYSTEM:Inputs()
-	return {"BrakePressure", "speed", "ThrottleRate", "ThrottleState", "BrakePressure","ReverserState","ReverserLeverState", "ReverserInserted","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOnA", "BatteryOnB", "KeyInsertA", "KeyInsertB", "KeyTurnOnA", "KeyTurnOnB", "BlinkerState", "Haltebremse", "CloseDoorsButton", "DoorsOpenButton"}
+	return {"HeadlightsSwitch","BrakePressure", "speed", "ThrottleRate", "ThrottleState", "BrakePressure","ReverserState","ReverserLeverState", "ReverserInserted","BellEngage","Horn","BitteZuruecktreten", "PantoUp", "BatteryOnA", "BatteryOnB", "KeyInsertA", "KeyInsertB", "KeyTurnOnA", "KeyTurnOnB", "BlinkerState", "Haltebremse", "CloseDoorsButton", "DoorsOpenButton"}
 end
 
 function TRAIN_SYSTEM:Outputs()
@@ -128,6 +130,8 @@ function TRAIN_SYSTEM:Think(Train)
 	self:MUHandler()
 
 	self:IsLeadingCab()
+
+	self.Speed = self.Train.Speed
 
 	--PrintMessage(HUD_PRINTTALK,self.ResistorBank)
 
@@ -246,6 +250,23 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(7) > 0 then --if either the battery is on or the EMU cables signal multiple unit mode
 
+		if self.Train.Duewag_Deadman.IsPressed > 0 then --set up the deadman state as a wire, for easier adaptation into the consist
+			self.Train:WriteTrainWire(12,1)
+		elseif self.Train.Duewag_Deadman.IsPressed < 1 then
+			self.Train:WriteTrainWire(12,0)
+		end
+
+
+		if self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(12) > 0 then
+			self.TractionConditionFulfilled = true
+		elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Duewag_Deadman.IsPressed > 0 then
+			self.TractionConditionFulfilled = true
+		elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Duewag_Deadman.IsPressed < 1 then
+			self.TractionConditionFulfilled = false
+		elseif self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(12) < 1 then
+			self.TractionConditionFulfilled = false
+		end
+
 		if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 then
 			self.TractionConditionFulfilled = true
 		
@@ -300,9 +321,9 @@ function TRAIN_SYSTEM:Think(Train)
 						self.Train:WriteTrainWire(2,1)
 						if self.Speed > 3.5 and self.Train:ReadTrainWire(2) > 0 then
 							self.Train:WriteTrainWire(1,self.Traction * -1)
-						elseif self.Speed < 3.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) == 2.7 then
+						elseif self.Speed < 1.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) == 2.7 then
 							self.Traction = 0
-						elseif self.Speed > 2.7 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) < 2.7 then
+						elseif self.Speed > 1.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) < 2.7 then
 							self.Traction = self.Traction
 						end
 					end
@@ -320,7 +341,7 @@ function TRAIN_SYSTEM:Think(Train)
 					if self.Traction < 0 then
 						if self.Speed > 3.5 and self.ThrottleState < 0 then
 							self.Traction = self.Traction * -1
-						elseif self.Speed < 3.5 and self.ThrottleState < 0 and self.BrakePressure == 2.7 then
+						elseif self.Speed < 0.2 and self.ThrottleState < 0 and self.BrakePressure == 2.7 then
 							self.Traction = 0
 						elseif self.Speed > 2 and self.ThrottleState > 0 and self.BrakePressure == 0 then
 							self.Traction = self.Traction
@@ -336,21 +357,33 @@ function TRAIN_SYSTEM:Think(Train)
 			
 			--end
 		elseif self.Train:GetNW2Bool("DeadmanTripped",false) == true then
-			if self.Speed > 5 then
+			if self.Speed > 1.5 then
 				self.Traction = -100 
 				self.BrakePressure = 2.7
 				self.Train:WriteTrainWire(1,self.Traction)
-				----print("Deadman tripped and braking")
-			elseif self.Speed < 5 then
+				print("Deadman tripped and braking")
+			elseif self.Speed < 1.5 then
 				self.BrakePressure = 2.7
 				self.Traction = 0
 				self.Train:WriteTrainWire(1,self.Traction)
 			end
 		end
+	elseif self.Train:GetNW2Bool("DeadmanTripped",false) == true then
+		if self.Speed > 1.5 then
+			self.Traction = -100 
+			self.BrakePressure = 2.7
+			self.Train:WriteTrainWire(1,self.Traction)
+			print("Deadman tripped and braking")
+		elseif self.Speed < 1.5 then
+			self.BrakePressure = 2.7
+			self.Traction = 0
+			self.Train:WriteTrainWire(1,self.Traction)
+		end
+	
 	end		
 	
 
-	if self.ThrottleState <= 100 then --Throttle animation handling. Adapt the value to the pose aprameter on the model
+	if self.ThrottleState <= 100 then --Throttle animation handling. Adapt the value to the pose parameter on the model
 		self.ThrottleStateAnim = self.ThrottleState / 200 + 0.5
 	elseif (self.ThrottleState >= 0) then
 		self.ThrottleStateAnim = (self.ThrottleState * -0.1)
@@ -474,9 +507,12 @@ function TRAIN_SYSTEM:U2Engine()
 			
 		end
 	
-
-	self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
-
+	if self.ReverserState > 1 then
+		self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
+	end
+	if self.ReverserState < 0 then
+		self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
+	end
 	----print(self.ResistorBank)
 	if math.abs(self.Train.FrontBogey.Acceleration) > 0 then
 		self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
@@ -599,14 +635,16 @@ function TRAIN_SYSTEM:MUHandler()
 	end
 
 	
-	if self.ThrottleState > 0 or self.ThrottleState < 0 and self.ReverserState ~= 0 and self.Train.Speed > 4 then
+	if self.ThrottleState > 0 or self.ThrottleState < 0 and self.ReverserState ~= 0 and self.Train.Speed > 5 then
 		self.FanTimer = CurTime()
 		self.Train:SetNW2Bool("Fans",true)
 	elseif self.ThrottleState == 0 and self.Train.Speed < 2 then
 		self.FanTimer = 0
 	end
 
-	if CurTime() - self.FanTimer > 5 and self.Train:GetNW2Bool("Fans",false) == true then
-		self.Train:SetNW2Bool("Fans",false)
+	if CurTime() - self.FanTimer > 5 then
+
+			self.Train:SetNW2Bool("Fans",false)
+		
 	end
 end
