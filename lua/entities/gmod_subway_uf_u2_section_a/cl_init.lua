@@ -942,7 +942,7 @@ function ENT:Think()
 
     if self:GetNW2Bool("CamshaftMoved",false) == true and self.CamshaftMadeSound == false then
         self.CamshaftMadeSound = true
-        self:PlayOnce("Switchgear"..math.random(1,7),"cabin",0.3,1)
+        self:PlayOnce("Switchgear"..math.random(1,7),"cabin",0.2,1)
     else
         self.CamshaftMadeSound = false
     end

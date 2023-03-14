@@ -85,6 +85,10 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.ManualHoldingBrake = false
 
+	self.CamshaftMoveTimer = 0
+
+	self.CamshaftFinishedMoving = true
+
 	
 	
 
@@ -502,29 +506,45 @@ function TRAIN_SYSTEM:U2Engine()
 	
 		
 		if self.ResistorBank != self.CurrentResistor then
+			self.CamshaftMoveTimer = CurTime()
 			self.ResistorChangeRegistered = true
 			self.CurrentResistor = self.ResistorBank
+			self.CamshaftFinishedMoving = false
 		elseif self.ResistorBank == self.CurrentResistor then
 			self.ResistorChangeRegistered = false
+			self.Train:SetNW2Bool("CamshaftMoved",false)
+			if self.CamshaftFinishedMoving == true then
+				self.CamshaftMoveTimer = 0
+			end
 		end
 	
 	
 	if self.ReverserState != 0 then --camshaft only moves when you're actually in gear
 		if self.ThrottleState >= 1 and self.Speed >= 0 then -- if the throttle is set to acceleration and the speed is nil or greater
-			self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
-			print("mooo")
+			if CurTime() - self.CamshaftMoveTimer > 0.2 and self.CamshaftFinishedMoving == false then
+				self.CamshaftFinishedMoving = true
+				self.Train:SetNW2Bool("CamshaftMoved",true)
+				
+				print("1")
+			end
 		elseif self.Speed <= 6 and self.ThrottleState >= 1 then -- if the throttle is set to acceleration and the speed is stationary
-			self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
+			
+			if CurTime() - self.CamshaftMoveTimer > 0.2 and self.CamshaftFinishedMoving == false then
+				self.Train:SetNW2Bool("CamshaftMoved",true)
+				self.CamshaftFinishedMoving = true
+				print("2")
+			end
 		elseif self.Speed >= 5 then
-			self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered) --if we're already in motion, do the sound regardless of throttle state because it'll always be reacting to braking or accelerating
+			if CurTime() - self.CamshaftMoveTimer > 0.2 and self.CamshaftFinishedMoving == false then
+				self.Train:SetNW2Bool("CamshaftMoved",true) --if we're already in motion, do the sound regardless of throttle state because it'll always be reacting to braking or accelerating
+				self.CamshaftFinishedMoving = true
+				print("3")
+			end
 		end
 		
 	end
 
-	--self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
-	
-	--print(self.Train:GetNW2Bool("CamshaftMoved",false))
-	--print(self.ResistorBank)
+
 	if math.abs(self.Train.FrontBogey.Acceleration) > 0 then
 		self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
 
