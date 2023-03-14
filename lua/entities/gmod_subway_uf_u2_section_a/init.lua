@@ -270,7 +270,7 @@ end
 ENT.BogeyDistance = 1100
 
 
-ENT.SyncTable = {"Headlights","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "PassengerLights", "SetHoldingBrake", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
+ENT.SyncTable = {"Headlights","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm","PassengerLights", "SetHoldingBrake", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
 
 
 function ENT:Initialize()
@@ -309,6 +309,8 @@ function ENT:Initialize()
 	self.LastDoorTick = 0
 
 	self.WagonNumber = 303
+
+	self.Door1 = false
 
 	self.Haltebremse = 0
 	self.CabWindowR = 0
@@ -469,6 +471,7 @@ function ENT:Initialize()
 							[KEY_B] = "BatteryDisableToggle",
 							[KEY_PAGEUP] = "Rollsign+",
 							[KEY_PAGEDOWN] = "Rollsign-",
+							[KEY_O] = "OpenDoor1Set",
 						},
 							
 		[KEY_LALT] = {
@@ -590,9 +593,19 @@ function ENT:Think(dT)
 	self.BaseClass.Think(self)
 
 
+	if self.Door1 == true then
+		if self.DoorSideUnlocked == "Left" then
+			self:DoorHandler(true,false,true,true)
+		elseif self.DoorSideUnlocked == "Right" then
+			self:DoorHandler(false,true,true,true)
+		end
+	end
+	
+	if self:GetPackedBool("BOStrab",false) == true then
+		self:SetPackedBool("BOStrab",false)
+	end
 
-	print(self.Duewag_U2.HeadlightsSwitch)
-
+	
 	self:RollsignSync()
 	self:SetNW2Entity("FrontBogey",self.FrontBogey)
 	self.PrevTime = self.PrevTime or CurTime()
@@ -785,7 +798,7 @@ function ENT:Think(dT)
 		
 		if self:GetNW2Bool("AIsCoupled",false) == false then
 			
-			if self:ReadTrainWire(4) > 0 and self:ReadTrainWire(3) < 0 then
+			if self:ReadTrainWire(4) > 0 and self:ReadTrainWire(3) < 1 then
 				self:SetLightPower(51,false)
     			self:SetLightPower(52,false)
 				self:SetLightPower(53,false)
@@ -1495,6 +1508,15 @@ function ENT:OnButtonPress(button,ply)
 		
 	end
 
+	if button == "OpenDoor1Set" then
+
+		if self.Door1 == false then
+			self.Door1 = true
+		end
+	end
+
+
+
 	if self.Duewag_U2.ThrottleRate == 0 then
 		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
 	end
@@ -1908,6 +1930,16 @@ function ENT:OnButtonPress(button,ply)
 		end
 	end
 
+	if button == "SetHoldingBrakeSet" then
+
+		self.Duewag_U2.ManualHoldingBrake = true
+	end
+
+	if button == "ReleaseHoldingBrakeSet" then
+
+		self.Duewag_U2.ManualHoldingBrake = false
+	end
+
 	if button == "PassengerLightsToggle" then
 		if self:GetNW2Bool("PassengerLights",false) == true then
 			self:SetNW2Bool("PassengerLights",false)
@@ -2124,6 +2156,10 @@ function ENT:OnButtonRelease(button,ply)
 			self.IBIS:Trigger("Enter",0)
 		end
 
+		if button == "OpenBOStrab" then
+			self:SetPackedBool("BOStrab",true)
+			--self:SetPackedBool("BOStrab",false)
+		end
 		
 end
 
@@ -2207,7 +2243,7 @@ function ENT:Blink(enable, left, right)
 	end
 end
 
-function ENT:DoorHandler(CommandOpen,CommandClose,left,right)
+function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 
 	--Door control
 	if CommandClose == true then
@@ -2277,6 +2313,21 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right)
 	--TEMPORARY
 
 	if left == true then
+
+		if door1 == true then
+			if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
+	
+						if self:GetNW2Float("Door1-2b",0) != 1 then
+							self.DoorState1 = self:GetNW2Float("Door1-2b",0) + 0.1
+							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
+							self:SetNW2Float("Door1-2b",self.DoorState1)
+							
+						end
+			elseif self:GetNW2Float("Door1-2b",0) >= 1 then
+							self:SetNW2Float("Door1-2b",1)
+			end
+			
+		end
 
 
 
@@ -2424,8 +2475,22 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right)
 	
 	if right == true then
 	
+		if door1 == true then
+
+			if self:GetNW2Float("Door1-2a",0) <= 1 then -- If state less than 1, open them
 	
-			
+						if self:GetNW2Float("Door1-2a",0) != 1 then
+							self.DoorState1 = self:GetNW2Float("Door1-2a",0) + 0.1
+							self.DoorState1 = math.Clamp(self.DoorState1,0,1)
+							self:SetNW2Float("Door1-2a",self.DoorState1)
+							
+						end
+			elseif self:GetNW2Float("Door1-2a",0) >= 1 then
+						--self:SetNW2Float("Door1-2a",1)
+						PrintMessage(HUD_PRINTTALK, "Door1-2a open")
+						
+			end
+		end
 	
 	
 		if CommandOpen == true and CommandClose == false then

@@ -83,6 +83,8 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.HeadlightsSwitch = false
 
+	self.ManualHoldingBrake = false
+
 	
 	
 
@@ -304,6 +306,7 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	if self.TractionConditionFulfilled == true then
 		if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
+
 			--if self.Train.BatteryOn == true or self.Train:ReadTrainWire(7) == 1 then
 				self.Traction = math.Clamp(self.ThrottleState * 0.01,-100,100)  --right now it's coupled directly to the throttle. This needs a somewhat realistic custom simulation, if we don't get schematics
 				if self.VZ == true then
@@ -336,7 +339,7 @@ function TRAIN_SYSTEM:Think(Train)
 					if self.Traction > 0 then
 						self.Traction = self.Traction
 						--self.Train:WriteTrainWire(2,0)
-						--self.BrakePressure = 0
+						self.BrakePressure = 0
 					end
 					if self.Traction < 0 then
 						if self.Speed > 3.5 and self.ThrottleState < 0 then
@@ -405,7 +408,7 @@ function TRAIN_SYSTEM:Think(Train)
 		if self.Train:ReadTrainWire(6) > 1 then --in MU mode we write that to the train wire for the train script to handle
 			self.Train:WriteTrainWire(5,0)
 			----print("brake released")
-
+			self.BrakePressure = 0
 		elseif self.Train:ReadTrainWire(6) < 1 then --in single unit mode we write that directly to the brake pressure
 			self.BrakePressure = 0
 			self.Train:SetNW2Int("BrakePressure",0)
@@ -416,15 +419,18 @@ function TRAIN_SYSTEM:Think(Train)
 	if self.ThrottleState > 0 and self.Train:GetNW2Float("Speed",0) < 3 then
  
 		if self.Train:ReadTrainWire(6) == 1 then
+			
 			self.Train:WriteTrainWire(5,0)
-		
 
 		elseif self.Train:ReadTrainWire(6) == 0 then
+
 			self.BrakePressure = 0
 			self.Train:SetNW2Int("BrakePressure",0)
 		end
 	
 	end
+
+	
 
 	if self.Train:GetNW2Bool("DepartureConfirmed",false) == true then
 		self.Train:WriteTrainWire(9,0)
@@ -443,11 +449,7 @@ end
 function TRAIN_SYSTEM:U2Engine()
 
 
-	if self.ThrottleState >= 0 then
-		self.Percentage = self.ThrottleState
-	elseif self.ThrottleState < 0 then
-		self.Percentage = self.ThrottleState * -1
-	end
+	self.Percentage = math.abs(self.ThrottleState)
 
 	if self.Percentage == 0 then
 		self.ResistorBank = 0
@@ -493,9 +495,9 @@ function TRAIN_SYSTEM:U2Engine()
 		self.ResistorBank = 20
 	end
 
-	--self.PrevResistorBank = self.PrevResistorBank or self.ResistorBank
+	
 
-	----print(self.CurrentResistor)
+	--print(self.CurrentResistor)
 
 	
 		
@@ -504,20 +506,29 @@ function TRAIN_SYSTEM:U2Engine()
 			self.CurrentResistor = self.ResistorBank
 		elseif self.ResistorBank == self.CurrentResistor then
 			self.ResistorChangeRegistered = false
-			
 		end
 	
-	if self.ReverserState > 1 then
-		self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
+	
+	if self.ReverserState != 0 then --camshaft only moves when you're actually in gear
+		if self.ThrottleState >= 1 and self.Speed >= 0 then -- if the throttle is set to acceleration and the speed is nil or greater
+			self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
+			print("mooo")
+		elseif self.Speed <= 6 and self.ThrottleState >= 1 then -- if the throttle is set to acceleration and the speed is stationary
+			self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
+		elseif self.Speed >= 5 then
+			self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered) --if we're already in motion, do the sound regardless of throttle state because it'll always be reacting to braking or accelerating
+		end
+		
 	end
-	if self.ReverserState < 0 then
-		self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
-	end
-	----print(self.ResistorBank)
+
+	--self.Train:SetNW2Bool("CamshaftMoved",self.ResistorChangeRegistered)
+	
+	--print(self.Train:GetNW2Bool("CamshaftMoved",false))
+	--print(self.ResistorBank)
 	if math.abs(self.Train.FrontBogey.Acceleration) > 0 then
 		self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration,1)
 
-	elseif math.abs(self.Train.FrontBogey.Acceleration) < 0 then
+	elseif self.Train.FrontBogey.Acceleration < 0 then
 		self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration*-1,1)
 	end
 
@@ -638,13 +649,24 @@ function TRAIN_SYSTEM:MUHandler()
 	if self.ThrottleState > 0 or self.ThrottleState < 0 and self.ReverserState ~= 0 and self.Train.Speed > 5 then
 		self.FanTimer = CurTime()
 		self.Train:SetNW2Bool("Fans",true)
-	elseif self.ThrottleState == 0 and self.Train.Speed < 2 then
+	elseif self.ThrottleState < 1 and self.Train.Speed < 2 and self.BrakePressure == 2.7 then
 		self.FanTimer = 0
 	end
 
-	if CurTime() - self.FanTimer > 5 then
+	if CurTime() - self.FanTimer > 5 and self.Speed < 5 then
 
 			self.Train:SetNW2Bool("Fans",false)
 		
+	end
+end
+
+function TRAIN_SYSTEM:ManualBrake(enable)
+
+	if enable == true then
+		self.ManualHoldingBrake = true
+		self.BrakePressure = 2.7
+	else
+		self.BrakePressure = self.BrakePressure
+		self.ManualHoldingBrake = false
 	end
 end
