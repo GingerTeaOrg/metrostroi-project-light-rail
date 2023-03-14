@@ -525,20 +525,20 @@ function TRAIN_SYSTEM:U2Engine()
 				self.CamshaftFinishedMoving = true
 				self.Train:SetNW2Bool("CamshaftMoved",true)
 				
-				print("1")
+				
 			end
 		elseif self.Speed <= 6 and self.ThrottleState >= 1 then -- if the throttle is set to acceleration and the speed is stationary
 			
 			if CurTime() - self.CamshaftMoveTimer > 0.2 and self.CamshaftFinishedMoving == false then
 				self.Train:SetNW2Bool("CamshaftMoved",true)
 				self.CamshaftFinishedMoving = true
-				print("2")
+				
 			end
 		elseif self.Speed >= 5 then
 			if CurTime() - self.CamshaftMoveTimer > 0.2 and self.CamshaftFinishedMoving == false then
 				self.Train:SetNW2Bool("CamshaftMoved",true) --if we're already in motion, do the sound regardless of throttle state because it'll always be reacting to braking or accelerating
 				self.CamshaftFinishedMoving = true
-				print("3")
+				
 			end
 		end
 		
