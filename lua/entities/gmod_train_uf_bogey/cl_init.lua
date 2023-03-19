@@ -112,7 +112,7 @@ function ENT:Think()
     local train = self:GetNW2Entity("TrainEntity")
 
     local soundsmul = 1
-    local streetC,tunnelC = 0,1
+    local streetC,tunnelC = 0,0.9
     if IsValid(train) then
         streetC,tunnelC = train.StreetCoeff or 0,train.TunnelCoeff or 1
         soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
@@ -138,7 +138,7 @@ function ENT:Think()
         self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1.5,1.5)
         local t = RealTime()*2.5
         local modulation = math.max(0,(speed-60)/30)*0.7+(0.2 + 1.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp((speed-15)/60,0,1)
-        local mod2 = 1.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
+        local mod2 = 0.9-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
         if (speed > -1.0) and (math.abs(self.MotorPowerSound)+modulation) >= 0.0 then
             --local startVolRamp = 0.2 + 0.8*math.max(0.0,math.min(1.0,(speed - 1.0)*0.5))
             local powerVolRamp
@@ -164,7 +164,7 @@ function ENT:Think()
                 elseif next  and speed > next[3] then
                     volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
                 end
-                local pitch = speed/snd[2]+0.06*streetC--math.max(0,speed/snd[2])+0.06*streetC
+                local pitch = speed/snd[2]*streetC--math.max(0,speed/snd[2])+0.06*streetC
                 self:SetSoundState(snd[1],motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2))
             end
         end
@@ -296,113 +296,3 @@ end
 
 local c_gui
 if IsValid(c_gui) then c_gui:Close() end
-
-local function addButton(parent,stext,state,scolor,btext,benabled,callback)
-    --local a = v[1]
-    local panel = vgui.Create("DPanel")
-    panel:Dock( TOP )
-    panel:DockMargin( 5, 0, 5, 5 )
-    panel:DockPadding( 5, 5, 5, 5 )
-    if benabled then
-        local button = vgui.Create("DButton",panel)
-        button:Dock(RIGHT)
-        button:SetText(Metrostroi.GetPhrase(btext))
-        button:DockPadding( 5, 5, 5, 5 )
-        button:SizeToContents()
-        button:SetContentAlignment(5)
-        button:SetEnabled(benabled)
-        button.DoClick = callback
-    end
-
-    --DrawCutText(panel,Metrostroi.GetPhrase("Workshop.Warning"),false,"DermaDefaultBold")
-    vgui.MetrostroiDrawCutText(panel,Metrostroi.GetPhrase(stext),false,"DermaDefaultBold")
-    vgui.MetrostroiDrawCutText(panel,Metrostroi.GetPhrase(state),scolor,"DermaDefaultBold")
-
-    panel:InvalidateLayout( true )
-    panel:SizeToChildren(true,true )
-    parent:AddItem(panel)
-end
-
-function ENT:DrawGUI(tbl)
-    if IsValid(c_gui) then  c_gui:Close() end
-    c_gui = vgui.Create("DFrame")
-        c_gui:SetDeleteOnClose(true)
-        c_gui:SetTitle(Metrostroi.GetPhrase("Common.Bogey.Title"))
-        c_gui:SetSize(0, 0)
-        c_gui:SetDraggable(true)
-        c_gui:SetSizable(false)
-        c_gui:MakePopup()
-    local scrollPanel = vgui.Create( "DScrollPanel", c_gui )
-    addButton(scrollPanel,"Common.Bogey.ContactState",tbl.relcontact and "Common.Bogey.CReleased" or "Common.Bogey.CPressed",tbl.relcontact and Color(150,50,0) or Color(0,150,0),tbl.relcontact and "Common.Bogey.CPress" or "Common.Bogey.CRelease",tbl.access,function()
-        net.Start("metrostroi-bogey-menu")
-            net.WriteEntity(self)
-            net.WriteUInt(0,8)
-        net.SendToServer()
-        c_gui:Close()
-    end)
-    if tbl.havepb then
-        addButton(scrollPanel,"Common.Bogey.ParkingBrakeState",tbl.pbdisabled and "Common.Bogey.PBDisabled" or "Common.Bogey.PBEnabled", Color(0,150,0),tbl.pbdisabled and "Common.Bogey.PBEnable" or "Common.Bogey.PBDisable",tbl.access,function()
-            net.Start("metrostroi-bogey-menu")
-                net.WriteEntity(self)
-                net.WriteUInt(1,8)
-            net.SendToServer()
-            c_gui:Close()
-        end)
-    end
-
-    scrollPanel:Dock( FILL )
-    scrollPanel:InvalidateLayout( true )
-    scrollPanel:SizeToChildren(false,true)
-    local spPefromLayout = scrollPanel.PerformLayout
-    function scrollPanel:PerformLayout()
-        spPefromLayout(self)
-        if not self.First then self.First = true return end
-        local _,y = scrollPanel:ChildrenSize()
-        if self.Centered then return end
-        self.Centered = true
-        c_gui:SetSize(512,math.min(350,y)+35)
-        c_gui:Center()
-    end
-end
-
-
-net.Receive("metrostroi-bogey-menu",function()
-    local ent = net.ReadEntity()
-    if not IsValid(ent) or IsValid(c_gui) and c_gui.Entity ~= ent then return end
-    ent:DrawGUI{
-        access = net.ReadBool(),
-        relcontact=net.ReadBool(),
-        havepb=net.ReadBool(),
-        pbdisabled=net.ReadBool(),
-    }
-end)
-
-net.Receive("metrostroi_bogey_contact",function()
-    local ent = net.ReadEntity()
-    if not IsValid(ent) or not ent.PlayTime then return end
-    local PantNum = net.ReadUInt(1)+1
-    local PantPos = net.ReadVector()
-    local Spark = net.ReadUInt(1) > 0
-    
-    local dt = CurTime() - ent.PlayTime[PantNum]
-    ent.PlayTime[PantNum] = CurTime()
-    
-    local volume = 0.53
-    if dt < 1.0 then volume = 0.43 end
-    sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".wav",ent:LocalToWorld(PantPos),65,math.random(90,120),volume)
-    
-    if not Spark then return end
-    local effectdata = EffectData()
-    effectdata:SetOrigin(ent:LocalToWorld(PantPos))
-    effectdata:SetNormal(Vector(0,0,-1))
-    util.Effect("stunstickimpact", effectdata, true, true)
-    
-    local light = ents.CreateClientside("gmod_train_dlight")
-    light:SetPos(effectdata:GetOrigin())
-    light:SetDColor(Color(100,220,255))
-    light:SetSize(256)
-    light:SetBrightness(5)
-    light:Spawn()
-    SafeRemoveEntityDelayed(light,0.1)
-    sound.Play("subway_trains/bogey/spark.mp3",effectdata:GetOrigin(),75,math.random(100,150),volume)
-end)

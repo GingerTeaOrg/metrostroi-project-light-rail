@@ -357,7 +357,7 @@ ENT.ButtonMap["Cab"] = {
 		
     {ID = "WarningAnnouncementSet", x=266, y=18, radius=10, tooltip = "Please keep back announcement", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
-        anim=true,var="WarningAnnouncement", speed=15,
+        var="WarningAnnouncement", speed=15,
         sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
@@ -370,7 +370,7 @@ ENT.ButtonMap["Cab"] = {
     },
     {ID = "ReleaseHoldingBrakeSet", x=21.5, y=90, radius=10, tooltip = "Release mechanical brake manually", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,anim=true,
-        var="ReleaseHoldingBrake",speed=1, vmin=0, vmax=1,
+        var="ReleaseHoldingBrake",speed=5, min=0, max=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
@@ -413,10 +413,10 @@ ENT.ButtonMap["Cab"] = {
         }
     },
     {ID = "BatteryToggle", x=463, y=91, radius=10, tooltip = "Toggle Battery", model = {
-        model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=0, ang=0,
-        getfunc =  function(ent) return ent:GetPackedBool("FlickBatterySwitchOn") and 1 or 0.5 or ent:GetPackedBool("FlickBatterySwitchOff") and 1 or 0.5 end,
-        var="Battery",speed=1, vmin=0, vmax=1,
-        sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=0, ang=45,
+        getfunc =  function(ent) return ent.BatterySwitch end,
+        var="BatteryToggle",speed=5, min=0, max=1,
+        sndvol = 1, snd = function(val,val2) return val2 == 1 and "button_on" or val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "SpeakerToggle", x=149, y=18.2, radius=10, tooltip = "Toggle Speaker Inside/Outside", model = {
@@ -550,8 +550,8 @@ ENT.ButtonMap["BOStrab"] = {
 }]]
 
 ENT.ButtonMap["IBISScreen"] = {
-    pos = Vector(419.65,-12.75,60.35),
-    ang = Angle(0,-135,48.5),--(0,44.5,-47.9),
+    pos = Vector(419.73,-12.75,60.35),
+    ang = Angle(0,-135.4,48.5),--(0,44.5,-47.9),
     width = 117,
     height = 29.9,
     scale = 0.0311,
@@ -847,6 +847,8 @@ function ENT:Initialize()
         "Nag3"
     }
     self.Speed = 0
+
+    self.BatterySwitch = 0.5
 end
 
 
@@ -857,6 +859,14 @@ function ENT:Think()
 
     self.Speed = self:GetNW2Int("Speed")
 	
+    if self:GetPackedBool("FlickBatterySwitchOn",false) == true then
+        self.BatterySwitch = 1
+    elseif self:GetPackedBool("FlickBatterySwitchOff",false) == true then
+        self.BatterySwitch = 0
+    else
+        self.BatterySwitch = 0.5
+    end
+    
     self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,0)
     self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
     self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,9,false)
@@ -904,16 +914,7 @@ function ENT:Think()
     	elseif self:GetNW2Bool("ReverserInserted",false) == false then
         	self:ShowHide("reverser",false,0)
     	end
-    if self:GetNW2Bool("BatteryToggleIsTouched",false) == true then
-        if self:GetNW2Bool("BatteryToggleOn",false) == true then
-            --self:Animate("BatterySwitch",1,0,100,100,10,false)
-        elseif self:GetNW2Bool("BatteryToggleOff",false) == true then
-            --self:Animate("BatterySwitch",0,0,100,100,10,false)
-        end
 
-    else
-        self:Animate("BatterySwitch",0.5,0,100,100,10,false)
-    end
     self:Animate("Door_fr2",self:GetNW2Int("Door1-2a"),0,100,1,.3,false)
     self:Animate("Door_fr1",self:GetNW2Int("Door1-2a"),0,100,1,.3,false)
 
@@ -1182,9 +1183,16 @@ function ENT:Think()
 	
 	
 
-    self:U2SoundEngine()
+    --self:U2SoundEngine()
 	self:ScrollTracker()
+    if self.Speed > 15 then
 
+        self:SetSoundState("Cruise",math.min(self.Speed / 80+0.2),1,1,1)
+        self:SetSoundState("rumb1",math.min(self.Speed / 80+0.2),1,1,1)
+    else
+        self:SetSoundState("Cruise",math.min(self.Speed / 80+0.2),0,1,1)
+        self:SetSoundState("rumb1",math.min(self.Speed / 80+0.2),0,1,1)
+    end
 	
 end
 Metrostroi.GenerateClientProps()

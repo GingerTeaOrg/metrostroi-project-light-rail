@@ -117,7 +117,10 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Toggle"] = {1100,1e9,Vector(250,0,200),1}
 
 	self.SoundNames["Cruise"] = {loop=0.5,"lilly/uf/u2/cruise/cruise_medium_start.mp3","lilly/uf/u2/cruise/cruise_medium.mp3","lilly/uf/u2/cruise/cruise_medium_stop.mp3"}
-	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,70),1}
+	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,100),1}
+
+	self.SoundNames["rumb1"] = {"lilly/uf/u2/cruise/rumb1.mp3"}
+	self.SoundPositions["rumb1"] = {1100,1e9,Vector(300,0,100),1}
 
 	self.SoundNames["Blinker"] = {"lilly/uf/u2/blinker.mp3"}
 	self.SoundPositions["Blinker"] = {10,1e9,Vector(400,-5,200),1}

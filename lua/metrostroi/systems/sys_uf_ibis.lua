@@ -48,21 +48,21 @@ function TRAIN_SYSTEM:Initialize()
     self.KeyInput = nil
 
     self.TriggerNames = {
-        	"Number1",
-        	"Number2",
-        	"Number3",
-        	"Number4",
-        	"Number5",
-        	"Number6",
+        	"Number1", --1
+        	"Number2", --2
+        	"Number3", --3
+        	"Number4", --4
+        	"Number5", --5
+        	"Number6", --6
 		    "Number7",
 		    "Number8",
 		    "Number9",
 		    "Number0",
-		    "Destination",
-        	"Delete",
-        	"Enter",
-        	"SpecialAnnouncements",
-        	"TimeAndDate"
+		    "Destination", --11
+        	"Delete", --12
+        	"Enter", --13
+        	"SpecialAnnouncements", --14
+        	"TimeAndDate" --15
     }
     self.Triggers = {}
     self.State = 0
@@ -109,8 +109,9 @@ function TRAIN_SYSTEM:Trigger(name,value)
 
         if name == "Number0" and value == 1 then
             if self.KeyInputDone == false then
+                self.KeyInputDone = true
                 self.KeyInput = "0"
-                self.KeyInput = true
+                self.KeyInputDone = true
             end
         end
         if name == "Number1" and value == 1 then
@@ -418,10 +419,14 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     if State == 2 then
 
         if Menu == 4 then
-            
-            self:BlinkText(true, "Linie-Kurs :")
-            
-            self:PrintText(11.5,1.5,Course)
+            if self.CourseChar4 == nil then
+                self:BlinkText(true, "Linie-Kurs :")
+                self:PrintText(11.5,1.5,Course)
+            elseif self.CourseChar4 != nil then
+                self:PrintText(0,1.5,"Linie-Kurs :")
+                self:PrintText(11.5,1.5,Course)
+                
+            end
             
 
             
@@ -429,8 +434,15 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         end
 
         if Menu == 5 then
-            self:BlinkText(true,"Route :")
-            self:PrintText(13.5,1.5,Route)
+            if self.RouteChar1 == nil then
+                self:BlinkText(true,"Route :")
+                self:PrintText(13.5,1.5,Route)
+                
+            elseif self.RouteChar1 != nil then
+                self:PrintText(13.5,1.5,Route)
+                self:PrintText(0,1.5,"Route :")
+                
+            end
             return
         end
         
@@ -632,6 +644,11 @@ if CLIENT then
 
         self.LastBlinkTime = 0
         self.BlinkingText = false
+
+        self.DefectStrings = { 
+            "IFIS FEHLER",
+            "FUNK DEFEKT"
+        }
     end
 	function TRAIN_SYSTEM:BlinkText(enable,Text)
 		if not enable then

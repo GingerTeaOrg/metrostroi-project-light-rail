@@ -89,6 +89,8 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.CamshaftFinishedMoving = true
 
+	self.LeadingUnit = false
+
 	
 	
 
@@ -136,6 +138,7 @@ function TRAIN_SYSTEM:Think(Train)
 	self:MUHandler()
 
 	self:IsLeadingCab()
+	self:IsLeadingUnit()
 
 	self.Speed = self.Train.Speed
 
@@ -189,7 +192,7 @@ function TRAIN_SYSTEM:Think(Train)
 
 	if self.BatteryStartUnlock == false then --Only on the * Setting of the reverser lever should the battery turn on
 		self.BatteryOn = self.BatteryOn
-		self.Train:WriteTrainWire(7,self.Train:ReadTrainWire(7))
+		--self.Train:WriteTrainWire(7,self.Train:ReadTrainWire(7))
 	elseif self.BatteryStartUnlock == true then
 		self.BatteryOn = self.Train:GetNW2Bool("BatteryOn",false)
 			if self.Train:GetNW2Bool("BatteryOn",false) == true then
@@ -521,7 +524,7 @@ function TRAIN_SYSTEM:U2Engine()
 	
 	if self.ReverserState != 0 then --camshaft only moves when you're actually in gear
 		if self.ThrottleState >= 1 and self.Speed >= 0 then -- if the throttle is set to acceleration and the speed is nil or greater
-			if CurTime() - self.CamshaftMoveTimer > 0.1 and self.CamshaftFinishedMoving == false then
+			if CurTime() - self.CamshaftMoveTimer > 0.05 and self.CamshaftFinishedMoving == false then
 				self.CamshaftFinishedMoving = true
 				self.Train:SetNW2Bool("CamshaftMoved",true)
 				
@@ -529,13 +532,13 @@ function TRAIN_SYSTEM:U2Engine()
 			end
 		elseif self.Speed <= 6 and self.ThrottleState >= 1 then -- if the throttle is set to acceleration and the speed is stationary
 			
-			if CurTime() - self.CamshaftMoveTimer > 0.1 and self.CamshaftFinishedMoving == false then
+			if CurTime() - self.CamshaftMoveTimer > 0.05 and self.CamshaftFinishedMoving == false then
 				self.Train:SetNW2Bool("CamshaftMoved",true)
 				self.CamshaftFinishedMoving = true
 				
 			end
 		elseif self.Speed >= 5 then
-			if CurTime() - self.CamshaftMoveTimer > 0.1 and self.CamshaftFinishedMoving == false then
+			if CurTime() - self.CamshaftMoveTimer > 0.05 and self.CamshaftFinishedMoving == false then
 				self.Train:SetNW2Bool("CamshaftMoved",true) --if we're already in motion, do the sound regardless of throttle state because it'll always be reacting to braking or accelerating
 				self.CamshaftFinishedMoving = true
 				
@@ -566,6 +569,16 @@ function TRAIN_SYSTEM:IsLeadingCab()
 	----print("leadingcab"..self.LeadingCab)
 end
 
+function TRAIN_SYSTEM:IsLeadingUnit()
+	if self.VZ == true and self.Train.FrontCouple.CoupledEnt == nil then
+
+		self.LeadingUnit = true
+	else
+		self.LeadingUnit = false
+	end
+
+end
+
 function TRAIN_SYSTEM:MUHandler()
 
 
@@ -582,17 +595,23 @@ function TRAIN_SYSTEM:MUHandler()
 
 
 ---------------------------------------------------------------------------------------------------------
-----print(self.Train.FrontBogey.MotorPower)
-----print(self.Train.FrontBogey.Reversed)
+
 
 
 	--Set reverser logic directly if we're the leading unit
 		if self.ReverserLeverState == 0 then
 			if self.LeadingCab == 1 then
 				self.ReverserState = 0
+			elseif self.LeadingCab == 0 then
+				if self.Train:ReadTrainWire(6) < 1 then
+					self.VE = false
+					self.VZ = false
+				elseif self.Train:ReadTrainWire(6) > 0 then
+					self.VE = false
+					self.VZ = true
+				end
 			end
-			self.VE = false
-			self.VZ = false
+			
 			--self.Train:WriteTrainWire(6,0)
 		elseif self.ReverserLeverState == -1 then
 			if self.LeadingCab == 1 then
@@ -622,7 +641,7 @@ function TRAIN_SYSTEM:MUHandler()
 			self.VZ = false
 			self.VE = true
 			if self.LeadingCab == 1 then
-				self.Train:WriteTrainWire(6,0)
+				--self.Train:WriteTrainWire(6,0)
 				self.ReverserState = 1
 			end
 		end
@@ -642,7 +661,7 @@ function TRAIN_SYSTEM:MUHandler()
 		self.VZ = false
 	end
 
-----print("MUWire"..self.Train:ReadTrainWire(6))
+--print("MUWire"..self.Train:ReadTrainWire(6))
 
 ---------------------------------------------------------------------------------------
 
