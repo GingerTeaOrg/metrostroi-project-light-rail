@@ -237,7 +237,7 @@ ENT.ClientProps["reverser"] = {
 
 ENT.ClientProps["blinds_l"] = {
     model = "models/lilly/uf/u2/cab/blinds.mdl",
-    pos = Vector(-1,0,0),
+    pos = Vector(0,0,0),
     ang = Angle(0,0,0),
     hideseat = 8,
 }
@@ -1185,14 +1185,14 @@ function ENT:Think()
 
     --self:U2SoundEngine()
 	self:ScrollTracker()
-    if self.Speed > 15 then
+    --[[if self.Speed > 15 then
 
         self:SetSoundState("Cruise",math.min(self.Speed / 80+0.2),1,1,1)
         self:SetSoundState("rumb1",math.min(self.Speed / 80+0.2),1,1,1)
     else
         self:SetSoundState("Cruise",math.min(self.Speed / 80+0.2),0,1,1)
         self:SetSoundState("rumb1",math.min(self.Speed / 80+0.2),0,1,1)
-    end
+    end]]
 	
 end
 Metrostroi.GenerateClientProps()

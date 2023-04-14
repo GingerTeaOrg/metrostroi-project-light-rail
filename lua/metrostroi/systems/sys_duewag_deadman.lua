@@ -16,6 +16,8 @@ function TRAIN_SYSTEM:Initialize()
 	self.EmergencyShutOff = false
 	self.DeadmanTripped = false
 
+	self.MUDeadman = false
+
 end
 
 function TRAIN_SYSTEM:Inputs()
@@ -42,8 +44,12 @@ function TRAIN_SYSTEM:Think()
 		local train = self.Train
 		self.Speed = math.abs(self.Train.Speed)
 	if self.Train:GetNW2Bool("BatteryOn",false) == true then
-
-		if self.IsPressed == 1 then
+		if self.Train:ReadTrainWire(12) > 0 and self.Train:ReadTrainWire(6) > 0 then
+			self.MUDeadman = true
+		else
+			self.MUDeadman = false
+		end
+		if self.IsPressed == 1 or self.MUDeadman == true then
 			if self.EmergencyShutOff == false then
 				if self.TrainHasReset == false then
 						self.Train:SetNW2Bool("DeadmanTripped",false)
@@ -72,7 +78,7 @@ function TRAIN_SYSTEM:Think()
 				end
 			end
 
-		elseif self.IsPressed == 0 then
+		elseif self.IsPressed == 0 or self.MUDeadman == false then
 			
 			if self.Speed < 5 then
 				if self.EmergencyShutOff == false and self.Speed < 80 then

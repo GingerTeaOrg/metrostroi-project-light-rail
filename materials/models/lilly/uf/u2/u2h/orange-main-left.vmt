@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u2/u2h/orange-main-left"
+	"$envmapmask" "models/lilly/uf/u2/u2h/main-env-left"
+	"$surfaceprop" "Metal"
+	"$alphatest" 1
+}

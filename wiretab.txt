@@ -9,6 +9,7 @@ Wire 8, Deadman brake
 Wire 9, Doors unlocked, block traction and engage mechanical brake
 Wire 10, Emergency brake
 Wire 11, Passenger Emergency brake
+Wire 12, Deadman switch for traction unblocking
 
 
 ***********Lighting***********************

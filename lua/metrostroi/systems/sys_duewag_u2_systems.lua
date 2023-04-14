@@ -91,6 +91,9 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.LeadingUnit = false
 
+	self.PrevResistorBank = 0
+
+	self.TractionJerk = 0
 	
 	
 
@@ -504,13 +507,14 @@ function TRAIN_SYSTEM:U2Engine()
 
 	
 
-	--print(self.CurrentResistor)
+	
 
 	
 		
 		if self.ResistorBank != self.CurrentResistor then
 			self.CamshaftMoveTimer = CurTime()
 			self.ResistorChangeRegistered = true
+			self.PrevResistorBank = self.CurrentResistor
 			self.CurrentResistor = self.ResistorBank
 			self.CamshaftFinishedMoving = false
 		elseif self.ResistorBank == self.CurrentResistor then
@@ -521,6 +525,22 @@ function TRAIN_SYSTEM:U2Engine()
 			end
 		end
 	
+	if self.PrevResistorBank > self.CurrentResistor or self.PrevResistorBank < self.CurrentResistor then
+		if self.PrevResistorBank > self.CurrentResistor then
+			self.TractionJerk = self.PrevResistorBank - self.CurrentResistor
+		elseif self.PrevResistorBank < self.CurrentResistor then
+			self.TractionJerk = self.CurrentResistor - self.PrevResistorBank
+		end
+		if self.CamshaftFinishedMoving == true then
+			if self.Traction > 0 then
+				self.Traction = self.Traction + self.TractionJerk
+			elseif self.Traction < 0 then
+				self.Traction = self.Traction - self.TractionJerk
+			end
+		else
+			--self.Traction = self.Traction
+		end
+	end
 	
 	if self.ReverserState != 0 then --camshaft only moves when you're actually in gear
 		if self.ThrottleState >= 1 and self.Speed >= 0 then -- if the throttle is set to acceleration and the speed is nil or greater

@@ -519,8 +519,8 @@ function ENT:Initialize()
 	[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
 	[54] = { "light",Vector(426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
 	[55] = { "light",Vector(426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-	[56] = { "light",Vector(426.5,31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-	[57] = { "light",Vector(426.5,-31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+	[56] = { "light",Vector(426.5,31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+	[57] = { "light",Vector(426.5,-31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
 	[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 	[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 	[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
@@ -543,8 +543,8 @@ function ENT:Initialize()
 
 self.InteractionZones = {
         {
-            ID = "DoorButtonFLSet",
-            Pos = Vector(397.343,51,49.7), Radius = 16,
+            ID = "Button1a",
+            Pos = Vector(396.3,-51,50.5), Radius = 16,
         },
 
 }
@@ -781,18 +781,19 @@ function ENT:Think(dT)
 	
 	if self:ReadTrainWire(7) > 1 or self.Duewag_U2.BatteryOn == true then -- if the battery is on
 		
-		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 then
+		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 and self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
 			self:SetLightPower(56,true)
 			self:SetLightPower(57,true)
 			self:SetNW2Bool("BrakeLights",true)
-		elseif self:GetNW2Bool("AIsCoupled",false) == true then
+		elseif self:GetNW2Bool("AIsCoupled",false) == true and self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
 			self:SetLightPower(56,false)
 			self:SetLightPower(57,false)
 			self:SetNW2Bool("BrakeLights",false)
-		elseif self:GetPackedBool("Headlights",false) == true then
+		elseif self:GetPackedBool("Headlights",false) == true and self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
 			self:SetLightPower(56,false)
 			self:SetLightPower(57,false)
 			self:SetNW2Bool("BrakeLights",false)
+		
 		end
 		
 		
@@ -927,7 +928,7 @@ function ENT:Think(dT)
 	
 if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 	
-	------print(#self.WagonList)
+	--print(#self.WagonList)
 	--self.FrontBogey.PneumaticBrakeForce = 10000.0
 	--self.MiddleBogey.PneumaticBrakeForce = 10000.0
 	--self.RearBogey.PneumaticBrakeForce = 10000.0  
@@ -968,12 +969,21 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 			elseif self.Train:GetNW2Bool("DeadmanTripped") == true then
-				self.RearBogey.MotorPower = 0
-				self.FrontBogey.MotorPower = 0
-				self.FrontBogey.BrakeCylinderPressure = 2.7 
-				self.MiddleBogey.BrakeCylinderPressure = 2.7
-				self.RearBogey.BrakeCylinderPressure = 2.7
-				self:SetNW2Bool("Braking",true)
+				if self.Speed > 5 then
+					--self.RearBogey.MotorPower = 0
+					--self.FrontBogey.MotorPower = 0
+					self.FrontBogey.BrakeCylinderPressure = 2.7 
+					self.MiddleBogey.BrakeCylinderPressure = 2.7
+					self.RearBogey.BrakeCylinderPressure = 2.7
+					self:SetNW2Bool("Braking",true)
+				else
+					self.RearBogey.MotorPower = 0
+					self.FrontBogey.MotorPower = 0
+					self.FrontBogey.BrakeCylinderPressure = 2.7 
+					self.MiddleBogey.BrakeCylinderPressure = 2.7
+					self.RearBogey.BrakeCylinderPressure = 2.7
+					self:SetNW2Bool("Braking",true)
+				end
 			end
 
 		elseif self:GetNW2Bool("DepartureConfirmed",false) == false then
@@ -1078,16 +1088,16 @@ end
 	--if self:GetNW2Bool("BatteryOn",false) == true or self:ReadTrainWire(7) == 1 then --blinker only works when electricity is on, duh
 		if self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) < 1 then
 			self:Blink(true,true,false)
-		--self.Blinker = "Left"
+		
 		elseif self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) > 0 then
 		self:Blink(true,false,true)
-		--self.Blinker = "Right"
+		
 		elseif self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) > 0 then
 			self:Blink(true,true,true)
-		--self.Blinker = "Warn"
+		
 		elseif self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
 			self:Blink(false,false,false)
-		--self.Blinker = "Off"
+		
 		end
 
 	
@@ -1701,6 +1711,9 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "DeadmanSet" then
 			self.Duewag_Deadman:TriggerInput("IsPressed", 1)
+			if self:ReadTrainWire(6) > 0 then
+				self:WriteTrainWire(12,1)
+			end
 			------print("DeadmanPressedYes")
 	end
 	
@@ -1714,12 +1727,12 @@ function ENT:OnButtonPress(button,ply)
 		self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are off, set to left
 			self:WriteTrainWire(20,1)
 			self:WriteTrainWire(21,0)
-			self:SetNW2String("BlinkerDirection","left")
+			--self:SetNW2String("BlinkerDirection","left")
 		elseif
 		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are already on, turn them off
 			self:WriteTrainWire(20,0)
 			self:WriteTrainWire(21,0)
-			self:SetNW2String("BlinkerDirection","none")
+			--self:SetNW2String("BlinkerDirection","none")
 		elseif
 		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) > 0 then
 			self:WriteTrainWire(20,1)
@@ -2074,6 +2087,10 @@ function ENT:OnButtonRelease(button,ply)
 		
 		if button == "DeadmanSet" then
 			self.Duewag_Deadman:TriggerInput("IsPressed", 0)
+
+			if self:ReadTrainWire(6) > 0 then
+				self:WriteTrainWire(12,0)
+			end
 			------print("DeadmanPressedNo")
 		end
 	
@@ -2222,8 +2239,8 @@ function ENT:Blink(enable, left, right)
 		self.u2sectionb.BlinkerRight = self.BlinkerOn and right
 
 		if self.BlinkerOn and left and right then
-			self:SetLightPower(56,self.BlinkerOn and left)
-			self:SetLightPower(57,self.BlinkerOn and right)
+			self:SetLightPower(56,self.BlinkerOn)
+			self:SetLightPower(57,self.BlinkerOn)
 			self:SetLightPower(38,self.BlinkerOn)
 		end
 

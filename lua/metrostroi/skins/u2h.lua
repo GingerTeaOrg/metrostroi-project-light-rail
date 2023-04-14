@@ -67,6 +67,7 @@ Metrostroi.AddSkin("train","SVB",{
     textures = {
 		main_b = "models/lilly/uf/u2/u2h/svb-main_b",
         main = "models/lilly/uf/u2/u2h/svb-main",
+        main_left = "models/lilly/uf/u2/u2h/svb-main-left",
 		door_external = "models/lilly/uf/u2/u2h/door_external_svb",
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
 
@@ -110,6 +111,7 @@ Metrostroi.AddSkin("train","OrEbSW",{
     typ = "U2h",
     textures = {
         main = "models/lilly/uf/u2/u2h/orange-main",
+        main_left = "models/lilly/uf/u2/u2h/orange-main-left",
 		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
         door_external = "models/lilly/uf/u2/u2h/door_external_orange",
 		
@@ -121,6 +123,7 @@ Metrostroi.AddSkin("train","OrEbSW_b",{
     textures = {
         main_b = "models/lilly/uf/u2/u2h/orange_main-b",
         main = "models/lilly/uf/u2/u2h/orange-main",
+        main_left = "models/lilly/uf/u2/u2h/orange-main-left",
 		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
         door_external = "models/lilly/uf/u2/u2h/door_external_orange",
     }

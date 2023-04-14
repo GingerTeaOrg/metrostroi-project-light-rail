@@ -164,7 +164,7 @@ function ENT:Think()
                 elseif next  and speed > next[3] then
                     volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
                 end
-                local pitch = speed/snd[2]*streetC--math.max(0,speed/snd[2])+0.06*streetC
+                local pitch = math.max(0,speed/snd[2])+0.06*streetC
                 self:SetSoundState(snd[1],motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2))
             end
         end
