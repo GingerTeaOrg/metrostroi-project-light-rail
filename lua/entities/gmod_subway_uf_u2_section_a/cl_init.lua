@@ -800,7 +800,7 @@ function ENT:Initialize()
 
     self.SoundNames = {}
 
-    self.SoundNames["loop_main"] = "lilly/uf//u2/engineloop_test.mp3"
+    self.SoundNames["loop_main"] = "lilly/uf/u2/engineloop_test.mp3"
     self.SoundNames["loop_secondary"] = "lilly/uf/u2/engineloop_test.mp3"
 
 

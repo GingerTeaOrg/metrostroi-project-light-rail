@@ -2259,10 +2259,10 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 
 	--Door control
 	if CommandClose == true then
-		--PrintMessage(HUD_PRINTTALK, "Command to close doors running")
+		PrintMessage(HUD_PRINTTALK, "Command to close doors running")
 	end
 	if CommandOpen == true then
-		--PrintMessage(HUD_PRINTTALK, "Command to Open doors running")
+		PrintMessage(HUD_PRINTTALK, "Command to Open doors running")
 	end
 
 	local DoorsUnlocked = self:GetNW2Bool("DoorsUnlocked")

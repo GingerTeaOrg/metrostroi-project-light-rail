@@ -1,0 +1,6 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u2/u2h/seats"
+	"$bumpmap" "models/lilly/uf/u2/u2h/seat_texture_n"
+	"$alphatest" 1
+}

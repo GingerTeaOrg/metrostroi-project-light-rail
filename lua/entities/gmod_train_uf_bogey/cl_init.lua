@@ -2,8 +2,8 @@ include("shared.lua")
 
 -- Bogey-related sounds
 ENT.SoundNames = {}
-ENT.SoundNames["ted1_703"]  = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_primary.mp3"
-ENT.SoundNames["ted2_703"]  = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_combined.mp3"
+ENT.SoundNames["ted1_703"]  = "lilly/uf/u2/overhaul/u2_engine_primary_pitch.mp3"
+ENT.SoundNames["ted2_703"]  = "lilly/uf/u2/overhaul/u2_engine_secondary.mp3"
 
 
 
