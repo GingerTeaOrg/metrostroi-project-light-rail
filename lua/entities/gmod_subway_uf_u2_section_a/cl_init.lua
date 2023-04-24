@@ -174,7 +174,7 @@ ENT.ClientProps["Mirror"] = {
 
 ENT.ClientProps["Speedo"] = {
     model = "models/lilly/uf/u2/cab/speedo.mdl",
-    pos = Vector(418.192,10.148,54.66),
+    pos = Vector(418.192,10,54.66),
     ang = Angle(-8.7,0,0),
     hideseat = 0.2,
 }
@@ -196,7 +196,7 @@ ENT.ClientProps["DoorSwitch"] = {
 ENT.ClientProps["BlinkerSwitch"] = {
     model = "models/lilly/uf/u2/cab/battery_switch.mdl",
     pos = Vector(413.5,6.3,54),
-    ang = Angle(-8.5,0,0),
+    ang = Angle(-8.5,0,4),
     hideseat = 0.2,
 }
 
@@ -216,14 +216,14 @@ ENT.ClientProps["DriverLightSwitch"] = {
 
 ENT.ClientProps["Voltage"] = {
     model = "models/lilly/uf/u2/cab/gauge.mdl",
-    pos = Vector(418,18.9,54.8),
+    pos = Vector(418,18.7,54.8),
     ang = Angle(-12,0,0),
     hideseat = 0.2,
 }
 
 ENT.ClientProps["Amps"] = {
     model = "models/lilly/uf/u2/cab/gauge.mdl",
-    pos = Vector(418,1.7,54.8),
+    pos = Vector(418,1.5,54.8),
     ang = Angle(-12,0,0),
     hideseat = 0.2,
 }
@@ -347,7 +347,7 @@ ENT.ButtonMap["Button4a"] = {
 
 
 ENT.ButtonMap["Cab"] = {
-    pos = Vector(419.6,25,55.2),
+    pos = Vector(419.6,24.88,55.2),
     ang = Angle(0,-90,8),
     width = 500,
     height = 120,

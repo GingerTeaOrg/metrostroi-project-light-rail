@@ -370,29 +370,8 @@ function TRAIN_SYSTEM:Think(Train)
 			
 			--end
 		elseif self.Train:GetNW2Bool("DeadmanTripped",false) == true then
-			if self.Speed > 1.5 then
-				self.Traction = -100 
-				self.BrakePressure = 2.7
-				self.Train:WriteTrainWire(1,self.Traction)
-				print("Deadman tripped and braking")
-			elseif self.Speed < 1.5 then
-				self.BrakePressure = 2.7
-				self.Traction = 0
-				self.Train:WriteTrainWire(1,self.Traction)
-			end
+			
 		end
-	elseif self.Train:GetNW2Bool("DeadmanTripped",false) == true then
-		if self.Speed > 1.5 then
-			self.Traction = -100 
-			self.BrakePressure = 2.7
-			self.Train:WriteTrainWire(1,self.Traction)
-			print("Deadman tripped and braking")
-		elseif self.Speed < 1.5 then
-			self.BrakePressure = 2.7
-			self.Traction = 0
-			self.Train:WriteTrainWire(1,self.Traction)
-		end
-	
 	end		
 	
 
@@ -533,9 +512,9 @@ function TRAIN_SYSTEM:U2Engine()
 		end
 		if self.CamshaftFinishedMoving == true then
 			if self.Traction > 0 then
-				self.Traction = self.Traction + self.TractionJerk
+				--self.Traction = self.Traction + self.TractionJerk
 			elseif self.Traction < 0 then
-				self.Traction = self.Traction - self.TractionJerk
+				--self.Traction = self.Traction - self.TractionJerk
 			end
 		else
 			--self.Traction = self.Traction
@@ -622,6 +601,8 @@ function TRAIN_SYSTEM:MUHandler()
 		if self.ReverserLeverState == 0 then
 			if self.LeadingCab == 1 then
 				self.ReverserState = 0
+				self.Train:WriteTrainWire(3,0)
+				self.Train:WriteTrainWire(4,0)
 			elseif self.LeadingCab == 0 then
 				if self.Train:ReadTrainWire(6) < 1 then
 					self.VE = false
@@ -688,7 +669,7 @@ function TRAIN_SYSTEM:MUHandler()
 	if self.Train:ReadTrainWire(10) > 0 then --if the emergency brake is pulled high
 		if self.Speed >= 2 then --if the speed is greater than 2 (tolerances for inaccuracies registered due to wobble)
 			self.ThrottleState = -100 --Register the throttle to be all the way back
-			self.Traction = self.Traction - 10 --give a small bonus to reversal of the power
+			--self.Traction = self.Traction - 10 --give a small bonus to reversal of the power
 		elseif self.Speed < 2 then
 			self.Traction = 0
 		end
@@ -700,7 +681,7 @@ function TRAIN_SYSTEM:MUHandler()
 		self.Train.FrontBogey.BrakePressure = self.Train.FrontBogey.BrakePressure
 		self.Train.MiddleBogey.BrakePressure = self.Train.MiddleBogey.BrakePressure
 		self.Train.RearBogey.BrakePressure = self.Train.RearBogey.BrakePressure
-
+		self.ThrottleState = self.ThrottleState
 		self.Traction = self.Traction
 	end
 

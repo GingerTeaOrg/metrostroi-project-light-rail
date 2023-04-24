@@ -719,9 +719,9 @@ if SERVER then
             if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate"  then
                 if self.CourseChar4 == -1 and self.CourseChar3 == -1 and self.CourseChar2 == -1 and self.CourseChar1 == -1 then
 
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.CourseChar4 = tonumber(self.KeyInput)
-                    end
+                if tonumber(self.KeyInput) ~= nil then
+                    self.CourseChar4 = tonumber(self.KeyInput)
+                end    
     
     
     

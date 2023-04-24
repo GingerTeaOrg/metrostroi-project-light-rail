@@ -140,7 +140,7 @@ function TRAIN_SYSTEM:Think()
 		
 
 
-		if CurTime() - self.AlarmTime > 3 then --If the alarm has gone off for three seconds
+		if CurTime() - self.AlarmTime > 4.5 then --If the alarm has gone off for three seconds
 			if self.KeyBypass == false then
 				if self.TrainHasReset == false then
 					self.Train:SetNW2Bool("DeadmanTripped",true) --trip the deadman switch
@@ -182,6 +182,7 @@ function TRAIN_SYSTEM:Think()
 	if self.Speed > 81 then
 		self.Train:SetNW2Bool("DeadmanTripped",true)
 		self.Train:SetNW2Bool("OverspeedCutOut",true)
+		self.AlarmSound = true
 	end
 
 	if self.Train:GetNW2Bool("BatteryOn",false) == false then
