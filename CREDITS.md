@@ -30,3 +30,5 @@ IBIS1 and IBIS+ Footage by Frederik Scheps, Historische Straßenbahn Leipzig
 IBIS scripting support by Anton Borisovich
 
 Electrical Engineering insights by Fred Walter
+
+Archival documentation support for electrical schematics, Bernd Rodmann Historische Straßenbahn Frankfurt
