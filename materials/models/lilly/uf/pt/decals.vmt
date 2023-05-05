@@ -1,0 +1,6 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lilly/uf/pt/decals"
+	"$surfaceprop" "Metal"
+	"$alphatest" 1
+}

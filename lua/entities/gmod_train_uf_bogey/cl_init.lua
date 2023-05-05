@@ -28,8 +28,8 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 
 ENT.EngineSNDConfig = {
     {
-        {"ted1_703" ,50,00,16,1},
-        {"ted2_703" ,50,100,32,1},
+        {"ted1_703" ,50,0,1,1}, --initial speed, 
+        {"ted2_703" ,50,80,80,2},
     },
 }
 
@@ -131,7 +131,7 @@ function ENT:Think()
 
         self.MotorSoundType = self:GetNWInt("MotorSoundType",1)
         self.DisableEngines = self:GetNWBool("DisableEngines")
-        self.MotorSoundArr = self.EngineSNDConfig [self.MotorSoundType+1]
+        self.MotorSoundArr = self.EngineSNDConfig[self.MotorSoundType+1]
     end
 
     if not self.DisableEngines and self.MotorSoundArr then

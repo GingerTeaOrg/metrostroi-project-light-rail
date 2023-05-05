@@ -60,7 +60,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.ThrottleRate = 0
 	self.ThrottleEngaged = false
 	self.TractionConditionFulfilled = false
-	self.BrakePressure = 0
+	self.BrakePressure = 2.7
 	self.TractionCutOut = false
 	
 	self.ThrottleStateAnim = 0 --whether to stop listening to the throttle input
@@ -83,7 +83,7 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.HeadlightsSwitch = false
 
-	self.ManualHoldingBrake = false
+	self.ManualRetainerBrake = false
 
 	self.CamshaftMoveTimer = 0
 
@@ -142,6 +142,12 @@ function TRAIN_SYSTEM:Think(Train)
 
 	self:IsLeadingCab()
 	self:IsLeadingUnit()
+
+	if self.ManualRetainerBrake == true then
+		self.Train:SetRetainerBrake(true)
+	else
+		self.Train:SetRetainerBrake()
+	end
 
 	self.Speed = self.Train.Speed
 
@@ -211,7 +217,7 @@ function TRAIN_SYSTEM:Think(Train)
 
 
 
-	self.ReverserLeverState = math.Clamp(self.ReverserLeverState, -2, 3)
+	self.ReverserLeverState = math.Clamp(self.ReverserLeverState, -1, 3)
 
 
 
@@ -490,7 +496,7 @@ function TRAIN_SYSTEM:U2Engine()
 
 	
 		
-		if self.ResistorBank != self.CurrentResistor then
+		if self.ResistorBank ~= self.CurrentResistor then
 			self.CamshaftMoveTimer = CurTime()
 			self.ResistorChangeRegistered = true
 			self.PrevResistorBank = self.CurrentResistor
@@ -521,7 +527,7 @@ function TRAIN_SYSTEM:U2Engine()
 		end
 	end
 	
-	if self.ReverserState != 0 then --camshaft only moves when you're actually in gear
+	if self.ReverserState ~= 0 then --camshaft only moves when you're actually in gear
 		if self.ThrottleState >= 1 and self.Speed >= 0 then -- if the throttle is set to acceleration and the speed is nil or greater
 			if CurTime() - self.CamshaftMoveTimer > 0.05 and self.CamshaftFinishedMoving == false then
 				self.CamshaftFinishedMoving = true
@@ -601,8 +607,8 @@ function TRAIN_SYSTEM:MUHandler()
 		if self.ReverserLeverState == 0 then
 			if self.LeadingCab == 1 then
 				self.ReverserState = 0
-				self.Train:WriteTrainWire(3,0)
-				self.Train:WriteTrainWire(4,0)
+				--self.Train:WriteTrainWire(3,0)
+				--self.Train:WriteTrainWire(4,0)
 			elseif self.LeadingCab == 0 then
 				if self.Train:ReadTrainWire(6) < 1 then
 					self.VE = false
@@ -647,7 +653,8 @@ function TRAIN_SYSTEM:MUHandler()
 			end
 		end
 	--end
-
+		--print(self.ReverserLeverState)
+		
 	if self.LeadingCab == 0 and self.Train:ReadTrainWire(6) > 0 then --if we're not the leading train, read this stuff from train wires
 		self.VZ = true
 		if self.Train:ReadTrainWire(3) > 0 and self.Train:ReadTrainWire(4) < 1 then --wire 3 high and wire 4 high that means
@@ -700,13 +707,3 @@ function TRAIN_SYSTEM:MUHandler()
 	end
 end
 
-function TRAIN_SYSTEM:ManualBrake(enable)
-
-	if enable == true then
-		self.ManualHoldingBrake = true
-		self.BrakePressure = 2.7
-	else
-		self.BrakePressure = self.BrakePressure
-		self.ManualHoldingBrake = false
-	end
-end

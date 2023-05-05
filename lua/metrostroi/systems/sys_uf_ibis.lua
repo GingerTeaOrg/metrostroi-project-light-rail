@@ -422,7 +422,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
             if self.CourseChar4 == nil then
                 self:BlinkText(true, "Linie-Kurs :")
                 self:PrintText(11.5,1.5,Course)
-            elseif self.CourseChar4 != nil then
+            elseif self.CourseChar4 ~= nil then
                 self:PrintText(0,1.5,"Linie-Kurs :")
                 self:PrintText(11.5,1.5,Course)
                 
@@ -438,7 +438,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
                 self:BlinkText(true,"Route :")
                 self:PrintText(13.5,1.5,Route)
                 
-            elseif self.RouteChar1 != nil then
+            elseif self.RouteChar1 ~= nil then
                 self:PrintText(13.5,1.5,Route)
                 self:PrintText(0,1.5,"Route :")
                 

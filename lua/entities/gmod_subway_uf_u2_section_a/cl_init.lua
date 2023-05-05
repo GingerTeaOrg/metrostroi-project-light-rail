@@ -128,15 +128,6 @@ ENT.ClientProps["IBIS"] = {
 	scale = 1,
 }]]
 
-
-
---[[ENT.ClientProps["Dest"] = {
-	model = "models/lilly/uf/u2/dest_a.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
-	scale = 1,
-}]]
-
 ENT.ClientProps["window_cab_l"] = {
 	model = "models/lilly/uf/u2/window_cab_l.mdl",
 	pos = Vector(0,0,0),
@@ -237,7 +228,7 @@ ENT.ClientProps["reverser"] = {
 
 ENT.ClientProps["blinds_l"] = {
     model = "models/lilly/uf/u2/cab/blinds.mdl",
-    pos = Vector(0,0,0),
+    pos = Vector(-0.6,0,0),
     ang = Angle(0,0,0),
     hideseat = 8,
 }
@@ -368,13 +359,13 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "ReleaseHoldingBrakeSet", x=21.5, y=90, radius=10, tooltip = "Release mechanical brake manually", model = {
+    {ID = "ReleaseHoldingBrakeSet", x=21.5, y=90, radius=10, tooltip = "Release mechanical retainer brake manually", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,anim=true,
         var="ReleaseHoldingBrake",speed=5, min=0, max=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "SetHoldingBrakeSet", x=21.5, y=58, radius=10, tooltip = "set mechanical holding brake manually", model = {
+    {ID = "SetHoldingBrakeSet", x=21.5, y=58, radius=10, tooltip = "set mechanical retainer brake manually", model = {
         model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=180,
         var="SetHoldingBrake",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),

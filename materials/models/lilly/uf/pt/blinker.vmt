@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u2/u2h/blinker"
+	//$bumpmap		"models/lilly/uf/u2/u2h/blinker-n"
+}

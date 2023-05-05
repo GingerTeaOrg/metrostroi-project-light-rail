@@ -7,7 +7,7 @@ ENT.Purpose         = ""
 ENT.Instructions    = ""
 ENT.Category		= "Metrostroi: Project Light Rail"
 
-ENT.Spawnable       = true
+ENT.Spawnable       = false
 ENT.AdminSpawnable  = false
 
 ENT.SkinsType = "U2h"

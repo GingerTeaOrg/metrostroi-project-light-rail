@@ -121,6 +121,9 @@ function ENT:CreateBogeyUF_b(pos,ang,forward,typ)
 	if self.NoPhysics then
 		bogey:SetParent(self)
 	else
+		
+		
+		
 		constraint.Axis(bogey,self.u2sectionb,0,0,
 		Vector(0,0,0),Vector(0,0,0),
 		0,0,0,1,Vector(0,0,1),false)
@@ -129,6 +132,7 @@ function ENT:CreateBogeyUF_b(pos,ang,forward,typ)
 		elseif not forward and IsValid(self.RearCouple) then
 			constraint.NoCollide(bogey,self.RearCouple,0,0)
 		end
+		
 	end
 	-- Add to cleanup list
 	table.insert(self.TrainEntities,bogey)
@@ -280,6 +284,7 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	self:SetPos(self:GetPos() + Vector(0,0,10))  --set to 200 if one unit spawns in ground
 	
+	self:SetMassFib()
 	-- Create seat entities
 	self.DriverSeat = self:CreateSeat("driver",Vector(395,15,34))
 	self.InstructorsSeat = self:CreateSeat("instructor",Vector(395,-20,10),Angle(0,90,0),"models/vehicles/prisoner_pod_inner.mdl")
@@ -592,6 +597,10 @@ end
 
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
+	
+	--self:SetMassFib()
+	
+	
 	
 	
 	if self.Door1 == true then
@@ -927,6 +936,7 @@ end
 
 
 
+
 if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 	
 	--print(#self.WagonList)
@@ -1041,7 +1051,7 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 						self.RearBogey.Reversed = true
 					end
 				end
-			elseif self:ReadTrainWire(9) < 1 then
+			elseif self:ReadTrainWire(9) > 0 then
 				
 				self.FrontBogey.BrakeCylinderPressure = 2.7
 				self.MiddleBogey.BrakeCylinderPressure = 2.7
@@ -1217,7 +1227,7 @@ if self.DoorSideUnlocked == "Left" then
 			
 			if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door1-2b",0) != 1 then
+				if self:GetNW2Float("Door1-2b",0) ~= 1 then
 					self.DoorState4 = self:GetNW2Float("Door1-2b",0) + 0.1
 					self.DoorState4 = math.Clamp(self.DoorState4,0,1)
 					self:SetNW2Float("Door1-2b",self.DoorState4)
@@ -1233,7 +1243,7 @@ if self.DoorSideUnlocked == "Left" then
 			
 			if self:GetNW2Float("Door3-4b",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door3-4b",0) != 1 then
+				if self:GetNW2Float("Door3-4b",0) ~= 1 then
 					self.DoorState3 = self:GetNW2Float("Door3-4b",0) + 0.1
 					self.DoorState3 = math.Clamp(self.DoorState3,0,1)
 					self:SetNW2Float("Door3-4b",self.DoorState3)
@@ -1249,7 +1259,7 @@ if self.DoorSideUnlocked == "Left" then
 			
 			if self:GetNW2Float("Door5-6b",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door5-6b",0) != 1 then
+				if self:GetNW2Float("Door5-6b",0) ~= 1 then
 					self.DoorState2 = self:GetNW2Float("Door5-6b",0) + 0.1
 					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 					self:SetNW2Float("Door5-6b",self.DoorState2)
@@ -1265,7 +1275,7 @@ if self.DoorSideUnlocked == "Left" then
 			
 			if self:GetNW2Float("Door7-8b",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door7-8b",0) != 1 then
+				if self:GetNW2Float("Door7-8b",0) ~= 1 then
 					self.DoorState1 = self:GetNW2Float("Door7-8b",0) + 0.1
 					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 					self:SetNW2Float("Door7-8b",self.DoorState1)
@@ -1286,7 +1296,7 @@ if self.DoorSideUnlocked == "Left" then
 		
 		if self:GetNW2Float("Door1-2b",0) > 0 then -- If state 1, close them
 			
-			if self:GetNW2Float("Door1-2b",0) != 0 then
+			if self:GetNW2Float("Door1-2b",0) ~= 0 then
 				self.DoorState4 = self:GetNW2Float("Door1-2b",0) - 0.1
 				self.DoorState4 = math.Clamp(self.DoorState4,0,1)
 				self:SetNW2Float("Door1-2b",self.DoorState4)
@@ -1302,7 +1312,7 @@ if self.DoorSideUnlocked == "Left" then
 		
 		if self:GetNW2Float("Door3-4b",0) > 0 then -- If state 1, close them
 			
-			if self:GetNW2Float("Door3-4b",0) != 0 then
+			if self:GetNW2Float("Door3-4b",0) ~= 0 then
 				self.DoorState3 = self:GetNW2Float("Door3-4b",0) - 0.1
 				self.DoorState3 = math.Clamp(self.DoorState3,0,1)
 				self:SetNW2Float("Door3-4b",self.DoorState3)
@@ -1317,7 +1327,7 @@ if self.DoorSideUnlocked == "Left" then
 		
 		if self:GetNW2Float("Door5-6b",0) > 0 then -- If state less than 1, open them
 			
-			if self:GetNW2Float("Door5-6b",0) != 0 then
+			if self:GetNW2Float("Door5-6b",0) ~= 0 then
 				self.DoorState2 = self:GetNW2Float("Door5-6b",0) - 0.1
 				self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 				self:SetNW2Float("Door5-6b",self.DoorState2)
@@ -1333,7 +1343,7 @@ if self.DoorSideUnlocked == "Left" then
 		
 		if self:GetNW2Float("Door7-8b",0) > 0 then -- If state less than 1, open them
 			
-			if self:GetNW2Float("Door7-8b",0) != 0 then
+			if self:GetNW2Float("Door7-8b",0) ~= 0 then
 				self.DoorState1 = self:GetNW2Float("Door7-8b",0) - 0.1
 				self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 				self:SetNW2Float("Door7-8b",self.DoorState1)
@@ -1365,7 +1375,7 @@ if self.DoorSideUnlocked == "Right" then
 			
 			if self:GetNW2Float("Door1-2a",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door1-2a",0) != 1 then
+				if self:GetNW2Float("Door1-2a",0) ~= 1 then
 					self.DoorState1 = self:GetNW2Float("Door1-2a",0) + 0.1
 					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 					self:SetNW2Float("Door1-2a",self.DoorState1)
@@ -1383,7 +1393,7 @@ if self.DoorSideUnlocked == "Right" then
 			
 			if self:GetNW2Float("Door3-4a",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door3-4a",0) != 1 then
+				if self:GetNW2Float("Door3-4a",0) ~= 1 then
 					self.DoorState2 = self:GetNW2Float("Door3-4a",0) + 0.1
 					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 					self:SetNW2Float("Door3-4a",self.DoorState2)
@@ -1401,7 +1411,7 @@ if self.DoorSideUnlocked == "Right" then
 			
 			if self:GetNW2Float("Door5-6a",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door5-6a",0) != 1 then
+				if self:GetNW2Float("Door5-6a",0) ~= 1 then
 					self.DoorState3 = self:GetNW2Float("Door5-6a",0) + 0.1
 					self.DoorState3 = math.Clamp(self.DoorState3,0,1)
 					self:SetNW2Float("Door5-6a",self.DoorState3)
@@ -1419,7 +1429,7 @@ if self.DoorSideUnlocked == "Right" then
 			
 			if self:GetNW2Float("Door7-8a",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door7-8a",0) != 1 then
+				if self:GetNW2Float("Door7-8a",0) ~= 1 then
 					self.DoorState4 = self:GetNW2Float("Door7-8a",0) + 0.1
 					self.DoorState4 = math.Clamp(self.DoorState4,0,1)
 					self:SetNW2Float("Door7-8a",self.DoorState4)
@@ -1442,7 +1452,7 @@ if self.DoorSideUnlocked == "Right" then
 		
 		if self:GetNW2Float("Door1-2a",0) > 0 then -- If state less than 1, open them
 			
-			--if self:GetNW2Float("Door1-2a",0) != 0 then
+			--if self:GetNW2Float("Door1-2a",0) ~= 0 then
 			self.DoorState1 = self:GetNW2Float("Door1-2a",0) - 0.1
 			self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 			self:SetNW2Float("Door1-2a",self.DoorState1)
@@ -1459,7 +1469,7 @@ if self.DoorSideUnlocked == "Right" then
 		
 		if self:GetNW2Float("Door3-4a",0) > 0 then -- If state less than 1, open them
 			
-			--if self:GetNW2Float("Door3-4a",0) != 0 then
+			--if self:GetNW2Float("Door3-4a",0) ~= 0 then
 			self.DoorState2 = self:GetNW2Float("Door3-4a",0) - 0.1
 			self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 			self:SetNW2Float("Door3-4a",self.DoorState2)
@@ -1477,7 +1487,7 @@ if self.DoorSideUnlocked == "Right" then
 		
 		if self:GetNW2Float("Door5-6a",0) > 0 then -- If state less than 1, open them
 			
-			--if self:GetNW2Float("Door5-6a",0) != 0 then
+			--if self:GetNW2Float("Door5-6a",0) ~= 0 then
 			self.DoorState3 = self:GetNW2Float("Door5-6a",0) - 0.1
 			self.DoorState3 = math.Clamp(self.DoorState3,0,1)
 			self:SetNW2Float("Door5-6a",self.DoorState3)
@@ -1494,7 +1504,7 @@ if self.DoorSideUnlocked == "Right" then
 		
 		if self:GetNW2Float("Door7-8a",0) > 0 then -- If state less than 1, open them
 			
-			--if self:GetNW2Float("Door7-8a",0) != 0 then
+			--if self:GetNW2Float("Door7-8a",0) ~= 0 then
 			self.DoorState4 = self:GetNW2Float("Door7-8a",0) - 0.1
 			self.DoorState4 = math.Clamp(self.DoorState4,0,1)
 			self:SetNW2Float("Door7-8a",self.DoorState4)
@@ -1962,12 +1972,12 @@ end
 
 if button == "SetHoldingBrakeSet" then
 	
-	self.Duewag_U2.ManualHoldingBrake = true
+	self.Duewag_U2.ManualRetainerBrake = true
 end
 
 if button == "ReleaseHoldingBrakeSet" then
 	
-	self.Duewag_U2.ManualHoldingBrake = false
+	self.Duewag_U2.ManualRetainerBrake = false
 end
 
 if button == "PassengerLightsToggle" then
@@ -2196,8 +2206,7 @@ end
 
 
 function ENT:CreateSectionB(pos)
-	
-	
+
 	
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
@@ -2211,6 +2220,13 @@ function ENT:CreateSectionB(pos)
 	local xmin = 5
 	local xmax = 5
 	
+	local phys = u2sectionb:GetPhysicsObject()
+	
+	if ( IsValid( phys ) ) then -- Always check with IsValid! The ent might not have physics!
+		phys:SetMass(50000)
+		
+	end
+	
 	constraint.Axis(
 	u2sectionb,
 	self.MiddleBogey,
@@ -2222,7 +2238,21 @@ function ENT:CreateSectionB(pos)
 	0, --torquelimit
 	0,
 	1 --nocollide
-)
+	)
+local phys = self:GetPhysicsObject()
+
+if ( IsValid( phys ) ) then -- Always check with IsValid! The ent might not have physics!
+	phys:SetMass(32000)
+	
+end
+
+local phys = u2sectionb:GetPhysicsObject()
+
+if ( IsValid( phys ) ) then -- Always check with IsValid! The ent might not have physics!
+	phys:SetMass(32000)
+	
+end
+
 
 constraint.NoCollide(self.MiddleBogey,u2sectionb,0,0)
 -- Add to cleanup list
@@ -2232,7 +2262,7 @@ end
 
 
 function ENT:SetRetainerBrake(enable)
-
+	
 	if enable then
 		self.FrontBogey.BrakeCylinderPressure = 2.7 
 		self.MiddleBogey.BrakeCylinderPressure = 2.7
@@ -2361,7 +2391,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 		if door1 == true then
 			if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door1-2b",0) != 1 then
+				if self:GetNW2Float("Door1-2b",0) ~= 1 then
 					self.DoorState1 = self:GetNW2Float("Door1-2b",0) + 0.1
 					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 					self:SetNW2Float("Door1-2b",self.DoorState1)
@@ -2386,7 +2416,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 				
 				if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
 					
-					if self:GetNW2Float("Door1-2b",0) != 1 then
+					if self:GetNW2Float("Door1-2b",0) ~= 1 then
 						self.DoorState1 = self:GetNW2Float("Door1-2b",0) + 0.1
 						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 						self:SetNW2Float("Door1-2b",self.DoorState1)
@@ -2402,7 +2432,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 				
 				if self:GetNW2Float("Door3-4b",0) <= 1 then -- If state less than 1, open them
 					
-					if self:GetNW2Float("Door3-4b",0) != 1 then
+					if self:GetNW2Float("Door3-4b",0) ~= 1 then
 						self.DoorState2 = self:GetNW2Float("Door3-4b",0) + 0.1
 						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 						self:SetNW2Float("Door3-4b",self.DoorState2)
@@ -2418,7 +2448,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 				
 				if self:GetNW2Float("Door5-6b",0) <= 1 then -- If state less than 1, open them
 					
-					if self:GetNW2Float("Door5-6b",0) != 1 then
+					if self:GetNW2Float("Door5-6b",0) ~= 1 then
 						self.DoorState2 = self:GetNW2Float("Door5-6b",0) + 0.1
 						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 						self:SetNW2Float("Door5-6b",self.DoorState2)
@@ -2434,7 +2464,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 				
 				if self:GetNW2Float("Door7-8b",0) <= 1 then -- If state less than 1, open them
 					
-					if self:GetNW2Float("Door7-8b",0) != 1 then
+					if self:GetNW2Float("Door7-8b",0) ~= 1 then
 						self.DoorState2 = self:GetNW2Float("Door7-8b",0) + 0.1
 						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 						self:SetNW2Float("Door7-8b",self.DoorState2)
@@ -2455,7 +2485,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door1-2b",0) > 0 then -- If state 1, close them
 				
-				if self:GetNW2Float("Door1-2b",0) != 0 then
+				if self:GetNW2Float("Door1-2b",0) ~= 0 then
 					self.DoorState1 = self:GetNW2Float("Door1-2b",0) - 0.1
 					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 					self:SetNW2Float("Door1-2b",self.DoorState1)
@@ -2471,7 +2501,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door3-4b",0) > 0 then -- If state 1, close them
 				
-				if self:GetNW2Float("Door3-4b",0) != 0 then
+				if self:GetNW2Float("Door3-4b",0) ~= 0 then
 					self.DoorState2 = self:GetNW2Float("Door3-4b",0) - 0.1
 					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 					self:SetNW2Float("Door3-4b",self.DoorState2)
@@ -2486,7 +2516,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door5-6b",0) > 0 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door5-6b",0) != 0 then
+				if self:GetNW2Float("Door5-6b",0) ~= 0 then
 					self.DoorState2 = self:GetNW2Float("Door5-6b",0) - 0.1
 					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 					self:SetNW2Float("Door5-6b",self.DoorState2)
@@ -2502,7 +2532,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door7-8b",0) > 0 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door7-8b",0) != 0 then
+				if self:GetNW2Float("Door7-8b",0) ~= 0 then
 					self.DoorState2 = self:GetNW2Float("Door7-8b",0) - 0.1
 					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 					self:SetNW2Float("Door7-8b",self.DoorState2)
@@ -2523,7 +2553,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door1-2a",0) <= 1 then -- If state less than 1, open them
 				
-				if self:GetNW2Float("Door1-2a",0) != 1 then
+				if self:GetNW2Float("Door1-2a",0) ~= 1 then
 					self.DoorState1 = self:GetNW2Float("Door1-2a",0) + 0.1
 					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 					self:SetNW2Float("Door1-2a",self.DoorState1)
@@ -2548,7 +2578,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 				
 				if self:GetNW2Float("Door1-2a",0) <= 1 then -- If state less than 1, open them
 					
-					if self:GetNW2Float("Door1-2a",0) != 1 then
+					if self:GetNW2Float("Door1-2a",0) ~= 1 then
 						self.DoorState1 = self:GetNW2Float("Door1-2a",0) + 0.1
 						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 						self:SetNW2Float("Door1-2a",self.DoorState1)
@@ -2566,7 +2596,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 				
 				if self:GetNW2Float("Door3-4a",0) <= 1 then -- If state less than 1, open them
 					
-					if self:GetNW2Float("Door3-4a",0) != 1 then
+					if self:GetNW2Float("Door3-4a",0) ~= 1 then
 						self.DoorState2 = self:GetNW2Float("Door3-4a",0) + 0.1
 						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 						self:SetNW2Float("Door3-4a",self.DoorState2)
@@ -2584,7 +2614,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 				
 				if self:GetNW2Float("Door5-6a",0) <= 1 then -- If state less than 1, open them
 					
-					if self:GetNW2Float("Door5-6a",0) != 1 then
+					if self:GetNW2Float("Door5-6a",0) ~= 1 then
 						self.DoorState3 = self:GetNW2Float("Door5-6a",0) + 0.1
 						self.DoorState3 = math.Clamp(self.DoorState3,0,1)
 						self:SetNW2Float("Door5-6a",self.DoorState3)
@@ -2602,7 +2632,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 				
 				if self:GetNW2Float("Door7-8a",0) <= 1 then -- If state less than 1, open them
 					
-					if self:GetNW2Float("Door7-8a",0) != 1 then
+					if self:GetNW2Float("Door7-8a",0) ~= 1 then
 						self.DoorState4 = self:GetNW2Float("Door7-8a",0) + 0.1
 						self.DoorState4 = math.Clamp(self.DoorState4,0,1)
 						self:SetNW2Float("Door7-8a",self.DoorState4)
@@ -2625,7 +2655,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door1-2a",0) > 0 then -- If state less than 1, open them
 				
-				--if self:GetNW2Float("Door1-2a",0) != 0 then
+				--if self:GetNW2Float("Door1-2a",0) ~= 0 then
 				self.DoorState1 = self:GetNW2Float("Door1-2a",0) - 0.1
 				self.DoorState1 = math.Clamp(self.DoorState1,0,1)
 				self:SetNW2Float("Door1-2a",self.DoorState1)
@@ -2642,7 +2672,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door3-4a",0) > 0 then -- If state less than 1, open them
 				
-				--if self:GetNW2Float("Door3-4a",0) != 0 then
+				--if self:GetNW2Float("Door3-4a",0) ~= 0 then
 				self.DoorState2 = self:GetNW2Float("Door3-4a",0) - 0.1
 				self.DoorState2 = math.Clamp(self.DoorState2,0,1)
 				self:SetNW2Float("Door3-4a",self.DoorState2)
@@ -2660,7 +2690,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door5-6a",0) > 0 then -- If state less than 1, open them
 				
-				--if self:GetNW2Float("Door5-6a",0) != 0 then
+				--if self:GetNW2Float("Door5-6a",0) ~= 0 then
 				self.DoorState3 = self:GetNW2Float("Door5-6a",0) - 0.1
 				self.DoorState3 = math.Clamp(self.DoorState3,0,1)
 				self:SetNW2Float("Door5-6a",self.DoorState3)
@@ -2677,7 +2707,7 @@ function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
 			
 			if self:GetNW2Float("Door7-8a",0) > 0 then -- If state less than 1, open them
 				
-				--if self:GetNW2Float("Door7-8a",0) != 0 then
+				--if self:GetNW2Float("Door7-8a",0) ~= 0 then
 				self.DoorState4 = self:GetNW2Float("Door7-8a",0) - 0.1
 				self.DoorState4 = math.Clamp(self.DoorState4,0,1)
 				self:SetNW2Float("Door7-8a",self.DoorState4)
@@ -2712,3 +2742,12 @@ function ENT:RollsignSync()
 	end
 end
 
+function ENT:SetMassFib()
+	
+	local phys = self:GetPhysicsObject()
+	
+	if ( IsValid( phys ) ) then -- Always check with IsValid! The ent might not have physics!
+		phys:SetMass(50000)
+		
+	end
+end

@@ -1,0 +1,6 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lilly/uf/pt/cabint-pt"
+	"$surfaceprop" "Metal"
+	"$surfaceprop2" "SlipperyMetal"
+}
