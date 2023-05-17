@@ -119,6 +119,8 @@ function ENT:Initialize()
     if self:GetNW2Int("SquealType",0)==0 then
         self:SetNW2Int("SquealType",math.floor(math.random()*4)+1)
     end
+
+    self.InhibitReRail = false
 end
 
 function ENT:InitializeWheels()
@@ -486,7 +488,7 @@ function ENT:SpawnFunction(ply, tr)
     local verticaloffset = 40 -- Offset for the train model, gmod seems to add z by default, nvm its you adding 170 :V
     local distancecap = 2000 -- When to ignore hitpos and spawn at set distanace
     local pos, ang = nil
-    local inhibitrerail = false
+    local inhibitrerail = self.InhibitReRail
 
     if tr.Hit then
         -- Setup trace to find out of this is a track

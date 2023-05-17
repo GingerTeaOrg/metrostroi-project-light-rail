@@ -299,7 +299,7 @@ function ENT:Initialize()
 	
 	self.WarningAnnouncement = 0
 	
-	
+	self.SquealSensitivity = 200
 	
 	self.Speed = 0
 	self.ThrottleState = 0
@@ -437,6 +437,7 @@ function ENT:Initialize()
 	self.KeyMap = {
 		[KEY_A] = "ThrottleUp",
 		[KEY_D] = "ThrottleDown",
+		[KEY_F] = "ReduceBrake",
 		[KEY_H] = "BellEngageSet",
 		[KEY_SPACE] = "DeadmanSet",
 		[KEY_W] = "ReverserUpSet",
@@ -497,6 +498,7 @@ function ENT:Initialize()
 			[KEY_PAD_MINUS] = "TimeAndDateSet",
 			[KEY_V] = "PassengerLightsSet",
 			[KEY_D] = "EmergencyBrakeSet",
+			[KEY_N] = "Parrallel",
 			
 			
 			

@@ -15,6 +15,7 @@ COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
 ENT.Types = {
     ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(42.5,0,0),Vector(2,0,0),Angle(0,-90,0)},
     ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(0,0,0),Vector(-2,0,0),Angle(0,-90,0)},
+    ["pt"] = {"models/lilly/uf/coupler_new.mdl",Vector(0,0,0),Vector(-2,0,0),Angle(0,-90,0)},
     --["dummy"] = {"models/lilly/uf/coupler_dummy.mdl",Vector(42.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
     def={"models/lilly/uf/coupler_new.mdl",Vector(10,0,0),Vector(42.6,0,0),Angle(0,-90,0)},
 }
@@ -147,8 +148,8 @@ end
 
 -- This feels so wrong, any ideas how to improve this?
 local function CanCoupleTogether(ent1,ent2)
-    if not (ent1.CanCouple and ent1:CanCouple()) then return false end
-    if not (ent2.CanCouple and ent2:CanCouple()) then return false end
+    if not (ent1.CanCouple and ent1:CanCouple()) then print("ent1 can couple") return false end
+    if not (ent2.CanCouple and ent2:CanCouple()) then print("ent2 can couple") return false end
     if      ent2:GetClass() ~= ent1:GetClass() then return false end
     if not AreInCoupleDistance(ent1,ent2) then return false end
     if not AreFacingEachother(ent1,ent2) then return false end
@@ -169,35 +170,6 @@ function ENT:Use(ply)
     local train = self:GetNW2Entity("TrainEntity")
     local isfront = self:GetNW2Bool("IsForwardCoupler")
     RunConsoleCommand("say", "To uncouple, set the brakes on both units and press the decouple button in cab" )
-    --[[net.Start("metrostroi-coupler-menu")
-        net.WriteEntity(self)
-        net.WriteBool(not self.CPPICanUse or self:CPPICanUse(ply))
-        net.WriteBool(self.CoupledEnt ~= nil)
-        if IsValid(train) then
-            if isfront and train.FrontBrakeLineIsolation and train.FrontTrainLineIsolation then
-                net.WriteBool(true)
-                net.WriteBool(train.FrontBrakeLineIsolation.Value>0 and train.FrontTrainLineIsolation.Value>0)
-            elseif not isfront and train.RearBrakeLineIsolation and train.RearTrainLineIsolation then
-                net.WriteBool(true)
-                net.WriteBool(train.RearBrakeLineIsolation.Value>0 and train.RearTrainLineIsolation.Value>0)
-            else
-                net.WriteBool(false)
-                net.WriteBool(false)
-            end
-        else
-            net.WriteBool(false)
-            net.WriteBool(false)
-        end
-        net.WriteBool(self.CoupleType=="722")
-        net.WriteBool(self.EKKDisconnected)
-    net.Send(ply)]]
-    --[[ if self.CoupledEnt ~= nil then
-        local tr = ply:GetEyeTrace()
-        if not tr.Hit then return end
-        if self:LocalToWorld(self.CouplingPointOffset):Distance(tr.HitPos) < 25 then
-            self:Decouple()
-        end
-    end--]]
 end
 
 function ENT:ElectricDisconnected()
@@ -205,56 +177,6 @@ function ENT:ElectricDisconnected()
     return self.EKKDisconnected or self.CoupledEnt.EKKDisconnected
 end
 
---[[net.Receive("metrostroi-coupler-menu",function(_,ply)
-    local bogey = net.ReadEntity()
-    local train = bogey:GetNW2Entity("TrainEntity")
-    local isfront = bogey:GetNW2Bool("IsForwardCoupler")
-
-    if bogey.CPPICanUse and not bogey:CPPICanUse(ply) then return end
-    local id = net.ReadUInt(8)
-    if id==0 and bogey.CoupledEnt ~= nil then bogey:Decouple() end
-    if id==1 then
-        if not IsValid(train) then return end
-        if isfront and train.FrontBrakeLineIsolation and train.FrontTrainLineIsolation then
-            local state = train.FrontBrakeLineIsolation.Value>0 or train.FrontTrainLineIsolation.Value>0
-            train.FrontBrakeLineIsolation:TriggerInput("Set",state and 0 or 1)
-            train.FrontTrainLineIsolation:TriggerInput("Set",state and 0 or 1)
-            if IsValid(train.FrontTrain)then
-                local ftrain = train.FrontTrain
-                if ftrain.RearTrain==train and train.RearBrakeLineIsolation and train.RearTrainLineIsolation then
-                    ftrain.RearBrakeLineIsolation:TriggerInput("Set",state and 0 or 1)
-                    ftrain.RearTrainLineIsolation:TriggerInput("Set",state and 0 or 1)
-                elseif ftrain.FrontTrain==train and ftrain.FrontBrakeLineIsolation and ftrain.FrontTrainLineIsolation then
-                    ftrain.FrontBrakeLineIsolation:TriggerInput("Set",state and 0 or 1)
-                    ftrain.FrontTrainLineIsolation:TriggerInput("Set",state and 0 or 1)
-                end
-            end
-        elseif not isfront and train.RearBrakeLineIsolation and train.RearTrainLineIsolation then
-            local state = train.RearBrakeLineIsolation.Value>0 or train.RearTrainLineIsolation.Value>0
-            train.RearBrakeLineIsolation:TriggerInput("Set",state and 0 or 1)
-            train.RearTrainLineIsolation:TriggerInput("Set",state and 0 or 1)
-            if IsValid(train.RearTrain)then
-                local rtrain = train.RearTrain
-                if rtrain.RearTrain==train and train.RearBrakeLineIsolation and train.RearTrainLineIsolation then
-                    rtrain.RearBrakeLineIsolation:TriggerInput("Set",state and 0 or 1)
-                    rtrain.RearTrainLineIsolation:TriggerInput("Set",state and 0 or 1)
-                elseif rtrain.FrontTrain==train and rtrain.FrontBrakeLineIsolation and rtrain.FrontTrainLineIsolation then
-                    rtrain.FrontBrakeLineIsolation:TriggerInput("Set",state and 0 or 1)
-                    rtrain.FrontTrainLineIsolation:TriggerInput("Set",state and 0 or 1)
-                end
-            end
-        end
-    end
-    if id==2 then
-        bogey.EKKDisconnected = not bogey.EKKDisconnected
-        if bogey.CoupledEnt ~= nil then
-            bogey.CoupledEnt.EKKDisconnected = bogey.EKKDisconnected
-            if IsValid(train) then train:OnConnectDisconnect() end
-            local coupledTrain = bogey.CoupledEnt:GetNW2Entity("TrainEntity")
-            if IsValid(coupledTrain) then coupledTrain:OnConnectDisconnect() end
-        end
-    end
-end)]]
 
 function ENT:ConnectDisconnect(status)
     local isfront = self:GetNW2Bool("IsForwardCoupler")
@@ -324,7 +246,7 @@ function ENT:OnCouple(ent)
         parent:OnCouple(ent,isforward)
     end
     if self.OnCoupleSpawner then self:OnCoupleSpawner() end
-    self:SetPackedBool("IsCoupledAnim",true)
+    self:SetNW2Bool("IsCoupledAnim",true)
 end
 
 function ENT:OnDecouple()
@@ -335,6 +257,8 @@ function ENT:OnDecouple()
     if IsValid(parent) then
         parent:OnDecouple(isforward)
     end
+
+    self:SetNW2Bool("IsCoupledAnim",false)
 end
 
 function ENT:Think()

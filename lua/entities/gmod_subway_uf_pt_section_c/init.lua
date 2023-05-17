@@ -20,39 +20,41 @@ ENT.SubwayTrain = {
 	Type = "P8",
 	Name = "Pt",
 	WagType = 2,
-	Manufacturer = "Duewag",
+	Manufacturer = "Düwag",
 }
 
 function ENT:Initialize()
-
+	
 	-- Set model and initialize
 	self:SetModel("models/lilly/uf/pt/section-c.mdl")
 	self.BaseClass.Initialize(self)
 	self:SetPos(self:GetPos() + Vector(0,0,5))
-
 	
-
+	
+	
 	self.Bogeys = {}
 	-- Create bogeys
-	
-	
-				
-	self.MiddleBogeyA  = self:CreateBogeyUF(Vector( 132,0,16),Angle(0,0,0),false,"duewag_motor")
+	self.MiddleBogeyA  = self:CreateBogeyUF(Vector( 138,0,14),Angle(0,0,0),false,"duewag_motor")
+	self.MiddleBogeyA.InhibitReRail = true
 	self.SectionA = self:CreateSectionA(Vector(134,0,2.8))
 	self.FrontBogey = self:CreateBogeyUF_a(Vector(380,0,14),Angle(0,0,0),true,"duewag_motor")
-	self.MiddleBogeyB  = self:CreateBogeyUF(Vector( -132,0,16),Angle(0,0,0),false,"duewag_motor")
-
+	self.FrontBogey.InhibitReRail = true
+	self.MiddleBogeyB  = self:CreateBogeyUF(Vector( -138,0,14),Angle(0,0,0),false,"duewag_motor")
+	self.MiddleBogeyB.InhibitReRail = true
+	--self.RearBogey = self.MiddleBogeyB
 	
 	self.SectionB = self:CreateSectionB(Vector(-134,0,2.8))
 	
-	self.RearBogey = self:CreateBogeyUF_b(Vector( -380,0,14),Angle(0,0,0),false,"duewag_motor")
-	self.FrontCouple = self:CreateCoupleUF_a(Vector( 525,0,14),Angle(0,0,0),true,"u2")	
-    self.RearCouple = self:CreateCoupleUF_b(Vector( -525,0,14),Angle(0,-180,0),false,"u2")				
-	table.insert(self.Bogeys,self.FrontBogey)
-	table.insert(self.Bogeys,self.RearBogey)
-	table.insert(self.Bogeys,self.MiddleBogeyA)
-	table.insert(self.Bogeys,self.MiddleBogeyB)
-
+	self.RearBogey = self:CreateBogeyUF_b(Vector( -380,0,14),Angle(0,0,0),true,"duewag_motor")
+	self.RearBogey.InhibitReRail = true
+	self.FrontCouple = self.SectionA:CreateCoupleUF_a(Vector( 400,0,10),Angle(0,0,0),true,"pt")	
+	self.RearCouple = self.SectionB:CreateCoupleUF_b(Vector( 400,0,10),Angle(0,0,0),false,"u2")				
+	
+	
+	--self.SectionA.BaseClass:Initialize(self.SectionA)
+	--self.SectionB.BaseClass:Initialize(self.SectionB)
+	--self.DriverSeat = self:CreateSeat("driver",Vector(0,0,80))
+	
 	constraint.NoCollide(self.FrontBogey,self.SectionA,0,0)
 	constraint.NoCollide(self.RearBogey,self.SectionB,0,0)
 	constraint.NoCollide(self.MiddleBogeyA,self.SectionA,0,0)
@@ -68,28 +70,27 @@ function ENT:Initialize()
 	self:SetNW2Entity("SectionA",self.SectionA)
 	self:SetNW2Entity("SectionB",self.SectionB)
 	self:SetNW2Entity("SectionC",self)
-
-	--[[undo.Create(self.ClassName)	
-	undo.AddEntity(self)	
-	undo.SetPlayer(self.Owner)
-	undo.SetCustomUndoText("Undone a train")
-	undo.Finish()]]
 	
-	self.Wheels = self.FrontBogey.Wheels	
-
-
+	
+	
+	--self.Wheels = self.FrontBogey.Wheels	
+	
+	
 	self.ReverserInsertedA = false
 	self.ReverserInsertedB = false
 	self.ThrottleAnimB = 0
 	self.ThrottleAnimA = 0
-
-
+	
+	self:SetNW2Bool("DepartureConfirmed",true)
+	
+	
+	
+	
+	
+	
 end
 
 function ENT:OnButtonPress(button,ply)
-    if button == "CabinDoorLeft" then self.CabinDoorLeft = not self.CabinDoorLeft end
-	if button == "RearDoor" then self.RearDoor = not self.RearDoor end
-	if button == "RearDoor2" then self.RearDoor2 = not self.RearDoor2 end
 end
 
 
@@ -99,13 +100,80 @@ function ENT:Think()
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*100)
 	
-	--print(self.MiddleBogeyA)
-
-
+	
+	--self.ReverserInsertedB = self.SectionB.ReverserInserted
+	self.ReverserInsertedA = self.SectionA.ReverserInserted
+	self.SectionA:SetNW2Bool("ReverserInserted",self.ReverserInsertedA)
+	--self.SectionB:SetNW2Bool("ReverserInserted",self.ReverserInsertedB)
+	
 	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogeyA) and IsValid(self.MiddleBogeyB) and IsValid(self.RearBogey) then
-
-
+		
+		if self.Duewag_Pt.ThrottleStateA < 0 or self.Duewag_Pt.ThrottleStateB < 0 then
+			self.RearBogey.MotorForce  = -5980 
+			self.FrontBogey.MotorForce = -5980
+			self:SetNW2Bool("Braking",true)
+			self.RearBogey.MotorPower = self.Duewag_Pt.Traction
+			self.FrontBogey.MotorPower = self.Duewag_Pt.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure 
+			self.MiddleBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+		elseif self.Duewag_Pt.ThrottleStateA > 0 or self.Duewag_Pt.ThrottleStateB > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
+			self.RearBogey.MotorForce  = 4980
+			self.FrontBogey.MotorForce = 4980 
+			self.RearBogey.MotorPower = self.Duewag_Pt.Traction
+			self.FrontBogey.MotorPower = self.Duewag_Pt.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure 
+			self.MiddleBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+		elseif self.Duewag_Pt.ThrottleStateA == 0 or self.Duewag_Pt.ThrottleStateB == 0 then 
+			self.RearBogey.MotorForce  = 0
+			self.FrontBogey.MotorForce = 0
+			self:SetNW2Bool("Braking",false)
+			self.RearBogey.MotorPower = self.Duewag_Pt.Traction
+			self.FrontBogey.MotorPower = self.Duewag_Pt.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure 
+			self.MiddleBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+		elseif self.Train:GetNW2Bool("DeadmanTripped") == true then
+			if self.Speed > 5 then
+				self.RearBogey.MotorPower = self.Duewag_Pt.Traction
+				self.FrontBogey.MotorPower = self.Duewag_Pt.Traction
+				self.FrontBogey.BrakeCylinderPressure = 2.7 
+				self.MiddleBogeyA.BrakeCylinderPressure = 2.7
+				self.RearBogey.BrakeCylinderPressure = 2.7
+				self:SetNW2Bool("Braking",true)
+			else
+				self.RearBogey.MotorPower = 0
+				self.FrontBogey.MotorPower = 0
+				self.FrontBogey.BrakeCylinderPressure = 2.7 
+				self.MiddleBogeyA.BrakeCylinderPressure = 2.7
+				self.RearBogey.BrakeCylinderPressure = 2.7
+				self:SetNW2Bool("Braking",true)
+			end
+		end
+		
+	elseif self:GetNW2Bool("DepartureConfirmed",false) == false then
+		self.FrontBogey.BrakeCylinderPressure = 2.7
+		self.MiddleBogeyA.BrakeCylinderPressure = 2.7
+		self.RearBogey.BrakeCylinderPressure = 2.7
+		self.RearBogey.MotorPower = 0
+		self.FrontBogey.MotorPower = 0
+		self:SetNW2Bool("Braking",true)
+		
+		
+		
 	end
+	
+	if self.Duewag_Pt.ReverserState == 1 then 
+		self.FrontBogey.Reversed = false
+		self.RearBogey.Reversed = false 
+	elseif self.Duewag_Pt.ReverserState == -1 then
+		self.FrontBogey.Reversed = true
+		self.RearBogey.Reversed = true
+	end
+	
+	
+	
 	
 end
 
@@ -117,6 +185,7 @@ function ENT:CreateSectionA(pos)
 	SecA:SetPos(self:LocalToWorld(pos))
 	SecA:SetAngles(self:GetAngles() + ang)
 	SecA:Spawn()
+	--SecA:Initialize()
 	SecA:SetOwner(self:GetOwner())
 	SecA:SetNW2Entity("SectionC",self)
 	local xmin = 5
@@ -129,7 +198,7 @@ function ENT:CreateSectionA(pos)
 	0, --bone
 	0, --bone
 	Vector(0,0,0),
-	Vector(4,0,0),
+	Vector(8,0,14),
 	0, --forcelimit
 	0, --torquelimit
 	0,
@@ -143,33 +212,34 @@ end
 function ENT:CreateSectionB(pos)
 	local ang = Angle(0,180,0)
 	local SecB = ents.Create("gmod_subway_uf_pt_section_ab")
-
+	
 	SecB:SetPos(self:LocalToWorld(pos))
 	SecB:SetAngles(self:GetAngles() + ang)
 	SecB:Spawn()
+	--SecB:Initialize()
 	SecB:SetOwner(self:GetOwner())
 	SecB:SetNW2Entity("SectionC",self)
 	local xmin = 5
 	local xmax = 5
-		
 	
-
+	
+	
 	constraint.Axis(
 	self.MiddleBogeyB,
 	SecB,
 	0, --bone
 	0, --bone
 	Vector(0,0,0),
-	Vector(-4,0,0),
+	Vector(-8,0,14),
 	0, --forcelimit
 	0, --torquelimit
 	0,
 	1 --nocollide
-	)
-	
-	-- Add to cleanup list
-	table.insert(self.TrainEntities,SecB)
-	return SecB
+)
+
+-- Add to cleanup list
+table.insert(self.TrainEntities,SecB)
+return SecB
 end
 
 function ENT:CreateBogeyUF(pos,ang,forward,typ)
@@ -309,137 +379,139 @@ function ENT:CreateBogeyUF_b(pos,ang,forward,typ)
 end
 
 function ENT:CreateCoupleUF_a(pos,ang,forward,typ)
-	-- Create bogey entity
-	local coupler = ents.Create("gmod_train_uf_couple")
-	coupler:SetPos(self:LocalToWorld(pos))
-	coupler:SetAngles(self:GetAngles() + ang)
-	coupler.CoupleType = typ
-	coupler:Spawn()
-	
-	-- Assign ownership
-	if CPPI and IsValid(self:CPPIGetOwner()) then coupler:CPPISetOwner(self:CPPIGetOwner()) end
-	
-	-- Some shared general information about the bogey
-	coupler:SetNW2Bool("IsForwardCoupler", forward)
-	coupler:SetNW2Entity("TrainEntity", self)
-	coupler.SpawnPos = pos
-	coupler.SpawnAng = ang
-	local index=1
-	local x = self:WorldToLocal(coupler:LocalToWorld(coupler.CouplingPointOffset)).x
-	for i,v in ipairs(self.JointPositions) do
-		if v>pos.x then index=i+1 else break end
-	end
-	table.insert(self.JointPositions,index,x)
-	-- Constraint bogey to the train
-	if self.NoPhysics then
-		bogey:SetParent(coupler)
-	else
-		constraint.AdvBallsocket(
-		self.SectionA,
-		coupler,
-		0, --bone
-		0, --bone
-		pos,
-		Vector(0,0,0),
-		1, --forcelimit
-		1, --torquelimit
-		-2, --xmin
-		-2, --ymin
-		-15, --zmin
-		2, --xmax
-		2, --ymax
-		15, --zmax
-		0.1, --xfric
-		0.1, --yfric
-		1, --zfric
-		0, --rotonly
-		1 --nocollide
-					)
-	end
-	
-	if forward and IsValid(self.FrontBogey) then
-		constraint.NoCollide(self.FrontBogey,coupler,0,0)
-		constraint.NoCollide(self.FrontBogey,self.SectionA,0,0)
-	elseif not forward and IsValid(self.MiddleBogey) then
-		constraint.NoCollide(self.MiddleBogey,coupler,0,0)
-		constraint.NoCollide(self.MiddleBogey,self.SectionA,0,0)
-	end
-	
-	constraint.Axis(coupler,self.SectionA,0,0,
-	Vector(0,0,0),Vector(0,0,0),
-	0,0,0,1,Vector(0,0,1),false)
+    -- Create bogey entity
+    local coupler = ents.Create("gmod_train_uf_couple")
+    coupler:SetPos(self:LocalToWorld(pos))
+    coupler:SetAngles(self:GetAngles() + ang)
+    coupler.CoupleType = typ
+    coupler:Spawn()
+
+    -- Assign ownership
+    if CPPI and IsValid(self:CPPIGetOwner()) then coupler:CPPISetOwner(self:CPPIGetOwner()) end
+
+    -- Some shared general information about the bogey
+    coupler:SetNW2Bool("IsForwardCoupler", forward)
+    coupler:SetNW2Entity("TrainEntity", self)
+    coupler.SpawnPos = pos
+    coupler.SpawnAng = ang
+    local index=1
+    local x = self:WorldToLocal(coupler:LocalToWorld(coupler.CouplingPointOffset)).x
+    for i,v in ipairs(self.JointPositions) do
+        if v>pos.x then index=i+1 else break end
+    end
+    table.insert(self.JointPositions,index,x)
+    -- Constraint bogey to the train
+    if self.NoPhysics then
+        coupler:SetParent(self.SectionA)
+    else
+        constraint.AdvBallsocket(
+            self.SectionA,
+            coupler,
+            0, --bone
+            0, --bone
+            pos,
+            Vector(0,0,0),
+            1, --forcelimit
+            1, --torquelimit
+            -2, --xmin
+            -2, --ymin
+            -15, --zmin
+            2, --xmax
+            2, --ymax
+            15, --zmax
+            0.1, --xfric
+            0.1, --yfric
+            1, --zfric
+            0, --rotonly
+            1 --nocollide
+        )
+
+        if forward and IsValid(self.FrontBogey) then
+            constraint.NoCollide(self.FrontBogey,coupler,0,0)
+        end
+        --[[
+        constraint.Axis(coupler,self,0,0,
+            Vector(0,0,0),Vector(0,0,0),
+            0,0,0,1,Vector(0,0,1),false)]]
+    end
+
+    -- Add to cleanup list
+    table.insert(self.TrainEntities,coupler)
+    return coupler
 end
 
 function ENT:CreateCoupleUF_b(pos,ang,forward,typ)
-	-- Create bogey entity
-	local coupler = ents.Create("gmod_train_uf_couple")
-	coupler:SetPos(self:LocalToWorld(pos))
-	coupler:SetAngles(self:GetAngles() + ang)
-	coupler.CoupleType = typ
-	coupler:Spawn()
-	
-	-- Assign ownership
-	if CPPI and IsValid(self:CPPIGetOwner()) then coupler:CPPISetOwner(self:CPPIGetOwner()) end
-	
-	-- Some shared general information about the bogey
-	coupler:SetNW2Bool("IsForwardCoupler", forward)
-	coupler:SetNW2Entity("TrainEntity", self)
-	coupler.SpawnPos = pos
-	coupler.SpawnAng = ang
-	local index=1
-	local x = self:WorldToLocal(coupler:LocalToWorld(coupler.CouplingPointOffset)).x
-	for i,v in ipairs(self.JointPositions) do
-		if v>pos.x then index=i+1 else break end
-	end
-	table.insert(self.JointPositions,index,x)
-	-- Constraint bogey to the train
-	if self.NoPhysics then
-		bogey:SetParent(coupler)
-	else
-		constraint.AdvBallsocket(
-		self.SectionB,
-		coupler,
-		0, --bone
-		0, --bone
-		pos,
-		Vector(0,0,0),
-		1, --forcelimit
-		1, --torquelimit
-		-2, --xmin
-		-2, --ymin
-		-15, --zmin
-		2, --xmax
-		2, --ymax
-		15, --zmax
-		0.1, --xfric
-		0.1, --yfric
-		1, --zfric
-		0, --rotonly
-		1 --nocollide
-							)
-	end
-	if forward and IsValid(self.FrontBogey) then
-		constraint.NoCollide(self.FrontBogey,coupler,0,0)
-		constraint.NoCollide(self.FrontBogey,self.SectionB,0,0)
-	elseif not forward and IsValid(self.RearBogey) then
-		constraint.NoCollide(self.RearBogey,coupler,0,0)
-		constraint.NoCollide(self.RearBogey,self.SectionB,0,0)
-	end
-	
-	constraint.Axis(coupler,self.SectionB,0,0,
-	Vector(0,0,0),Vector(0,0,0),
-	0,0,0,1,Vector(0,0,1),false)
+    -- Create bogey entity
+    local coupler = ents.Create("gmod_train_uf_couple")
+    coupler:SetPos(self:LocalToWorld(pos))
+    coupler:SetAngles(self:GetAngles() + ang)
+    coupler.CoupleType = typ
+    coupler:Spawn()
+
+    -- Assign ownership
+    if CPPI and IsValid(self:CPPIGetOwner()) then coupler:CPPISetOwner(self:CPPIGetOwner()) end
+
+    -- Some shared general information about the bogey
+    coupler:SetNW2Bool("IsForwardCoupler", forward)
+    coupler:SetNW2Entity("TrainEntity", self)
+    coupler.SpawnPos = pos
+    coupler.SpawnAng = ang
+    local index=1
+    local x = self:WorldToLocal(coupler:LocalToWorld(coupler.CouplingPointOffset)).x
+    for i,v in ipairs(self.JointPositions) do
+        if v>pos.x then index=i+1 else break end
+    end
+    table.insert(self.JointPositions,index,x)
+    -- Constraint bogey to the train
+    if self.NoPhysics then
+        coupler:SetParent(self.SectionB)
+    else
+        constraint.AdvBallsocket(
+            self.SectionB,
+            coupler,
+            0, --bone
+            0, --bone
+            pos,
+            Vector(0,0,0),
+            1, --forcelimit
+            1, --torquelimit
+            -2, --xmin
+            -2, --ymin
+            -15, --zmin
+            2, --xmax
+            2, --ymax
+            15, --zmax
+            0.1, --xfric
+            0.1, --yfric
+            1, --zfric
+            0, --rotonly
+            1 --nocollide
+        )
+
+        
+        --[[if not forward and IsValid(self.RearBogey) then
+            constraint.NoCollide(self.RearBogey,coupler,0,0)
+        end]]
+        --[[
+        constraint.Axis(coupler,self,0,0,
+            Vector(0,0,0),Vector(0,0,0),
+            0,0,0,1,Vector(0,0,1),false)]]
+    end
+
+    -- Add to cleanup list
+    table.insert(self.TrainEntities,coupler)
+    return coupler
 end
 
 function ENT:CarBus()
-
+	
 	--if self.SectionA[name] then self[name] = value end
 	--if self.SectionB[name] then self[name] = value end
-
+	
 	if self.SectionA.ReverserInserted == true then self.ReverserInsertedA = true
 	elseif self.SectionA.ReverserInserted == false then self.ReverserInsertedA = false
 	end
-
+	
 	if self.SectionB.ReverserInserted == true then self.ReverserInsertedB = true
 	elseif self.SectionB.ReverserInserted == false then self.ReverserInsertedB = false
 	end

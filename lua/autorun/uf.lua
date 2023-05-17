@@ -52,21 +52,67 @@ end
 
 UF.AnnouncementsIBIS = {}
 UF.IBISSetup = {}
-function UF.AddIBISAnnouncer(name,soundtable,datatable)
-    if not soundtable or not datatable then return end
-    for k,v in pairs(datatable) do
-        if not istable(v) then continue end
-        for k2,stbl in pairs(v) do
-            if not istable(stbl) then continue end
-            if stbl.have_inrerchange then stbl.have_interchange = true end
+UF.IBISDestinations = {}
+UF.IBISRoutes = {}
+UF.IBISLines = {}
+
+function UF.AddIBISDestinations(name,index)
+    if not index or not name then return end
+    for k,v in pairs(UF.IBISDestinations) do
+        if v.name == name then
+            UF.IBISDestinations[k] = index
+            UF.IBISDestinations[k].name = name
+            
+            print("Light Rail: Loaded \""..name.."\" IBIS station index.")
+            return
         end
     end
+    local id = table.insert(UF.IBISDestinations,index)
+    UF.IBISDestinations[id].name = name
+    print("Light Rail: Loaded \""..name.."\" IBIS station index.")
+end
+
+function UF.AddIBISRoutes(number,table)
+end
+
+function UF.AddIBISLines(name,lines)
+    if not name or not lines then return end
+    for k,v in pairs(UF.IBISLines) do
+        if v.name == name then
+            UF.IBISLines[k] = lines
+            UF.IBISLines[k].name = name
+            
+            print("Light Rail: Reloaded \""..name.."\" IBIS line index.")
+            return
+        end
+    end
+    local id = table.insert(UF.IBISLines,lines)
+    UF.IBISLines[id].name = name
+    print("Light Rail: Loaded \""..name.."\" IBIS line index.")
+end
+
+function UF.AddIBISRoutes(name,routes)
+    if not name or not routes then return end
+    for k,v in pairs(UF.IBISRoutes) do
+        if v.name == name then
+            UF.IBISRoutes[k] = routes
+            UF.IBISRoutes[k].name = name
+            
+            print("Light Rail: Reloaded \""..name.."\" IBIS Route index.")
+            return
+        end
+    end
+    local id = table.insert(UF.IBISRoutes,routes)
+    UF.IBISRoutes[id].name = name
+    print("Light Rail: Loaded \""..name.."\" IBIS Route index.")
+end
+
+function UF.AddIBISAnnouncer(name,datatable,soundtable)
+    if not datatable then return end
     for k,v in pairs(UF.AnnouncementsIBIS) do
         if v.name == name then
             UF.AnnouncementsIBIS[k] = soundtable
             UF.AnnouncementsIBIS[k].name = name
-            UF.IBISSetup[k] = datatable
-            UF.IBISSetup[k].name = name
             print("Light Rail: Changed \""..name.."\" IBIS announcer.")
             return
         end
@@ -74,9 +120,24 @@ function UF.AddIBISAnnouncer(name,soundtable,datatable)
     local id = table.insert(UF.AnnouncementsIBIS,soundtable)
     UF.AnnouncementsIBIS[id].name = name
 
-    local id = table.insert(UF.IBISSetup,datatable)
-    UF.IBISSetup[id].name = name
     print("Light Rail: Added \""..name.."\" IBIS announcer.")
+end
+
+function UF.AddSpecialAnnouncements(name,soundtable)
+    if not soundtable then return end
+
+    for k,v in pairs(UF.AnnouncementsIBIS) do
+        if v.name == name then
+            UF.AnnouncementsIBIS[k] = soundtable
+            UF.AnnouncementsIBIS[k].name = name
+            
+            print("Light Rail: Changed \""..name.."\" IBIS Service Announcements.")
+            return
+        end
+    end
+    local id = table.insert(UF.AnnouncementsIBIS,soundtable)
+    UF.AnnouncementsIBIS[id].name = name
+    print("Metrostroi Light Rail: Added \""..name.."\" IBIS special announcement set.")
 end
 
 function UF.AddRollsignTex(id,stIndex,texture)
@@ -102,4 +163,14 @@ function UF.AddRollsignTex(id,stIndex,texture)
         end
     end
     tbl[stIndex] = table.insert(tbl,texture)
+end
+
+
+if SERVER then
+    files = file.Find("uf/IBIS/*.lua","LUA")
+    for _,filename in pairs(files) do
+        AddCSLuaFile("uf/IBIS/"..filename)
+        include("uf/IBIS/"..filename)
+    end
+
 end

@@ -12,14 +12,14 @@ ENT.Lights = {
 
 ENT.ClientProps["Throttle"] = {
     model = "models/lilly/uf/common/cab/throttle.mdl",
-    pos = Vector(-31.5,-8.4,10),
+    pos = Vector(-31.5,-7,10),
     ang = Angle(0,0,0),
 
 }
 
 ENT.ClientProps["reverser"] = {
     model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
-    pos = Vector(-31.2,-8.4,10),
+    pos = Vector(-31.5,-9,10),
     ang = Angle(0,0,0),
 }
 
@@ -28,62 +28,6 @@ ENT.ClientProps["Speedo"] = {
     pos = Vector(360,0,120),
     ang = Angle(-8.7,0,0),
 	scale = 10
-}
-
---[[ENT.ClientProps["Cabwall_Blinds"] = {
-    model = "models/lilly/uf/pt/cab/blinds_cabwall.mdl",
-    pos = Vector(0,0,0),
-    ang = Angle(0,0,0),
-
-}]]
-
-ENT.ClientProps["step_r"] = {
-    model = "models/lilly/uf/pt/step_r.mdl",
-    pos = Vector(0,0,0),
-    ang = Angle(0,0,0),
-
-}
-
-ENT.ClientProps["step_r_back"] = {
-    model = "models/lilly/uf/pt/step_r_back.mdl",
-    pos = Vector(-237.2,0,0),
-    ang = Angle(0,0,0),
-
-}
-
-ENT.ClientProps["step_l"] = {
-    model = "models/lilly/uf/pt/step_r.mdl",
-    pos = Vector(667,0,0),
-    ang = Angle(0,180,0),
-
-}
-
-ENT.ClientProps["step_l_back"] = {
-    model = "models/lilly/uf/pt/step_r_back.mdl",
-    pos = Vector(431.5,0,0),
-    ang = Angle(0,180,0),
-
-}
-
-ENT.ClientProps["mirror_r"] = {
-    model = "models/lilly/uf/pt/mirror_r.mdl",
-    pos = Vector(387.5,-31.8,67),
-    ang = Angle(0,0,180),
-
-}
-
-ENT.ClientProps["mirror_l"] = {
-    model = "models/lilly/uf/pt/mirror_l.mdl",
-    pos = Vector(387.5,31.8,63),
-    ang = Angle(0,0,0),
-
-}
-
-ENT.ClientProps["sunshade"] = {
-    model = "models/lilly/uf/pt/cab/cab_sunshade.mdl",
-    pos = Vector(0.1,0,-3.15),
-    ang = Angle(0,0,0),
-
 }
 
 ENT.ButtonMap["IBISScreen"] = {
@@ -134,18 +78,11 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-	self:Animate("reverser",self:GetNW2Float("ReverserAnim",0.25),0,100,50,9,false)
-    self:Animate("step_r",0,0,11,50,9,false)
-	
-    self:ShowHide("reverser",self:GetNW2Bool("ReverserInserted",false),0)
-
-    
-    if self:GetNW2Bool("Rollsign1Scroll+",false) == true then
-        self.ScrollModifier1 = self.ScrollModifier1 + 0.02
-    elseif self:GetNW2Bool("Rollsign1Scroll-",false) == true then
-        self.ScrollModifier1 = self.ScrollModifier1 - 0.02
-    else
-        self.ScrollModifier1 = self.ScrollModifier1
+	self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,9,false)
+	if self:GetNW2Bool("ReverserInserted",false) == true then
+    	self:ShowHide("reverser",true)
+    elseif self:GetNW2Bool("ReverserInserted",false) == false then
+    	self:ShowHide("reverser",false,0)
     end
 end
 	
@@ -166,13 +103,13 @@ function ENT:DrawPost()
     self:DrawOnPanel("Rollsign",function(...)
         surface.SetDrawColor( color_white )
         surface.SetMaterial(mat)
-        surface.DrawTexturedRectUV(0,0,560,137,0,self.ScrollModifier + 0.813,1,self.ScrollModifier + 0.813 + 0.015)
+        surface.DrawTexturedRectUV(0,0,560,137,0,self.ScrollModifier,1,self.ScrollModifier + 0.015)
     end)
 	local mat1 = Material("models/lilly/uf/pt/pt-lines.png")
     self:DrawOnPanel("Rollsign",function(...)
         surface.SetDrawColor( color_white )
         surface.SetMaterial(mat1)
-        surface.DrawTexturedRectUV(-180,-4,158,135,0,self.ScrollModifier1 + 0.17,1,self.ScrollModifier1 + 0.17 + 0.027)
+        surface.DrawTexturedRectUV(-180,-4,158,135,0,self.ScrollModifier1,1,self.ScrollModifier1 + 0.027)
     end)
 end
 

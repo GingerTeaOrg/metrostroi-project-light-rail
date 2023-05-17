@@ -28,8 +28,8 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 
 ENT.EngineSNDConfig = {
     {
-        {"ted1_703" ,50,0,1,1}, --initial speed, 
-        {"ted2_703" ,50,80,80,2},
+        {"ted1_703" ,35,0,1,1}, --initial speed, 
+        {"ted2_703" ,35,80,80,2},
     },
 }
 
@@ -164,7 +164,11 @@ function ENT:Think()
                 elseif next  and speed > next[3] then
                     volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
                 end
+
+                
                 local pitch = math.max(0,speed/snd[2])+0.06*streetC
+                
+
                 self:SetSoundState(snd[1],motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2))
             end
         end

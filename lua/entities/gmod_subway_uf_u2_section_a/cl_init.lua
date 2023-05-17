@@ -241,7 +241,7 @@ ENT.ButtonMap["Drivers_Door"] = {
     scale = 1,
     buttons ={
         
-        {ID = "PassengerDoor",x=0,y=0,w=25,h=80, tooltip="Дверь в кабину машиниста из салона\nPass door", model = {
+        {ID = "PassengerDoor",x=0,y=0,w=25,h=80, tooltip="Cab Door", model = {
         var="PassengerDoor",sndid="door_cab_m",
         sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
         sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
