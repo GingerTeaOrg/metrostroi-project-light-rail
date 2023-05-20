@@ -840,6 +840,8 @@ function ENT:Initialize()
     self.Speed = 0
 
     self.BatterySwitch = 0.5
+    self:ShowHide("reverser",true)
+    self:ShowHide("reverser",false)
 end
 
 
@@ -872,6 +874,14 @@ function ENT:Think()
 
     if self:GetPackedBool("BOStrab",false) == true then
         gui.OpenURL( "http://thenest.dynv6.net:8085/lightrail/" )
+    end
+
+    if self:GetNW2Bool("IBISKeyBeep",false) == true then
+        local beep
+        if not beep then
+            self:PlayOnce("IBIS_beep","cabin",1,1)
+            beep = true
+        else return end
     end
 
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,9,false)

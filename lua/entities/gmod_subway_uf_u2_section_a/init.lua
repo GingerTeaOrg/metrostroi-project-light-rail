@@ -407,6 +407,8 @@ function ENT:Initialize()
 	
 	self.PrevTime = 0
 	self.DeltaTime = 0
+
+	self.IBISKeyRegistered =false
 	
 	self.RollsignModifier = 0
 	self.RollsignModifierRate = 0
@@ -600,7 +602,7 @@ end
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
 	
-	--self:SetMassFib()
+	--print(table.ToString(UF.IBISLines[1]))
 	
 	
 	
@@ -1817,47 +1819,6 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	
-	local ibisbutton
-	
-	if button == "DestinationSet" then
-		self.IBIS:Trigger("Destination",1)
-	end
-	
-	
-	if button == "Number0Set" then
-		self.IBIS:Trigger("Number0",1)
-	end
-	
-	if button == "Number1Set" then
-		self.IBIS:Trigger("Number1",1)
-	end
-	if button == "Number2Set" then
-		self.IBIS:Trigger("Number2",1)
-	end
-	if button == "Number3Set" then
-		self.IBIS:Trigger("Number3",1)
-	end
-	if button == "Number4Set" then
-		self.IBIS:Trigger("Number4",1)
-	end
-	if button == "Number5Set" then
-		self.IBIS:Trigger("Number5",1)
-	end
-	if button == "Number6Set" then
-		self.IBIS:Trigger("Number6",1)
-	end
-	if button == "Number7Set" then
-		self.IBIS:Trigger("Number7",1)
-	end
-	if button == "Number8Set" then
-		self.IBIS:Trigger("Number8",1)
-	end
-	if button == "Number9Set" then
-		self.IBIS:Trigger("Number9",1)
-	end
-	if button == "EnterSet" then
-		self.IBIS:Trigger("Enter",1)
-	end
 	
 	if button == "ThrowCouplerSet" then
 		if self:ReadTrainWire(5) > 1 and self.Duewag_U2.Speed < 1 then
@@ -1947,89 +1908,208 @@ function ENT:OnButtonPress(button,ply)
 		end
 	end
 	
-	--[[if button == "Button5b" or "Button6b" then
-	if self.DoorSideUnlocked == "Left" then
-		if self.DoorRandomness1 == 0 then
-			self.DoorRandomness1 = 1
+	
+	
+	
+	if button == "DoorsCloseConfirmSet" then
+		
+		self:SetNW2Bool("DoorCloseCommand",false)
+		self:SetNW2Bool("DepartureConfirmed",true)
+		if self:GetNW2Bool("DoorAlarm",false) == true then
+			self:SetNW2Bool("DoorAlarm",false)
+			
 		end
 	end
-end
-
-if button == "Button3b" or "Button4b" then
-	if self.DoorRandomness2 == 0 then
-		self.DoorRandomness2 = 1
-	end
-end]]
-
-
-if button == "DoorsCloseConfirmSet" then
 	
-	self:SetNW2Bool("DoorCloseCommand",false)
-	self:SetNW2Bool("DepartureConfirmed",true)
-	if self:GetNW2Bool("DoorAlarm",false) == true then
-		self:SetNW2Bool("DoorAlarm",false)
+	if button == "SetHoldingBrakeSet" then
+		
+		self.Duewag_U2.ManualRetainerBrake = true
+	end
+	
+	if button == "ReleaseHoldingBrakeSet" then
+		
+		self.Duewag_U2.ManualRetainerBrake = false
+	end
+	
+	if button == "PassengerLightsToggle" then
+		if self:GetNW2Bool("PassengerLights",false) == true then
+			self:SetNW2Bool("PassengerLights",false)
+		elseif self:GetNW2Bool("PassengerLights",false) == false then
+			self:SetNW2Bool("PassengerLights",true)
+		end
+	end
+	
+	if button == "DoorsSelectLeftToggle" then
+		if self:GetNWString("DoorSide","none") == "right" then
+			self:SetNWString("DoorSide","none")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
+		elseif self:GetNWString("DoorSide","none") == "none" then
+			self:SetNWString("DoorSide","left")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position left")
+		end
+	end
+	
+	if button == "DoorsSelectRightToggle" then
+		if self:GetNWString("DoorSide","none") == "left" then
+			self:SetNWString("DoorSide","none")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
+		elseif self:GetNWString("DoorSide","none") == "none" then
+			self:SetNWString("DoorSide","right")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position right")
+		end
+	end
+	
+	if button == "PassengerDoor" then
+		
+		if self:GetNW2Float("DriversDoorState",0) == 0 then
+			self:SetNW2Float("DriversDoorState",1)
+		else
+			self:SetNW2Float("DriversDoorState",0)
+		end
+	end
+	
+	if button == "Mirror" then
+		if self:GetNW2Float("Mirror",0) == 0 then
+			self:SetNW2Float("Mirror",1)
+		else
+			self:SetNW2Float("Mirror",0)
+		end
+	end
+	
+	if button == "ComplaintSet" then
+		self:SetNW2Bool("Microphone",true)
+	end
+	
+	
+	if button == "ComplaintSet" then
+		
+		self:SetNW2Bool("Microphone",false)
+	end
+	
+	if button == "DestinationSet" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self:SetNW2Bool("IBISKeyBeep",true)
+			self.IBIS:Trigger("Destination",RealTime())
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+	end
+	
+	
+	if button == "Number0Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number0",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 		
 	end
-end
-
-if button == "SetHoldingBrakeSet" then
 	
-	self.Duewag_U2.ManualRetainerBrake = true
-end
-
-if button == "ReleaseHoldingBrakeSet" then
-	
-	self.Duewag_U2.ManualRetainerBrake = false
-end
-
-if button == "PassengerLightsToggle" then
-	if self:GetNW2Bool("PassengerLights",false) == true then
-		self:SetNW2Bool("PassengerLights",false)
-	elseif self:GetNW2Bool("PassengerLights",false) == false then
-		self:SetNW2Bool("PassengerLights",true)
+	if button == "Number1Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number1",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
-end
-
-if button == "DoorsSelectLeftToggle" then
-	if self:GetNWString("DoorSide","none") == "right" then
-		self:SetNWString("DoorSide","none")
-		--PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
-	elseif self:GetNWString("DoorSide","none") == "none" then
-		self:SetNWString("DoorSide","left")
-		--PrintMessage(HUD_PRINTTALK, "Door switch position left")
+	if button == "Number2Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number2",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
-end
-
-if button == "DoorsSelectRightToggle" then
-	if self:GetNWString("DoorSide","none") == "left" then
-		self:SetNWString("DoorSide","none")
-		--PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
-	elseif self:GetNWString("DoorSide","none") == "none" then
-		self:SetNWString("DoorSide","right")
-		--PrintMessage(HUD_PRINTTALK, "Door switch position right")
+	if button == "Number3Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number3",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
-end
-
-if button == "PassengerDoor" then
-	
-	if self:GetNW2Float("DriversDoorState",0) == 0 then
-		self:SetNW2Float("DriversDoorState",1)
-	else
-		self:SetNW2Float("DriversDoorState",0)
+	if button == "Number4Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number4",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
-end
-
-if button == "Mirror" then
-	if self:GetNW2Float("Mirror",0) == 0 then
-		self:SetNW2Float("Mirror",1)
-	else
-		self:SetNW2Float("Mirror",0)
+	if button == "Number5Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number5",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
-end
-
-if button == "ComplaintSet" then
-	self:SetNW2Bool("Microphone",true)
-end
+	if button == "Number6Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number6",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+	end
+	if button == "Number7Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number7",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+	end
+	if button == "Number8Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number8",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+	end
+	if button == "Number9Set" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number9",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+	end
+	if button == "EnterSet" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Enter",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+	end
 end
 
 
@@ -2140,64 +2220,84 @@ if button == "BatteryToggle" then
 	self:SetNW2Bool("IBIS_impulse",false)
 end
 
---[[if button == "BatteryToggle" then
-if self:GetNW2Bool("BatteryOn",false) == false then
-	self:SetNW2Int("Startup",CurTime())
-	if self:GetNW2Bool("BatteryButton",false) == false then
-		self:SetNW2Bool("BatteryButton",true)
-	elseif self:GetNW2Bool("BatteryButton",false) == true then
-		self:SetNW2Bool("BatteryButton",false)
-		if self:GetNW2Bool("BatteryOn",false) == false then
-			self:SetNW2Bool("IBISPlayed",false)
-			self:SetNW2Bool("StartupPlayed",false)
+	if button == "DestinationSet" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
 	end
-end
+	
+	
+	if button == "Number0Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+		
+	end
+	
+	if button == "Number1Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number2Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number3Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number4Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number5Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number6Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number7Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number8Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number9Set" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "EnterSet" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
 
-end]]
-if button == "ComplaintSet" then
-	self:SetNW2Bool("Microphone",false)
-end
-
-if button == "DestinationSet" then
-	self.IBIS:Trigger("Destination",0)
-end
-
-
-if button == "Number0Set" then
-	self.IBIS:Trigger("Number0",0)
-end
-
-if button == "Number1Set" then
-	self.IBIS:Trigger("Number1",0)
-end
-if button == "Number2Set" then
-	self.IBIS:Trigger("Number2",0)
-end
-if button == "Number3Set" then
-	self.IBIS:Trigger("Number3",0)
-end
-if button == "Number4Set" then
-	self.IBIS:Trigger("Number4",0)
-end
-if button == "Number5Set" then
-	self.IBIS:Trigger("Number5",0)
-end
-if button == "Number6Set" then
-	self.IBIS:Trigger("Number6",0)
-end
-if button == "Number7Set" then
-	self.IBIS:Trigger("Number7",0)
-end
-if button == "Number8Set" then
-	self.IBIS:Trigger("Number8",0)
-end
-if button == "Number9Set" then
-	self.IBIS:Trigger("Number9",0)
-end
-if button == "EnterSet" then
-	self.IBIS:Trigger("Enter",0)
-end
 
 if button == "OpenBOStrab" then
 	self:SetPackedBool("BOStrab",true)
@@ -2208,7 +2308,7 @@ end
 
 
 function ENT:CreateSectionB(pos)
-
+	
 	
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
@@ -2240,7 +2340,7 @@ function ENT:CreateSectionB(pos)
 	0, --torquelimit
 	0,
 	1 --nocollide
-	)
+)
 local phys = self:GetPhysicsObject()
 
 if ( IsValid( phys ) ) then -- Always check with IsValid! The ent might not have physics!

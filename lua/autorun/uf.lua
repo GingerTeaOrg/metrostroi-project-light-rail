@@ -72,8 +72,23 @@ function UF.AddIBISDestinations(name,index)
     print("Light Rail: Loaded \""..name.."\" IBIS station index.")
 end
 
-function UF.AddIBISRoutes(number,table)
+function UF.AddIBISRoutes(name,routes)
+        if not name or not routes then return end
+    for k,v in pairs(UF.IBISRoutes) do
+        if v.name == name then
+            UF.IBISRoutes[k] = routes
+            UF.IBISRoutes[k].name = name
+            
+            print("Light Rail: Reloaded \""..name.."\" IBIS Route index.")
+            return
+        end
+    end
+    local id = table.insert(UF.IBISRoutes,routes)
+    UF.IBISRoutes[id].name = name
+    print("Light Rail: Loaded \""..name.."\" IBIS Route index.")
 end
+
+
 
 function UF.AddIBISLines(name,lines)
     if not name or not lines then return end
@@ -90,6 +105,7 @@ function UF.AddIBISLines(name,lines)
     UF.IBISLines[id].name = name
     print("Light Rail: Loaded \""..name.."\" IBIS line index.")
 end
+
 
 function UF.AddIBISRoutes(name,routes)
     if not name or not routes then return end
@@ -128,7 +144,7 @@ function UF.AddSpecialAnnouncements(name,soundtable)
 
     for k,v in pairs(UF.AnnouncementsIBIS) do
         if v.name == name then
-            UF.AnnouncementsIBIS[k] = soundtable
+            UF.AnnouncementsIBIS[v] = soundtable
             UF.AnnouncementsIBIS[k].name = name
             
             print("Light Rail: Changed \""..name.."\" IBIS Service Announcements.")

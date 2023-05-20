@@ -57,36 +57,40 @@ UF.AddSpecialAnnouncements("Ingrid FFM",{
 
 UF.AddIBISLines("Frankfurt",{
 
-    01,
-    02,
-    03,
-    04,
-    05,
-    06,
-    07,
-    08,
-    09,
+    ["01"] = true,
+    ["02"] = true,
+    ["03"] = true,
+    ["04"] = true,
+    ["05"] = true,
+    ["06"] = true,
+    ["07"] = true,
+    ["08"] = true,
+    ["09"] = true,
 
 })
 
 UF.AddIBISRoutes("Frankfurt",{ --Format: [Line] = {[RouteNumber] = {StationNumber1,StationNumber2,StationNumber3,etc},[RouteNumber2] = {etc}}
 
-    [01] = {[01] = {712,710,709},[02] = {709,710,712}},
-    [02] = {},
-    [04] = {},
-    [05] = {},
-    [06] = {},
-    [07] = {},
-    [08] = {},
-    [09] = {}
+    ["01"] = {["01"] = {712,773,715,710,783,711},["02"] = {711,783,710,715,773,712}},
+    ["02"] = {["01"] = {712,773,715,710,785,784},["02"] = {784,785,710,715,773,712}},
+    ["03"] = {["01"] = {712,773,715,710,787,786},["02"] = {786,787,710,715,773,712}},
+    ["04"] = {["01"] = {728,709,773,707,708},["02"] = {708,707,773,709,728}},
+    ["05"] = {["01"] = {709,773,707,726},["02"] = {726,773,707,709}},
+    ["06"] = {["01"] = {720,722,728,707,729,721},["02"] = {721,729,707,728,722,720}},
+    ["07"] = {["01"] = {725,722,728,707,729,704,723,724},["02"] = {724,723,704,729,707,728,722,725}},
+    ["08"] = {["01"] = {712,773,715,710,779},["02"] = {779,710,715,773,712}},
+    ["09"] = {["01"] = {711,714,713},["02"] = {713,714,711}}
 })
 
 
-for k, v in pairs(UF.IBISRoutes) do
-    print(k,v[01])
-end
-UF.AddIBISDestinations("Frankfurt",{
 
+UF.AddIBISDestinations("Frankfurt",{
+    [045] = "Leerfahrt",
+    [700] = " ",
+    [701] = "PROBEWAGEN NICHT EINSTEIGEN",
+    [702] = "FAHRSCHULE NICHT EINSTEIGEN",
+    [703] = "SONDERWAGEN NICHT EINSTEIGEN",
+    [704] = "EISSPORTHALLE Festplatz",
     [707] = "Konstablerwache",
     [708] = "Seckbacker Ldstr",
     [709] = "Hauptbahnhof",
@@ -110,7 +114,24 @@ UF.AddIBISDestinations("Frankfurt",{
     [727] = "Eckenheimer Ldstr",
     [728] = "Bockenheimer Warte",
     [729] = "Zoo",
-    [779] = "Riedberg"
+    [739] = "Stadtbahn-Zentralwerkstatt",
+    [773] = "Willy-Brandt-Platz",
+    [779] = "Riedberg",
+    [782] = "Heddernheim",
+    [783] = "Römerstadt",
+    [784] = "BAD HOMBURG Gonzenheim",
+    [785] = "Nieder-Eschbach",
+    [786] = "OBERURSEL Hohemark",
+    [787] = "OBERURSEL Bahnhof",
+    [788] = "OBERURSEL Bommersheim",
+    [789] = "FRANKFURT Südbahnhof",
+    [790] = "RIEDERWALD Schäfflestr",
+    [791] = "BORNHEIM Seckbacher Ldstr",
+    [792] = "Zoo >> J. Tesch-Platz",
+    [793] = "Riedberg",
+    [794] = "BITTE NICHT einsteigen",
+    [795] = "Eschenheimer Tor",
+
 
 }
 )

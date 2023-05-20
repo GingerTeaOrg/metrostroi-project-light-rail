@@ -17,6 +17,14 @@ function TRAIN_SYSTEM:Initialize()
     self.NextStationString = ""
     self.NextStation = 0
     
+    self.LineTable = UF.IBISLines[1]
+    
+    
+    
+    self.RouteTable = UF.IBISRoutes[1]
+    
+    self.DestinationTable = UF.IBISDestinations[1]
+    
     
     self.JustBooted = false
     self.PowerOn = 0
@@ -42,6 +50,8 @@ function TRAIN_SYSTEM:Initialize()
     self.DisplayedCourseChar4 = 0
     self.DisplayedCourseChar5 = 0
     
+    self.IndexValid = false
+    
     self.DefectChance = math.random(10,0)
     
     self.Destination = 0 --Destination index number
@@ -52,9 +62,17 @@ function TRAIN_SYSTEM:Initialize()
     self.DisplayedDestinationChar2 = 0
     self.DisplayedDestinationChar3 = 0
     
+    self.CurrentStationInternal = 0
+    
     self.TrainID = math.random(9999,1)
     
     self.KeyInput = nil
+    
+    self.KeyRegistered = false
+    
+    self.ErrorMoment = 0
+    
+    self.ErrorAcknowledged = false
     
     self.TriggerNames = {
         "Number1", --1
@@ -111,174 +129,138 @@ function TRAIN_SYSTEM:Outputs()
     return {"Course","Route","Destination","State"}
 end
 
-function TRAIN_SYSTEM:Trigger(name,value)
+function TRAIN_SYSTEM:Trigger(name,time)
     
     if self.State > 0 then
         
         
-        if name == "Number0" and value == 1 then
-            if self.KeyInputDone == false then
-                self.KeyInputDone = true
+        if name == "Number0"  then
+            if self.KeyRegistered == false then
                 self.KeyInput = "0"
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number1" and value == 1 then
-            if self.KeyInputDone == false then
+        elseif name == "Number1"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "1"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number2" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Number2"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "2"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number3" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Number3"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "3"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number4" and value == 1 then
-            if self.KeyInputDone == false then
+            
+            
+        elseif name == "Number4"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "4"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number5" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Number5"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "5"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number6" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Number6"  then
+            if self.KeyRegistered == false then
                 self.KeyInput = "6"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number7" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Number7"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "7"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number8" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Number8"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "8"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number9" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Number9"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "9"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Number0" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Number0"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "0"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Delete" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Delete"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "Delete"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        if name == "Enter" and value == 1 then
-            if self.KeyInputDone == false then
+            
+        elseif name == "Enter"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "Enter"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
-        end
-        
-        if name == "Destination" and value == 1 then
             
-            if self.KeyInputDone == false then
+        elseif name == "Destination"  then
+            
+            if self.KeyRegistered == false then
                 self.KeyInput = "Destination"
-                
-                self.KeyInputDone = true
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
             end
             
-        end
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        if name == "Number0" and value == 0 then
+        elseif name == nil then
             self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Number1" and value == 0 then
-            self.KeyInput = nil
-        end
-        if name == "Number2" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Number3" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Number4" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Number5" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Number6" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Number7" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Number8" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Number9" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Destination" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Delete" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        elseif name == "Enter" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
-        end
-        if name == "Delete" and value == 0 then
-            self.KeyInput = nil
-            self.KeyInputDone = false
+            self.KeyRegistered = false
         end
         
     end
@@ -397,9 +379,10 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     local Route = self.Train:GetNW2String("IBIS:RouteChar1")..self.Train:GetNW2String("IBIS:RouteChar2")
     local Course = self.Train:GetNW2String("IBIS:CourseChar1")..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")
     local Destination = self.Train:GetNW2String("IBIS:DestinationChar1")..self.Train:GetNW2String("IBIS:DestinationChar2")..self.Train:GetNW2String("IBIS:DestinationChar3")
-    local DestinationText = self.Train:GetNW2String("IBIS:DestinationText"," ")
-    --print(Route)
-    --print(Course)
+    --local DestinationText = self.Train:GetNW2String("IBIS:DestinationText"," ")
+    local CurrentStation = self.Train:GetNW2String("CurrentStation",0)
+    ----print(Route)
+    ----print(Course)
     
     local PowerOn = self.Train:GetNW2Bool("IBISPowerOn",false)
     
@@ -429,10 +412,10 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         
         if Menu == 4 then
             if self.CourseChar4 == nil then
-                self:BlinkText(true, "Linie-Kurs :")
+                self:BlinkText(true, "Linie-Kurs:")
                 self:PrintText(11.5,1.5,Course)
             elseif self.CourseChar4 ~= nil then
-                self:PrintText(0,1.5,"Linie-Kurs :")
+                self:PrintText(0,1.5,"Linie-Kurs:")
                 self:PrintText(11.5,1.5,Course)
                 
             end
@@ -489,35 +472,49 @@ function TRAIN_SYSTEM:IBISScreen(Train)
             self:PrintText(2,6,Destination)
             self:PrintText(5.6,6,Course)
             self:PrintText(10.5,6,Route)
-            self:PrintText(0,0,DestinationText)
-            --print(self.Train:GetNW2Int("IBIS:Route"))
+            self:PrintText(0,1,CurrentStation)
+            ----print(self.Train:GetNW2Int("IBIS:Route"))
             return 
         end
     end
     if State == 3 then
         
         if Menu == 1 then
-            self:BlinkText(true,"Ungueltige Linie")
+            self:BlinkText(true,"Ung. Linie")
             
             return 
         end
         
         if Menu == 2 then
-            self:BlinkText(true,"Ungueltige Route")
+            self:BlinkText(true,"Ung. Route")
             
             return 
         end
         
         if Menu == 3 then
-            self:BlinkText(true,"Ungueltiges Ziel")
+            self:BlinkText(true,"Ung. Ziel")
             
             return 
+        end
+        if Menu == 4 then
+            self:BlinkText(true,"Ung. Linie")
+            
+            return
+        end
+        if Menu == 5 then
+            self:BlinkText(true,"Ung. Route")
+            
+            return  
         end
     end
     return
 end
 
 function TRAIN_SYSTEM:Think()
+    
+    if self.Menu > 0 then
+        self:ReadDataset()
+    end
     
     
     --Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
@@ -568,16 +565,16 @@ function TRAIN_SYSTEM:Think()
     
     
     if self.KeyInput ~= nil then
-        print("Key Input"..self.KeyInput)
+        --print("Key Input"..self.KeyInput)
     end
-    --print("Course Number:"..self.Train:GetNW2String("IBIS:CourseChar1",nil)..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")..self.Train:GetNW2String("IBIS:CourseChar5"))
+    ----print("Course Number:"..self.Train:GetNW2String("IBIS:CourseChar1",nil)..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")..self.Train:GetNW2String("IBIS:CourseChar5"))
     local Train = self.Train
     
-    --print("IBIS loaded")
+    ----print("IBIS loaded")
     if self.Train.BatteryOn == true then
         self.PowerOn = 1
         self.Train:SetNW2Bool("IBISPowerOn",true)
-        --print("IBIS powered")
+        ----print("IBIS powered")
     elseif self.Train.BatteryOn == false then
         self.PowerOn = 0
         self.Train:SetNW2Bool("IBISPowerOn",false)
@@ -595,15 +592,37 @@ function TRAIN_SYSTEM:Think()
     end
     
     if self.State == 2 and self.Menu == 4 then
-        if self.KeyInput == "Enter" then
+        if self.KeyInput == "Enter" and self.IndexValid == true then
             self.Menu = 5
+        elseif self.KeyInput == "Enter" and self.IndexValid == false then
+            self.Menu = 4
+            self.State = 3
+            --print("Index Number invalid")
+            self.Train:SetNW2Bool("IBISError",true)
+            self.ErrorMoment = RealTime()
         end
     end
     
     if self.State == 2 and self.Menu == 5 and self.Route ~= 0 then
-        if self.KeyInput == "Enter" then
+        if self.KeyInput == "Enter" and self.IndexValid == true then
             self.State = 1
             self.Menu  = 0
+        elseif self.KeyInput == "Enter" and self.IndexValid == false then
+            self.Menu = 5
+            self.State = 3
+            --print("Index Number invalid")
+            self.Train:SetNW2Bool("IBISError",true)
+            self.ErrorMoment = RealTime()
+        end
+    end
+    
+    if self.State == 3 then
+        
+        if RealTime() - self.ErrorMoment > 1.5 then
+            if self.KeyInput == "Enter" then
+                self.State = 2
+                self.Train:SetNW2Bool("IBISError",false)
+            end
         end
     end
     
@@ -614,6 +633,20 @@ function TRAIN_SYSTEM:Think()
             self.Menu = 1
         elseif self.KeyInput == "Destination" then
             self.Menu = 3
+        elseif self.KeyInput == "3" then
+            local indexlength = #self.RouteTable[self.CourseChar1..self.CourseChar2][self.RouteChar1..self.RouteChar2]
+            if indexlength > self.CurrentStationInternal then
+                self.CurrentStationInternal = self.CurrentStationInternal + 1
+                
+                self.CurrentStation = self.RouteTable[self.CourseChar1..self.CourseChar2][self.RouteChar1..self.RouteChar2][self.CurrentStationInternal]
+            end
+            --print indexlength
+        elseif self.KeyInput == "6" then
+            if self.CurrentStationInternal > 1 then
+                self.CurrentStationInternal = self.CurrentStationInternal - 1
+                
+                self.CurrentStation = self.RouteTable[self.CourseChar1..self.CourseChar2][self.RouteChar1..self.RouteChar2][self.CurrentStationInternal]
+            end
         end
     elseif self.State == 1 and self.Menu == 1 then
         if self.KeyInput == "Enter" then
@@ -631,7 +664,7 @@ function TRAIN_SYSTEM:Think()
     
     
     
-    --print(self.Route)
+    ----print(self.Route)
     
     --math.Clamp(self.Route,0,99)
     --math.Clamp(tonumber(self.Course),0,99999)
@@ -657,7 +690,7 @@ function TRAIN_SYSTEM:Think()
     
     self:InputProcessor(self.KeyInput)
     if self.KeyInput ~= nil then
-        print(self.KeyInput)
+        --print(self.KeyInput)
     end
     
     --SetGlobal2Int("TrainID"..self.TrainID,self.Course..self.Route..self.TrainID)
@@ -665,6 +698,11 @@ function TRAIN_SYSTEM:Think()
         self:SyncIBIS()
     else
     end
+    
+    if self.CurrentStation > -1 and self.CurrentStation ~= nil then
+        self.Train:SetNW2String("CurrentStation",self.DestinationTable[self.CurrentStation])
+    end
+    --print(self.CurrentStationInternal)
 end
 
 
@@ -685,56 +723,59 @@ function TRAIN_SYSTEM:findNestedValue(table,targetValue)
 end
 
 function TRAIN_SYSTEM:ReadDataset()
-    
-    if self.Course > 0 then --reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
-        local line = string.sub(self.Course, 1, -3)
+    ----print(tonumber(self.CourseChar1..self.CourseChar2,10))
+    ----print(self.LineTable[1])
+    ----print(tonumber(string.sub(self.Course, 1, 2)))
+    --print(self.LineTable["01"])
+    if self.Menu == 1 or self.Menu == 4 then
         
-        for k, v in pairs(UF.IBISLines) do
-            local queried_line
-            queried_line = k,v[line]
-            if not queried_line then
-                self.State = 3
-                self.Course = 0
-            end
-        end
-    end
-    
-    if self.Route > 0 then -- reference the route number with the provided dataset
-        
-        local line = string.sub(self.Course, 1, -3)
-        
-        for k, v in pairs(UF.IBISRoutes) do
-            local linetable = v[line]
-            
-            
-            local route = linetable[self.Route]
-            if route then
-                local laststation = route[#route]
-                self.Destination = laststation
+        if self.CourseChar1 > -1 and self.CourseChar2 > -1 and self.CourseChar3 > -1 and self.CourseChar4 > -1 then --reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
+            local line = self.CourseChar1..self.CourseChar2
+            if self.LineTable[line] then
+                self.IndexValid = true
+                --print(line.."Line Index")
             else
-                self.State = 3
-                self.Route = 0
+                self.IndexValid = false
+                --print(line.."Line Index invalid")
+            end
+            
+        end
+    elseif self.Menu == 2 or self.Menu == 5 then
+        if self.RouteChar1 > -1 and self.RouteChar2 > -1 then
+            local line = self.CourseChar1..self.CourseChar2
+            if self.RouteTable[line] then
+                if self.RouteTable[line][self.RouteChar1..self.RouteChar2] then
+                    local destchars = self.RouteTable[line][self.RouteChar1..self.RouteChar2][#self.RouteTable[line][self.RouteChar1..self.RouteChar2]]
+                    self.DestinationChar1 = tonumber(string.sub(destchars,1,1),10)
+                    self.DestinationChar2 = tonumber(string.sub(destchars,2,2),10)
+                    self.DestinationChar3 = tonumber(string.sub(destchars,3,3),10)
+                    self.FirstStation = self.RouteTable[line][self.RouteChar1..self.RouteChar2][1]
+                    self.CurrentStation = self.FirstStation
+                    self.CurrentStationInternal = 1
+                    self.NextStation = self.RouteTable
+                    --print(self.Destination.."Destination index")
+                    self.IndexValid = true      
+                else
+                    self.State = 3
+                    self.Route = 0
+                    self.IndexValid = false
+                end
+                
             end
         end
         
+    elseif self.Menu == 3 then
         
-    end
-    
-    if self.Destination > 0 then --reference the destination index number with the dataset
-        local destination = self.Destination
-        
-        for k, v in pairs(UF.IBISDestinations) do
-            local queried_destination
-            queried_destination = k,v[destination]
-            if not queried_destination then
-                self.State = 3
-                self.Destination = 0
+        if tonumber(self.Destination) and tonumber(self.Destination) > 0 then --reference the destination index number with the dataset
+            
+            if self.DestinationTable[self.Destination] then
+                self.Destination = self.Destination
+                self.IndexValid = true
             else
-                self.DestinationText = v[destination]
+                self.IndexValid = false
             end
         end
     end
-    
     
 end
 
@@ -817,11 +858,12 @@ if SERVER then
     
     function TRAIN_SYSTEM:InputProcessor(Input)
         if self.Menu == 4 or self.Menu == 1 then
-            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate"  then
+            self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4
+            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter"  then
                 if self.CourseChar4 == -1 and self.CourseChar3 == -1 and self.CourseChar2 == -1 and self.CourseChar1 == -1 then
                     
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.CourseChar4 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.CourseChar4 = tonumber(self.KeyInput,10)
                     end    
                     
                     
@@ -830,8 +872,8 @@ if SERVER then
                     
                     
                     self.CourseChar3 = self.CourseChar4
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.CourseChar4 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.CourseChar4 = tonumber(self.KeyInput,10)
                     end
                     
                     
@@ -839,89 +881,126 @@ if SERVER then
                     
                     self.CourseChar2 = self.CourseChar3
                     self.CourseChar3 = self.CourseChar4
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.CourseChar5 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.CourseChar4 = tonumber(self.KeyInput,10)
                     end
                 elseif self.CourseChar4 ~= -1 and self.CourseChar3 ~= -1 and self.CourseChar2 ~= -1 and self.CourseChar1 == -1 then
                     
                     self.CourseChar1 = self.CourseChar2
                     self.CourseChar2 = self.CourseChar3						
                     self.CourseChar3 = self.CourseChar4
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.CourseChar4 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.CourseChar4 = tonumber(self.KeyInput,10)
+                    else
+                        self.CourseChar4 = self.CourseChar4
                     end
-                elseif self.CourseChar4 > -1 and self.CourseChar3 > -1 and self.CourseChar2 > -1 and self.CourseChar1 > -1 then
+                elseif self.CourseChar4 ~= -1 and self.CourseChar3 ~= -1 and self.CourseChar2 ~= -1 and self.CourseChar1 ~= -1 then
+                    
                     self.CourseChar1 = self.CourseChar2
                     self.CourseChar2 = self.CourseChar3						
                     self.CourseChar3 = self.CourseChar4
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.CourseChar4 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.CourseChar4 = tonumber(self.KeyInput,10)
+                    else
+                        self.CourseChar4 = self.CourseChar4
                     end
                 end
-                self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4..self.CourseChar5
+                
                 
                 
             elseif Input ~= nil and Input == "Delete" then
+                if self.CourseChar4 ~= -1 and self.CourseChar3 ~= -1 and self.CourseChar2 ~= -1 and self.CourseChar1 ~= -1 then
+                    
+                    self.CourseChar4 = self.CourseChar3
+                    self.CourseChar3 = self.CourseChar2
+                    self.CourseChar1 = -1
+                elseif self.CourseChar4 ~= -1 and self.CourseChar3 ~= -1 and self.CourseChar2 ~= -1 and self.CourseChar1 == -1 then
+                    self.CourseChar4 = self.CourseChar3
+                    self.CourseChar3 = self.CourseChar2
+                    self.CourseChar2 = -1
+                elseif self.CourseChar4 ~= -1 and self.CourseChar3 ~= -1 and self.CourseChar2 == -1 and self.CourseChar1 == -1 then
+                    self.CourseChar4 = self.CourseChar3
+                    self.CourseChar3 = self.CourseChar2
+                    self.CourseChar3 = -1
+                elseif self.CourseChar4 ~= -1 and self.CourseChar3 == -1 and self.CourseChar2 == -1 and self.CourseChar1 == -1 then
+                    self.CourseChar4 = self.CourseChar3
+                    self.CourseChar3 = self.CourseChar2
+                    self.CourseChar4 = -1
+                end
                 
             end
         elseif self.Menu == 5 or self.Menu == 2 then
+            self.Route = self.RouteChar1..self.RouteChar2
             if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" then
                 if self.RouteChar2 == -1 and self.RouteChar1 == -1 then
-                    self.RouteChar2 = tonumber(self.KeyInput)
+                    self.RouteChar2 = tonumber(self.KeyInput,10)
                     
                     
                 elseif self.RouteChar2 ~= -1 and self.RouteChar1 == -1 then
                     
                     self.RouteChar1 = self.RouteChar2					
                     
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.RouteChar2 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.RouteChar2 = tonumber(self.KeyInput,10)
                     end
                 elseif self.RouteChar2 ~= -1 and self.RouteChar1 ~= -1 then
                     self.RouteChar1 = self.RouteChar2					
                     
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.RouteChar2 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.RouteChar2 = tonumber(self.KeyInput,10)
                     end
                 end
-                if self.RouteChar1 ~=nil and self.RouteChar2 ~= nil then
+                
+            elseif Input ~= nil and Input == "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and not tonumber(Input,10) then
+                if self.RouteChar2 ~= -1 and self.RouteChar1 ~= -1 then
                     self.RouteChar1 = self.RouteChar2
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.RouteChar2 = tonumber(self.KeyInput)
-                    end
+                    self.RouteChar1 = -1
+                elseif self.RouteChar2 ~= -1 and self.RouteChar1 == -1 then
+                    self.RouteChar1 = -1
                 end
-                self.Route = self.RouteChar1..self.RouteChar2
             end
         elseif self.Menu == 3 then
             if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" then
                 if self.DestinationChar3 == -1 and self.DestinationChar2 == -1 and self.DestinationChar1 == -1 then
                     
-                    if tonumber(self.KeyInput) ~=nil then
-                        self.DestinationChar3 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~=nil then
+                        self.DestinationChar3 = tonumber(self.KeyInput,10)
                     end
                     
                 elseif self.DestinationChar3 ~= -1 and self.DestinationChar2 == -1 and self.DestinationChar1 == -1 then
                     
                     self.DestinationChar2 = self.DestinationChar3					
                     
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.DestinationChar3 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.DestinationChar3 = tonumber(self.KeyInput,10)
                     end
                 elseif self.DestinationChar3 ~= -1 and self.DestinationChar2 ~= -1 and self.DestinationChar1 == -1 then
                     
                     self.DestinationChar1 = self.DestinationChar2					
                     
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.DestinationChar3 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.DestinationChar3 = tonumber(self.KeyInput,10)
                     end
                 elseif self.DestinationChar3 ~= -1 and self.DestinationChar2 ~= -1 and self.DestinationChar1 ~= -1 then
                     self.DestinationChar1 = self.DestinationChar2					
                     self.DestinationChar2 = self.DestinationChar3
-                    if tonumber(self.KeyInput) ~= nil then
-                        self.DestinationChar3 = tonumber(self.KeyInput)
+                    if tonumber(self.KeyInput,10) ~= nil then
+                        self.DestinationChar3 = tonumber(self.KeyInput,10)
                     end
                 end
                 self.Destination = self.DestinationChar1..self.DestinationChar2..self.DestinationChar3
+            elseif Input ~= nil and Input == "Delete" and Input ~= "TimeAndDate" then
+                if self.DestinationChar3 ~= -1 and self.DestinationChar2 ~= -1 and self.DestinationChar1 ~= -1 then
+                    
+                    self.DestinationChar1 = self.DestinationChar2
+                    self.DestinationChar1 = -1					
+                    self.DestinationChar3 = self.DestinationChar2
+                elseif self.DestinationChar3 ~= -1 and self.DestinationChar2 ~= -1 and self.DestinationChar1 == -1 then
+                    self.DestinationChar2 = self.DestinationChar3
+                    self.DestinationChar2 = -1					
+                elseif self.DestinationChar3 ~= -1 and self.DestinationChar2 == -1 and self.DestinationChar1 == -1 then
+                    self.DestinationChar3 = -1
+                end
             end
         end    
     end
