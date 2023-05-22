@@ -1,58 +1,20 @@
---[[UF.AddIBISAnnouncer("Frankfurt",
-{
-    {
-        
-        Name = "U6",
-        spec_last = {"terminates_here"},
-        Loop = false,
-        {
-            110,"Международная",
-            arrlast = {nil,{"arr_mejdunarodnaya_f",0.5,"last_f",2,"things_f",2,"deadlock_f"},"mejdunarodnaya_m"},
-            dep = {{"doors_closing_m","park_kultury_m"}},
-            not_last_c = {nil,"not_last_f"},spec_last_c = {nil,"spec_last_f"}, spec_wait_c = {nil,"spec_wait_f"},
-        },
-        {
-            111,"Парк Культуры",
-            arr = {{"station_m","park_kultury_m"},"arr_park_kultury_f"},
-            dep = {{"doors_closing_m","politehnicheskaya_m",0.2,"politeness_m"},{"doors_closing_f","next_mejdunarodnaya_f",0.2,"politeness_f"}},
-            not_last_c = {nil,"not_last_f"},spec_last_c = {nil,"spec_last_f"}, spec_wait_c = {nil,"spec_wait_f"},
-        },
-        {
-            112,"Политехнич.",
-            arr = {{"station_m","politehnicheskaya_m",0.2,"things_m"},{"arr_politehnicheskaya_f",0.2,"objects_f"}},
-            dep = {{"doors_closing_m","prospekt_suvorova_m"},{"doors_closing_f","next_park_kultury_f"}},
-            not_last_c = {nil,"not_last_f"},spec_last_c = {nil,"spec_last_f"}, spec_wait_c = {nil,"spec_wait_f"},
-        },
-        {
-            113,"Пр. Суворова",
-            arr = {{"station_m","prospekt_suvorova_m",0.2,"objects_m"},{"station_m","prospekt_suvorova_m",0.2,"things_m"}},
-            dep = {{"doors_closing_m","nahimovskaya_m"},{"doors_closing_m","politehnicheskaya_m"}},
-            not_last_c = {nil,"not_last_f"},spec_last_c = {nil,"spec_last_f"}, spec_wait_c = {nil,"spec_wait_f"},
-        },
-    }
-})]]
-
-UF.AddSpecialAnnouncements("Badesalz",{
-    "lilly/uf/IBIS/announcements/special/badesalz/arrival_at_stadium.mp3",
-    "lilly/uf/IBIS/announcements/special/badesalz/clear_the_doors.mp3",
-    "lilly/uf/IBIS/announcements/special/badesalz/departure_after_lost.mp3",
-    "lilly/uf/IBIS/announcements/special/badesalz/diversion.mp3",
-    "lilly/uf/IBIS/announcements/special/badesalz/end_of_line.mp3",
-    "lilly/uf/IBIS/announcements/special/badesalz/greetings.mp3",
-    "lilly/uf/IBIS/announcements/special/badesalz/put_your_feet_down.mp3",
-    "lilly/uf/IBIS/announcements/special/badesalz/signal_malfunction.mp3",
-    "lilly/uf/IBIS/announcements/special/badesalz/sorry_for_delay.mp3",
-
-})
-
-UF.AddSpecialAnnouncements("Ingrid FFM",{
-    "lilly/uf/IBIS/announcements/special/imn/delay_due_to_malfunction.mp3",
-    "lilly/uf/IBIS/announcements/special/imn/delay_due_to_malfunction_further_info_pending.mp3",
-    "lilly/uf/IBIS/announcements/special/imn/diversion_due_to_malfunction.mp3",
-    "lilly/uf/IBIS/announcements/special/imn/escorted_by_security.mp3",
-    "lilly/uf/IBIS/announcements/special/imn/signal_delay.mp3",
-    "lilly/uf/IBIS/announcements/special/imn/this_train_terminates_due_to_malfunction.mp3",
-    "lilly/uf/IBIS/announcements/special/imn/this_train_terminates_due_to_malfunction_further_info_on_platform.mp3",
+UF.AddSpecialAnnouncements("Frankfurt",{
+    ["01"] = "lilly/uf/IBIS/announcements/special/imn/delay_due_to_malfunction.mp3",
+    ["02"] = "lilly/uf/IBIS/announcements/special/imn/delay_due_to_malfunction_further_info_pending.mp3",
+    ["03"] = "lilly/uf/IBIS/announcements/special/imn/diversion_due_to_malfunction.mp3",
+    ["04"] = "lilly/uf/IBIS/announcements/special/imn/escorted_by_security.mp3",
+    ["05"] = "lilly/uf/IBIS/announcements/special/imn/signal_delay.mp3",
+    ["06"] = "lilly/uf/IBIS/announcements/special/imn/this_train_terminates_due_to_malfunction.mp3",
+    ["07"] = "lilly/uf/IBIS/announcements/special/imn/this_train_terminates_due_to_malfunction_further_info_on_platform.mp3",
+    ["08"] = "lilly/uf/IBIS/announcements/special/badesalz/arrival_at_stadium.mp3",
+    ["09"] = "lilly/uf/IBIS/announcements/special/badesalz/clear_the_doors.mp3",
+    ["10"] = "lilly/uf/IBIS/announcements/special/badesalz/departure_after_lost.mp3",
+    ["11"] = "lilly/uf/IBIS/announcements/special/badesalz/diversion.mp3",
+    ["12"] = "lilly/uf/IBIS/announcements/special/badesalz/end_of_line.mp3",
+    ["13"] = "lilly/uf/IBIS/announcements/special/badesalz/greetings.mp3",
+    ["14"] = "lilly/uf/IBIS/announcements/special/badesalz/put_your_feet_down.mp3",
+    ["15"] = "lilly/uf/IBIS/announcements/special/badesalz/signal_malfunction.mp3",
+    ["16"] = "lilly/uf/IBIS/announcements/special/badesalz/sorry_for_delay.mp3",
 })
 
 UF.AddIBISLines("Frankfurt",{
@@ -71,10 +33,10 @@ UF.AddIBISLines("Frankfurt",{
 
 UF.AddIBISRoutes("Frankfurt",{ --Format: [Line] = {[RouteNumber] = {StationNumber1,StationNumber2,StationNumber3,etc},[RouteNumber2] = {etc}}
 
-    ["01"] = {["01"] = {712,773,715,710,783,711},["02"] = {711,783,710,715,773,712}},
+    ["01"] = {["01"] = {712,773,715,710,783,711},["02"] = {711,783,710,715,773,712},["00"] = {000,000}},
     ["02"] = {["01"] = {712,773,715,710,785,784},["02"] = {784,785,710,715,773,712}},
     ["03"] = {["01"] = {712,773,715,710,787,786},["02"] = {786,787,710,715,773,712}},
-    ["04"] = {["01"] = {728,709,773,707,708},["02"] = {708,707,773,709,728}},
+    ["04"] = {["01"] = {728,709,773,707,708},["02"] = {708,707,773,709,728},["03"] = {728,709,773,707,708,723,724},["04"] = {724,723,708,707,773,709,728}},
     ["05"] = {["01"] = {709,773,707,726},["02"] = {726,773,707,709}},
     ["06"] = {["01"] = {720,722,728,707,729,721},["02"] = {721,729,707,728,722,720}},
     ["07"] = {["01"] = {725,722,728,707,729,704,723,724},["02"] = {724,723,704,729,707,728,722,725}},
@@ -99,7 +61,7 @@ UF.AddIBISDestinations("Frankfurt",{
     [712] = "Südbahnhof",
     [713] = "Nieder-Eschbach",
     [714] = "Römerstadt",
-    [715] = "Eschenheimer Tor",
+    [715] = "Eschenheimer T",
     [716] = "Gonzenheim",
     [717] = "Oberursel Bhf",
     [718] = "Oberursel Hhmrk",
@@ -115,7 +77,7 @@ UF.AddIBISDestinations("Frankfurt",{
     [728] = "Bockenheimer Warte",
     [729] = "Zoo",
     [739] = "Stadtbahn-Zentralwerkstatt",
-    [773] = "Willy-Brandt-Platz",
+    [773] = "Willy-Brandt-Pl",
     [779] = "Riedberg",
     [782] = "Heddernheim",
     [783] = "Römerstadt",

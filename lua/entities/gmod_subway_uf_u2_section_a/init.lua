@@ -2110,6 +2110,16 @@ function ENT:OnButtonPress(button,ply)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
+	if button == "SpecialAnnouncementSet" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("SpecialAnnouncement",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+	end
 end
 
 
@@ -2292,6 +2302,12 @@ end
 		end
 	end
 	if button == "EnterSet" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+	end
+	if button == "SpecialAnnouncementSet" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
@@ -2853,3 +2869,4 @@ function ENT:SetMassFib()
 		
 	end
 end
+

@@ -24,7 +24,7 @@ function TRAIN_SYSTEM:Initialize()
     self.RouteTable = UF.IBISRoutes[1]
     
     self.DestinationTable = UF.IBISDestinations[1]
-    
+    self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[1]
     
     self.JustBooted = false
     self.PowerOn = 0
@@ -61,6 +61,10 @@ function TRAIN_SYSTEM:Initialize()
     self.DisplayedDestinationChar1 = 0
     self.DisplayedDestinationChar2 = 0
     self.DisplayedDestinationChar3 = 0
+
+    self.AnnouncementChar1 = 0
+    self.AnnouncementChar2 = 0
+    self.SpecialAnnouncement = 0
     
     self.CurrentStationInternal = 0
     
@@ -257,7 +261,15 @@ function TRAIN_SYSTEM:Trigger(name,time)
             else
                 self.KeyInput = nil
             end
+        elseif name == "SpecialAnnouncement"  then
             
+            if self.KeyRegistered == false then
+                self.KeyInput = "SpecialAnnouncements"
+                self.KeyRegistered = true
+            else
+                self.KeyInput = nil
+            end
+              
         elseif name == nil then
             self.KeyInput = nil
             self.KeyRegistered = false
@@ -381,6 +393,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     local Destination = self.Train:GetNW2String("IBIS:DestinationChar1")..self.Train:GetNW2String("IBIS:DestinationChar2")..self.Train:GetNW2String("IBIS:DestinationChar3")
     --local DestinationText = self.Train:GetNW2String("IBIS:DestinationText"," ")
     local CurrentStation = self.Train:GetNW2String("CurrentStation",0)
+    local SpecialAnnouncement = self.Train:GetNW2String("IBIS:SpecialAnnouncement"," ")
     ----print(Route)
     ----print(Course)
     
@@ -467,9 +480,15 @@ function TRAIN_SYSTEM:IBISScreen(Train)
             self:PrintText(11,1.5,Destination)
             return 
         end
-        
+
+        if Menu == 6 then
+            self:PrintText(0,1.5,"Ansage      :")
+            self:PrintText(13.5,1.5,SpecialAnnouncement)
+            return
+        end
+
         if Menu == 0 then
-            self:PrintText(2,6,Destination)
+            self:PrintText(1.5,6,Destination)
             self:PrintText(5.6,6,Course)
             self:PrintText(10.5,6,Route)
             self:PrintText(0,1,CurrentStation)
@@ -505,6 +524,10 @@ function TRAIN_SYSTEM:IBISScreen(Train)
             self:BlinkText(true,"Ung. Route")
             
             return  
+        end
+        if Menu == 6 then
+            self:PrintText(0,1,"Ung. Ansage")
+            return
         end
     end
     return
@@ -614,11 +637,13 @@ function TRAIN_SYSTEM:Think()
             self.Train:SetNW2Bool("IBISError",true)
             self.ErrorMoment = RealTime()
         end
+    
+        
     end
     
     if self.State == 3 then
         
-        if RealTime() - self.ErrorMoment > 1.5 then
+        if RealTime() - self.ErrorMoment > 5 then
             if self.KeyInput == "Enter" then
                 self.State = 2
                 self.Train:SetNW2Bool("IBISError",false)
@@ -627,6 +652,10 @@ function TRAIN_SYSTEM:Think()
     end
     
     if self.State == 1 and self.Menu == 0 then
+        self.SpecialAnnouncement = " "
+        self.AnnouncementChar1 = " "
+        self.AnnouncementChar2 = " "
+        self.Train:SetNW2String("ServiceAnnouncement","")
         if self.KeyInput == "7" then
             self.Menu = 2
         elseif self.KeyInput == "0" then
@@ -647,18 +676,40 @@ function TRAIN_SYSTEM:Think()
                 
                 self.CurrentStation = self.RouteTable[self.CourseChar1..self.CourseChar2][self.RouteChar1..self.RouteChar2][self.CurrentStationInternal]
             end
+        elseif self.KeyInput == "SpecialAnnouncements" then
+            self.Menu = 6
         end
     elseif self.State == 1 and self.Menu == 1 then
         if self.KeyInput == "Enter" then
             self.Menu = 0
         end
     elseif self.State == 1 and self.Menu == 2 then
-        if self.KeyInput == "Enter" then
-            self.Menu = 0
+        if self.KeyInput == "Enter" and self.IndexValid == true then
+            self.State = 1
+            self.Menu  = 0
+        elseif self.KeyInput == "Enter" and self.IndexValid == false then
+            self.Menu = 5
+            self.State = 3
+            --print("Index Number invalid")
+            self.Train:SetNW2Bool("IBISError",true)
+            self.ErrorMoment = RealTime()
         end
     elseif self.State == 1 and self.Menu == 3 then
         if self.KeyInput == "Enter" then
             self.Menu = 0
+        end
+    elseif self.State == 1 and self.Menu == 6 then
+        if self.KeyInput == "Enter" then
+            if self.ServiceAnnouncement ~= "00" and self.Menu == 6 and self.IndexValid == true then
+                self.Train:SetNW2String("ServiceAnnouncement",self.ServiceAnnouncements[self.ServiceAnnouncement])
+                self.Menu = 0
+            elseif self.ServiceAnnouncement ~= "00" then
+                self.Menu = 0
+            else
+                self.State = 3
+                self.Train:SetNW2Bool("IBISError",true)
+                self.ErrorMoment = RealTime()
+            end
         end
     end
     
@@ -687,6 +738,7 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2String("IBIS:DestinationChar1",self.DisplayedDestinationChar1)
     Train:SetNW2String("IBIS:DestinationChar2",self.DisplayedDestinationChar2)
     Train:SetNW2String("IBIS:DestinationChar3",self.DisplayedDestinationChar3)
+    Train:SetNW2String("IBIS:SpecialAnnouncement",self.ServiceAnnouncement)
     
     self:InputProcessor(self.KeyInput)
     if self.KeyInput ~= nil then
@@ -703,6 +755,7 @@ function TRAIN_SYSTEM:Think()
         self.Train:SetNW2String("CurrentStation",self.DestinationTable[self.CurrentStation])
     end
     --print(self.CurrentStationInternal)
+    --print(self.ServiceAnnouncements[1])
 end
 
 
@@ -756,7 +809,7 @@ function TRAIN_SYSTEM:ReadDataset()
                     --print(self.Destination.."Destination index")
                     self.IndexValid = true      
                 else
-                    self.State = 3
+                    --self.State = 3
                     self.Route = 0
                     self.IndexValid = false
                 end
@@ -774,6 +827,15 @@ function TRAIN_SYSTEM:ReadDataset()
             else
                 self.IndexValid = false
             end
+        end
+    elseif self.Menu == 6 then
+        
+        if self.ServiceAnnouncements[self.ServiceAnnouncement] then
+            self.ServiceAnnouncement = self.ServiceAnnouncement
+            self.IndexValid = true
+        else
+            
+            self.IndexValid = false
         end
     end
     
@@ -1000,6 +1062,27 @@ if SERVER then
                     self.DestinationChar2 = -1					
                 elseif self.DestinationChar3 ~= -1 and self.DestinationChar2 == -1 and self.DestinationChar1 == -1 then
                     self.DestinationChar3 = -1
+                end
+            end
+        elseif self.Menu == 6 then
+            self.ServiceAnnouncement = self.AnnouncementChar1..self.AnnouncementChar2
+            if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then
+                if self.AnnouncementChar2 == -1 and self.AnnouncementChar1 == -1 then
+                    self.AnnouncementChar2 = self.KeyInput
+                    
+                    
+                elseif self.AnnouncementChar2 ~= -1 and self.AnnouncementChar1 == -1 then
+                    
+                    self.AnnouncementChar1 = self.AnnouncementChar2					
+                    
+                    self.AnnouncementChar2 = self.KeyInput
+                    
+                elseif self.AnnouncementChar2 ~= -1 and self.AnnouncementChar1 ~= -1 then
+                    self.AnnouncementChar1 = self.AnnouncementChar2					
+                    
+                    
+                        self.AnnouncementChar2 = self.KeyInput
+                    
                 end
             end
         end    

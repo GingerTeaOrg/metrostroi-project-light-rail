@@ -632,7 +632,7 @@ ENT.ButtonMap["IBIS"] = {
             sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
                 }
         },
-        {ID = "SpecialAnnouncementsSet", x=85, y=96, radius=10, tooltip = "Special Annoucements", model = {
+        {ID = "SpecialAnnouncementSet", x=85, y=96, radius=10, tooltip = "Special Annoucements", model = {
             z=0, ang=0,
             var="main",speed=1, vmin=0, vmax=1,
             sndvol = 0.5, snd = function(val) return val and "IBIS_beep"  end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
@@ -877,13 +877,22 @@ function ENT:Think()
     end
 
     if self:GetNW2Bool("IBISKeyBeep",false) == true then
-        local beep
-        if not beep then
+        local beep = false
+        if beep == false then
             self:PlayOnce("IBIS_beep","cabin",1,1)
             beep = true
-        else return end
+        else
+        end
     end
 
+    if self:GetNW2String("ServiceAnnouncement","") ~= "" then
+        local played = false
+        if played == false then
+            played = true
+            self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),1,1,5,10,Vector(200,0,50))
+        else
+        end
+    end
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,9,false)
     self.CabWindowL = self:GetNW2Float("CabWindowL",0)
     self.CabWindowR = self:GetNW2Float("CabWindowR",0)

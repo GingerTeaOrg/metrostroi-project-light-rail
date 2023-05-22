@@ -51,6 +51,7 @@ else
 end
 
 UF.AnnouncementsIBIS = {}
+UF.SpecialAnnouncementsIBIS = {}
 UF.IBISSetup = {}
 UF.IBISDestinations = {}
 UF.IBISRoutes = {}
@@ -140,21 +141,23 @@ function UF.AddIBISAnnouncer(name,datatable,soundtable)
 end
 
 function UF.AddSpecialAnnouncements(name,soundtable)
-    if not soundtable then return end
+    if not name or not soundtable then return end
 
-    for k,v in pairs(UF.AnnouncementsIBIS) do
+    for k,v in pairs(UF.SpecialAnnouncementsIBIS) do
         if v.name == name then
-            UF.AnnouncementsIBIS[v] = soundtable
-            UF.AnnouncementsIBIS[k].name = name
+            UF.SpecialAnnouncementsIBIS[k] = soundtable
+            UF.SpecialAnnouncementsIBIS[k].name = name
             
             print("Light Rail: Changed \""..name.."\" IBIS Service Announcements.")
             return
         end
     end
-    local id = table.insert(UF.AnnouncementsIBIS,soundtable)
-    UF.AnnouncementsIBIS[id].name = name
-    print("Metrostroi Light Rail: Added \""..name.."\" IBIS special announcement set.")
+    local id = table.insert(UF.SpecialAnnouncementsIBIS,soundtable)
+    UF.SpecialAnnouncementsIBIS[id].name = name
+    print("Light Rail: Added \""..name.."\" IBIS Service announcement set.")
 end
+
+
 
 function UF.AddRollsignTex(id,stIndex,texture)
     if not UF.Skins[id] then

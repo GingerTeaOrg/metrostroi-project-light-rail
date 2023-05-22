@@ -1,4 +1,10 @@
-Metrostroi.DefineSystem("IBIS_Announcer")
+--------------------------------------------------------------------------------
+-- Announcer and announcer-related code
+--------------------------------------------------------------------------------
+-- Copyright (C) 2013-2018 Metrostroi Team & FoxWorks Aerospace s.r.o.
+-- Contains proprietary code. See license.md for additional information.
+--------------------------------------------------------------------------------
+Metrostroi.DefineSystem("uf_announcer")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 local ANNOUNCER_CACHE_LIMIT = 30
 
@@ -19,7 +25,7 @@ if SERVER then
         self.AnnTable = tbl
     end
 
-    util.AddNetworkString("ibis_announcer")
+    util.AddNetworkString("uf_announcer")
 
     function TRAIN_SYSTEM:TriggerInput(name,value)
         if name == "Reset" then
@@ -29,10 +35,10 @@ if SERVER then
     end
 
     function TRAIN_SYSTEM:Queue(tbl)
-        if not Metrostroi[self.AnnTable] then return end
+        if not UF[self.AnnTable] then return end
 
         for k, v in pairs(tbl) do
-            local tbl = Metrostroi[self.AnnTable][self.Train:GetNW2Int("Announcer", 1)] or Metrostroi[self.AnnTable][1]
+            local tbl = UF[self.AnnTable][self.Train:GetNW2Int("Announcer", 1)] or UF[self.AnnTable][1]
             if v~=-2 then
                 table.insert(self.Schedule, tbl and tbl[v] or v)
             else
@@ -51,7 +57,7 @@ if SERVER then
     end
     function TRAIN_SYSTEM:WriteMessage(msg)
         for i = 1, #self.Train.WagonList do
-            net.Start("ibis_announcer", true)
+            net.Start("uf_announcer", true)
             local train = self.Train.WagonList[i]
             net.WriteEntity(train)
             net.WriteString(msg)
@@ -135,7 +141,7 @@ if SERVER then
         end
     end
 else
-    net.Receive("ibis_announcer", function(len, pl)
+    net.Receive("uf_announcer", function(len, pl)
         local train = net.ReadEntity()
         if not IsValid(train) or not train.RenderClientEnts then return end
         local snd = net.ReadString()
