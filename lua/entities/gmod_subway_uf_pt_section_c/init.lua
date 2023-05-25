@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.BogeyDistance = 650 -- Needed for gm trainspawner
+ENT.BogeyDistance = 30000 -- Needed for gm trainspawner
 
 --------------------------------------------------------------------------------
 -- переписал Lindy2017 
@@ -48,7 +48,7 @@ function ENT:Initialize()
 	self.RearBogey = self:CreateBogeyUF_b(Vector( -380,0,14),Angle(0,0,0),true,"duewag_motor")
 	self.RearBogey.InhibitReRail = true
 	self.FrontCouple = self.SectionA:CreateCoupleUF_a(Vector( 400,0,10),Angle(0,0,0),true,"pt")	
-	self.RearCouple = self.SectionB:CreateCoupleUF_b(Vector( 400,0,10),Angle(0,0,0),false,"u2")				
+	self.RearCouple = self:CreateCoupleUF_b(Vector( -520,0,10),Angle(0,180,0),false,"u2")				
 	
 	
 	--self.SectionA.BaseClass:Initialize(self.SectionA)

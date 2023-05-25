@@ -100,6 +100,9 @@ function ENT:Initialize()
     self.PneumaticBrakeForce = 100000.0
     self.DisableSound = 0
 
+    self.Texture = ""
+    self.GetAdditionalTextures = false
+
     self.Variables = {}
 
     -- Pressure in brake cylinder
@@ -532,4 +535,59 @@ function ENT:SpawnFunction(ply, tr)
 
     if not inhibitrerail then Metrostroi.RerailBogey(ent) end
     return ent
+end
+
+local types = {Texture = "train",PassTexture = "pass",CabTexture = "cab"}
+function ENT:FindFineSkin()
+    local train = self:GetNW2Entity("TrainEntity")
+    if not train.SkinsType then return end
+
+    for id,typ in pairs(types) do
+        local fineSkins = {all={},def={}}
+        for k,v in pairs(Metrostroi.Skins[typ]) do
+            if v.textures and v.typ == self.SkinsType then
+                table.insert(fineSkins.all,k)
+                if v.def then table.insert(fineSkins.def,k) end
+            end
+        end
+        if #fineSkins.def > 0 then
+            self:SetNW2String(id,table.Random(fineSkins.def))
+            self:UpdateTextures()
+        elseif #fineSkins.all > 0 then
+            self:SetNW2String(id,table.Random(fineSkins.all))
+            self:UpdateTextures()
+        end
+    end
+end
+
+function ENT:UpdateTextures()
+    
+    if texture and texture.func then
+        self:SetNW2String("Texture",texture.func(self))
+        
+    end
+
+    --self.Texture = self:GetNW2String("Texture")
+    local texture = Metrostroi.Skins["train"][self.Texture]
+    --print(Metrostroi.Skins["train"][self.Texture])
+    for k in pairs(self:GetMaterials()) do self:SetSubMaterial(k-1,"") end
+    for k,v in pairs(self:GetMaterials()) do
+        local tex = v:gsub("^.+/","")
+        if self.GetAdditionalTextures then
+            local tex = self:GetAdditionalTextures(tex)
+            if tex then
+                self:SetSubMaterial(k-1,tex)
+                --print("test")
+                continue
+            end
+        end
+        if texture and texture.textures and texture.textures[tex] then
+            self:SetSubMaterial(k-1,texture.textures[tex])
+        end
+    end
+
+    if texture and texture.postfunc then texture.postfunc(self) end
+
+    local level = math.random() > 0.95 and 0.7 or math.random() > 0.8 and 0.55 or math.random() > 0.35 and 0.25 or 0
+    self:SetNW2Vector("DirtLevel",math.Clamp(level+math.random()*0.2-0.1,0,1))
 end

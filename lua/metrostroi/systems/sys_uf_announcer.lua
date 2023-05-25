@@ -88,43 +88,9 @@ if SERVER then
                         train.AnnouncementToLeaveWagon = true
                         --train.AnnouncementToLeaveWagonAcknowledged = false
                     end
-                elseif self.NoiseWork == true then
-                    self.NoiseWork = tbl
-                    for i = 1, #self.Train.WagonList do
-                        self.Train.WagonList[i]:SetNW2Int("AnnouncerNoise", tbl)
-                    end
-                elseif self.BuzzWork == 1 then
-                    for i = 1, #self.Train.WagonList do
-                        self.Train.WagonList[i]:SetNW2Int("AnnouncerBuzz", tbl)
-                    end
-                    self.BuzzWork = true
                 else
                     self.AnnounceTimer = CurTime() + tbl
                 end
-            elseif tbl == "noise_start" then
-                self.NoiseWork = true
-            elseif tbl == "noise_end" then
-                for i = 1, #self.Train.WagonList do
-                    self.Train.WagonList[i]:SetNW2Int("AnnouncerNoise", -1)
-                end
-                self.NoiseWork = false
-            elseif tbl == "buzz_start_upo" then
-                self.BuzzWork = 1
-            elseif tbl == "buzz_end_upo" then
-                for i = 1, #self.Train.WagonList do
-                    self.Train.WagonList[i]:SetNW2Int("AnnouncerBuzz", -1)
-                end
-            elseif tbl == "buzz_start" then
-                local bpsn = self.Train:GetNW2Int("BPSNType",13)
-                for i = 1, #self.Train.WagonList do
-                    self.Train.WagonList[i]:SetNW2Int("AnnouncerBuzz", (bpsn == 1 or bpsn == 2 or bpsn == 8) and 2 or 1)
-                end
-                self.BuzzWork = true
-            elseif tbl == "buzz_end" then
-                for i = 1, #self.Train.WagonList do
-                    self.Train.WagonList[i]:SetNW2Int("AnnouncerBuzz", -1)
-                end
-                self.BuzzWork = false
             elseif type(tbl) == "table" then
                 self:WriteMessage(tbl[1])
                 self.AnnounceTimer = CurTime() + tbl[2]

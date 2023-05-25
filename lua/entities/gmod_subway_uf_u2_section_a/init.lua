@@ -301,6 +301,9 @@ function ENT:Initialize()
 	
 	self.SquealSensitivity = 200
 	
+	
+
+
 	self.Speed = 0
 	self.ThrottleState = 0
 	self.ThrottleEngaged = false
@@ -327,7 +330,7 @@ function ENT:Initialize()
 	self.FrontBogey = self:CreateBogeyUF(Vector( 300,0,0),Angle(0,180,0),true,"duewag_motor")
 	self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,0),Angle(0,0,0),false,"u2joint")
 	self:SetNW2Entity("FrontBogey",self.FrontBogey)
-	
+	self.MiddleBogey:SetNW2Entity("MainTrain",self)
 	-- Create couples
 	self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,2),Angle(0,0,0),true,"u2")	
 	
@@ -480,6 +483,15 @@ function ENT:Initialize()
 			[KEY_PAGEUP] = "Rollsign+",
 			[KEY_PAGEDOWN] = "Rollsign-",
 			[KEY_O] = "OpenDoor1Set",
+			[KEY_1] = "Throttle10-Pct",
+			[KEY_2] = "Throttle20-Pct",
+			[KEY_3] = "Throttle30-Pct",
+			[KEY_4] = "Throttle40-Pct",
+			[KEY_5] = "Throttle50-Pct",
+			[KEY_6] = "Throttle60-Pct",
+			[KEY_7] = "Throttle70-Pct",
+			[KEY_8] = "Throttle80-Pct",
+			[KEY_9] = "Throttle90-Pct",
 		},
 		
 		[KEY_LALT] = {
@@ -574,13 +586,15 @@ end
 function ENT:TrainSpawnerUpdate()
 	
 	
-	--local num = self.WagonNumber
-	--math.randomseed(num+400)
+	
 	
 	self.FrontCouple:SetParameters()
 	self.RearCouple:SetParameters()
 	local tex = "Def_U2"
+	self.MiddleBogey.Texture = self:GetNW2String("Texture")
 	self:UpdateTextures()
+	self.MiddleBogey:UpdateTextures()
+	
 	--self.MiddleBogey:UpdateTextures()
 	--self.MiddleBogey:UpdateTextures()
 	--self:UpdateLampsColors()
@@ -633,6 +647,13 @@ function ENT:Think(dT)
 	
 	self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
 	self:SetPackedBool("WarningAnnouncement",Panel.WarningAnnouncement > 0)
+	self:SetPackedBool("SetHoldingBrake",Panel.SetHoldingBrake > 0)
+	self:SetPackedBool("PassengerOverground",Panel.PassengerLightsOff > 0)
+	self:SetPackedBool("PassengerUnderground",Panel.PassengerLightsOn > 0)
+	self:SetPackedBool("SetPointLeft",Panel.SetPointLeft > 0)
+	self:SetPackedBool("SetPointRight",Panel.SetPointLeft > 0)
+	self:SetPackedBool("AnnPlay",self.Panel.AnnouncerPlaying > 0)
+
 	
 	
 	self:SetPackedBool("Headlights",self.Panel.Headlights > 0)
@@ -1095,6 +1116,51 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 			
 		end
 		
+	elseif self.Duewag_U2.ReverserLeverState == -1 then
+		print(self.Duewag_U2.BrakePressure)
+		if self.Duewag_U2.ThrottleState < 0 then
+				self.RearBogey.MotorForce  = -5980 
+				self.FrontBogey.MotorForce = -5980
+				self:SetNW2Bool("Braking",true)
+				self.RearBogey.MotorPower = self.Duewag_U2.Traction
+				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			elseif self.Duewag_U2.ThrottleState > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
+				self.RearBogey.MotorForce  = 4980
+				self.FrontBogey.MotorForce = 4980 
+				self.RearBogey.MotorPower = self.Duewag_U2.Traction
+				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			elseif self.Duewag_U2.ThrottleState == 0 then 
+				self.RearBogey.MotorForce  = 0
+				self.FrontBogey.MotorForce = 0
+				self:SetNW2Bool("Braking",false)
+				self.RearBogey.MotorPower = self.Duewag_U2.Traction
+				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			elseif self.Train:GetNW2Bool("DeadmanTripped") == true then
+				if self.Speed > 5 then
+					self.RearBogey.MotorPower = self.Duewag_U2.Traction
+					self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+					self.FrontBogey.BrakeCylinderPressure = 2.7 
+					self.MiddleBogey.BrakeCylinderPressure = 2.7
+					self.RearBogey.BrakeCylinderPressure = 2.7
+					self:SetNW2Bool("Braking",true)
+				else
+					self.RearBogey.MotorPower = 0
+					self.FrontBogey.MotorPower = 0
+					self.FrontBogey.BrakeCylinderPressure = 2.7 
+					self.MiddleBogey.BrakeCylinderPressure = 2.7
+					self.RearBogey.BrakeCylinderPressure = 2.7
+					self:SetNW2Bool("Braking",true)
+				end
+			end
 		
 	end
 	self.FrontBogey.PneumaticBrakeForce = 43.333
@@ -1592,6 +1658,36 @@ function ENT:OnButtonPress(button,ply)
 	if button == "Throttle90Pct" then
 		self.Duewag_U2.ThrottleState = 90
 	end
+
+	if button == "Throttle10-Pct" then
+		self.Duewag_U2.ThrottleState = -10
+	end
+	
+	if button == "Throttle20-Pct" then
+		self.Duewag_U2.ThrottleState = -20
+	end
+	
+	if button == "Throttle30-Pct" then
+		self.Duewag_U2.ThrottleState = -30
+	end
+	if button == "Throttle40-Pct" then
+		self.Duewag_U2.ThrottleState = -40
+	end
+	if button == "Throttle50-Pct" then
+		self.Duewag_U2.ThrottleState = -50
+	end
+	if button == "Throttle60-Pct" then
+		self.Duewag_U2.ThrottleState = -60
+	end
+	if button == "Throttle70-Pct" then
+		self.Duewag_U2.ThrottleState = -70
+	end
+	if button == "Throttle80-Pct" then
+		self.Duewag_U2.ThrottleState = -80
+	end
+	if button == "Throttle90-Pct" then
+		self.Duewag_U2.ThrottleState = -90
+	end
 	
 	if button == "PantoUp" then
 		if self.PantoUp == false then
@@ -1810,11 +1906,13 @@ function ENT:OnButtonPress(button,ply)
 			self:SetNW2Bool("WarningBlinker",true)
 			self:WriteTrainWire(20,1)
 			self:WriteTrainWire(21,1)
+			self.Panel.WarnBlink = 1
 		elseif
 		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) > 0 then
 			self:SetNW2Bool("WarningBlinker",false)
 			self:WriteTrainWire(20,0)
 			self:WriteTrainWire(21,0)
+			self.Panel.WarnBlink = 0
 		end
 	end
 	
@@ -1824,6 +1922,7 @@ function ENT:OnButtonPress(button,ply)
 		if self:ReadTrainWire(5) > 1 and self.Duewag_U2.Speed < 1 then
 			self.FrontCouple:Decouple()
 		end
+		self:SetPackedBool("ThrowCoupler",true)
 	end
 	
 	if button == "DriverLightToggle" then
@@ -2187,6 +2286,11 @@ if button == "DoorsUnlockSet"  then
 	end
 end
 
+	if button == "ThrowCouplerSet" then
+		
+		self:SetPackedBool("ThrowCoupler",false)
+	end
+
 if button == "DoorsLockSet"  then
 	
 	--if self:GetNW2Bool("DoorsUnlocked",false) == true then
@@ -2315,17 +2419,14 @@ end
 	end
 
 
-if button == "OpenBOStrab" then
-	self:SetPackedBool("BOStrab",true)
-	--self:SetPackedBool("BOStrab",false)
-end
+	if button == "OpenBOStrab" then
+		self:SetPackedBool("BOStrab",true)
+		--self:SetPackedBool("BOStrab",false)
+	end
 
 end
-
 
 function ENT:CreateSectionB(pos)
-	
-	
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
 	u2sectionb.ParentTrain = self
@@ -2338,44 +2439,48 @@ function ENT:CreateSectionB(pos)
 	local xmin = 5
 	local xmax = 5
 	
-	local phys = u2sectionb:GetPhysicsObject()
 	
-	if ( IsValid( phys ) ) then -- Always check with IsValid! The ent might not have physics!
-		phys:SetMass(50000)
-		
-	end
+	constraint.AdvBallsocket(
+		u2sectionb,
+		self.MiddleBogey,
+		0, --bone
+		0, --bone		
+		Vector(0,0,0),
+		Vector(0,0,6),		
+		0, --forcelimit
+		0, --torquelimit
+		-20, --xmin
+		0, --ymin
+		-180, --zmin
+		20, --xmax
+		0, --ymax
+		180, --zmax
+		0, --xfric
+		5, --yfric
+		0, --zfric
+		0, --rotonly
+		1--nocollide
+	)
+
+	--[[constraint.Axis(
+		u2sectionb,
+		self.MiddleBogey,
+		0,
+		0,
+		Vector(0,0,0),
+		Vector(0,0,0),
+		0,
+		0,
+		0,
+		0
+	)]]
+	table.insert(self.TrainEntities,u2sectionb)
+
+
+	constraint.NoCollide(self.MiddleBogey,u2sectionb,0,0)
+	constraint.NoCollide(self,u2sectionb,0,0)
 	
-	constraint.Axis(
-	u2sectionb,
-	self.MiddleBogey,
-	0, --bone
-	0, --bone
-	Vector(0,0,0),
-	Vector(0,0,-0.4),
-	0, --forcelimit
-	0, --torquelimit
-	0,
-	1 --nocollide
-)
-local phys = self:GetPhysicsObject()
-
-if ( IsValid( phys ) ) then -- Always check with IsValid! The ent might not have physics!
-	phys:SetMass(32000)
-	
-end
-
-local phys = u2sectionb:GetPhysicsObject()
-
-if ( IsValid( phys ) ) then -- Always check with IsValid! The ent might not have physics!
-	phys:SetMass(32000)
-	
-end
-
-
-constraint.NoCollide(self.MiddleBogey,u2sectionb,0,0)
--- Add to cleanup list
-table.insert(self.TrainEntities,u2sectionb)
-return u2sectionb
+	return u2sectionb
 end
 
 

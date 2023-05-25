@@ -108,13 +108,16 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Switchgear7"] = {1100,1e9,Vector(250,0,200),1}
 	
 	self.SoundNames["button_on"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
-	self.SoundPositions["button_on"] = {1100,1e9,Vector(420,0,200),1}
+	self.SoundPositions["button_on"] = {1100,1e9,Vector(405,36,55),1}
 	
 	self.SoundNames["button_off"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
-	self.SoundPositions["button_off"] = {1100,1e9,Vector(250,0,200),1}
+	self.SoundPositions["button_off"] = {1100,1e9,Vector(405,36,55),1}
 	
-	self.SoundNames["Toggle"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
-	self.SoundPositions["Toggle"] = {1100,1e9,Vector(250,0,200),1}
+	self.SoundNames["Toggle_on"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
+	self.SoundPositions["Toggle_on"] = {1100,1e9,Vector(405,36,55),1}
+
+	self.SoundNames["Toggle_off"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
+	self.SoundPositions["Toggle_off"] = {1100,1e9,Vector(405,36,55),1}
 	
 	self.SoundNames["Cruise"] = {"lilly/uf/u2/cruise/cruise_medium_start.mp3","lilly/uf/u2/cruise/cruise_medium.mp3","lilly/uf/u2/cruise/cruise_medium_stop.mp3"}
 	self.SoundPositions["Cruise"] = {1100,1e9,Vector(300,0,100),1}
@@ -172,7 +175,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")
 	self:LoadSystem("Duewag_Deadman")
 	self:LoadSystem("IBIS")
-	self:LoadSystem("uf_announcer")
+	self:LoadSystem("Announcer","uf_announcer")
 	self:LoadSystem("Duewag_Battery")
 	self:LoadSystem("Panel","U2_panel")
 	

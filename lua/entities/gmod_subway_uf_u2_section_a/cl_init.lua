@@ -423,7 +423,7 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "SetPointLeftSet", x=179, y=91, radius=10, tooltip = "Set track point to left", model = {
+    {ID = "SetPointLeftSet", x=179.8, y=90, radius=10, tooltip = "Set track point to left", model = {
         model = "models/lilly/uf/u2/cab/button_bulge_arrow_right.mdl", z=-4, ang=90, anim=true,
         var="SetPointLeft",speed=15, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
@@ -473,7 +473,7 @@ ENT.ButtonMap["Cab"] = {
     },]]
     {ID = "ThrowCouplerSet", x=334.8, y=91, radius=10, tooltip = "Throw Coupler", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl",getfunc = function(ent) return ent:GetPackedBool("ThrowCoupler") and 1 or 0 end, z=-5, ang=0,
-        var="ThrowCoupler",speed=1, vmin=0, vmax=1,
+        var="ThrowCoupler",speed=10, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
@@ -726,12 +726,11 @@ ENT.ButtonMap["Left"] = {
             var="ParrallelToggle",speed=1, vmin=0, vmax=1,
             sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
-        {ID = "WarnBlinkToggle", x=79, y=71, radius=7, tooltip = "Set indicators to warning mode", model = { 
+        {ID = "WarnBlinkToggle", x=79.5, y=70, radius=7, tooltip = "Set indicators to warning mode", model = {speed=10,
             model="models/lilly/uf/u2/cab/switch_flick.mdl",
-            getfunc = function(ent) return ent:GetPackedBool("WarnBlink") and 1 or 0 end,
-            z=-3, ang=0,
-            var="WarnBlink",speed=8, vmin=1, vmax=0,
-            sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
+            z=-3, ang=180,
+            var="WarningBlinker",
+            sndvol = 1, snd = function(val) return val and "button" or "button" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
         {ID = "ReduceBrakeSet", x=44, y=11.5, radius=7, tooltip = "Reduce track brake intensity", model = {
             z=-5, ang=0,
@@ -809,13 +808,14 @@ function ENT:Initialize()
     self.DoorsOpen = false
 
     self.CamshaftMadeSound = false
-	
+	self.AnnouncementTriggered = false
 	self.ThrottleLastEngaged = 0
 
     self.ElectricOnMoment = 0
 	self.IBISKickStart = false
 	self.IBISStarted = false
 	self.StartupSoundPlayed = false
+    self.IBISBeep = false
 
     self.WarningAnnouncement = false
 
@@ -877,21 +877,23 @@ function ENT:Think()
     end
 
     if self:GetNW2Bool("IBISKeyBeep",false) == true then
-        local beep = false
-        if beep == false then
+        if self.IBISBeep == false then
+            self.IBISBeep = true
             self:PlayOnce("IBIS_beep","cabin",1,1)
-            beep = true
         else
         end
+    else
+        self.IBISBeep = false
     end
 
     if self:GetNW2String("ServiceAnnouncement","") ~= "" then
-        local played = false
-        if played == false then
-            played = true
-            self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),1,1,5,10,Vector(200,0,50))
-        else
+        
+        if self.AnnouncementPlayed == false then 
+            self.AnnouncementPlayed = true
+            self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),1,1,1,2,Vector(293,44,102))    
         end
+    else
+        self.AnnouncementPlayed = false
     end
     self:Animate("reverser",self:GetNW2Float("ReverserAnimate"),0,100,50,9,false)
     self.CabWindowL = self:GetNW2Float("CabWindowL",0)
@@ -1005,7 +1007,7 @@ function ENT:Think()
     else
         self:Animate("DriverLightSwitch",0.5,0,100,100,10,false)
     end
-
+    
     if self:GetNW2Bool("BatteryOn",false) == true then
         
        
@@ -1195,14 +1197,14 @@ function ENT:Think()
 
     --self:U2SoundEngine()
 	self:ScrollTracker()
-    --[[if self.Speed > 15 then
+    if self.Speed > 15 then
 
-        self:SetSoundState("Cruise",math.min(self.Speed / 80+0.2),1,1,1)
-        self:SetSoundState("rumb1",math.min(self.Speed / 80+0.2),1,1,1)
+        self:SetSoundState("Cruise",1,1,1,1)
+        self:SetSoundState("rumb1",1,1,1,1)
     else
-        self:SetSoundState("Cruise",math.min(self.Speed / 80+0.2),0,1,1)
-        self:SetSoundState("rumb1",math.min(self.Speed / 80+0.2),0,1,1)
-    end]]
+        self:SetSoundState("Cruise",0,1,1,1)
+        self:SetSoundState("rumb1",0,1,1,1)
+    end
 	
 end
 Metrostroi.GenerateClientProps()

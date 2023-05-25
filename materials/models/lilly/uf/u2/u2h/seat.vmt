@@ -1,5 +1,5 @@
 "VertexlitGeneric"
 {
-	"$basetexture" "models/lilly/uf/u2h/seat"
+	"$basetexture" "models/lilly/uf/u2/u2h/seat"
 	"$alphatest" 1
 }

@@ -8,7 +8,7 @@ function ENT:Think()
 	self.PrevTime = RealTime()
 
 	-- Angular velocity
-	local wheel_radius = 0.5*63 -- units
+	local wheel_radius = 0.5*65 -- units
 	local speed = -self:GetVelocity():Dot(self:GetAngles():Forward())
 	local ang_vel = speed/(2*math.pi*wheel_radius)
 

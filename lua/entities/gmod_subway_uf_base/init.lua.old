@@ -76,9 +76,6 @@ function ENT:PostEntityPaste(ply,ent,createdEntities)
                     0,0,0,1,Vector(0,0,1),false)
             end
 
-            if self.SubwayTrain.Type == "Tatra" then
-                v[1]:SetAngles(self:GetAngles() + Angle(0,(1-k)*180,0))
-            end
             table.insert(self.TrainEntities,v[1])
         end
     end
@@ -281,7 +278,7 @@ function ENT:Initialize()
         self.NormalMass = self:GetPhysicsObject():GetMass()
     end
 
-    SetGlobalInt("metrostroi_train_count",Metrostroi.TrainCount())
+    SetGlobalInt("metrostroi_train_count",UF.TrainCount())
     net.Start("MetrostroiTrainCount") net.Broadcast()
 
     --[[GRAVHULL
@@ -315,7 +312,7 @@ function ENT:OnRemove()
     if Turbostroi then
         Turbostroi.DeinitializeTrain(self)
     end
-    SetGlobalInt("metrostroi_train_count",Metrostroi.TrainCount())
+    SetGlobalInt("metrostroi_train_count",UF.TrainCount())
     net.Start("MetrostroiTrainCount") net.Broadcast()
 end
 
@@ -588,7 +585,7 @@ function ENT:ReadCell(Address)
             if Address == 49159 then return self.Schedule.EndTime*60 end
         end
 
-        local pos = Metrostroi.TrainPositions[self]
+        local pos = UF.TrainPositions[self]
         if (Address >= 49160) and (Address <= 49171) and pos and pos[1] then
             pos = pos[1]
 
@@ -596,7 +593,7 @@ function ENT:ReadCell(Address)
             local current,next,prev = 0,0,0
             local cPlatID,nPlatID,pPlatID = 0,0,0
             local x1,x2,x3 = 1e9,0,1e9
-            for stationID,stationData in pairs(Metrostroi.Stations) do
+            for stationID,stationData in pairs(UF.Stations) do
                 for platformID,platformData in pairs(stationData) do
                     if (platformData.node_start.path == pos.path) and
                         (platformData.x_start < pos.x) and
@@ -653,7 +650,7 @@ function ENT:ReadCell(Address)
         local platformID = math.floor((x - lineID*800 - stationID*8)/4)
         local varID = x - lineID*800 - stationID*8 - platformID*4
 
-        local station = Metrostroi.Stations[(lineID+1)*100 + stationID]
+        local station = UF.Stations[(lineID+1)*100 + stationID]
         if station then
             local platform = station[platformID]
             if platform then
@@ -666,7 +663,7 @@ function ENT:ReadCell(Address)
         return 0
     end
     if (Address >= 65504) and (Address <= 65510) then
-        local pos = Metrostroi.TrainPositions[self]
+        local pos = UF.TrainPositions[self]
         if pos and pos[1] then
             pos = pos[1]
             if Address == 65504 then return pos.x end
@@ -1702,12 +1699,7 @@ function ENT:Think()
     -- Apply mass of passengers
     if self.NormalMass then self:GetPhysicsObject():SetMass(self.NormalMass + 60*self:GetNW2Float("PassengerCount")) end
     if self.AnnouncementToLeaveWagon and self:GetNW2Float("PassengerCount") == 0  then self.AnnouncementToLeaveWagon = false end
-
-    -- Hack for VAH switch on non-supported maps so you don't have to hold space all the time
-    if not self.NonSupportedChecked then
-        self.NonSupportedChecked = true
-        if not Metrostroi.MapHasFullSupport("ars") and self.NonSupportTrigger then self:NonSupportTrigger() end
-    end
+    
 
     -- Calculate turn information, unused right now
     --[[if self.FrontBogey and self.RearBogey then
@@ -1735,7 +1727,6 @@ function ENT:Think()
         if IsValid(ply) then
             --if self.KeyMap then self:HandleKeyboardInput(ply) end
             if joystick then self:HandleJoystickInput(ply) end
-            self:SetNW2Bool("GoldenReverser",IsValid(ply) and IsValid(ply:GetWeapon("train_kv_wrench_gold")))
         end
 
     end
@@ -1909,14 +1900,6 @@ function ENT:Think()
             end
         end
     end
-    if Wire_CreateInputs then
-        local readTrainWire = self.ReadTrainWire
-        for i=1,32 do
-            self.TriggerOutput(self,"TrainWire"..i,readTrainWire(self,i))
-        end
-        self.TriggerOutput(self,"TrainWire35",readTrainWire(self,35))
-        self.TriggerOutput(self,"TrainWire36",readTrainWire(self,36))
-    end
 
     -- Calculate own speed and acceleration
     local speed,acceleration = 0,0
@@ -2013,28 +1996,28 @@ end
 --------------------------------------------------------------------------------
 function ENT:SpawnFunction(ply, tr,className,rotate,func)
     --MaxTrains limit
-    if self.ClassName ~= "gmod_subway_base" and not self.NoTrain then
+    if self.ClassName ~= "gmod_subway_uf_base" and not self.NoTrain then
         local Limit1 = math.min(2,C_MaxWagons:GetInt())*C_MaxTrainsOnPly:GetInt()-1
         local Limit2 = math.max(0,C_MaxWagons:GetInt()-2)*C_MaxTrainsOnPly:GetInt()-1
 
-        if Metrostroi.TrainCount() > C_MaxTrains:GetInt()*C_MaxWagons:GetInt()-1 then
+        if UF.TrainCount() > C_MaxTrains:GetInt()*C_MaxWagons:GetInt()-1 then
             ply:LimitHit("train_limit")
             --Metrostroi.LimitMessage(ply)
             return
         end
-        if Metrostroi.TrainCountOnPlayer(ply) > C_MaxWagons:GetInt()*C_MaxTrainsOnPly:GetInt()-1 then
+        if UF.TrainCountOnPlayer(ply) > C_MaxWagons:GetInt()*C_MaxTrainsOnPly:GetInt()-1 then
             ply:LimitHit("train_limit")
             --Metrostroi.LimitMessage(ply)
             return
         end
         if self.SubwayTrain and self.SubwayTrain.WagType == 1 then
-            if Metrostroi.TrainCountOnPlayer(ply, 1) > Limit1 then
+            if UF.TrainCountOnPlayer(ply, 1) > Limit1 then
                 ply:LimitHit("train_limit")
                 --Metrostroi.LimitMessage(ply)
                 return
             end
         elseif self.SubwayTrain and self.SubwayTrain.WagType == 2 then
-            if Metrostroi.TrainCountOnPlayer(ply, 2) > Limit2 then
+            if UF.TrainCountOnPlayer(ply, 2) > Limit2 then
                 ply:LimitHit("train_limit")
                 --Metrostroi.LimitMessage(ply)
                 return

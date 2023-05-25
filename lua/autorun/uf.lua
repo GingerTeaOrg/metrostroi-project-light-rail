@@ -56,6 +56,9 @@ UF.IBISSetup = {}
 UF.IBISDestinations = {}
 UF.IBISRoutes = {}
 UF.IBISLines = {}
+UF.TrainPositions = {}
+UF.Stations = {}
+UF.TrainCountOnPlayer = {}
 
 function UF.AddIBISDestinations(name,index)
     if not index or not name then return end

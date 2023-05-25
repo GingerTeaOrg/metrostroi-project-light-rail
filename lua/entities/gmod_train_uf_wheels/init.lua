@@ -22,11 +22,11 @@ function ENT:Think(dT)
 	self.dT = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
 	local Bogey = self:GetNW2Entity("TrainBogey")
-
+	
 	--if not IsValid(Bogey) then return end
 	--self.Meters = self.Meters + self.dT * Bogey.Speed * Bogey.SpeedSign
-
-
+	
+	
 end
 --]]
 function ENT:PhysicsCollide(data,physobj)
@@ -34,12 +34,12 @@ function ENT:PhysicsCollide(data,physobj)
 	if data.HitEntity and data.HitEntity:IsValid() and data.HitEntity:GetClass() == "prop_door_rotating" then
 		self.LastJunctionTime = self.LastJunctionTime or CurTime()
 		local dt = CurTime() - self.LastJunctionTime
-
+		
 		if dt > 3.5 then
 			local speed = self:GetVelocity():Length() * 0.06858
 			if speed > 10 then
 				self.LastJunctionTime = CurTime()
-
+				
 				local pitch_var = math.random(90,110)
 				local pitch = pitch_var*math.max(0.8,math.min(1.3,speed/40))
 				self:EmitSound("lilly/uf/bogeys/u2/jointH"..math.random(2,3)..".mp3",100,pitch )
