@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lilly/uf/wheels"
+	$envmapmask "models/lilly/uf/wheels_envmap"
+	$normalmap "models/lilly/uf/wheels_n"
+	$surfaceprop "gmod_silent"
+}
