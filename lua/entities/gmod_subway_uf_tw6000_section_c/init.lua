@@ -142,6 +142,11 @@ function ENT:Think()
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*100)
 
+	self.FrontBogey.BrakePressure = 0
+	self.MiddleBogeyA.BrakePressure = 0
+	self.MiddleBogeyB.BrakePressure = 0
+	self.RearBogey.BrakePressure = 0
+
 end
 
 

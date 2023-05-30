@@ -34,21 +34,23 @@ function ENT:Initialize()
 	
 	self.Bogeys = {}
 	-- Create bogeys
-	self.MiddleBogeyA  = self:CreateBogeyUF(Vector( 138,0,14),Angle(0,0,0),false,"duewag_motor")
-	self.MiddleBogeyA.InhibitReRail = true
-	self.SectionA = self:CreateSectionA(Vector(134,0,2.8))
-	self.FrontBogey = self:CreateBogeyUF_a(Vector(380,0,14),Angle(0,0,0),true,"duewag_motor")
+	self.FrontBogey = self:CreateBogeyUF(Vector(144,0,14),Angle(0,0,0),true,"duewag_motor")--380,0,14
 	self.FrontBogey.InhibitReRail = true
-	self.MiddleBogeyB  = self:CreateBogeyUF(Vector( -138,0,14),Angle(0,0,0),false,"duewag_motor")
-	self.MiddleBogeyB.InhibitReRail = true
-	--self.RearBogey = self.MiddleBogeyB
-	
-	self.SectionB = self:CreateSectionB(Vector(-134,0,2.8))
-	
-	self.RearBogey = self:CreateBogeyUF_b(Vector( -380,0,14),Angle(0,0,0),true,"duewag_motor")
+	self.RearBogey = self:CreateBogeyUF(Vector( -144,0,14),Angle(0,0,0),true,"duewag_motor") ---380,0,14
 	self.RearBogey.InhibitReRail = true
+	self.SectionA = self:CreateSectionA(Vector(145,0,2.8))
+	self.SectionBogeyA  = self:CreateBogeyUF_a(Vector( 380,0,14),Angle(0,0,0),false,"duewag_motor")
+	self.SectionBogeyA.InhibitReRail = true
+	self.SectionB = self:CreateSectionB(Vector(-145,0,2.8))
+	self.SectionBogeyB  = self:CreateBogeyUF_b(Vector( -380,0,14),Angle(0,0,0),false,"duewag_motor")
+	self.SectionBogeyB.InhibitReRail = true
+	--self.RearBogey = self.SectionBogeyB
+	
+	self.OptOutRerail = true
+	
+	
 	self.FrontCouple = self.SectionA:CreateCoupleUF_a(Vector( 400,0,10),Angle(0,0,0),true,"pt")	
-	self.RearCouple = self:CreateCoupleUF_b(Vector( -520,0,10),Angle(0,180,0),false,"u2")				
+	self.RearCouple = self.SectionB:CreateCoupleUF_b(Vector( 400,0,10),Angle(0,0,0),false,"u2")				
 	
 	
 	--self.SectionA.BaseClass:Initialize(self.SectionA)
@@ -57,13 +59,13 @@ function ENT:Initialize()
 	
 	constraint.NoCollide(self.FrontBogey,self.SectionA,0,0)
 	constraint.NoCollide(self.RearBogey,self.SectionB,0,0)
-	constraint.NoCollide(self.MiddleBogeyA,self.SectionA,0,0)
-	constraint.NoCollide(self.MiddleBogeyA,self,0,0)
-	constraint.NoCollide(self.MiddleBogeyB,self,0,0)
-	constraint.NoCollide(self.MiddleBogeyB,self.SectionB,0,0)
+	constraint.NoCollide(self.SectionBogeyA,self.SectionA,0,0)
+	constraint.NoCollide(self.SectionBogeyA,self,0,0)
+	constraint.NoCollide(self.SectionBogeyB,self,0,0)
+	constraint.NoCollide(self.SectionBogeyB,self.SectionB,0,0)
 	self:SetNW2Entity("RearBogey",self.RearBogey)
-	self:SetNW2Entity("MiddleBogey1",self.MiddleBogeyA)
-	self:SetNW2Entity("MiddleBogey2",self.MiddleBogeyB)
+	self:SetNW2Entity("MiddleBogey1",self.SectionBogeyA)
+	self:SetNW2Entity("MiddleBogey2",self.SectionBogeyB)
 	self:SetNW2Entity("FrontBogey",self.FrontBogey)
 	
 	
@@ -106,7 +108,7 @@ function ENT:Think()
 	self.SectionA:SetNW2Bool("ReverserInserted",self.ReverserInsertedA)
 	--self.SectionB:SetNW2Bool("ReverserInserted",self.ReverserInsertedB)
 	
-	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogeyA) and IsValid(self.MiddleBogeyB) and IsValid(self.RearBogey) then
+	if IsValid(self.FrontBogey) and IsValid(self.SectionBogeyA) and IsValid(self.SectionBogeyB) and IsValid(self.RearBogey) then
 		
 		if self.Duewag_Pt.ThrottleStateA < 0 or self.Duewag_Pt.ThrottleStateB < 0 then
 			self.RearBogey.MotorForce  = -5980 
@@ -115,7 +117,7 @@ function ENT:Think()
 			self.RearBogey.MotorPower = self.Duewag_Pt.Traction
 			self.FrontBogey.MotorPower = self.Duewag_Pt.Traction
 			self.FrontBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure 
-			self.MiddleBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+			self.SectionBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
 			self.RearBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
 		elseif self.Duewag_Pt.ThrottleStateA > 0 or self.Duewag_Pt.ThrottleStateB > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
 			self.RearBogey.MotorForce  = 4980
@@ -123,7 +125,7 @@ function ENT:Think()
 			self.RearBogey.MotorPower = self.Duewag_Pt.Traction
 			self.FrontBogey.MotorPower = self.Duewag_Pt.Traction
 			self.FrontBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure 
-			self.MiddleBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+			self.SectionBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
 			self.RearBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
 		elseif self.Duewag_Pt.ThrottleStateA == 0 or self.Duewag_Pt.ThrottleStateB == 0 then 
 			self.RearBogey.MotorForce  = 0
@@ -132,21 +134,21 @@ function ENT:Think()
 			self.RearBogey.MotorPower = self.Duewag_Pt.Traction
 			self.FrontBogey.MotorPower = self.Duewag_Pt.Traction
 			self.FrontBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure 
-			self.MiddleBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
+			self.SectionBogeyA.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
 			self.RearBogey.BrakeCylinderPressure = self.Duewag_Pt.BrakePressure
 		elseif self.Train:GetNW2Bool("DeadmanTripped") == true then
 			if self.Speed > 5 then
 				self.RearBogey.MotorPower = self.Duewag_Pt.Traction
 				self.FrontBogey.MotorPower = self.Duewag_Pt.Traction
 				self.FrontBogey.BrakeCylinderPressure = 2.7 
-				self.MiddleBogeyA.BrakeCylinderPressure = 2.7
+				self.SectionBogeyA.BrakeCylinderPressure = 2.7
 				self.RearBogey.BrakeCylinderPressure = 2.7
 				self:SetNW2Bool("Braking",true)
 			else
 				self.RearBogey.MotorPower = 0
 				self.FrontBogey.MotorPower = 0
 				self.FrontBogey.BrakeCylinderPressure = 2.7 
-				self.MiddleBogeyA.BrakeCylinderPressure = 2.7
+				self.SectionBogeyA.BrakeCylinderPressure = 2.7
 				self.RearBogey.BrakeCylinderPressure = 2.7
 				self:SetNW2Bool("Braking",true)
 			end
@@ -154,7 +156,7 @@ function ENT:Think()
 		
 	elseif self:GetNW2Bool("DepartureConfirmed",false) == false then
 		self.FrontBogey.BrakeCylinderPressure = 2.7
-		self.MiddleBogeyA.BrakeCylinderPressure = 2.7
+		self.SectionBogeyA.BrakeCylinderPressure = 2.7
 		self.RearBogey.BrakeCylinderPressure = 2.7
 		self.RearBogey.MotorPower = 0
 		self.FrontBogey.MotorPower = 0
@@ -193,7 +195,7 @@ function ENT:CreateSectionA(pos)
 	
 	
 	constraint.Axis(
-	self.MiddleBogeyA,
+	self.FrontBogey,
 	SecA,
 	0, --bone
 	0, --bone
@@ -225,7 +227,7 @@ function ENT:CreateSectionB(pos)
 	
 	
 	constraint.Axis(
-	self.MiddleBogeyB,
+	self.RearBogey,
 	SecB,
 	0, --bone
 	0, --bone

@@ -301,444 +301,458 @@ function ENT:Initialize()
 	
 	self.SquealSensitivity = 200
 	
-	
-
-
-	self.Speed = 0
-	self.ThrottleState = 0
-	self.ThrottleEngaged = false
-	self.ReverserState = 0
-	self.ReverserLeverState = 0
-	self.ReverserEnaged = 0
-	self.BrakePressure = 0
-	self.ThrottleRate = 0
-	self.MotorPower = 0
-	
-	self.LastDoorTick = 0
-	
-	self.WagonNumber = 303
-	
-	self.Door1 = false
-	
-	self.Haltebremse = 0
-	self.CabWindowR = 0
-	self.CabWindowL = 0
-	self.AlarmSound = 0
-	
-	self.DoorsOpen = false
-	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 300,0,0),Angle(0,180,0),true,"duewag_motor")
-	self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,0),Angle(0,0,0),false,"u2joint")
-	self:SetNW2Entity("FrontBogey",self.FrontBogey)
-	self.MiddleBogey:SetNW2Entity("MainTrain",self)
-	-- Create couples
-	self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,2),Angle(0,0,0),true,"u2")	
-	
-	
-	self.ElectricOnMoment = 0
-	self.ElectricKickStart = false
-	self.ElectricStarted = false 
-	
-	-- Create U2 Section B
-	self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
-	self.RearBogey = self:CreateBogeyUF_b(Vector( -300,0,0),Angle(0,180,0),false,"duewag_motor")
-	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,2),Angle(0,180,0),true,"u2")	
-	--self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
-	--self:GetPhysicsObject():SetMass(50000)
-	--self.u2sectionb:GetPhysicsObject():SetMass(50000)
-	
-	self.PantoUp = 0
-	
-	self.ReverserInsert = false 
-	self.BatteryOn = false
-	
-	self.FrontBogey:SetNWInt("MotorSoundType",0)
-	self.MiddleBogey:SetNWInt("MotorSoundType",0)
-	self.RearBogey:SetNWInt("MotorSoundType",0)
-	self.FrontBogey:SetNWBool("Async",false)
-	self.MiddleBogey:SetNWBool("Async",false)
-	self.RearBogey:SetNWBool("Async",false)
-	--[[self.FrontBogey:TriggerInput("DisableSound",3)
-	self.MiddleBogey:TriggerInput("DisableSound",3)
-	self.RearBogey:TriggerInput("DisableSound",3)]]
-	
-	--self.PantoState = 0
-	
-	-- Blinker variables
-	
-	self:SetNW2Float("Blinds",0.2)
-	
-	--self.FrontBogey.DisableSound = 3
-	--self.MiddleBogey.DisableSound = 3
-	--self.RearBogey.DisableSound = 3
-	
-	
-	self.BlinkerOn = false
-	self.BlinkerLeft = false
-	self.BlinkerRight = false
-	self.Blinker = "Off"
-	self.LastTriggerTime = 0
-	
-	self:SetNW2String("BlinkerDirection","none")
-	
-	self.DoorRandomness1 = 0
-	self.DoorRandomness2 = 0
-	self.DoorRandomness3 = 0
-	self.DoorRandomness4 = 0
-	
-	self.DoorState1 = 0
-	self.DoorState2 = 0
-	self.DoorState3 = 0
-	self.DoorState4 = 0
-	
-	self.DoorState21 = 0
-	self.DoorState22 = 0
-	self.DoorState23 = 0
-	self.DoorState24 = 0
-	
-	self.CommandOpen = false
-	self.CommandClose = false
-	
-	--self.Lights = {}
-	self.DoorSideUnlocked = "None"
-	self:SetNW2Bool("DepartureConfirmed",true)
-	self:SetNW2Bool("DoorsUnlocked",false)
-	
-	
-	self:SetPackedBool("FlickBatterySwitchOn",false)
-	self:SetPackedBool("FlickBatterySwitchOff",false)
-	
-	self.PrevTime = 0
-	self.DeltaTime = 0
-
-	self.IBISKeyRegistered =false
-	
-	self.RollsignModifier = 0
-	self.RollsignModifierRate = 0
-	self.ScrollMoment = 0
-	self.ScrollMomentDelta = 0
-	self.ScrollMomentRecorded = false
-	
-	self.IBISKeyPassed = false
-	
-	self.ScrollModifier = 0
-	
-	self.TrainWireCrossConnections = {
-		[4] = 3, -- Reverser F<->B
-		[21] = 20, --blinker
+	self.DoorStatesRight = {
+		["Door12a"] = 0,
+		["Door34a"] = 0,
+		["Door56a"] = 0,
+		["Door78a"] = 0,}
+		self.DoorStatesLeft = {
+			["Door12b"] = 0,
+			["Door34b"] = 0,
+			["Door56b"] = 0,
+			["Door78b"] = 0,
+		}
+		self.DoorsUnlocked = false
+		self.DoorsPreviouslyUnlocked = false
+		self.RandomnessCalulated = false
+		self.DepartureConfirmed = true
 		
-	}
-	
-	--[[self:SetNW2Int("Door1-2a",0)
-	self:SetNW2Int("Door3-4a",0)
-	self:SetNW2Int("Door5-6a",0)
-	self:SetNW2Int("Door7-8a",0)
-	self:SetNW2Int("Door1-2b",0)
-	self:SetNW2Int("Door3-4b",0)
-	self:SetNW2Int("Door5-6b",0)
-	self:SetNW2Int("Door7-8b",0)]]
-	
-	-- Initialize key mapping
-	self.KeyMap = {
-		[KEY_A] = "ThrottleUp",
-		[KEY_D] = "ThrottleDown",
-		[KEY_F] = "ReduceBrake",
-		[KEY_H] = "BellEngageSet",
-		[KEY_SPACE] = "DeadmanSet",
-		[KEY_W] = "ReverserUpSet",
-		[KEY_S] = "ReverserDownSet",
-		[KEY_P] = "PantoUpSet",
-		[KEY_O] = "DoorsUnlockSet",
-		[KEY_I] = "DoorsLockSet",
-		[KEY_K] = "DoorsCloseConfirmSet",
-		[KEY_Z] = "WarningAnnouncementSet",
-		[KEY_J] = "DoorsSelectLeftToggle",
-		[KEY_L] = "DoorsSelectRightToggle",
-		[KEY_B] = "BatteryToggle",
-		[KEY_V] = "HeadlightsToggle",
-		[KEY_M] = "Mirror",
-		[KEY_1] = "Throttle10Pct",
-		[KEY_2] = "Throttle20Pct",
-		[KEY_3] = "Throttle30Pct",
-		[KEY_4] = "Throttle40Pct",
-		[KEY_5] = "Throttle50Pct",
-		[KEY_6] = "Throttle60Pct",
-		[KEY_7] = "Throttle70Pct",
-		[KEY_8] = "Throttle80Pct",
-		[KEY_9] = "Throttle90Pct",
-		[KEY_PERIOD] = "WarnBlinkToggle",
 		
-		[KEY_COMMA] = "BlinkerLeftToggle",
-		--[KEY_0] = "KeyTurnOn",
+		self.Speed = 0
+		self.ThrottleState = 0
+		self.ThrottleEngaged = false
+		self.ReverserState = 0
+		self.ReverserLeverState = 0
+		self.ReverserEnaged = 0
+		self.BrakePressure = 0
+		self.ThrottleRate = 0
+		self.MotorPower = 0
 		
-		[KEY_LSHIFT] = {
-			[KEY_0] = "ReverserInsert",
-			[KEY_A] = "ThrottleUpFast",
-			[KEY_D] = "ThrottleDownFast",
-			[KEY_S] = "ThrottleZero",
-			[KEY_H] = "Horn",
-			[KEY_V] = "DriverLightToggle",
-			[KEY_COMMA] = "BlinkerRightToggle",
-			[KEY_B] = "BatteryDisableToggle",
-			[KEY_PAGEUP] = "Rollsign+",
-			[KEY_PAGEDOWN] = "Rollsign-",
-			[KEY_O] = "OpenDoor1Set",
-			[KEY_1] = "Throttle10-Pct",
-			[KEY_2] = "Throttle20-Pct",
-			[KEY_3] = "Throttle30-Pct",
-			[KEY_4] = "Throttle40-Pct",
-			[KEY_5] = "Throttle50-Pct",
-			[KEY_6] = "Throttle60-Pct",
-			[KEY_7] = "Throttle70-Pct",
-			[KEY_8] = "Throttle80-Pct",
-			[KEY_9] = "Throttle90-Pct",
-		},
+		self.LastDoorTick = 0
 		
-		[KEY_LALT] = {
-			[KEY_PAD_1] = "Number1Set",
-			[KEY_PAD_2] = "Number2Set",
-			[KEY_PAD_3] = "Number3Set",
-			[KEY_PAD_4] = "Number4Set",
-			[KEY_PAD_5] = "Number5Set",
-			[KEY_PAD_6] = "Number6Set",
-			[KEY_PAD_7] = "Number7Set",
-			[KEY_PAD_8] = "Number8Set",
-			[KEY_PAD_9] = "Number9Set",
-			[KEY_PAD_0] = "Number0Set",
-			[KEY_PAD_ENTER] = "EnterSet",
-			[KEY_PAD_DECIMAL] = "DeleteSet",
-			[KEY_PAD_DIVIDE] = "DestinationSet",
-			[KEY_PAD_MULTIPLY] = "SpecialAnnouncementsSet",
-			[KEY_PAD_MINUS] = "TimeAndDateSet",
-			[KEY_V] = "PassengerLightsSet",
-			[KEY_D] = "EmergencyBrakeSet",
-			[KEY_N] = "Parrallel",
+		self.WagonNumber = 303
+		
+		self.Door1 = false
+		
+		self.Haltebremse = 0
+		self.CabWindowR = 0
+		self.CabWindowL = 0
+		self.AlarmSound = 0
+		
+		self.DoorsOpen = false
+		-- Create bogeys
+		self.FrontBogey = self:CreateBogeyUF(Vector( 300,0,0),Angle(0,180,0),true,"duewag_motor")
+		self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,0),Angle(0,0,0),false,"u2joint")
+		self:SetNW2Entity("FrontBogey",self.FrontBogey)
+		self.MiddleBogey:SetNW2Entity("MainTrain",self)
+		-- Create couples
+		self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,2),Angle(0,0,0),true,"u2")	
+		
+		
+		self.ElectricOnMoment = 0
+		self.ElectricKickStart = false
+		self.ElectricStarted = false 
+		
+		-- Create U2 Section B
+		self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
+		self.RearBogey = self:CreateBogeyUF_b(Vector( -300,0,0),Angle(0,180,0),false,"duewag_motor")
+		self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,2),Angle(0,180,0),true,"u2")	
+		--self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
+		--self:GetPhysicsObject():SetMass(50000)
+		--self.u2sectionb:GetPhysicsObject():SetMass(50000)
+		
+		self.PantoUp = 0
+		
+		self.ReverserInsert = false 
+		self.BatteryOn = false
+		
+		self.FrontBogey:SetNWInt("MotorSoundType",0)
+		self.MiddleBogey:SetNWInt("MotorSoundType",0)
+		self.RearBogey:SetNWInt("MotorSoundType",0)
+		self.FrontBogey:SetNWBool("Async",false)
+		self.MiddleBogey:SetNWBool("Async",false)
+		self.RearBogey:SetNWBool("Async",false)
+		--[[self.FrontBogey:TriggerInput("DisableSound",3)
+		self.MiddleBogey:TriggerInput("DisableSound",3)
+		self.RearBogey:TriggerInput("DisableSound",3)]]
+		
+		--self.PantoState = 0
+		
+		-- Blinker variables
+		
+		self:SetNW2Float("Blinds",0.2)
+		
+		--self.FrontBogey.DisableSound = 3
+		--self.MiddleBogey.DisableSound = 3
+		--self.RearBogey.DisableSound = 3
+		
+		
+		self.BlinkerOn = false
+		self.BlinkerLeft = false
+		self.BlinkerRight = false
+		self.Blinker = "Off"
+		self.LastTriggerTime = 0
+		
+		self:SetNW2String("BlinkerDirection","none")
+		
+		self.DoorRandomness1 = 0
+		self.DoorRandomness2 = 0
+		self.DoorRandomness3 = 0
+		self.DoorRandomness4 = 0
+		
+		
+		
+		
+		--self.Lights = {}
+		self.DoorSideUnlocked = "None"
+		
+		
+		self:SetPackedBool("FlickBatterySwitchOn",false)
+		self:SetPackedBool("FlickBatterySwitchOff",false)
+		
+		self.PrevTime = 0
+		self.DeltaTime = 0
+		
+		self.IBISKeyRegistered =false
+		
+		self.RollsignModifier = 0
+		self.RollsignModifierRate = 0
+		self.ScrollMoment = 0
+		self.ScrollMomentDelta = 0
+		self.ScrollMomentRecorded = false
+		
+		self.IBISKeyPassed = false
+		
+		self.ScrollModifier = 0
+		
+		self.TrainWireCrossConnections = {
+			[4] = 3, -- Reverser F<->B
+			[21] = 20, --blinker
 			
-			
-			
-		},
-	}
-	
-	--How to get the IBIS inputs? With function TRAIN_SYSTEM:Trigger(name,value)
-	
-	
-	
-	local rand = math.random() > 0.8 and 1 or math.random(0.95,0.99) --because why not
-	
-	
-	
-	
-	self:TrainSpawnerUpdate()
-	--self.u2sectionb:SetNW2String("Texture", self:GetNW2String("Texture"))
-	--self.u2sectionb:TrainSpawnerUpdate()
-	
-	--Lights sheen
-	self.Lights = {
-		[50] = { "light",Vector(406,39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
-		[60] = { "light",Vector(406,-39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
-		[51] = { "light",Vector(430,40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
-		[52] = { "light",Vector(430,-40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
-		[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
-		[54] = { "light",Vector(426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
-		[55] = { "light",Vector(426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-		[56] = { "light",Vector(426.5,31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-		[57] = { "light",Vector(426.5,-31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
-		[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
-		[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
-		[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
-		[49] = { "light",Vector(327,-52,68), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom right
-		[30] = { "light",Vector(397.343,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 1
-		[31] = { "light",Vector(326.738,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 2
-		[32] = { "light",Vector(151.5,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 3
-		[33] = { "light",Vector(83.7,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 4
-		[34] = { "light",Vector(397.343,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 1
-		[35] = { "light",Vector(326.738,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
-		[36] = { "light",Vector(151.5,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
-		[37] = { "light",Vector(83.7,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
-		[38] = { "light",Vector(416.31,8.3445,54.4798), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
-	}
-	
-	
-	
-	
-	
-	
-	self.InteractionZones = {
-		{
-			ID = "Button1a",
-			Pos = Vector(396.3,-51,50.5), Radius = 16,
-		},
+		}
 		
-	}
+		--[[self:SetNW2Int("Door1-2a",0)
+		self:SetNW2Int("Door3-4a",0)
+		self:SetNW2Int("Door5-6a",0)
+		self:SetNW2Int("Door7-8a",0)
+		self:SetNW2Int("Door1-2b",0)
+		self:SetNW2Int("Door3-4b",0)
+		self:SetNW2Int("Door5-6b",0)
+		self:SetNW2Int("Door7-8b",0)]]
+		
+		-- Initialize key mapping
+		self.KeyMap = {
+			[KEY_A] = "ThrottleUp",
+			[KEY_D] = "ThrottleDown",
+			[KEY_F] = "ReduceBrake",
+			[KEY_H] = "BellEngageSet",
+			[KEY_SPACE] = "DeadmanSet",
+			[KEY_W] = "ReverserUpSet",
+			[KEY_S] = "ReverserDownSet",
+			[KEY_P] = "PantoUpSet",
+			[KEY_O] = "DoorsUnlockSet",
+			[KEY_I] = "DoorsLockSet",
+			[KEY_K] = "DoorsCloseConfirmSet",
+			[KEY_Z] = "WarningAnnouncementSet",
+			[KEY_J] = "DoorsSelectLeftToggle",
+			[KEY_L] = "DoorsSelectRightToggle",
+			[KEY_B] = "BatteryToggle",
+			[KEY_V] = "HeadlightsToggle",
+			[KEY_M] = "Mirror",
+			[KEY_1] = "Throttle10Pct",
+			[KEY_2] = "Throttle20Pct",
+			[KEY_3] = "Throttle30Pct",
+			[KEY_4] = "Throttle40Pct",
+			[KEY_5] = "Throttle50Pct",
+			[KEY_6] = "Throttle60Pct",
+			[KEY_7] = "Throttle70Pct",
+			[KEY_8] = "Throttle80Pct",
+			[KEY_9] = "Throttle90Pct",
+			[KEY_PERIOD] = "WarnBlinkToggle",
+			
+			[KEY_COMMA] = "BlinkerLeftToggle",
+			--[KEY_0] = "KeyTurnOn",
+			
+			[KEY_LSHIFT] = {
+				[KEY_0] = "ReverserInsert",
+				[KEY_A] = "ThrottleUpFast",
+				[KEY_D] = "ThrottleDownFast",
+				[KEY_S] = "ThrottleZero",
+				[KEY_H] = "Horn",
+				[KEY_V] = "DriverLightToggle",
+				[KEY_COMMA] = "BlinkerRightToggle",
+				[KEY_B] = "BatteryDisableToggle",
+				[KEY_PAGEUP] = "Rollsign+",
+				[KEY_PAGEDOWN] = "Rollsign-",
+				[KEY_O] = "OpenDoor1Set",
+				[KEY_1] = "Throttle10-Pct",
+				[KEY_2] = "Throttle20-Pct",
+				[KEY_3] = "Throttle30-Pct",
+				[KEY_4] = "Throttle40-Pct",
+				[KEY_5] = "Throttle50-Pct",
+				[KEY_6] = "Throttle60-Pct",
+				[KEY_7] = "Throttle70-Pct",
+				[KEY_8] = "Throttle80-Pct",
+				[KEY_9] = "Throttle90-Pct",
+			},
+			
+			[KEY_LALT] = {
+				[KEY_PAD_1] = "Number1Set",
+				[KEY_PAD_2] = "Number2Set",
+				[KEY_PAD_3] = "Number3Set",
+				[KEY_PAD_4] = "Number4Set",
+				[KEY_PAD_5] = "Number5Set",
+				[KEY_PAD_6] = "Number6Set",
+				[KEY_PAD_7] = "Number7Set",
+				[KEY_PAD_8] = "Number8Set",
+				[KEY_PAD_9] = "Number9Set",
+				[KEY_PAD_0] = "Number0Set",
+				[KEY_PAD_ENTER] = "EnterSet",
+				[KEY_PAD_DECIMAL] = "DeleteSet",
+				[KEY_PAD_DIVIDE] = "DestinationSet",
+				[KEY_PAD_MULTIPLY] = "SpecialAnnouncementsSet",
+				[KEY_PAD_MINUS] = "TimeAndDateSet",
+				[KEY_V] = "PassengerLightsSet",
+				[KEY_D] = "EmergencyBrakeSet",
+				[KEY_N] = "Parrallel",
+				
+				
+				
+			},
+		}
+		
+		--How to get the IBIS inputs? With function TRAIN_SYSTEM:Trigger(name,value)
+		
+		
+		
+		local rand = math.random() > 0.8 and 1 or math.random(0.95,0.99) --because why not
+		
+		
+		
+		
+		self:TrainSpawnerUpdate()
+		--self.u2sectionb:SetNW2String("Texture", self:GetNW2String("Texture"))
+		--self.u2sectionb:TrainSpawnerUpdate()
+		
+		--Lights sheen
+		self.Lights = {
+			[50] = { "light",Vector(406,39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
+			[60] = { "light",Vector(406,-39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
+			[51] = { "light",Vector(430,40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
+			[52] = { "light",Vector(430,-40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
+			[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
+			[54] = { "light",Vector(426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+			[55] = { "light",Vector(426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+			[56] = { "light",Vector(426.5,31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+			[57] = { "light",Vector(426.5,-31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+			[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
+			[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
+			[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
+			[49] = { "light",Vector(327,-52,68), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom right
+			[30] = { "light",Vector(397.343,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 1
+			[31] = { "light",Vector(326.738,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 2
+			[32] = { "light",Vector(151.5,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 3
+			[33] = { "light",Vector(83.7,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 4
+			[34] = { "light",Vector(397.343,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 1
+			[35] = { "light",Vector(326.738,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
+			[36] = { "light",Vector(151.5,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
+			[37] = { "light",Vector(83.7,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
+			[38] = { "light",Vector(416.31,8.3445,54.4798), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
+		}
+		
+		
+		
+		
+		
+		
+		self.InteractionZones = {
+			{
+				ID = "Button1a",
+				Pos = Vector(396.3,-51,50.5), Radius = 16,
+			},
+			
+		}
+		
+		
+	end
 	
 	
-end
-
-
-
-
-
-
-
-
-
-
-function ENT:TrainSpawnerUpdate()
 	
 	
 	
 	
-	self.FrontCouple:SetParameters()
-	self.RearCouple:SetParameters()
-	local tex = "Def_U2"
-	self.MiddleBogey.Texture = self:GetNW2String("Texture")
-	self:UpdateTextures()
-	self.MiddleBogey:UpdateTextures()
-	
-	--self.MiddleBogey:UpdateTextures()
-	--self.MiddleBogey:UpdateTextures()
-	--self:UpdateLampsColors()
-	self.FrontCouple.CoupleType = "U2"
-	self.RearCouple.CoupleType = "U2"
-	--self.u2sectionb:SetNW2String("Texture", self:GetNW2String("Texture"))
-	--self.u2sectionb.Texture = self:GetNW2String("Texture")
-	
-	
-	
-end
-
-
-
-
-
-
-
-function ENT:Think(dT)
-	self.BaseClass.Think(self)
-	
-	--print(table.ToString(UF.IBISLines[1]))
 	
 	
 	
 	
-	if self.Door1 == true then
-		if self.DoorSideUnlocked == "Left" then
-			self:DoorHandler(true,false,true,true)
-		elseif self.DoorSideUnlocked == "Right" then
-			self:DoorHandler(false,true,true,true)
+	function ENT:TrainSpawnerUpdate()
+		
+		
+		
+		
+		self.FrontCouple:SetParameters()
+		self.RearCouple:SetParameters()
+		local tex = "Def_U2"
+		self.MiddleBogey.Texture = self:GetNW2String("Texture")
+		self:UpdateTextures()
+		self.MiddleBogey:UpdateTextures()
+		
+		--self.MiddleBogey:UpdateTextures()
+		--self.MiddleBogey:UpdateTextures()
+		--self:UpdateLampsColors()
+		self.FrontCouple.CoupleType = "U2"
+		self.RearCouple.CoupleType = "U2"
+		--self.u2sectionb:SetNW2String("Texture", self:GetNW2String("Texture"))
+		--self.u2sectionb.Texture = self:GetNW2String("Texture")
+		
+		
+		
+	end
+	
+	
+	
+	
+	
+	
+	
+	function ENT:Think(dT)
+		self.BaseClass.Think(self)
+		
+		--print(table.ToString(UF.IBISLines[1]))
+		
+		
+		if self.DoorSideUnlocked == "Left" and self.DoorsUnlocked == true and self.Door1 ~= true then
+			self:DoorHandler(true,true,false,false)
+			
+		elseif self.DoorSideUnlocked == "Right" and self.DoorsUnlocked == true and self.Door1 ~= true then
+			self:DoorHandler(true,false,true,false)
+			
+		elseif self.DoorSideUnlocked == "Right" and self.Door1 == true then
+			self:DoorHandler(false,false,true,true)
+			
+		elseif self.DoorSideUnlocked == "Left" and self.Door1 == true then
+			self:DoorHandler(false,true,false,true)	
+			
+		elseif self.DoorSideUnlocked == "Left" and self.DoorsUnlocked == false and self.Door1 ~= true then
+			self:DoorHandler(false,true,false,false)
+			
+		elseif self.DoorSideUnlocked == "Right" and self.DoorsUnlocked == false and self.Door1 ~= true then
+			self:DoorHandler(false,false,true,false)
+			
 		end
-	end
-	
-	if self:GetPackedBool("BOStrab",false) == true then
-		self:SetPackedBool("BOStrab",false)
-	end
-	
-	
-	self:RollsignSync()
-	self:SetNW2Entity("FrontBogey",self.FrontBogey)
-	self.PrevTime = self.PrevTime or CurTime()
-	self.DeltaTime = (CurTime() - self.PrevTime)
-	self.PrevTime = CurTime()
-	
-	self:SetNW2Float("MotorPower",self.FrontBogey:GetMotorPower())
-	local Panel = self.Panel
-	
-	------print(self:GetNW2Float("MotorPower"))
-	
-	self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
-	self:SetPackedBool("WarningAnnouncement",Panel.WarningAnnouncement > 0)
-	self:SetPackedBool("SetHoldingBrake",Panel.SetHoldingBrake > 0)
-	self:SetPackedBool("PassengerOverground",Panel.PassengerLightsOff > 0)
-	self:SetPackedBool("PassengerUnderground",Panel.PassengerLightsOn > 0)
-	self:SetPackedBool("SetPointLeft",Panel.SetPointLeft > 0)
-	self:SetPackedBool("SetPointRight",Panel.SetPointLeft > 0)
-	self:SetPackedBool("AnnPlay",self.Panel.AnnouncerPlaying > 0)
-
-	
-	
-	self:SetPackedBool("Headlights",self.Panel.Headlights > 0)
-	
-	
-	--temporary, move to electrical system later
-	
-	if self.Duewag_U2.ReverserState > 0 and self.Duewag_U2.BatteryOn == true then
-		if self.Duewag_U2.HeadlightsSwitch == true then
-			self.Panel.Headlights = 1
+		
+		
+		
+		if self:GetPackedBool("BOStrab",false) == true then
+			self:SetPackedBool("BOStrab",false)
+		end
+		
+		
+		self:RollsignSync()
+		self:SetNW2Entity("FrontBogey",self.FrontBogey)
+		self.PrevTime = self.PrevTime or CurTime()
+		self.DeltaTime = (CurTime() - self.PrevTime)
+		self.PrevTime = CurTime()
+		
+		self:SetNW2Float("MotorPower",self.FrontBogey:GetMotorPower())
+		local Panel = self.Panel
+		
+		------print(self:GetNW2Float("MotorPower"))
+		
+		self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
+		self:SetPackedBool("WarningAnnouncement",Panel.WarningAnnouncement > 0)
+		self:SetPackedBool("SetHoldingBrake",Panel.SetHoldingBrake > 0)
+		self:SetPackedBool("PassengerOverground",Panel.PassengerLightsOff > 0)
+		self:SetPackedBool("PassengerUnderground",Panel.PassengerLightsOn > 0)
+		self:SetPackedBool("SetPointLeft",Panel.SetPointLeft > 0)
+		self:SetPackedBool("SetPointRight",Panel.SetPointLeft > 0)
+		self:SetPackedBool("AnnPlay",self.Panel.AnnouncerPlaying > 0)
+		
+		
+		
+		self:SetPackedBool("Headlights",self.Panel.Headlights > 0)
+		
+		
+		--temporary, move to electrical system later
+		
+		if self.Duewag_U2.ReverserState > 0 and self.Duewag_U2.BatteryOn == true then
+			if self.Duewag_U2.HeadlightsSwitch == true then
+				self.Panel.Headlights = 1
+			else
+				self.Panel.Headlights = 0
+			end
+			
 		else
 			self.Panel.Headlights = 0
 		end
 		
+		
+		------print(self:GetPackedBool("WarningAnnouncement"))
+		--self:SetNW2Entity("FrontBogey",self.FrontBogey)
+		------print(self.Panel.WarnBlink)
+		self.CabWindowL = math.Clamp(self.CabWindowL,0,1)
+		self.CabWindowR = math.Clamp(self.CabWindowR,0,1)
+		self:SetNW2Float("CabWindowL",self.CabWindowL)
+		self:SetNW2Float("CabWindowR",self.CabWindowR)
+		
+		--[[self.ScrollMomentDelta = self.ScrollMoment - CurTime()
+		self.RollsignModifier = self.RollsignModifierRate * self.ScrollMomentDelta + math.Clamp(self.RollsignModifier,0,0.7)
+		self:SetNW2Float("RollsignModifier",self.RollsignModifier)]]
+		
+		
+		
+		self.u2sectionb:TrainSpawnerUpdate()
+		self:SetNW2Entity("U2a",self)
+		
+		--[[if self:GetPhysicsObject:GetMass() == 50000 and self.u2sectionb:GetPhysicsObject:GetMass() == 50000 then
+		self:GetPhysicsObject:SetMass(16000)
+		self.u2sectionb:GetPhysicsObject:SetMass(16000)
+	end]]
+	
+	--PrintMessage(HUD_PRINTTALK, self:GetNW2String("Texture"))
+	
+	self:SetNW2Bool("PantoUp",self.PantoUp)
+	self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
+	
+	
+	
+	self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
+	self:SetNW2Int("Speed",self.Speed)
+	
+	--PrintMessage(HUD_PRINTTALK,"Current Speed")
+	--PrintMessage(HUD_PRINTTALK,self.Speed)
+	
+	
+	
+	
+	
+	
+	--Check if the A section is coupled
+	if self.FrontCouple.CoupledEnt ~= nil then
+		self:SetNW2Bool("AIsCoupled", true)
 	else
-		self.Panel.Headlights = 0
+		self:SetNW2Bool("AIsCoupled",false)
+	end
+	
+	if self.RearCouple.CoupledEnt ~= nil then
+		self:SetNW2Bool("BIsCoupled", true)
+	else
+		self:SetNW2Bool("BIsCoupled",false)
+	end
+	--Check if the B section is coupled
+	if self.RearCouple.CoupledEnt ~= nil then
+		self:SetNW2Bool("BIsCoupled", true)
+	else
+		self:SetNW2Bool("BIsCoupled",false)
 	end
 	
 	
-	------print(self:GetPackedBool("WarningAnnouncement"))
-	--self:SetNW2Entity("FrontBogey",self.FrontBogey)
-	------print(self.Panel.WarnBlink)
-	self.CabWindowL = math.Clamp(self.CabWindowL,0,1)
-	self.CabWindowR = math.Clamp(self.CabWindowR,0,1)
-	self:SetNW2Float("CabWindowL",self.CabWindowL)
-	self:SetNW2Float("CabWindowR",self.CabWindowR)
-	
-	--[[self.ScrollMomentDelta = self.ScrollMoment - CurTime()
-	self.RollsignModifier = self.RollsignModifierRate * self.ScrollMomentDelta + math.Clamp(self.RollsignModifier,0,0.7)
-	self:SetNW2Float("RollsignModifier",self.RollsignModifier)]]
 	
 	
-	
-	self.u2sectionb:TrainSpawnerUpdate()
-	self:SetNW2Entity("U2a",self)
-	
-	--[[if self:GetPhysicsObject:GetMass() == 50000 and self.u2sectionb:GetPhysicsObject:GetMass() == 50000 then
-	self:GetPhysicsObject:SetMass(16000)
-	self.u2sectionb:GetPhysicsObject:SetMass(16000)
-end]]
-
---PrintMessage(HUD_PRINTTALK, self:GetNW2String("Texture"))
-
-self:SetNW2Bool("PantoUp",self.PantoUp)
-self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
-
-
-
-self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
-self:SetNW2Int("Speed",self.Speed)
-
---PrintMessage(HUD_PRINTTALK,"Current Speed")
---PrintMessage(HUD_PRINTTALK,self.Speed)
-
-
-
-
-
-
---Check if the A section is coupled
-if self.FrontCouple.CoupledEnt ~= nil then
-	self:SetNW2Bool("AIsCoupled", true)
-else
-	self:SetNW2Bool("AIsCoupled",false)
-end
-
-if self.RearCouple.CoupledEnt ~= nil then
-	self:SetNW2Bool("BIsCoupled", true)
-else
-	self:SetNW2Bool("BIsCoupled",false)
-end
---Check if the B section is coupled
-if self.RearCouple.CoupledEnt ~= nil then
-	self:SetNW2Bool("BIsCoupled", true)
-else
-	self:SetNW2Bool("BIsCoupled",false)
-end
-
-
-
-
-self:SetNW2Float("BatteryCharge",self.Duewag_Battery.Voltage)
---If either of the sections are coupled, consider the unit coupled.
---[[if self.RearCouple.CoupledEnt ~= nil or self.RearCouple.CoupledEnt ~= nil then
-self:SetNW2Bool("UnitCoupled",true)
+	self:SetNW2Float("BatteryCharge",self.Duewag_Battery.Voltage)
+	--If either of the sections are coupled, consider the unit coupled.
+	--[[if self.RearCouple.CoupledEnt ~= nil or self.RearCouple.CoupledEnt ~= nil then
+	self:SetNW2Bool("UnitCoupled",true)
 else
 	self:SetNW2Bool("UnitCoupled",false)
 end]]
@@ -894,7 +908,7 @@ end
 local N = math.Clamp(self.Duewag_U2.Traction, 0, 100)
 
 
-if self:GetNW2Bool("DoorsUnlocked",false) == false then
+if self.DoorsUnlocked == false then
 	self:SetLightPower(30,false)
 	self:SetLightPower(31,false)
 	self:SetLightPower(32,false)
@@ -905,9 +919,9 @@ if self:GetNW2Bool("DoorsUnlocked",false) == false then
 	self:SetLightPower(37,false)
 end
 
-if self:GetNW2Bool("DoorsUnlocked",false) == true  then
+if self.DoorsUnlocked == true then
 	
-	if self:GetNWString("DoorSide","none") == "left" then
+	if self.DoorSideUnlocked == "Left" then
 		self:SetLightPower(30,true)
 		self:SetLightPower(31,true)
 		self:SetLightPower(32,true)
@@ -917,7 +931,7 @@ if self:GetNW2Bool("DoorsUnlocked",false) == true  then
 		self:SetLightPower(35,false)
 		self:SetLightPower(36,false)
 		self:SetLightPower(37,false)
-	elseif self:GetNWString("DoorSide","none") == "none" then
+	elseif self.DoorSideUnlocked == "None" then
 		self:SetLightPower(30,false)
 		self:SetLightPower(31,false)
 		self:SetLightPower(32,false)
@@ -926,7 +940,7 @@ if self:GetNW2Bool("DoorsUnlocked",false) == true  then
 		self:SetLightPower(35,false)
 		self:SetLightPower(36,false)
 		self:SetLightPower(37,false)
-	elseif self:GetNWString("DoorSide","none") == "right" then
+	elseif self.DoorSideUnlocked == "Right" then
 		self:SetLightPower(34,true)
 		self:SetLightPower(35,true)
 		self:SetLightPower(36,true)
@@ -939,22 +953,6 @@ if self:GetNW2Bool("DoorsUnlocked",false) == true  then
 		
 	end
 	
-	if self:GetNWString("DoorSide","none") == "left" and (self:GetNW2Float("Door1-2b",0) == 1 or self:GetNW2Float("Door3-4b",0)  == 1 or self:GetNW2Float("Door5-6b",0) == 1 or self:GetNW2Float("Door7-8b",0)) then
-		self.LeftDoorsOpen = true
-		self.RightDoorsOpen = false
-		
-	elseif self:GetNWString("DoorSide","none") == "none" then
-		self.LeftDoorsOpen = false
-		self.RightDoorsOpen = false
-		
-	elseif self:GetNWString("DoorSide","none") == "right" and (self:GetNW2Float("Door1-2a",0) == 1 or self:GetNW2Float("Door3-4a",0)  == 1 or self:GetNW2Float("Door5-6a",0) == 1 or self:GetNW2Float("Door7-8a",0)) then
-		self.LeftDoorsOpen = false
-		self.RightDoorsOpen = true
-		
-	end
-else 
-	self.LeftDoorsOpen = false
-	self.RightDoorsOpen = false
 	
 end
 
@@ -972,7 +970,7 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 	
 	if self.Duewag_U2.ReverserLeverState == 3 or self:ReadTrainWire(6) < 1 then
 		
-		if self:GetNW2Bool("DepartureConfirmed",false) == true then
+		if self.DepartureConfirmed == true then
 			
 			
 			
@@ -987,7 +985,7 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
 				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-			elseif self.Duewag_U2.ThrottleState > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
+			elseif self.Duewag_U2.ThrottleState > 0 and self.DepartureConfirmed == true then 
 				self.RearBogey.MotorForce  = 4980
 				self.FrontBogey.MotorForce = 4980 
 				self.RearBogey.MotorPower = self.Duewag_U2.Traction
@@ -1022,7 +1020,7 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 				end
 			end
 			
-		elseif self:GetNW2Bool("DepartureConfirmed",false) == false then
+		elseif self.DepartureConfirmed == false then
 			self.FrontBogey.BrakeCylinderPressure = 2.7
 			self.MiddleBogey.BrakeCylinderPressure = 2.7
 			self.RearBogey.BrakeCylinderPressure = 2.7
@@ -1119,48 +1117,48 @@ if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearB
 	elseif self.Duewag_U2.ReverserLeverState == -1 then
 		print(self.Duewag_U2.BrakePressure)
 		if self.Duewag_U2.ThrottleState < 0 then
-				self.RearBogey.MotorForce  = -5980 
-				self.FrontBogey.MotorForce = -5980
+			self.RearBogey.MotorForce  = -5980 
+			self.FrontBogey.MotorForce = -5980
+			self:SetNW2Bool("Braking",true)
+			self.RearBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+		elseif self.Duewag_U2.ThrottleState > 0 and self.DepartureConfirmed == true then 
+			self.RearBogey.MotorForce  = 4980
+			self.FrontBogey.MotorForce = 4980 
+			self.RearBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+		elseif self.Duewag_U2.ThrottleState == 0 then 
+			self.RearBogey.MotorForce  = 0
+			self.FrontBogey.MotorForce = 0
+			self:SetNW2Bool("Braking",false)
+			self.RearBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+			self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
+			self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+			self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+		elseif self.Train:GetNW2Bool("DeadmanTripped") == true then
+			if self.Speed > 5 then
+				self.RearBogey.MotorPower = self.Duewag_U2.Traction
+				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
+				self.FrontBogey.BrakeCylinderPressure = 2.7 
+				self.MiddleBogey.BrakeCylinderPressure = 2.7
+				self.RearBogey.BrakeCylinderPressure = 2.7
 				self:SetNW2Bool("Braking",true)
-				self.RearBogey.MotorPower = self.Duewag_U2.Traction
-				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
-				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
-				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-			elseif self.Duewag_U2.ThrottleState > 0 and self:GetNW2Bool("DepartureConfirmed",false) ~=false then 
-				self.RearBogey.MotorForce  = 4980
-				self.FrontBogey.MotorForce = 4980 
-				self.RearBogey.MotorPower = self.Duewag_U2.Traction
-				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
-				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
-				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-			elseif self.Duewag_U2.ThrottleState == 0 then 
-				self.RearBogey.MotorForce  = 0
-				self.FrontBogey.MotorForce = 0
-				self:SetNW2Bool("Braking",false)
-				self.RearBogey.MotorPower = self.Duewag_U2.Traction
-				self.FrontBogey.MotorPower = self.Duewag_U2.Traction
-				self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
-				self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-				self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
-			elseif self.Train:GetNW2Bool("DeadmanTripped") == true then
-				if self.Speed > 5 then
-					self.RearBogey.MotorPower = self.Duewag_U2.Traction
-					self.FrontBogey.MotorPower = self.Duewag_U2.Traction
-					self.FrontBogey.BrakeCylinderPressure = 2.7 
-					self.MiddleBogey.BrakeCylinderPressure = 2.7
-					self.RearBogey.BrakeCylinderPressure = 2.7
-					self:SetNW2Bool("Braking",true)
-				else
-					self.RearBogey.MotorPower = 0
-					self.FrontBogey.MotorPower = 0
-					self.FrontBogey.BrakeCylinderPressure = 2.7 
-					self.MiddleBogey.BrakeCylinderPressure = 2.7
-					self.RearBogey.BrakeCylinderPressure = 2.7
-					self:SetNW2Bool("Braking",true)
-				end
+			else
+				self.RearBogey.MotorPower = 0
+				self.FrontBogey.MotorPower = 0
+				self.FrontBogey.BrakeCylinderPressure = 2.7 
+				self.MiddleBogey.BrakeCylinderPressure = 2.7
+				self.RearBogey.BrakeCylinderPressure = 2.7
+				self:SetNW2Bool("Braking",true)
 			end
+		end
 		
 	end
 	self.FrontBogey.PneumaticBrakeForce = 43.333
@@ -1211,384 +1209,42 @@ end
 --PrintMessage(HUD_PRINTTALK,#self.WagonList)
 
 self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
---self:SetNWFloat("ThrottleState",self.ThrottleState)
---self.Duewag_U2:TriggerInput("ThrottleRate", self.ThrottleRate)
+
 self:SetNWInt("ThrottleStateAnim", self.Duewag_U2.ThrottleStateAnim)
 
+--Send door states to client
+self:SetNW2Float("Door12a",self.DoorStatesRight["Door12a"])
+self:SetNW2Float("Door34a",self.DoorStatesRight["Door34a"])
+self:SetNW2Float("Door56a",self.DoorStatesRight["Door56a"])
+self:SetNW2Float("Door78a",self.DoorStatesRight["Door78a"])
 
+self:SetNW2Float("Door12b",self.DoorStatesRight["Door12b"])
+self:SetNW2Float("Door34b",self.DoorStatesRight["Door34b"])
+self:SetNW2Float("Door56b",self.DoorStatesRight["Door56b"])
+self:SetNW2Float("Door78b",self.DoorStatesRight["Door78b"])
 
-
----Door control
-if self.CommandClose == true then
-	--PrintMessage(HUD_PRINTTALK, "Command to close doors running")
-end
-if self.CommandOpen == true then
-	--PrintMessage(HUD_PRINTTALK, "Command to Open doors running")
-end
-
---[[if self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "left" then --if the doors are cleared for opening and the side is left
-
-
-if self:GetNW2Float("Door1-2b",0) <=1 and self:GetNW2Float("Door3-4b",0) <=1 and self:GetNW2Float("Door5-6b",0) <=1 and self:GetNW2Float("Door7-8b",0) <= 1 then --then either of the doors are less than fully opened
-	self:SetNW2Bool("DoorsJustOpened",true)
-	self.CommandClose = false
-	self.CommandOpen = true
-	self:SetNWBool("DoorAlarmAlreadyTriggered",false)
-	--self:DoorHandler(true,false) --give the command to open the doors
-elseif self:GetNW2Float("Door1-2b",0) >= 1 or self:GetNW2Float("Door3-4b",0) >= 1 or self:GetNW2Float("Door5-6b",0) >= 1 or self:GetNW2Float("Door7-8b",0) >= 1 then --if they're all at 1 then don't do anything anymore
-	--self.CommandOpen = false
-	--self.CommandClose = false
-	--self:SetNW2Bool("DoorsJustOpened",true) --we've just opened the doors. This matters for simulating the departing procedure.
-end
-elseif self:GetNW2Bool("DoorsUnlocked") == true and self:GetNWString("DoorSide","none") == "right" then --same thing for the right side
-	
-	if self:GetNW2Float("Door1-2a",0) < 1 and self:GetNW2Float("Door3-4a",0) < 1 and self:GetNW2Float("Door5-6a",0) < 1 and self:GetNW2Float("Door7-8a",0) < 1 then
-		self.CommandOpen = true
-		self.CommandClose = false
-		self:SetNW2Bool("DoorsJustOpened",true)
-	elseif self:GetNW2Float("Door1-2a",0) >= 1 or self:GetNW2Float("Door3-4a",0) >= 1 or self:GetNW2Float("Door5-6a",0) >= 1 or self:GetNW2Float("Door7-8a",0) >= 1 then
-		--self.CommandOpen = false
-		--self:SetNW2Bool("DoorsJustOpened",true)
-	end
-	
-	
-	
-elseif self:GetNW2Bool("DoorCloseCommand",false) == true then --if we've just gotten the door close signal
-	self.CommandClose = true --set them to close
-	self.CommandOpen = false
-	if self:GetNW2Float("Door1-2a",0) <=0 and self:GetNW2Float("Door3-4a",0) and self:GetNW2Float("Door5-6a",0) and self:GetNW2Float("Door7-8a",0) <=0 and self:GetNW2Float("Door1-2b",0) <=0 and self:GetNW2Float("Door3-4b",0) <=0 and self:GetNW2Float("Door5-6b",0) and self:GetNW2Float("Door7-8b",0) then --if they're already closed
-		--self.CommandOpen = false --stop controlling them
-		self.CommandClose = false
-		if self:GetNW2Bool("DoorsJustOpened",false) == true then --if they were just open, reset that flag
-			self:SetNW2Bool("DoorsJustOpened",false)
-			self.CommandClose = false
-			self:SetNW2Bool("DoorsJustClosed",true) --say that we just closed the doors
-		end
-	end
-end
---math.Clamp(self.DoorState,0,1)
-
-if self:GetNW2Bool("DoorsJustClosed",false) == true then --if all doors are closed
-	if self:GetNWBool("DoorAlarmAlreadyTriggered",false) == false then
-		self:SetNWBool("DoorAlarmAlreadyTriggered",true)
-		self:SetNW2Bool("DoorAlarm",true) --set off the door closed confirmation
-	end
+if self.DoorsPreviouslyUnlocked == true and self.DoorsUnlocked == false and self.LeftDoorsOpen == false and self.RightDoorsOpen == false then
+	self:SetNW2Bool("DoorCloseAlarm",true)
 else
-	--self:SetNW2Bool("DoorAlarm",false) --don't set it off yet if above condition isn't true, either not closed yet or confirmed departure button
+	self:SetNW2Bool("DoorCloseAlarm",false)
 end
 
-------print(self:GetNW2Float("Door1-2a",0))
-------print(self:GetNW2Float("Door1-2b",0))
 
---TEMPORARY
 
-if self.DoorSideUnlocked == "Left" then
-	
-	
-	
-	if self.CommandOpen == true and self.CommandClose == false then
-		
-		
-		
-		
-		
-		if self.DoorRandomness4 > 0 then
-			
-			
-			if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door1-2b",0) ~= 1 then
-					self.DoorState4 = self:GetNW2Float("Door1-2b",0) + 0.1
-					self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-					self:SetNW2Float("Door1-2b",self.DoorState4)
-					
-				end
-			elseif self:GetNW2Float("Door1-2b",0) >= 1 then
-				self:SetNW2Float("Door1-2b",1)
-			end
-		end
-		
-		if self.DoorRandomness3 > 0 then
-			
-			
-			if self:GetNW2Float("Door3-4b",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door3-4b",0) ~= 1 then
-					self.DoorState3 = self:GetNW2Float("Door3-4b",0) + 0.1
-					self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-					self:SetNW2Float("Door3-4b",self.DoorState3)
-					
-				end
-			elseif self:GetNW2Float("Door3-4b",0) >= 1 then
-				self:SetNW2Float("Door3-4b",1)
-			end
-		end
-		
-		if self.DoorRandomness2 > 0 then
-			
-			
-			if self:GetNW2Float("Door5-6b",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door5-6b",0) ~= 1 then
-					self.DoorState2 = self:GetNW2Float("Door5-6b",0) + 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Float("Door5-6b",self.DoorState2)
-					
-				end
-			elseif self:GetNW2Float("Door5-6b",0) >= 1 then
-				self:SetNW2Float("Door5-6b",1)
-			end
-		end
-		
-		if self.DoorRandomness1 > 0 then
-			
-			
-			if self:GetNW2Float("Door7-8b",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door7-8b",0) ~= 1 then
-					self.DoorState1 = self:GetNW2Float("Door7-8b",0) + 0.1
-					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-					self:SetNW2Float("Door7-8b",self.DoorState1)
-					
-				end
-			elseif self:GetNW2Float("Door7-8b",0) >= 1 then
-				self:SetNW2Float("Door7-8b",1)
-			end
-		end
-		
-	end
-	
-	if self.CommandClose == true and self.CommandOpen == false then
-		
-		
-		
-		
-		
-		if self:GetNW2Float("Door1-2b",0) > 0 then -- If state 1, close them
-			
-			if self:GetNW2Float("Door1-2b",0) ~= 0 then
-				self.DoorState4 = self:GetNW2Float("Door1-2b",0) - 0.1
-				self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-				self:SetNW2Float("Door1-2b",self.DoorState4)
-			end
-		elseif self:GetNW2Float("Door1-2b",0) <= 0 then
-			self:SetNW2Float("Door1-2b",0)
-		end
-		
-		
-		
-		
-		
-		
-		if self:GetNW2Float("Door3-4b",0) > 0 then -- If state 1, close them
-			
-			if self:GetNW2Float("Door3-4b",0) ~= 0 then
-				self.DoorState3 = self:GetNW2Float("Door3-4b",0) - 0.1
-				self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-				self:SetNW2Float("Door3-4b",self.DoorState3)
-			end
-		elseif self:GetNW2Float("Door3-4b",0) <= 0 then
-			self:SetNW2Float("Door3-4b",1)
-		end
-		
-		
-		
-		
-		
-		if self:GetNW2Float("Door5-6b",0) > 0 then -- If state less than 1, open them
-			
-			if self:GetNW2Float("Door5-6b",0) ~= 0 then
-				self.DoorState2 = self:GetNW2Float("Door5-6b",0) - 0.1
-				self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-				self:SetNW2Float("Door5-6b",self.DoorState2)
-				
-			end
-		elseif self:GetNW2Float("Door5-6b",0) <= 0 then
-			self:SetNW2Float("Door5-6b",1)
-		end
-		
-		
-		
-		
-		
-		if self:GetNW2Float("Door7-8b",0) > 0 then -- If state less than 1, open them
-			
-			if self:GetNW2Float("Door7-8b",0) ~= 0 then
-				self.DoorState1 = self:GetNW2Float("Door7-8b",0) - 0.1
-				self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-				self:SetNW2Float("Door7-8b",self.DoorState1)
-				
-			end
-		elseif self:GetNW2Float("Door7-8b",0) <= 0 then
-			self:SetNW2Float("Door7-8b",0)
-		end
-		
-		
-		
-	end
+
+
+if self.DoorStatesRight["Door12a"] > 0 or self.DoorStatesRight["Door34a"] > 0 or self.DoorStatesRight["Door56a"] > 0 or self.DoorStatesRight["Door78a"] > 0 then
+	self.RightDoorsOpen = true
+else
+	self.RightDoorsOpen = false
+end
+if self.DoorStatesLeft["Door12b"] > 0 or self.DoorStatesLeft["Door34b"] > 0 or self.DoorStatesLeft["Door56b"] > 0 or self.DoorStatesLeft["Door78b"] > 0 then
+	self.LeftDoorsOpen = true
+else
+	self.LeftDoorsOpen = false
 end
 
-if self.DoorSideUnlocked == "Right" then
-	
-	
-	
-	
-	
-	if self.CommandOpen == true and self.CommandClose == false then
-		
-		
-		
-		
-		
-		if self.DoorRandomness1 > 0 then
-			
-			
-			if self:GetNW2Float("Door1-2a",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door1-2a",0) ~= 1 then
-					self.DoorState1 = self:GetNW2Float("Door1-2a",0) + 0.1
-					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-					self:SetNW2Float("Door1-2a",self.DoorState1)
-					
-				end
-			elseif self:GetNW2Float("Door1-2a",0) >= 1 then
-				--self:SetNW2Float("Door1-2a",1)
-				PrintMessage(HUD_PRINTTALK, "Door1-2a open")
-				
-			end
-		end
-		
-		if self.DoorRandomness2 > 0 then
-			
-			
-			if self:GetNW2Float("Door3-4a",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door3-4a",0) ~= 1 then
-					self.DoorState2 = self:GetNW2Float("Door3-4a",0) + 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Float("Door3-4a",self.DoorState2)
-					
-				end
-			elseif self:GetNW2Float("Door3-4a",0) >= 1 then
-				--self:SetNW2Float("Door3-4a",1)
-				PrintMessage(HUD_PRINTTALK, "Door3-4a open")
-				
-			end
-		end
-		
-		if self.DoorRandomness3 > 0 then
-			
-			
-			if self:GetNW2Float("Door5-6a",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door5-6a",0) ~= 1 then
-					self.DoorState3 = self:GetNW2Float("Door5-6a",0) + 0.1
-					self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-					self:SetNW2Float("Door5-6a",self.DoorState3)
-					
-				end
-			elseif self:GetNW2Float("Door5-6a",0) >= 1 then
-				--self:SetNW2Float("Door5-6a",1)
-				PrintMessage(HUD_PRINTTALK, "Door5-6a open")
-				
-			end
-		end
-		
-		if self.DoorRandomness4 > 0 then
-			
-			
-			if self:GetNW2Float("Door7-8a",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door7-8a",0) ~= 1 then
-					self.DoorState4 = self:GetNW2Float("Door7-8a",0) + 0.1
-					self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-					self:SetNW2Float("Door7-8a",self.DoorState4)
-					
-				end
-			elseif self:GetNW2Float("Door7-8a",0) >= 1 then
-				--self:SetNW2Float("Door7-8a",1)
-				PrintMessage(HUD_PRINTTALK, "Door7-8a open")
-				
-			end
-		end
-		
-	end
-	
-	if self.CommandClose == true and self.CommandOpen == false then
-		
-		
-		
-		
-		
-		if self:GetNW2Float("Door1-2a",0) > 0 then -- If state less than 1, open them
-			
-			--if self:GetNW2Float("Door1-2a",0) ~= 0 then
-			self.DoorState1 = self:GetNW2Float("Door1-2a",0) - 0.1
-			self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-			self:SetNW2Float("Door1-2a",self.DoorState1)
-			----print("Door1-2a")
-			----print(self.DoorState1)
-			--end
-		elseif self:GetNW2Float("Door1-2a",0) < 0 then
-			--self:SetNW2Float("Door1-2a",0)
-		end
-		
-		
-		
-		
-		
-		if self:GetNW2Float("Door3-4a",0) > 0 then -- If state less than 1, open them
-			
-			--if self:GetNW2Float("Door3-4a",0) ~= 0 then
-			self.DoorState2 = self:GetNW2Float("Door3-4a",0) - 0.1
-			self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-			self:SetNW2Float("Door3-4a",self.DoorState2)
-			----print("Door3-4a")
-			----print(self.DoorState2)
-			
-			--end
-		elseif self:GetNW2Float("Door3-4a",0) < 0 then
-			--self:SetNW2Float("Door3-4a",0)
-		end
-		
-		
-		
-		
-		
-		if self:GetNW2Float("Door5-6a",0) > 0 then -- If state less than 1, open them
-			
-			--if self:GetNW2Float("Door5-6a",0) ~= 0 then
-			self.DoorState3 = self:GetNW2Float("Door5-6a",0) - 0.1
-			self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-			self:SetNW2Float("Door5-6a",self.DoorState3)
-			
-			--end
-		elseif self:GetNW2Float("Door5-6a",0) < 0 then
-			--self:SetNW2Float("Door5-6a",0)
-			
-		end
-		
-		
-		
-		
-		
-		if self:GetNW2Float("Door7-8a",0) > 0 then -- If state less than 1, open them
-			
-			--if self:GetNW2Float("Door7-8a",0) ~= 0 then
-			self.DoorState4 = self:GetNW2Float("Door7-8a",0) - 0.1
-			self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-			self:SetNW2Float("Door7-8a",self.DoorState4)
-			
-			--end
-		elseif self:GetNW2Float("Door7-8a",0) < 0 then
-			--self:SetNW2Float("Door7-8a",0)
-			
-		end
-		
-		
-		
-	end
-end]]
+
 
 end
 
@@ -1624,6 +1280,9 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	
+	if button == "Door1Set" then
+		self.Door1 = true
+	end
 	
 	if self.Duewag_U2.ThrottleRate == 0 then
 		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
@@ -1658,7 +1317,7 @@ function ENT:OnButtonPress(button,ply)
 	if button == "Throttle90Pct" then
 		self.Duewag_U2.ThrottleState = 90
 	end
-
+	
 	if button == "Throttle10-Pct" then
 		self.Duewag_U2.ThrottleState = -10
 	end
@@ -1828,8 +1487,8 @@ function ENT:OnButtonPress(button,ply)
 		if self.BatteryOn == true and self.Duewag_U2.ReverserLeverState == 1 then
 			self.BatteryOn = false
 			self.Duewag_Battery:TriggerInput("Charge",1.3)
-			self:SetNW2Bool("BatteryOn",true)
-			PrintMessage(HUD_PRINTTALK, "Battery switch is off")
+			self:SetNW2Bool("BatteryOn",false)
+			--PrintMessage(HUD_PRINTTALK, "Battery switch is off")
 			--self:SetNW2Bool("BatteryToggleIsTouched",true)
 			
 		end
@@ -1967,18 +1626,11 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	
-	if button == "DoorsLockSet" then
-		
-		if self:GetNW2Bool("DoorsUnlocked",false) == true then
-			self:SetNW2Bool("DoorsUnlocked",false)
-			self:SetNW2Bool("DoorCloseCommand",true)
-		end
-	end
 	
 	if button == "Button1a" then
 		if self.DoorSideUnlocked == "Right" then
 			if self.DoorRandomness1 == 0 then
-				self.DoorRandomness1 = 1
+				self.DoorRandomness1 = 4
 			end
 		end
 	end
@@ -1986,7 +1638,7 @@ function ENT:OnButtonPress(button,ply)
 	if button == "Button2a" then
 		if self.DoorSideUnlocked == "Right" then
 			if self.DoorRandomness1 == 0 then
-				self.DoorRandomness1 = 1
+				self.DoorRandomness1 = 4
 			end
 		end
 	end
@@ -1994,7 +1646,7 @@ function ENT:OnButtonPress(button,ply)
 	if button == "Button3a" then
 		if self.DoorSideUnlocked == "Right" then
 			if self.DoorRandomness2 == 0 then
-				self.DoorRandomness2 = 1
+				self.DoorRandomness2 = 4
 			end
 		end
 	end
@@ -2002,22 +1654,40 @@ function ENT:OnButtonPress(button,ply)
 	if button == "Button4a" then
 		if self.DoorSideUnlocked == "Right" then
 			if self.DoorRandomness2 == 0 then
-				self.DoorRandomness2 = 1
+				self.DoorRandomness2 = 4
 			end
 		end
 	end
 	
 	
+	if button == "DoorsUnlockSet"  then
+		
+		self.DoorsUnlocked = true
+		self.DepartureConfirmed = false
+		
+	end
 	
+	
+	if button == "DoorsLockSet"  then
+		
+		
+		self.DoorRandomness1 = 0
+		self.DoorRandomness2 = 0
+		self.DoorRandomness3 = 0
+		self.DoorRandomness4 = 0
+		
+		self.DoorsPreviouslyUnlocked = true
+		self.RandomnessCalculated = false
+		self.DoorsUnlocked = false
+		
+		
+		
+	end
 	
 	if button == "DoorsCloseConfirmSet" then
 		
-		self:SetNW2Bool("DoorCloseCommand",false)
-		self:SetNW2Bool("DepartureConfirmed",true)
-		if self:GetNW2Bool("DoorAlarm",false) == true then
-			self:SetNW2Bool("DoorAlarm",false)
-			
-		end
+		self.DoorsPreviouslyUnlocked = false
+		self.DepartureConfirmed = true
 	end
 	
 	if button == "SetHoldingBrakeSet" then
@@ -2237,103 +1907,51 @@ function ENT:OnButtonRelease(button,ply)
 		self.Duewag_U2.ThrottleRate = 0
 	end
 	
-	--[[if button == "Rollsign+" then
-	self.ScrollMomentRecorded = false
-	self.RollsignModifierRate = 0
-end
-if button == "Rollsign-" then
-	self.RollsignModifierRate = 0
-	self.ScrollMomentRecorded = false
-end]]
-
-if button == "Rollsign+" then
-	self:SetNW2Bool("Rollsign+",false)
-	self.ScrollMoment = CurTime()
-end
-if button == "Rollsign-" then
-	self:SetNW2Bool("Rollsign-",false)
-	self.ScrollMoment = CurTime()
-end
-
-if button == "BatteryToggle" then
-	self:SetPackedBool("FlickBatterySwitchOn",false)
-end
-
-if button == "BatteryDisableToggle" then
-	self:SetPackedBool("FlickBatterySwitchOff",false)
-end
-
-if button == "DoorsUnlockSet"  then
 	
-	if self:GetNW2Bool("DoorsUnlocked",false) == false then
+	
+	if button == "Rollsign+" then
+		self:SetNW2Bool("Rollsign+",false)
+		self.ScrollMoment = CurTime()
+	end
+	if button == "Rollsign-" then
+		self:SetNW2Bool("Rollsign-",false)
+		self.ScrollMoment = CurTime()
+	end
+	
+	if button == "BatteryToggle" then
+		self:SetPackedBool("FlickBatterySwitchOn",false)
+	end
+	
+	if button == "BatteryDisableToggle" then
+		self:SetPackedBool("FlickBatterySwitchOff",false)
+	end
+	
+	
+	
+	if button == "DeadmanSet" then
+		self.Duewag_Deadman:TriggerInput("IsPressed", 0)
 		
-		
-		
-		self:SetNW2Bool("DoorsUnlocked",true)
-		self:SetNW2Bool("DepartureConfirmed",false)
-		self:SetNW2Bool("DoorCloseCommand",false)
-		if self:GetNW2Bool("DoorRandomnessSet",false) == false then
-			self:SetNW2Bool("DoorRandomnessSet",true)
-			self.DoorRandomness1 = math.random(0,1)
-			self.DoorRandomness2 = math.random(0,1)
-			self.DoorRandomness3 = math.random(0,2)
-			self.DoorRandomness4 = math.random(0,2)
-			
-			--PrintMessage(HUD_PRINTTALK,self.DoorRandomness1)
-			--PrintMessage(HUD_PRINTTALK,self.DoorRandomness2)
+		if self:ReadTrainWire(6) > 0 then
+			self:WriteTrainWire(12,0)
 		end
-		
+		------print("DeadmanPressedNo")
 	end
-end
-
-	if button == "ThrowCouplerSet" then
-		
-		self:SetPackedBool("ThrowCoupler",false)
+	
+	if button == "WarningAnnouncementSet" then
+		self:SetNW2Bool("WarningAnnouncement", false)
 	end
-
-if button == "DoorsLockSet"  then
 	
-	--if self:GetNW2Bool("DoorsUnlocked",false) == true then
-	
-	
-	
-	--[[self:SetNW2Bool("DoorsUnlocked",true)
-	self:SetNW2Bool("DepartureConfirmed",false)
-	self:SetNW2Bool("DoorCloseCommand",false)]]
-	self.DoorRandomness1 = 0
-	self.DoorRandomness2 = 0
-	self.DoorRandomness3 = 0
-	self.DoorRandomness4 = 0
-	self:SetNW2Bool("DoorRandomnessSet",false)
-	
-	
-	--end
-end
-
-if button == "DeadmanSet" then
-	self.Duewag_Deadman:TriggerInput("IsPressed", 0)
-	
-	if self:ReadTrainWire(6) > 0 then
-		self:WriteTrainWire(12,0)
+	if button == "BellEngageSet" then
+		self:SetNW2Bool("Bell",false)
 	end
-	------print("DeadmanPressedNo")
-end
-
-if button == "WarningAnnouncementSet" then
-	self:SetNW2Bool("WarningAnnouncement", false)
-end
-
-if button == "BellEngageSet" then
-	self:SetNW2Bool("Bell",false)
-end
-if button == "Horn" then
-	self:SetNW2Bool("Horn",false)
-end
-
-if button == "BatteryToggle" then
-	self:SetNW2Bool("IBIS_impulse",false)
-end
-
+	if button == "Horn" then
+		self:SetNW2Bool("Horn",false)
+	end
+	
+	if button == "BatteryToggle" then
+		self:SetNW2Bool("IBIS_impulse",false)
+	end
+	
 	if button == "DestinationSet" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
@@ -2417,13 +2035,13 @@ end
 			self.IBIS:Trigger(nil)
 		end
 	end
-
-
+	
+	
 	if button == "OpenBOStrab" then
 		self:SetPackedBool("BOStrab",true)
 		--self:SetPackedBool("BOStrab",false)
 	end
-
+	
 end
 
 function ENT:CreateSectionB(pos)
@@ -2441,46 +2059,35 @@ function ENT:CreateSectionB(pos)
 	
 	
 	constraint.AdvBallsocket(
-		u2sectionb,
-		self.MiddleBogey,
-		0, --bone
-		0, --bone		
-		Vector(0,0,0),
-		Vector(0,0,6),		
-		0, --forcelimit
-		0, --torquelimit
-		-20, --xmin
-		0, --ymin
-		-180, --zmin
-		20, --xmax
-		0, --ymax
-		180, --zmax
-		0, --xfric
-		5, --yfric
-		0, --zfric
-		0, --rotonly
-		1--nocollide
-	)
-
-	--[[constraint.Axis(
-		u2sectionb,
-		self.MiddleBogey,
-		0,
-		0,
-		Vector(0,0,0),
-		Vector(0,0,0),
-		0,
-		0,
-		0,
-		0
-	)]]
-	table.insert(self.TrainEntities,u2sectionb)
+	u2sectionb,
+	self.MiddleBogey,
+	0, --bone
+	0, --bone		
+	Vector(0,0,0),
+	Vector(0,0,6),		
+	0, --forcelimit
+	0, --torquelimit
+	-20, --xmin
+	0, --ymin
+	-180, --zmin
+	20, --xmax
+	0, --ymax
+	180, --zmax
+	0, --xfric
+	5, --yfric
+	0, --zfric
+	0, --rotonly
+	1--nocollide
+)
 
 
-	constraint.NoCollide(self.MiddleBogey,u2sectionb,0,0)
-	constraint.NoCollide(self,u2sectionb,0,0)
-	
-	return u2sectionb
+table.insert(self.TrainEntities,u2sectionb)
+
+
+constraint.NoCollide(self.MiddleBogey,u2sectionb,0,0)
+constraint.NoCollide(self,u2sectionb,0,0)
+
+return u2sectionb
 end
 
 
@@ -2519,14 +2126,13 @@ function ENT:Blink(enable, left, right)
 		self:SetLightPower(48,self.BlinkerOn and left)
 		self:SetLightPower(59,self.BlinkerOn and right)
 		self:SetLightPower(49,self.BlinkerOn and right)
-		self:SetLightPower(38,self.BlinkerOn and right)
-		self:SetLightPower(38,self.BlinkerOn and left)
+		self:SetLightPower(38,self.BlinkerOn and right or left and self.BlinkerOn)
 		self.u2sectionb.BlinkerRight = self.BlinkerOn and right
 		
 		if self.BlinkerOn and left and right then
 			self:SetLightPower(56,self.BlinkerOn)
 			self:SetLightPower(57,self.BlinkerOn)
-			self:SetLightPower(38,self.BlinkerOn)
+			self:SetLightPower(38,self.BlinkerOn and left and right)
 		end
 		
 		if self.BlinkerOn and left == true then
@@ -2540,411 +2146,131 @@ function ENT:Blink(enable, left, right)
 	end
 end
 
-function ENT:DoorHandler(CommandOpen,CommandClose,left,right,door1)
-	
-	--Door control
-	if CommandClose == true then
-		PrintMessage(HUD_PRINTTALK, "Command to close doors running")
-	end
-	if CommandOpen == true then
-		PrintMessage(HUD_PRINTTALK, "Command to Open doors running")
-	end
-	
-	local DoorsUnlocked = self:GetNW2Bool("DoorsUnlocked")
+function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideLeft,sideRight,door1 open
 	
 	
-	if DoorsUnlocked == true and left == true then --if the doors are cleared for opening and the side is left
-		
-		
-		if self:GetNW2Float("Door1-2b",0) <=1 and self:GetNW2Float("Door3-4b",0) <=1 and self:GetNW2Float("Door5-6b",0) <=1 and self:GetNW2Float("Door7-8b",0) <= 1 then --then either of the doors are less than fully opened
-			self:SetNW2Bool("DoorsJustOpened",true)
-			self.CommandClose = false
-			self.CommandOpen = true
-			self:SetNWBool("DoorAlarmAlreadyTriggered",false)
-			--self:DoorHandler(true,false) --give the command to open the doors
-		elseif self:GetNW2Float("Door1-2b",0) >= 1 or self:GetNW2Float("Door3-4b",0) >= 1 or self:GetNW2Float("Door5-6b",0) >= 1 or self:GetNW2Float("Door7-8b",0) >= 1 then --if they're all at 1 then don't do anything anymore
-			self.CommandOpen = false
-			self.CommandClose = false
-			self:SetNW2Bool("DoorsJustOpened",true) --we've just opened the doors. This matters for simulating the departing procedure.
+	if right and door1 then --door1 control according to side preselection
+		if self.DoorStatesRight["Door12a"] < 1 then
+			self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] + 0.1
 		end
-	elseif DoorsUnlocked == true and right == true then --same thing for the right side
-		
-		if self:GetNW2Float("Door1-2a",0) < 1 and self:GetNW2Float("Door3-4a",0) < 1 and self:GetNW2Float("Door5-6a",0) < 1 and self:GetNW2Float("Door7-8a",0) < 1 then
-			self.CommandOpen = true
-			self.CommandClose = false
-			self:SetNW2Bool("DoorsJustOpened",true)
-			self:SetNWBool("DoorAlarmAlreadyTriggered",false)
-		elseif self:GetNW2Float("Door1-2a",0) >= 1 or self:GetNW2Float("Door3-4a",0) >= 1 or self:GetNW2Float("Door5-6a",0) >= 1 or self:GetNW2Float("Door7-8a",0) >= 1 then
-			self.CommandClose = false
-			self:SetNW2Bool("DoorsJustOpened",true)
+	elseif left and door1 then
+		if self.DoorStatesLeft["Door78b"] < 1 then
+			self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] + 0.1
 		end
-		
-		
-		
-	elseif CommandClose == true and right == true then --if we've just gotten the door close signal
-		self.CommandClose = true --set them to close
-		self.CommandOpen = false
-		if self:GetNW2Float("Door1-2a",0) <= 0 and self:GetNW2Float("Door3-4a",0) <= 0 and self:GetNW2Float("Door5-6a",0) <= 0 and self:GetNW2Float("Door7-8a",0) <= 0 and self:GetNW2Float("Door1-2b",0) <= 0 and self:GetNW2Float("Door3-4b",0) <= 0 and self:GetNW2Float("Door5-6b",0) <= 0 and self:GetNW2Float("Door7-8b",0) <= 0 then --if they're already closed
-			self.CommandClose = false --stop controlling them
-			if self:GetNW2Bool("DoorsJustOpened",false) == true then --if they were just open, reset that flag
-				self:SetNW2Bool("DoorsJustOpened",false)
-				self.CommandClose = false
-				self:SetNW2Bool("DoorsJustClosed",true) --say that we just closed the doors
+	end
+	----------------------------------------------------------------------	
+	if unlock then 
+		if right then
+			
+			if self.RandomnessCalulated ~= true then --pick a random door to be unlocked
+				self.RandomnessCalculated = true
+				self.DoorRandomness1 = math.random(0,4)
+				self.DoorRandomness2 = math.random(0,4)
+				self.DoorRandomness3 = math.random(0,4)
+				self.DoorRandomness4 = math.random(0,4)
+				
 			end
-		end
-	end
-	
-	
-	if self:GetNW2Bool("DoorsJustClosed",false) == true then --if all doors are closed
-		if self:GetNWBool("DoorAlarmAlreadyTriggered",false) == false then
-			self:SetNWBool("DoorAlarmAlreadyTriggered",true)
-			self:SetNW2Bool("DoorAlarm",true) --set off the door closed confirmation
+			if self.DoorRandomness1 == 3 then
+				if self.DoorStatesRight["Door12a"] < 1 then
+					self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] + 0.1
+				end
+				
+			end
+			if self.DoorRandomness2 == 3 then
+				if self.DoorStatesRight["Door34a"] < 1 then
+					self.DoorStatesRight["Door34a"] = self.DoorStatesRight["Door34a"] + 0.1
+				end
+				
+			end
+			if self.DoorRandomness3 == 3 then
+				if self.DoorStatesRight["Door56a"] < 1 then
+					self.DoorStatesRight["Door56a"] = self.DoorStatesRight["Door56a"] + 0.1
+				end
+				
+			end
+			if self.DoorRandomness4 == 3 then
+				if self.DoorStatesRight["Door78a"] < 1 then
+					self.DoorStatesRight["Door78a"] = self.DoorStatesRight["Door78a"] + 0.1
+				end
+				
+			end
+		elseif left then
+			if not self.RandomnessCalulated then
+				self.RandomnessCalculated = true
+				self.DoorRandomness1 = math.random(0,4)
+				self.DoorRandomness2 = math.random(0,4)
+				self.DoorRandomness3 = math.random(0,4)
+				self.DoorRandomness4 = math.random(0,4)
+			end
+			if self.DoorRandomness1 == 3 then
+				if self.DoorStatesLeft["Door12b"] < 1 then
+					self.DoorStatesLeft["Door12b"] = self.DoorStatesLeft["Door12b"] + 0.1
+				end
+			end
+			if self.DoorRandomness2 == 3 then
+				if self.DoorStatesLeft["Door34b"] < 1 then
+					self.DoorStatesLeft["Door34b"] = self.DoorStatesLeft["Door34b"] + 0.1
+				end
+			end
+			if self.DoorRandomness3 == 3 then
+				if self.DoorStatesLeft["Door56b"] < 1 then
+					self.DoorStatesLeft["Door56b"] = self.DoorStatesLeft["Door56b"] + 0.1
+				end
+			end
+			if self.DoorRandomness4 == 3 then
+				if self.DoorStatesLeft["Door78b"] < 1 then
+					self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] + 0.1
+				end
+			end
 		end
 	else
-		--self:SetNW2Bool("DoorAlarm",false) --don't set it off yet if above condition isn't true, either not closed yet or confirmed departure button
-	end
-	
-	------print(self:GetNW2Float("Door1-2a",0))
-	------print(self:GetNW2Float("Door1-2b",0))
-	
-	--TEMPORARY
-	
-	if left == true then
-		
-		if door1 == true then
-			if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door1-2b",0) ~= 1 then
-					self.DoorState1 = self:GetNW2Float("Door1-2b",0) + 0.1
-					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-					self:SetNW2Float("Door1-2b",self.DoorState1)
-					
-				end
-			elseif self:GetNW2Float("Door1-2b",0) >= 1 then
-				self:SetNW2Float("Door1-2b",1)
-			end
-			
-		end
-		
-		
-		
-		if CommandOpen == true and CommandClose == false then
+		if right then
 			
 			
-			
-			
-			
-			if self.DoorRandomness1 > 0 then
-				
-				
-				if self:GetNW2Float("Door1-2b",0) <= 1 then -- If state less than 1, open them
-					
-					if self:GetNW2Float("Door1-2b",0) ~= 1 then
-						self.DoorState1 = self:GetNW2Float("Door1-2b",0) + 0.1
-						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-						self:SetNW2Float("Door1-2b",self.DoorState1)
-						
-					end
-				elseif self:GetNW2Float("Door1-2b",0) >= 1 then
-					self:SetNW2Float("Door1-2b",1)
-				end
-			end
-			
-			if self.DoorRandomness2 > 0 then
-				
-				
-				if self:GetNW2Float("Door3-4b",0) <= 1 then -- If state less than 1, open them
-					
-					if self:GetNW2Float("Door3-4b",0) ~= 1 then
-						self.DoorState2 = self:GetNW2Float("Door3-4b",0) + 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Float("Door3-4b",self.DoorState2)
-						
-					end
-				elseif self:GetNW2Float("Door3-4b",0) >= 1 then
-					self:SetNW2Float("Door3-4b",1)
-				end
-			end
-			
-			if self.DoorRandomness3 > 0 then
-				
-				
-				if self:GetNW2Float("Door5-6b",0) <= 1 then -- If state less than 1, open them
-					
-					if self:GetNW2Float("Door5-6b",0) ~= 1 then
-						self.DoorState2 = self:GetNW2Float("Door5-6b",0) + 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Float("Door5-6b",self.DoorState2)
-						
-					end
-				elseif self:GetNW2Float("Door5-6b",0) >= 1 then
-					self:SetNW2Float("Door5-6b",1)
-				end
-			end
-			
-			if self.DoorRandomness4 > 0 then
-				
-				
-				if self:GetNW2Float("Door7-8b",0) <= 1 then -- If state less than 1, open them
-					
-					if self:GetNW2Float("Door7-8b",0) ~= 1 then
-						self.DoorState2 = self:GetNW2Float("Door7-8b",0) + 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Float("Door7-8b",self.DoorState2)
-						
-					end
-				elseif self:GetNW2Float("Door7-8b",0) >= 1 then
-					self:SetNW2Float("Door7-8b",1)
-				end
-			end
-			
-		end
-		
-		if CommandClose == true and CommandOpen == false then
-			
-			
-			
-			
-			
-			if self:GetNW2Float("Door1-2b",0) > 0 then -- If state 1, close them
-				
-				if self:GetNW2Float("Door1-2b",0) ~= 0 then
-					self.DoorState1 = self:GetNW2Float("Door1-2b",0) - 0.1
-					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-					self:SetNW2Float("Door1-2b",self.DoorState1)
-				end
-			elseif self:GetNW2Float("Door1-2b",0) <= 0 then
-				self:SetNW2Float("Door1-2b",0)
+			if self.DoorStatesRight["Door12a"] > 0 then
+				self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] - 0.1
 			end
 			
 			
-			
-			
-			
-			
-			if self:GetNW2Float("Door3-4b",0) > 0 then -- If state 1, close them
-				
-				if self:GetNW2Float("Door3-4b",0) ~= 0 then
-					self.DoorState2 = self:GetNW2Float("Door3-4b",0) - 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Float("Door3-4b",self.DoorState2)
-				end
-			elseif self:GetNW2Float("Door3-4b",0) <= 0 then
-				self:SetNW2Float("Door3-4b",1)
+			if self.DoorStatesRight["Door34a"] > 0 then
+				self.DoorStatesRight["Door34a"] = self.DoorStatesRight["Door34a"] - 0.1
 			end
 			
 			
-			
-			
-			
-			if self:GetNW2Float("Door5-6b",0) > 0 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door5-6b",0) ~= 0 then
-					self.DoorState2 = self:GetNW2Float("Door5-6b",0) - 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Float("Door5-6b",self.DoorState2)
-					
-				end
-			elseif self:GetNW2Float("Door5-6b",0) <= 0 then
-				self:SetNW2Float("Door5-6b",1)
+			if self.DoorStatesRight["Door56a"] > 0 then
+				self.DoorStatesRight["Door56a"] = self.DoorStatesRight["Door56a"] - 0.1
 			end
 			
 			
+			if self.DoorStatesRight["Door78a"] > 0 then
+				self.DoorStatesRight["Door78a"] = self.DoorStatesRight["Door78a"] - 0.1
+			end
 			
+		elseif left then
 			
-			
-			if self:GetNW2Float("Door7-8b",0) > 0 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door7-8b",0) ~= 0 then
-					self.DoorState2 = self:GetNW2Float("Door7-8b",0) - 0.1
-					self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-					self:SetNW2Float("Door7-8b",self.DoorState2)
-					
-				end
-			elseif self:GetNW2Float("Door7-8b",0) <= 0 then
-				self:SetNW2Float("Door7-8b",0)
+			if self.DoorStatesLeft["Door12b"] > 0 then
+				self.DoorStatesLeft["Door12b"] = self.DoorStatesLeft["Door12b"] - 0.1
 			end
 			
 			
+			if self.DoorStatesLeft["Door34b"] > 0 then
+				self.DoorStatesLeft["Door34b"] = self.DoorStatesLeft["Door34b"] - 0.1
+			end
+			
+			
+			if self.DoorStatesLeft["Door56b"] > 0 then
+				self.DoorStatesLeft["Door56b"] = self.DoorStatesLeft["Door56b"] - 0.1
+			end
+			
+			
+			if self.DoorStatesLeft["Door78b"] > 0 then
+				self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] - 0.1
+			end
 			
 		end
 	end
 	
-	if right == true then
-		
-		if door1 == true then
-			
-			if self:GetNW2Float("Door1-2a",0) <= 1 then -- If state less than 1, open them
-				
-				if self:GetNW2Float("Door1-2a",0) ~= 1 then
-					self.DoorState1 = self:GetNW2Float("Door1-2a",0) + 0.1
-					self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-					self:SetNW2Float("Door1-2a",self.DoorState1)
-					
-				end
-			elseif self:GetNW2Float("Door1-2a",0) >= 1 then
-				--self:SetNW2Float("Door1-2a",1)
-				PrintMessage(HUD_PRINTTALK, "Door1-2a open")
-				
-			end
-		end
-		
-		
-		if CommandOpen == true and CommandClose == false then
-			
-			
-			
-			
-			
-			if self.DoorRandomness1 > 0 then
-				
-				
-				if self:GetNW2Float("Door1-2a",0) <= 1 then -- If state less than 1, open them
-					
-					if self:GetNW2Float("Door1-2a",0) ~= 1 then
-						self.DoorState1 = self:GetNW2Float("Door1-2a",0) + 0.1
-						self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-						self:SetNW2Float("Door1-2a",self.DoorState1)
-						
-					end
-				elseif self:GetNW2Float("Door1-2a",0) >= 1 then
-					--self:SetNW2Float("Door1-2a",1)
-					PrintMessage(HUD_PRINTTALK, "Door1-2a open")
-					
-				end
-			end
-			
-			if self.DoorRandomness2 > 0 then
-				
-				
-				if self:GetNW2Float("Door3-4a",0) <= 1 then -- If state less than 1, open them
-					
-					if self:GetNW2Float("Door3-4a",0) ~= 1 then
-						self.DoorState2 = self:GetNW2Float("Door3-4a",0) + 0.1
-						self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-						self:SetNW2Float("Door3-4a",self.DoorState2)
-						
-					end
-				elseif self:GetNW2Float("Door3-4a",0) >= 1 then
-					--self:SetNW2Float("Door3-4a",1)
-					PrintMessage(HUD_PRINTTALK, "Door3-4a open")
-					
-				end
-			end
-			
-			if self.DoorRandomness3 > 0 then
-				
-				
-				if self:GetNW2Float("Door5-6a",0) <= 1 then -- If state less than 1, open them
-					
-					if self:GetNW2Float("Door5-6a",0) ~= 1 then
-						self.DoorState3 = self:GetNW2Float("Door5-6a",0) + 0.1
-						self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-						self:SetNW2Float("Door5-6a",self.DoorState3)
-						
-					end
-				elseif self:GetNW2Float("Door5-6a",0) >= 1 then
-					--self:SetNW2Float("Door5-6a",1)
-					PrintMessage(HUD_PRINTTALK, "Door5-6a open")
-					
-				end
-			end
-			
-			if self.DoorRandomness4 > 0 then
-				
-				
-				if self:GetNW2Float("Door7-8a",0) <= 1 then -- If state less than 1, open them
-					
-					if self:GetNW2Float("Door7-8a",0) ~= 1 then
-						self.DoorState4 = self:GetNW2Float("Door7-8a",0) + 0.1
-						self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-						self:SetNW2Float("Door7-8a",self.DoorState4)
-						
-					end
-				elseif self:GetNW2Float("Door7-8a",0) >= 1 then
-					--self:SetNW2Float("Door7-8a",1)
-					PrintMessage(HUD_PRINTTALK, "Door7-8a open")
-					
-				end
-			end
-			
-		end
-		
-		if CommandClose == true and CommandOpen == false then
-			
-			
-			
-			
-			
-			if self:GetNW2Float("Door1-2a",0) > 0 then -- If state less than 1, open them
-				
-				--if self:GetNW2Float("Door1-2a",0) ~= 0 then
-				self.DoorState1 = self:GetNW2Float("Door1-2a",0) - 0.1
-				self.DoorState1 = math.Clamp(self.DoorState1,0,1)
-				self:SetNW2Float("Door1-2a",self.DoorState1)
-				----print("Door1-2a")
-				----print(self.DoorState1)
-				--end
-			elseif self:GetNW2Float("Door1-2a",0) < 0 then
-				--self:SetNW2Float("Door1-2a",0)
-			end
-			
-			
-			
-			
-			
-			if self:GetNW2Float("Door3-4a",0) > 0 then -- If state less than 1, open them
-				
-				--if self:GetNW2Float("Door3-4a",0) ~= 0 then
-				self.DoorState2 = self:GetNW2Float("Door3-4a",0) - 0.1
-				self.DoorState2 = math.Clamp(self.DoorState2,0,1)
-				self:SetNW2Float("Door3-4a",self.DoorState2)
-				----print("Door3-4a")
-				----print(self.DoorState2)
-				
-				--end
-			elseif self:GetNW2Float("Door3-4a",0) < 0 then
-				--self:SetNW2Float("Door3-4a",0)
-			end
-			
-			
-			
-			
-			
-			if self:GetNW2Float("Door5-6a",0) > 0 then -- If state less than 1, open them
-				
-				--if self:GetNW2Float("Door5-6a",0) ~= 0 then
-				self.DoorState3 = self:GetNW2Float("Door5-6a",0) - 0.1
-				self.DoorState3 = math.Clamp(self.DoorState3,0,1)
-				self:SetNW2Float("Door5-6a",self.DoorState3)
-				
-				--end
-			elseif self:GetNW2Float("Door5-6a",0) < 0 then
-				--self:SetNW2Float("Door5-6a",0)
-				
-			end
-			
-			
-			
-			
-			
-			if self:GetNW2Float("Door7-8a",0) > 0 then -- If state less than 1, open them
-				
-				--if self:GetNW2Float("Door7-8a",0) ~= 0 then
-				self.DoorState4 = self:GetNW2Float("Door7-8a",0) - 0.1
-				self.DoorState4 = math.Clamp(self.DoorState4,0,1)
-				self:SetNW2Float("Door7-8a",self.DoorState4)
-				
-				--end
-			elseif self:GetNW2Float("Door7-8a",0) < 0 then
-				--self:SetNW2Float("Door7-8a",0)
-				
-			end
-			
-			
-			
-		end
-	end
+	
 end
 
 function ENT:RollsignSync()

@@ -1,3 +1,6 @@
+if SERVER then
+    --include("autorun/metrostroi.lua")
+end
 if not UF then
     -- Global library
     UF = {}
@@ -15,10 +18,10 @@ if not UF then
                 UF.IsTrainClass[name] = true
             end
         end
-
-
-
-
+        
+        
+        
+        
     end)
     
 end
@@ -51,6 +54,8 @@ else
 end
 
 UF.AnnouncementsIBIS = {}
+UF.IBISAnnouncementScript = {}
+UF.IBISCommonFiles = {}
 UF.SpecialAnnouncementsIBIS = {}
 UF.IBISSetup = {}
 UF.IBISDestinations = {}
@@ -59,6 +64,39 @@ UF.IBISLines = {}
 UF.TrainPositions = {}
 UF.Stations = {}
 UF.TrainCountOnPlayer = {}
+UF.IBISDevicesRegistered = {}
+
+function UF.AddIBISCommonFiles(name,datatable)
+    if not datatable then return end
+    for k,v in pairs(UF.IBISCommonFiles) do
+        if v.name == name then
+            UF.IBISCommonFiles[k] = datatable
+            UF.IBISCommonFiles[k].name = name
+            print("Light Rail: Changed \""..name.."\" IBIS announcer.")
+            return
+        end
+    end
+    local id = table.insert(UF.IBISCommonFiles,datatable)
+    UF.IBISCommonFiles[id].name = name
+    
+    print("Light Rail: Added \""..name.."\" IBIS announcer.")
+end
+
+function UF.AddIBISAnnouncementScript(name,datatable)
+    if not datatable then return end
+    for k,v in pairs(UF.IBISAnnouncementScript) do
+        if v.name == name then
+            UF.IBISAnnouncementScript[k] = datatable
+            UF.IBISAnnouncementScript[k].name = name
+            print("Light Rail: Changed \""..name.."\" IBIS announcer.")
+            return
+        end
+    end
+    local id = table.insert(UF.IBISAnnouncementScript,datatable)
+    UF.IBISAnnouncementScript[id].name = name
+    
+    print("Light Rail: Added \""..name.."\" IBIS announcer.")
+end
 
 function UF.AddIBISDestinations(name,index)
     if not index or not name then return end
@@ -77,7 +115,7 @@ function UF.AddIBISDestinations(name,index)
 end
 
 function UF.AddIBISRoutes(name,routes)
-        if not name or not routes then return end
+    if not name or not routes then return end
     for k,v in pairs(UF.IBISRoutes) do
         if v.name == name then
             UF.IBISRoutes[k] = routes
@@ -127,25 +165,25 @@ function UF.AddIBISRoutes(name,routes)
     print("Light Rail: Loaded \""..name.."\" IBIS Route index.")
 end
 
-function UF.AddIBISAnnouncer(name,datatable,soundtable)
+function UF.AddIBISAnnouncements(name,datatable)
     if not datatable then return end
     for k,v in pairs(UF.AnnouncementsIBIS) do
         if v.name == name then
-            UF.AnnouncementsIBIS[k] = soundtable
+            UF.AnnouncementsIBIS[k] = datatable
             UF.AnnouncementsIBIS[k].name = name
             print("Light Rail: Changed \""..name.."\" IBIS announcer.")
             return
         end
     end
-    local id = table.insert(UF.AnnouncementsIBIS,soundtable)
+    local id = table.insert(UF.AnnouncementsIBIS,datatable)
     UF.AnnouncementsIBIS[id].name = name
-
+    
     print("Light Rail: Added \""..name.."\" IBIS announcer.")
 end
 
 function UF.AddSpecialAnnouncements(name,soundtable)
     if not name or not soundtable then return end
-
+    
     for k,v in pairs(UF.SpecialAnnouncementsIBIS) do
         if v.name == name then
             UF.SpecialAnnouncementsIBIS[k] = soundtable
@@ -194,5 +232,28 @@ if SERVER then
         AddCSLuaFile("uf/IBIS/"..filename)
         include("uf/IBIS/"..filename)
     end
-
+    
+    
+    if Metrostroi.Paths then
+        local options = { z_pad = 256 }
+        if Metrostroi.IgnoreEntityUpdates then return end
+        print("[!] LIGHT RAIL: Injecting Light Rail Signal Entities into Railnetwork")
+        local entities = ents.FindByClass("gmod_track_uf_signal")
+        for k,v in pairs(entities) do
+            local pos = Metrostroi.GetPositionOnTrack(v:GetPos(),v:GetAngles() - Angle(0,90,0),options)[1]
+            if pos then -- FIXME make it select proper path
+                Metrostroi.SignalEntitiesForNode[pos.node1] = 
+                Metrostroi.SignalEntitiesForNode[pos.node1] or {}
+                table.insert(Metrostroi.SignalEntitiesForNode[pos.node1],v)
+                
+                -- A signal belongs only to a single track
+                Metrostroi.SignalEntityPositions[v] = pos
+                v.TrackPosition = pos
+                v.TrackX = pos.x
+                --else
+                --print("position not found",k,v)
+            end
+        end
+    end
+    
 end

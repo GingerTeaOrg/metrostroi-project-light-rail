@@ -60,7 +60,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.ThrottleRate = 0
 	self.ThrottleEngaged = false
 	self.TractionConditionFulfilled = false
-	self.BrakePressure = 2.7
+	self.BrakePressure = 0
 	self.TractionCutOut = false
 	
 	self.ThrottleStateAnimA = 0 --whether to stop listening to the throttle input
@@ -103,7 +103,11 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 function TRAIN_SYSTEM:Think(Train)
-	
+
+	--self.Train.FrontBogey.BrakePressure = 0
+	--self.Train.MiddleBogeyA.BrakePressure = 0
+	--self.Train.MiddleBogeyB.BrakePressure = 0
+	--self.Train.RearBogey.BrakePressure = 0	
 	self.ThrottleStateA = self.ThrottleStateA + self.ThrottleRate --* dT * 2 --todo: enable deltaTime correction
 	
 	self.ThrottleStateA = math.Clamp(self.ThrottleStateA, -100,100)

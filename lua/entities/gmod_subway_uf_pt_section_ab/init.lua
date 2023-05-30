@@ -20,8 +20,8 @@ function ENT:Initialize()
 	self.SectionC = self:GetNW2Entity("SectionC")
 	-- Create bogeys
 	self.FrontBogey = self.SectionC.FrontBogey
-	self.MiddleBogeyA = self.SectionC.MiddleBogeyA
-	self.MiddleBogeyB = self.SectionC.MiddleBogeyB
+	self.SectionBogeyA = self.SectionC.SectionBogeyA
+	self.SectionBogeyB = self.SectionC.SectionBogeyB
     self.RearBogey = self.SectionC.RearBogey
 
 	self.FrontCouple = self.SectionC.FrontCouple
@@ -29,7 +29,7 @@ function ENT:Initialize()
 	
 	self.ReverserInserted = false
 
-	print("UF: Init Pt Section A/B")
+	--print("UF: Init Pt Section A/B")
 	
 	
 	-- Initialize key mapping

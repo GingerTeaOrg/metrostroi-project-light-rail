@@ -873,7 +873,7 @@ function ENT:Think()
 
 
     if self:GetPackedBool("BOStrab",false) == true then
-        gui.OpenURL( "http://thenest.dynv6.net:8085/lightrail/" )
+        gui.OpenURL( "https://lillywho.github.io" )
     end
 
     if self:GetNW2Bool("IBISKeyBeep",false) == true then
@@ -927,17 +927,17 @@ function ENT:Think()
         	self:ShowHide("reverser",false,0)
     	end
 
-    self:Animate("Door_fr2",self:GetNW2Int("Door1-2a"),0,100,1,.3,false)
-    self:Animate("Door_fr1",self:GetNW2Int("Door1-2a"),0,100,1,.3,false)
+    self:Animate("Door_fr2",self:GetNW2Float("Door12a"),0,100,1,0,false)
+    self:Animate("Door_fr1",self:GetNW2Float("Door12a"),0,100,1,0,false)
 
-    self:Animate("Door_rr2",self:GetNW2Int("Door3-4a"),0,100,1,.3,false)
-    self:Animate("Door_rr1",self:GetNW2Int("Door3-4a"),0,100,1,.3,false)
+    self:Animate("Door_rr2",self:GetNW2Float("Door34a"),0,100,1,0,false)
+    self:Animate("Door_rr1",self:GetNW2Float("Door34a"),0,100,1,0,false)
 
-    self:Animate("Door_fl2",self:GetNW2Int("Door7-8b"),0,100,1,.3,false)
-    self:Animate("Door_fl1",self:GetNW2Int("Door7-8b"),0,100,1,.3,false)
+    self:Animate("Door_fl2",self:GetNW2Float("Door78b"),0,100,1,0,false)
+    self:Animate("Door_fl1",self:GetNW2Float("Door78b"),0,100,1,0,false)
     
-    self:Animate("Door_rl2",self:GetNW2Int("Door5-6b"),0,100,1,.3,false)
-    self:Animate("Door_rl1",self:GetNW2Int("Door5-6b"),0,100,1,.3,false)
+    self:Animate("Door_rl2",self:GetNW2Float("Door56b"),0,100,1,0,false)
+    self:Animate("Door_rl1",self:GetNW2Float("Door56b"),0,100,1,0,false)
 
     if self:GetNW2Bool("Microphone",false) == true then
         if self.Microphone == false then
@@ -956,8 +956,10 @@ function ENT:Think()
     if self:GetNW2Bool("CamshaftMoved",false) == true and self.CamshaftMadeSound == false then
         self.CamshaftMadeSound = true
         self:PlayOnce("Switchgear"..math.random(1,7),"cabin",0.2,1)
+    elseif self:GetNW2Bool("CamshaftMoved",false) == true and self.CamshaftMadeSound == true then
     else
         self.CamshaftMadeSound = false
+        
     end
 
     --print(self.CamshaftMadeSound)
@@ -986,7 +988,7 @@ function ENT:Think()
     --self:Animate("Throttle",0,-45,45,3,0,false)
 	
     
-    self:SetSoundState("DoorsCloseAlarm", self:GetNW2Bool("DoorAlarm",false) and 1 or 0,1)
+    self:SetSoundState("DoorsCloseAlarm", self:GetNW2Bool("DoorCloseAlarm",false) and 1 or 0,1)
     
       
     if self:GetNW2Bool("DeadmanAlarmSound",false) == true or self:GetNW2Bool("TractionAppliedWhileStillNoDeadman",false) == true then
@@ -1059,11 +1061,16 @@ function ENT:Think()
             self:SetSoundState("Fan3",1,1,1)
         end
 
-        if self:GetNW2Bool("Fans",false) == false then
-            
-                self:SetSoundState("Fan1",0,1,1 )
-                self:SetSoundState("Fan2",0,1,1 )
-                self:SetSoundState("Fan3",0,1,1 )
+        if self:GetNW2Bool("Fans",false) == false and self:GetNW2Bool("BatteryOn",false) == true then
+                --print("fans low")
+                self:SetSoundState("Fan1",0.4,1,0 )
+                self:SetSoundState("Fan2",0.4,1,0 )
+                self:SetSoundState("Fan3",0.4,1,0 )
+        elseif self:GetNW2Bool("Fans",false) == false and self:GetNW2Bool("BatteryOn",false) == false then
+
+            self:SetSoundState("Fan1",0,1,1 )
+            self:SetSoundState("Fan2",0,1,1 )
+            self:SetSoundState("Fan3",0,1,1 )
             
         end
 
@@ -1096,7 +1103,7 @@ function ENT:Think()
 	    
 		if self.StartupSoundPlayed == false then
 		    self.StartupSoundPlayed = true
-		    self:PlayOnce("Startup","cabin",1,1)
+		    self:PlayOnce("Startup","cabin",0.4,1)
 		end    
 	    
 		if self:GetPackedBool("WarningAnnouncement") == true then
@@ -1193,18 +1200,27 @@ function ENT:Think()
     
 
 	
-	
+    local rollingi = math.min(1,self.TunnelCoeff+math.Clamp((self.StreetCoeff-0.82)/0.3,0,1))
+    local rollings = math.max(self.TunnelCoeff*0.6,self.StreetCoeff)
+    
 
+    local rol10 = math.Clamp(self.Speed/15,0,1)*(1-math.Clamp((self.Speed-18)/35,0,1))
+    local rol10p = Lerp((self.Speed-15)/14,0.6,0.78)
+    local rol40 = math.Clamp((self.Speed-18)/35,0,1)*(1-math.Clamp((self.Speed-55)/40,0,1))
+    local rol40p = Lerp((self.Speed-15)/66,0.6,1.3)
+    local rol70 = math.Clamp((self.Speed-55)/20,0,1)--*(1-math.Clamp((self.Speed-72)/5,0,1))
+    local rol70p = Lerp((self.Speed-55)/27,0.78,1.15)
+    
+    local rolling1 = self.Speed / 10
+    local rolling2 = self.Speed / 40
+    
+    self:SetSoundState("rumb1"    ,rol10*rollings,rol10p) --15
+    self:SetSoundState("Cruise",rol40*rollings,rol40p) --57
+    --self:SetSoundState("rolling_medium1",0 or rol40*rollings,rol40p) --57
+    self:SetSoundState("Cruise"  ,rol70*rollings,rol70p) --70
+    
     --self:U2SoundEngine()
 	self:ScrollTracker()
-    if self.Speed > 15 then
-
-        self:SetSoundState("Cruise",1,1,1,1)
-        self:SetSoundState("rumb1",1,1,1,1)
-    else
-        self:SetSoundState("Cruise",0,1,1,1)
-        self:SetSoundState("rumb1",0,1,1,1)
-    end
 	
 end
 Metrostroi.GenerateClientProps()

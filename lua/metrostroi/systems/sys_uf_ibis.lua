@@ -2,6 +2,8 @@ Metrostroi.DefineSystem("IBIS")
 TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 function TRAIN_SYSTEM:Initialize()
+
+    if self.Train.WagNum then self.SerialNum = self.Train.WagNum..math.random(1000,2000) end
     self.Route = 0 --Route index number
     self.RouteChar1 = -1
     self.RouteChar2 = -1
@@ -52,7 +54,8 @@ function TRAIN_SYSTEM:Initialize()
     
     self.IndexValid = false
     
-    self.DefectChance = math.random(10,0)
+    self.DefectChance = math.random(0,100)
+    self.LastRoll = RealTime()
     
     self.Destination = 0 --Destination index number
     self.DestinationChar1 = -1
@@ -530,6 +533,10 @@ function TRAIN_SYSTEM:IBISScreen(Train)
             return
         end
     end
+    if State == 4 then
+        self:BlinkText(true,self.DefectString[self.Train:GetNW2Int("Defect",1)])
+    end
+
     return
 end
 
@@ -641,13 +648,20 @@ function TRAIN_SYSTEM:Think()
         
     end
     
-    if self.State == 3 then
+    if self.State == 3 then --IBIS ran into a missing index number of any sort, bumb the current state to 3
         
         if RealTime() - self.ErrorMoment > 5 then
             if self.KeyInput == "Enter" then
                 self.State = 2
                 self.Train:SetNW2Bool("IBISError",false)
             end
+        end
+    end
+
+    if self.State == 4 then --We're in the defect state
+        
+        if self.KeyInput == "Enter" then --just confirm. Some IBIS devices just thought stuff was broken while it wasn't.
+            self.State = 1
         end
     end
     
@@ -712,6 +726,8 @@ function TRAIN_SYSTEM:Think()
             end
         end
     end
+
+    
     
     
     
@@ -846,13 +862,13 @@ if CLIENT then
         
         self.LastBlinkTime = 0
         self.BlinkingText = false
-        self.DefectChance = math.random(10,0)
         self.DefectStrings = { 
-            "IFIS FEHLER",
-            "FUNK DEFEKT",
-            "ENTWERTER 1 DEFEKT",
-            "WEICHENST DEFEKT",
+            [1] = "IFIS FEHLER",
+            [2] = "FUNK DEFEKT",
+            [3] = "ENTWERTER 1 DEFEKT",
+            [4] = "WEICHENST DEFEKT"
         }
+        
     end
     function TRAIN_SYSTEM:BlinkText(enable,Text)
         if not enable then
@@ -899,7 +915,6 @@ function TRAIN_SYSTEM:Play(dep,not_last)
             message = stbl.arr[path]
         end
     end
-    self:AnnQueue{"click1","buzz_start"}
     if lastst and not stbl.ignorelast then self:AnnQueue(-1) end
     
     
@@ -1087,4 +1102,20 @@ if SERVER then
             end
         end    
     end
+end
+
+function TRAIN_SYSTEM:DisasterTicker() --Generate a random chance for defect simulation
+
+    if CurTime() - self.LastRoll > 10 and self.State ~= 4 then
+        local randomNumber = math.Random(1, 10000)
+        if randomnumber <= 1 then
+            self.State = 4
+            self.Train:SetNW2Int("Defect",math.random(4,1))
+        end
+        self.LastRoll = CurTime()
+    end
+
+
+
+
 end

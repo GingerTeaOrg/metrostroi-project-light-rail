@@ -97,3 +97,18 @@ UF.AddIBISDestinations("Frankfurt",{
 
 }
 )
+
+UF.AddIBISAnnouncementScript("Frankfurt",{
+
+    ["next_station"] = true,
+    ["station"] = true,
+    ["interchange"] = true,
+    ["exitside"] = true,
+})
+
+UF.AddIBISCommonFiles("Frankfurt",{
+    ["next_station"] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/next_station.mp3",
+    ["exit_left"] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3",
+    ["exit_right"] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3",
+    ["terminus"] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3",
+})

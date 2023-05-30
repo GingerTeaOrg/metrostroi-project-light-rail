@@ -40,6 +40,7 @@ Metrostroi.AddSkin("train","Duesseldorf",{
         main = "models/lilly/uf/u2/u2h/main-duesseldorf",
         main_left = "models/lilly/uf/u2/u2h/main-duesseldorf-left",
         decals = "models/lilly/uf/u2/u2h/decals",
+        door_external = "models/lilly/uf/u2/u2h/door_external_duesseldorf"
     }
 })
 
@@ -52,6 +53,32 @@ Metrostroi.AddSkin("train","Duesseldorf_b",{
         decals = "models/lilly/uf/u2/u2h/decals",
     }
 })
+
+Metrostroi.AddSkin("train","Royalty",{
+    name = "Royalty",
+    typ = "U2h",
+    textures = {
+        main = "models/lilly/uf/u2/u2h/main-duesseldorf",
+        main_left = "models/lilly/uf/u2/u2h/main-duesseldorf-left",
+        decals = "models/lilly/uf/u2/u2h/decals",
+        jointdecal = "models/lilly/uf/u2/u2h/repaints/royaldecal",
+        door_external = "models/lilly/uf/u2/u2h/door_external_duesseldorf"
+    }
+})
+
+Metrostroi.AddSkin("train","Royalty_b",{
+    name = "Royalty",
+    typ = "U2hb",
+    textures = {
+        main_b = "models/lilly/uf/u2/u2h/main-duesseldorf",
+        main_b_left = "models/lilly/uf/u2/u2h/main-duesseldorf-left",
+        decals = "models/lilly/uf/u2/u2h/decals",
+        jointdecal = "models/lilly/uf/u2/u2h/repaints/royaldecal",
+        door_external = "models/lilly/uf/u2/u2h/door_external_duesseldorf"
+    }
+})
+
+
 Metrostroi.AddSkin("train","pride_b",{
     name = "LGBTQ Pride because fuck bigots",
     typ = "U2hb",
@@ -129,7 +156,7 @@ Metrostroi.AddSkin("train","OrEbSW_b",{
     }
 })
 
-
+--[[
 
 Metrostroi.AddSkin("train","Orange",{
     name = "Orange",
@@ -262,24 +289,7 @@ Metrostroi.AddSkin("train","yellow_b",{
     }
 })
 
-Metrostroi.AddSkin("train","hamburg",{
-    name = "Hamburg",
-    typ = "U2h",
-    textures = {
-        main = "models/lilly/uf/u2/u2h/repaints/main-hamburg",
-		decals = "models/lilly/uf/u2/u2h/decals-modern",
 
-    }
-})
-Metrostroi.AddSkin("train","hamburg_b",{
-    name = "Hamburg",
-    typ = "U2hb",
-    textures = {
-        main_b = "models/lilly/uf/u2/u2h/repaints/main-hamburg",
-        main = "models/lilly/uf/u2/u2h/repaints/main-hamburg",
-		decals = "models/lilly/uf/u2/u2h/decals-modern",
-    }
-})
 
 
 Metrostroi.AddSkin("train","white-bordeaux",{
@@ -298,4 +308,4 @@ Metrostroi.AddSkin("train","White-bordeaux_b",{
         main_b = "models/lilly/uf/u2/u2h/white-orange",
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
     }
-})
+})]]

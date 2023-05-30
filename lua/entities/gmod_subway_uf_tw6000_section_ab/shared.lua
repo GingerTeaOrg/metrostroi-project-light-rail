@@ -1,7 +1,7 @@
 ENT.Type            = "anim"
 ENT.Base            = "gmod_subway_base"
-ENT.PrintName 		= "Düwag Pt"
-ENT.PrintNameTranslated       = "Duewag P8"
+ENT.PrintName 		= "Duewag TW6000"
+ENT.PrintNameTranslated       = "Duewag TW6000"
 ENT.Author          = ""
 ENT.Contact         = ""
 ENT.Purpose         = ""
@@ -34,8 +34,8 @@ function ENT:ScrollDestinations(offset)
 end
 
 ENT.SubwayTrain = {
-	Type = "P8",
-	Name = "Pt",
+	Type = "TW6000",
+	Name = "TW6000",
 	WagType = 0,
 	Manufacturer = "Duewag",
 }

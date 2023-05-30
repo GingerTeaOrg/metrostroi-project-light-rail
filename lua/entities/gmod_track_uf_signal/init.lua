@@ -77,125 +77,14 @@ function ENT:CloseRoute(route)
 	end
 end
 
-function MSignalSayHook(ply, comm, fromULX)
-	if ulx and not fromULX then return end
-	for i,sig in pairs(ents.FindByClass("gmod_track_uf_signal")) do
-		local comm = comm
-		if comm:sub(1,8) == "!sactiv " then
-			comm = comm:sub(9,-1):upper()
 
-			comm = string.Explode(":",comm)
-			if sig.Routes then
-				for k,v in pairs(sig.Routes) do
-					if (v.RouteName and v.RouteName:upper() == comm[1] or comm[1] == "*") and v.Emer then
-						if sig.LastOpenedRoute and k ~= sig.LastOpenedRoute then sig:CloseRoute(sig.LastOpenedRoute) end
-						v.IsOpened = true
-						break
-					end
-				end
-			end
-		elseif comm:sub(1,10) == "!sdeactiv " then
-			comm = comm:sub(11,-1):upper()
-
-			comm = string.Explode(":",comm)
-			if sig.Routes then
-				for k,v in pairs(sig.Routes) do
-					if (v.RouteName and v.RouteName:upper() == comm[1] or comm[1] == "*") and v.Emer then
-						v.IsOpened = false
-						break
-					end
-				end
-			end
-		elseif comm:sub(1,8) == "!sclose " then
-			comm = comm:sub(9,-1):upper()
-
-			comm = string.Explode(":",comm)
-			if comm[1] == sig.Name then
-				if sig.Routes[1] and sig.Routes[1].Manual then
-					sig:CloseRoute(1)
-				else
-					if not sig.Close then
-						sig.Close = true
-					end
-					if sig.InvationSignal then
-						sig.InvationSignal = false
-					end
-					if (sig.LastOpenedRoute and sig.LastOpenedRoute == 1) or sig.Routes[1].Repeater then
-						sig:CloseRoute(1)
-					else
-						sig:OpenRoute(1)
-					end
-				end
-			elseif sig.Routes then
-				for k,v in pairs(sig.Routes) do
-					if v.RouteName and v.RouteName:upper() == comm[1] then
-						if sig.LastOpenedRoute and k ~= sig.LastOpenedRoute then sig:CloseRoute(sig.LastOpenedRoute) end
-						sig:CloseRoute(k)
-					end
-				end
-			end
-		elseif comm:sub(1,7) == "!sopen " then
-			comm = comm:sub(8,-1):upper()
-			comm = string.Explode(":",comm)
-			if comm[1] == sig.Name then
-				if comm[2] then
-					if sig.NextSignals[comm[2]] then
-						local Route
-						for k,v in pairs(sig.Routes) do
-							if v.NextSignal == comm[2] then Route = k break end
-						end
-						sig:OpenRoute(Route)
-					end
-				else
-					if sig.Routes[1] and sig.Routes[1].Manual then
-						sig:OpenRoute(1)
-					elseif sig.Close then
-						sig.Close = false
-					end
-				end
-			elseif sig.Routes then
-				for k,v in pairs(sig.Routes) do
-					if v.RouteName and v.RouteName:upper() == comm[1] then
-						if sig.LastOpenedRoute and k ~= sig.LastOpenedRoute then sig:CloseRoute(sig.LastOpenedRoute) end
-						sig:OpenRoute(k)
-					end
-				end
-			end
-		elseif comm:sub(1,7) == "!sopps " then
-			comm = comm:sub(8,-1):upper()
-			comm = string.Explode(":",comm)
-			if comm[1] == sig.Name then
-				sig.InvationSignal = true
-			end
-		elseif comm:sub(1,7) == "!sclps " then
-			comm = comm:sub(8,-1):upper()
-			comm = string.Explode(":",comm)
-			if comm[1] == sig.Name then
-				sig.InvationSignal = false
-			end
-		elseif comm:sub(1,7) == "!senao " then
-			comm = comm:sub(8,-1):upper()
-			comm = string.Explode(":",comm)
-			if comm[1] == sig.Name then
-				if sig.AODisabled then sig.AODisabled = false end
-			end
-		elseif comm:sub(1,8) == "!sdisao " then
-			comm = comm:sub(9,-1):upper()
-			comm = string.Explode(":",comm)
-			if comm[1] == sig.Name then
-				if sig.ARSSpeedLimit == 2 then sig.AODisabled = true end
-			end
-		end
-	end
-end
-hook.Add("PlayerSay","UF-signal-say", function(ply, comm) MSignalSayHook(ply,comm) end)
 function ENT:Initialize()
-	self:SetModel(self.TrafficLightModels[self.SignalType or 0].ArsBox.model)
+	self:SetModel(self.TrafficLightModels[self.SignalType or 0].PZBBox.model)
 	self.Sprites = {}
 	self.Sig = ""
 	self.FreeBS = 1
 	self.OldBSState = 1
-	self.OutputARS = 1
+	self.OutputPZB = 1
 	self.EnableDelay = {}
 	self.PostInitalized = true
 
@@ -248,7 +137,7 @@ function ENT:PostInitalize()
 			local sig
 			local cursig = self
 			while true do
-				cursig = Metrostroi.GetARSJoint(cursig.TrackPosition.node1,cursig.TrackPosition.x,cursig.TrackDir,false)
+				cursig = Metrostroi.GetPZBJoint(cursig.TrackPosition.node1,cursig.TrackPosition.x,cursig.TrackDir,false)
 				if not IsValid(cursig) then break end
 				sig = cursig
 				if not cursig.PassOcc then break end
@@ -319,59 +208,59 @@ function ENT:PostInitalize()
 		self.GoodInvationSignal = -1
 	end
 	if self.Left then
-		self:SetModel(self.TrafficLightModels[self.SignalType or 0].ArsBoxMittor.model)
+		self:SetModel(self.TrafficLightModels[self.SignalType or 0].PZBBoxMittor.model)
 	else
-		self:SetModel(self.TrafficLightModels[self.SignalType or 0].ArsBox.model)
+		self:SetModel(self.TrafficLightModels[self.SignalType or 0].PZBBox.model)
 	end
 	self.PostInitalized = false
 
 end
 
 function ENT:OnRemove()
-	Metrostroi.UpdateSignalEntities()
+	UF.UpdateSignalEntities()
 	Metrostroi.PostSignalInitialize()
 end
 
-function ENT:GetARS(ARSID,Force1_5,Force2_6)
-	if self.OverrideTrackOccupied then return ARSID == 2 end
-	if not self.ARSSpeedLimit then return false end
-	local nxt = self.ARSNextSpeedLimit == 2 and 0 or self.ARSNextSpeedLimit ~= 1 and self.ARSNextSpeedLimit
-	return self.ARSSpeedLimit == ARSID or ((self.TwoToSix and not Force1_5 or Force2_6) and nxt and nxt == ARSID and self.ARSSpeedLimit > nxt)
+function ENT:GetPZB(PZBID,Force1_5,Force2_6)
+	if self.OverrideTrackOccupied then return PZBID == 2 end
+	if not self.PZBSpeedLimit then return false end
+	local nxt = self.PZBNextSpeedLimit == 2 and 0 or self.PZBNextSpeedLimit ~= 1 and self.PZBNextSpeedLimit
+	return self.PZBSpeedLimit == PZBID or ((self.TwoToSix and not Force1_5 or Force2_6) and nxt and nxt == PZBID and self.PZBSpeedLimit > nxt)
 end
 --[[ function ENT:GetRS()
-	if not self.TwoToSix or not self.ARSSpeedLimit then return false end
-	--if self.ARSSpeedLimit == 1 or self.ARSSpeedLimit == 2 then return false end
-	if self.ARSSpeedLimit <= 2 then return false end
-	return self.OverrideTrackOccupied  or self.ARSSpeedLimit == 0 or (not self.ARSNextSpeedLimit or self.ARSNextSpeedLimit == 1) or self.ARSSpeedLimit <= self.ARSNextSpeedLimit
+	if not self.TwoToSix or not self.PZBSpeedLimit then return false end
+	--if self.PZBSpeedLimit == 1 or self.PZBSpeedLimit == 2 then return false end
+	if self.PZBSpeedLimit <= 2 then return false end
+	return self.OverrideTrackOccupied  or self.PZBSpeedLimit == 0 or (not self.PZBNextSpeedLimit or self.PZBNextSpeedLimit == 1) or self.PZBSpeedLimit <= self.PZBNextSpeedLimit
 end--]]
 
-function ENT:GetRS()
-	if self.OverrideTrackOccupied or not self.TwoToSix or not self.ARSSpeedLimit then return false end
-	--if self.ARSSpeedLimit == 1 or self.ARSSpeedLimit == 2 then return false end
-	if self.ARSSpeedLimit ~= 0 and self.ARSSpeedLimit== 2 then return false end
+function ENT:GetPZB()
+	if self.OverrideTrackOccupied or not self.TwoToSix or not self.PZBSpeedLimit then return false end
+	--if self.PZBSpeedLimit == 1 or self.PZBSpeedLimit == 2 then return false end
+	if self.PZBSpeedLimit ~= 0 and self.PZBSpeedLimit== 2 then return false end
 	if self.ControllerLogic and self.ControllerLogicOverride325Hz then return self.Override325Hz end
-	return (self.ARSSpeedLimit > 4 or self.ARSSpeedLimit == 4 and self.Approve0) and (not self.ARSNextSpeedLimit or self.ARSNextSpeedLimit >= self.ARSSpeedLimit)
+	return (self.PZBSpeedLimit > 4 or self.PZBSpeedLimit == 4 and self.Approve0) and (not self.PZBNextSpeedLimit or self.PZBNextSpeedLimit >= self.PZBSpeedLimit)
 end
 
 function ENT:Get325HzAproove0()
-	if self.OverrideTrackOccupied or not self.ARSSpeedLimit then return false end
-	return self.ARSSpeedLimit == 0 and self.Approve0
+	if self.OverrideTrackOccupied or not self.PZBSpeedLimit then return false end
+	return self.PZBSpeedLimit == 0 and self.Approve0
 end
 
-function ENT:GetMaxARS()
-	local ARSCodes = self.Routes[1].ARSCodes
-	if not self.Routes[1] or not ARSCodes then return 1 end
-	return tonumber(ARSCodes[#ARSCodes]) or 1
+function ENT:GetMaxPZB()
+	local PZBCodes = self.Routes[1].PZBCodes
+	if not self.Routes[1] or not PZBCodes then return 1 end
+	return tonumber(PZBCodes[#PZBCodes]) or 1
 end
-function ENT:GetMaxARSNext()
+function ENT:GetMaxPZBNext()
 	local Routes = self.NextSignalLink and self.NextSignalLink.Routes or self.Routes
-	local ARSCodes = Routes[1] and Routes[1].ARSCodes
-	local code = tonumber(ARSCodes[#ARSCodes]) or 1
-	local This = self:GetMaxARS()
-	if not ARSCodes then return This end
+	local PZBCodes = Routes[1] and Routes[1].PZBCodes
+	local code = tonumber(PZBCodes[#PZBCodes]) or 1
+	local This = self:GetMaxPZB()
+	if not PZBCodes then return This end
 	if code > This then return This end
-	--if not ARSCodes then return 1 end
-	return tonumber(ARSCodes[#ARSCodes]) or 1
+	--if not PZBCodes then return 1 end
+	return tonumber(PZBCodes[#PZBCodes]) or 1
 end
 
 function ENT:CheckOccupation()
@@ -379,7 +268,7 @@ function ENT:CheckOccupation()
 	--if not self.FoundedAll then return end
 	if not self.Close and not self.KGU then --not self.OverrideTrackOccupied and
 		if self.Node and  self.TrackPosition then
-			self.Occupied,self.OccupiedBy,self.OccupiedByNow = Metrostroi.IsTrackOccupied(self.Node, self.TrackPosition.x,self.TrackPosition.forward,self.ARSOnly and "ars" or "light", self)
+			self.Occupied,self.OccupiedBy,self.OccupiedByNow = Metrostroi.IsTrackOccupied(self.Node, self.TrackPosition.x,self.TrackPosition.forward,self.PZBOnly and "PZB" or "light", self)
 		end
 		if self.Routes[self.Route] and self.Routes[self.Route].Manual then
 			self.Occupied = self.Occupied or not self.Routes[self.Route].IsOpened
@@ -394,7 +283,7 @@ function ENT:CheckOccupation()
 		self.Occupied = self.Close or self.KGU --self.OverrideTrackOccupied or
 	end
 end
-function ENT:ARSLogic(tim)
+function ENT:PZBLogic(tim)
 	--print(self.FoundedAll)
 	--if not self.FoundedAll then return end
 	if not self.Routes or not self.NextSignals then return end
@@ -481,15 +370,15 @@ function ENT:ARSLogic(tim)
 		end
 		if self.Routes[self.Route or 1].Repeater then
 			self.RealName = IsValid(self.NextSignalLink) and self.NextSignalLink.Name or self.Name
-			self.ARSSpeedLimit = IsValid(self.NextSignalLink) and self.NextSignalLink.ARSSpeedLimit or 1
-			self.ARSNextSpeedLimit = IsValid(self.NextSignalLink) and self.NextSignalLink.ARSNextSpeedLimit or 1
+			self.PZBSpeedLimit = IsValid(self.NextSignalLink) and self.NextSignalLink.PZBSpeedLimit or 1
+			self.PZBNextSpeedLimit = IsValid(self.NextSignalLink) and self.NextSignalLink.PZBNextSpeedLimit or 1
 			self.FreeBS = IsValid(self.NextSignalLink) and self.NextSignalLink.FreeBS or 0
-		elseif self.Routes[self.Route].ARSCodes then
-			local ARSCodes = self.Routes[self.Route].ARSCodes
-			self.ARSNextSpeedLimit = IsValid(self.NextSignalLink) and self.NextSignalLink.ARSSpeedLimit or tonumber(ARSCodes[1])
-			self.ARSSpeedLimit = tonumber(ARSCodes[math.min(#ARSCodes, self.FreeBS+1)]) or 0
-			if self.AODisabled and self.ARSSpeedLimit ~= 2 then self.AODisabled = false end
-			if (self.InvationSignal or self.AODisabled) and self.ARSSpeedLimit == 2 then self.ARSSpeedLimit = 1 end
+		elseif self.Routes[self.Route].PZBCodes then
+			local PZBCodes = self.Routes[self.Route].PZBCodes
+			self.PZBNextSpeedLimit = IsValid(self.NextSignalLink) and self.NextSignalLink.PZBSpeedLimit or tonumber(PZBCodes[1])
+			self.PZBSpeedLimit = tonumber(PZBCodes[math.min(#PZBCodes, self.FreeBS+1)]) or 0
+			if self.AODisabled and self.PZBSpeedLimit ~= 2 then self.AODisabled = false end
+			if (self.InvationSignal or self.AODisabled) and self.PZBSpeedLimit == 2 then self.PZBSpeedLimit = 1 end
 		end
 	end
 	if self.NextSignalLink ~= false and (self.Occupied or not self.NextSignalLink or not self.NextSignalLink.FreeBS) then
@@ -549,10 +438,10 @@ function ENT:Think()
 		self:SetNW2Bool("BlockedByController",self.ControllerLogic)
 		for i=0,8 do
 			if i==3 or i==5 then continue end
-			self:SetNW2Bool("CurrentARS"..i,self:GetARS(i))
+			self:SetNW2Bool("CurrentPZB"..i,self:GetPZB(i))
 		end
-		self:SetNW2Bool("CurrentARS325",self:GetRS())
-		self:SetNW2Bool("CurrentARS325_2",self:Get325HzAproove0())
+		self:SetNW2Bool("CurrentPZB325",self:GetRS())
+		self:SetNW2Bool("CurrentPZB325_2",self:Get325HzAproove0())
 	end
 	if not self.ControllerLogic then
 		if not self.Routes or #self.Routes == 0 then
@@ -567,11 +456,11 @@ function ENT:Think()
 		self.PrevTime = self.PrevTime or 0
 		if (CurTime() - self.PrevTime) > 1.0 then
 			self.PrevTime = CurTime()+math.random(0.5,1.5)
-			self:ARSLogic(self.PrevTime - CurTime())
+			self:PZBLogic(self.PrevTime - CurTime())
 		end
 		self.RouteNumberOverrite = nil
 		local number = ""
-		if self.MU or self.ARSOnly or self.RouteNumberSetup and self.RouteNumberSetup ~= "" or self.RouteNumber and self.RouteNumber ~= "" then
+		if self.MU or self.PZBOnly or self.RouteNumberSetup and self.RouteNumberSetup ~= "" or self.RouteNumber and self.RouteNumber ~= "" then
 			if self.NextSignalLink then
 				if not self.NextSignalLink.Red and not self.Red then
 					self.RouteNumberOverrite = self.NextSignalLink.RouteNumberOverrite ~= "" and self.NextSignalLink.RouteNumberOverrite or self.NextSignalLink.RouteNumber
@@ -603,18 +492,18 @@ function ENT:Think()
 			self.OccupiedOld = self.Occupied
 		end	
 
-		if self.ARSOnly then
+		if self.PZBOnly then
 			if self.Sprites then
 				for k,v in pairs(self.Sprites) do
 					SafeRemoveEntity(v)
 					self.Sprites[k] = nil
 				end
-				if self.ARSOnly and self.Sprites then
+				if self.PZBOnly and self.Sprites then
 					self.Sprites = nil
 				end
 			end
 			self:SetNW2String("Signal","")
-			self.AutoEnabled = not self.ARSOnly
+			self.AutoEnabled = not self.PZBOnly
 			return
 		end
 
@@ -659,7 +548,7 @@ function ENT:Think()
 			if (CurTime() - self.PrevTime) > 0.5 then
 				self.PrevTime = CurTime() + math.random(0.5,1.5)
 				if self.Node and self.TrackPosition then
-					self.Occupied,self.OccupiedBy,self.OccupiedByNow = Metrostroi.IsTrackOccupied(self.Node, self.TrackPosition.x,self.TrackPosition.forward,self.ARSOnly and "ars" or "light", self)
+					self.Occupied,self.OccupiedBy,self.OccupiedByNow = Metrostroi.IsTrackOccupied(self.Node, self.TrackPosition.x,self.TrackPosition.forward,self.PZBOnly and "PZB" or "light", self)
 				end
 			end
 			if self.Occupied ~= self.OccupiedOld then
@@ -669,7 +558,7 @@ function ENT:Think()
 		
 		end
 		--[[
-		if self.MU or self.ARSOnly or self.RouteNumberSetup and self.RouteNumberSetup ~= "" or self.RouteNumber and self.RouteNumber ~= "" then
+		if self.MU or self.PZBOnly or self.RouteNumberSetup and self.RouteNumberSetup ~= "" or self.RouteNumber and self.RouteNumber ~= "" then
 			if self.NextSignalLink then
 				if not self.NextSignalLink.AutoEnabled and not self.AutoEnabled then
 					self.RouteNumberOverrite = self.NextSignalLink.RouteNumberOverrite ~= "" and self.NextSignalLink.RouteNumberOverrite or self.NextSignalLink.RouteNumber
@@ -741,7 +630,7 @@ function ENT:SendUpdate(ply)
 		net.WriteEntity(self)
 		net.WriteInt(self.SignalType or 0,3)
 		net.WriteString(self.Name or "NOT LOADED")
-		net.WriteString(self.ARSOnly and "ARSOnly" or self.LensesStr)
+		net.WriteString(self.PZBOnly and "PZBOnly" or self.LensesStr)
 		net.WriteString(self.SignalType == 0 and self.RouteNumberSetup or "")
 		net.WriteBool(self.Left)
 		net.WriteBool(self.Double)

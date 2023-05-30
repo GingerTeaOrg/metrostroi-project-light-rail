@@ -5,7 +5,7 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 local DECOUPLE_TIMEOUT      = 2     -- Time after decoupling furing wich a Coupler cannot couple
-local COUPLE_MAX_DISTANCE   = 20    -- Maximum distance between couple offsets
+local COUPLE_MAX_DISTANCE   = 50    -- Maximum distance between couple offsets
 local COUPLE_MAX_ANGLE      = 18    -- Maximum angle between Couplers on couple
 
 --------------------------------------------------------------------------------
