@@ -619,7 +619,7 @@ function ENT:Initialize()
 		self.BaseClass.Think(self)
 		
 		--print(table.ToString(UF.IBISLines[1]))
-		
+		print(UF.RegisterTrain("0123",self))
 		
 		if self.DoorSideUnlocked == "Left" and self.DoorsUnlocked == true and self.Door1 ~= true then
 			self:DoorHandler(true,true,false,false)

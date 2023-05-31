@@ -73,13 +73,16 @@ UF.IBISRegisteredTrains = {}
 
 function UF.RegisterTrain(LineCourse,train)
     if not LineCourse and not train then return end
-    for _, value in ipairs(UF.IBISRegisteredTrains) do
+    for key, value in ipairs(UF.IBISRegisteredTrains) do
         if value == LineCourse then
             return false
+        else
+            table.insert(UF.IBISRegisteredTrains, train[LineCourse])
+            --UF.IBISRegisteredTrains[train] = LineCourse
+            return true
         end
     end
-    table.insert(UF.IBISRegisteredTrains, train[LineCourse])
-    return true
+    
 
 end
 

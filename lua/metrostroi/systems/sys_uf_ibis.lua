@@ -835,10 +835,11 @@ function TRAIN_SYSTEM:ReadDataset()
                 if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == true then
                     self.IndexValid = true
                     self.RBLRegistered = true
-                else
+                elseif UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == false then
                     self.IndexValid = true
                     self.RBLRegisterFailed = true
                     self.RBLRegistered = false
+                    print("RBL Failed")
                 end   
             else
                 self.IndexValid = false
