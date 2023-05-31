@@ -517,27 +517,13 @@ function TRAIN_SYSTEM:U2Engine()
 	end
 	
 	if self.ReverserState ~= 0 then --camshaft only moves when you're actually in gear
-		if self.Speed >= 0 then -- if the throttle is set to acceleration and the speed is nil or greater
-			if CurTime() - self.CamshaftMoveTimer > 0.15  then
+			if CurTime() - self.CamshaftMoveTimer > 0.4  then
 				self.CamshaftFinishedMoving = true
 				self.Train:SetNW2Bool("CamshaftMoved",true)
 				
 				
 			end
-		elseif self.Speed <= 6 then -- if the throttle is set to acceleration and the speed is stationary
-			
-			if CurTime() - self.CamshaftMoveTimer > 0.15  then
-				self.Train:SetNW2Bool("CamshaftMoved",true)
-				self.CamshaftFinishedMoving = true
-				
-			end
-		elseif self.Speed >= 5 then
-			if CurTime() - self.CamshaftMoveTimer > 0.15  then
-				self.Train:SetNW2Bool("CamshaftMoved",true) --if we're already in motion, do the sound regardless of throttle state because it'll always be reacting to braking or accelerating
-				self.CamshaftFinishedMoving = true
-				
-			end
-		end
+		
 		
 	end
 	

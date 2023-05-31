@@ -557,7 +557,7 @@ function ENT:Initialize()
 			[35] = { "light",Vector(326.738,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
 			[36] = { "light",Vector(151.5,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
 			[37] = { "light",Vector(83.7,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
-			[38] = { "light",Vector(416.31,8.3445,54.4798), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
+			[38] = { "light",Vector(416.31,8.34,54.4798), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
 		}
 		
 		
@@ -623,24 +623,26 @@ function ENT:Initialize()
 		
 		if self.DoorSideUnlocked == "Left" and self.DoorsUnlocked == true and self.Door1 ~= true then
 			self:DoorHandler(true,true,false,false)
-			
+			self:SetNW2Bool("DoorsClosing",false)
 		elseif self.DoorSideUnlocked == "Right" and self.DoorsUnlocked == true and self.Door1 ~= true then
 			self:DoorHandler(true,false,true,false)
-			
+			self:SetNW2Bool("DoorsClosing",false)
 		elseif self.DoorSideUnlocked == "Right" and self.Door1 == true then
 			self:DoorHandler(false,false,true,true)
-			
+			self:SetNW2Bool("DoorsClosing",false)
 		elseif self.DoorSideUnlocked == "Left" and self.Door1 == true then
 			self:DoorHandler(false,true,false,true)	
-			
+			self:SetNW2Bool("DoorsClosing",false)
 		elseif self.DoorSideUnlocked == "Left" and self.DoorsUnlocked == false and self.Door1 ~= true then
 			self:DoorHandler(false,true,false,false)
-			
+			self:SetNW2Bool("DoorsClosing",true)
 		elseif self.DoorSideUnlocked == "Right" and self.DoorsUnlocked == false and self.Door1 ~= true then
 			self:DoorHandler(false,false,true,false)
-			
+			self:SetNW2Bool("DoorsClosing",true)
 		end
 		
+		self:SetNW2String("DoorSideUnlocked",self.DoorSideUnlocked)
+		self:SetNW2Bool("DoorsUnlocked",self.DoorsUnlocked)
 		
 		
 		if self:GetPackedBool("BOStrab",false) == true then
@@ -1679,7 +1681,7 @@ function ENT:OnButtonPress(button,ply)
 		self.DoorsPreviouslyUnlocked = true
 		self.RandomnessCalculated = false
 		self.DoorsUnlocked = false
-		
+		self.Door1 = false
 		
 		
 	end
@@ -2228,43 +2230,43 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 			
 			
 			if self.DoorStatesRight["Door12a"] > 0 then
-				self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] - 0.1
+				self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] - 0.05
 			end
 			
 			
 			if self.DoorStatesRight["Door34a"] > 0 then
-				self.DoorStatesRight["Door34a"] = self.DoorStatesRight["Door34a"] - 0.1
+				self.DoorStatesRight["Door34a"] = self.DoorStatesRight["Door34a"] - 0.05
 			end
 			
 			
 			if self.DoorStatesRight["Door56a"] > 0 then
-				self.DoorStatesRight["Door56a"] = self.DoorStatesRight["Door56a"] - 0.1
+				self.DoorStatesRight["Door56a"] = self.DoorStatesRight["Door56a"] - 0.05
 			end
 			
 			
 			if self.DoorStatesRight["Door78a"] > 0 then
-				self.DoorStatesRight["Door78a"] = self.DoorStatesRight["Door78a"] - 0.1
+				self.DoorStatesRight["Door78a"] = self.DoorStatesRight["Door78a"] - 0.05
 			end
 			
 		elseif left then
 			
 			if self.DoorStatesLeft["Door12b"] > 0 then
-				self.DoorStatesLeft["Door12b"] = self.DoorStatesLeft["Door12b"] - 0.1
+				self.DoorStatesLeft["Door12b"] = self.DoorStatesLeft["Door12b"] - 0.05
 			end
 			
 			
 			if self.DoorStatesLeft["Door34b"] > 0 then
-				self.DoorStatesLeft["Door34b"] = self.DoorStatesLeft["Door34b"] - 0.1
+				self.DoorStatesLeft["Door34b"] = self.DoorStatesLeft["Door34b"] - 0.05
 			end
 			
 			
 			if self.DoorStatesLeft["Door56b"] > 0 then
-				self.DoorStatesLeft["Door56b"] = self.DoorStatesLeft["Door56b"] - 0.1
+				self.DoorStatesLeft["Door56b"] = self.DoorStatesLeft["Door56b"] - 0.05
 			end
 			
 			
 			if self.DoorStatesLeft["Door78b"] > 0 then
-				self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] - 0.1
+				self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] - 0.05
 			end
 			
 		end

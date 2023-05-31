@@ -721,8 +721,8 @@ ENT.ButtonMap["Left"] = {
     height = 80,
     scale = 0.1,
     buttons = {
-        {ID = "ParrallelToggle", x=27, y=32, radius=7, tooltip = "Set engines to shunt mode (not yet implemented)", model = {
-            z=-5, ang=0,
+        {ID = "ParrallelToggle", x=29, y=32, radius=7, tooltip = "Set engines to shunt mode (not yet implemented)", model = { model="models/lilly/uf/u2/cab/switch_flick.mdl",
+            z=-5, ang=90,
             var="ParrallelToggle",speed=1, vmin=0, vmax=1,
             sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
@@ -816,6 +816,12 @@ function ENT:Initialize()
 	self.IBISStarted = false
 	self.StartupSoundPlayed = false
     self.IBISBeep = false
+
+    self.BatteryBreakerOnSoundPlayed = false
+    self.BatteryBreakerOffSoundPlayed = false
+
+    self.BlinkerPrevOn = false
+    
 
     self.WarningAnnouncement = false
 
@@ -1073,17 +1079,17 @@ function ENT:Think()
             self:SetSoundState("Fan3",0,1,1 )
             
         end
-
-        if self:GetNW2Bool("DoorsUnlocked",false) == true and self.DoorOpenSoundPlayed == false then
+        local DoorsUnlocked = self:GetNW2Bool("DoorsUnlocked",false)
+        if self:GetNW2Float("Door12a",0) > 0 and self.DoorOpenSoundPlayed == false and DoorsUnlocked == true then
             self.DoorOpenSoundPlayed = true
             self.DoorCloseSoundPlayed = false
             self:PlayOnce("Door_open1","cabin",0.4,1)
-            self.DoorsOpen = true
+            
         end
 
-        if self:GetNW2Bool("DoorsUnlocked",false) == false and self.DoorsOpen == true and self.DoorCloseSoundPlayed == false then
+        if self:GetNW2Float("Door12a",0) < 1 and self.DoorCloseSoundPlayed == false and self:GetNW2Bool("DoorsClosing",false) == true then
             self.DoorCloseSoundPlayed = true
-            self.DoorsOpen = false
+            
             self:PlayOnce("Door_close1","cabin",0.4,1)
             self.DoorOpenSoundPlayed = false
         end
@@ -1104,6 +1110,8 @@ function ENT:Think()
 		if self.StartupSoundPlayed == false then
 		    self.StartupSoundPlayed = true
 		    self:PlayOnce("Startup","cabin",0.4,1)
+            self:PlayOnce("Battery_breaker_on",0.4,1)
+            self.BatteryBreakerOffSoundPlayed = false
 		end    
 	    
 		if self:GetPackedBool("WarningAnnouncement") == true then
@@ -1111,6 +1119,10 @@ function ENT:Think()
         end
     elseif self:GetNW2Bool("BatteryOn",false) == false then --what shall we do when the battery is off
 		self.StartupSoundPlayed = false	
+        if self.BatteryBreakerOffSoundPlayed == false then
+            self.BatteryBreakerOffSoundPlayed = true
+            self:PlayOnce("Battery_breaker_off",0.4,1)
+        end
 
     end
 
@@ -1214,7 +1226,7 @@ function ENT:Think()
     local rolling1 = self.Speed / 10
     local rolling2 = self.Speed / 40
     
-    self:SetSoundState("rumb1"    ,rol10*rollings,rol10p) --15
+    self:SetSoundState("rumb1"    ,rol10*rollings,rol10p+0.9) --15
     self:SetSoundState("Cruise",rol40*rollings,rol40p) --57
     --self:SetSoundState("rolling_medium1",0 or rol40*rollings,rol40p) --57
     self:SetSoundState("Cruise"  ,rol70*rollings,rol70p) --70

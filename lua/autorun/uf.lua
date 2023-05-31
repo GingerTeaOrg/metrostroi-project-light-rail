@@ -38,6 +38,9 @@ hook.Add("EntityRemoved","UFTrains",function(ent)
     if UF.SpawnedTrains[ent] then
         UF.SpawnedTrains[ent] = nil
     end
+    if UF.IBISRegisteredTrains[ent] then
+        UF.IBISRegisteredTrains[ent] = nil
+    end
 end)
 if SERVER then
     hook.Add("OnEntityCreated","UFTrains",function(ent)
@@ -53,7 +56,7 @@ else
     end)
 end
 
-UF.AnnouncementsIBIS = {}
+UF.IBISAnnouncementFiles = {}
 UF.IBISAnnouncementScript = {}
 UF.IBISCommonFiles = {}
 UF.SpecialAnnouncementsIBIS = {}
@@ -65,6 +68,20 @@ UF.TrainPositions = {}
 UF.Stations = {}
 UF.TrainCountOnPlayer = {}
 UF.IBISDevicesRegistered = {}
+
+UF.IBISRegisteredTrains = {}
+
+function UF.RegisterTrain(LineCourse,train)
+    if not LineCourse and not train then return end
+    for _, value in ipairs(UF.IBISRegisteredTrains) do
+        if value == LineCourse then
+            return false
+        end
+    end
+    table.insert(UF.IBISRegisteredTrains, train[LineCourse])
+    return true
+
+end
 
 function UF.AddIBISCommonFiles(name,datatable)
     if not datatable then return end
@@ -167,16 +184,16 @@ end
 
 function UF.AddIBISAnnouncements(name,datatable)
     if not datatable then return end
-    for k,v in pairs(UF.AnnouncementsIBIS) do
+    for k,v in pairs(UF.IBISAnnouncementFiles) do
         if v.name == name then
-            UF.AnnouncementsIBIS[k] = datatable
-            UF.AnnouncementsIBIS[k].name = name
+            UF.IBISAnnouncementFiles[k] = datatable
+            UF.IBISAnnouncementFiles[k].name = name
             print("Light Rail: Changed \""..name.."\" IBIS announcer.")
             return
         end
     end
-    local id = table.insert(UF.AnnouncementsIBIS,datatable)
-    UF.AnnouncementsIBIS[id].name = name
+    local id = table.insert(UF.IBISAnnouncementFiles,datatable)
+    UF.IBISAnnouncementFiles[id].name = name
     
     print("Light Rail: Added \""..name.."\" IBIS announcer.")
 end

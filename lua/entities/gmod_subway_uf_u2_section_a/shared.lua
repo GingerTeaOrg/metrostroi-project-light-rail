@@ -127,6 +127,15 @@ function ENT:InitializeSounds()
 	
 	self.SoundNames["Blinker"] = {"lilly/uf/u2/overhaul/u2_blinker_relay.mp3"}
 	self.SoundPositions["Blinker"] = {10,1e9,Vector(400,-5,200),1}
+
+	self.SoundNames["Blinker_off"] = {"lilly/uf/u2/U2_Blinkerrelais_auslauf.mp3"}
+	self.SoundPositions["Blinker_off"] = {10,1e9,Vector(400,-5,200),1}
+
+	self.SoundNames["Battery_breaker"] = {"lilly/uf/u2/u2_battery_breaker_on.mp3"}
+	self.SoundPositions["Battery_breaker"] = {10,1e9,Vector(400,-5,200),1}
+
+	self.SoundNames["Battery_breaker_off"] = {"lilly/uf/u2/u2_battery_breaker_off.mp3"}
+	self.SoundPositions["Battery_breaker_off"] = {10,1e9,Vector(400,-5,200),1}
 	
 	self.SoundNames["MotorType1"] = {loop=5, "lilly/uf/bogeys/u2/test/engine_loop_primary_start.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary_end.mp3"}
 	self.SoundPositions["MotorType1"] = {1100,1e9,Vector(540,0,70),0.035}

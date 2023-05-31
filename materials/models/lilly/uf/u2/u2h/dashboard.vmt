@@ -2,4 +2,5 @@
 {
 	"$basetexture" "models/lilly/uf/u2/u2h/dashboard"
 	"$envmask"	"models/lilly/uf/u2/u2h/dashboard_env"
+	"$bumpmap" "models/lilly/uf/u2/u2h/dashboard_n"
 }

@@ -51,7 +51,6 @@ if SERVER then
         if #self.Schedule > 0 then
             self.Schedule = {}
             self.AnnounceTimer = nil
-            if self.BuzzWork then self:Queue{"buzz_end"} end
         end
         self:WriteMessage("_STOP")
     end
@@ -100,7 +99,7 @@ if SERVER then
         end
         if #self.Schedule == 0 and self.AnnounceTimer and CurTime() - self.AnnounceTimer > 0 then
             self.AnnounceTimer = nil
-            if self.BuzzWork then self:Queue{"buzz_end"} end
+            
         end
         if #self.Schedule > ANNOUNCER_CACHE_LIMIT then
             self:Reset()

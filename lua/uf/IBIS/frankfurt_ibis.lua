@@ -17,6 +17,10 @@ UF.AddSpecialAnnouncements("Frankfurt",{
     ["16"] = "lilly/uf/IBIS/announcements/special/badesalz/sorry_for_delay.mp3",
 })
 
+UF.AddIBISAnnouncements("Frankfurt",{
+    
+})
+
 UF.AddIBISLines("Frankfurt",{
 
     ["01"] = true,

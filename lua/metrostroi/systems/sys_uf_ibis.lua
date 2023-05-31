@@ -21,7 +21,8 @@ function TRAIN_SYSTEM:Initialize()
     
     self.LineTable = UF.IBISLines[1]
     
-    
+    self.RBLRegisterFailed = false
+    self.RBLRegistered = false
     
     self.RouteTable = UF.IBISRoutes[1]
     
@@ -536,6 +537,9 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     if State == 4 then
         self:BlinkText(true,self.DefectString[self.Train:GetNW2Int("Defect",1)])
     end
+    if State == 5 and Menu == 4 or State == 5 and Menu == 1 then
+        self:BlinkText(true,"Kurs besetzt")
+    end
 
     return
 end
@@ -622,14 +626,30 @@ function TRAIN_SYSTEM:Think()
     end
     
     if self.State == 2 and self.Menu == 4 then
-        if self.KeyInput == "Enter" and self.IndexValid == true then
+        if self.KeyInput == "Enter" and self.IndexValid == true and self.RBLRegistered == true then
             self.Menu = 5
+            print("Got past RBL and index lookup")
         elseif self.KeyInput == "Enter" and self.IndexValid == false then
             self.Menu = 4
             self.State = 3
             --print("Index Number invalid")
             self.Train:SetNW2Bool("IBISError",true)
-            self.ErrorMoment = RealTime()
+            self.ErrorMoment = CurTime()
+        elseif self.KeyInput == "Enter" and self.RBLRegisterFailed == true and self.IndexValid == true then
+            self.State = 5
+            self.Menu = 4
+            self.Train:SetNW2Bool("IBISError",true)
+            self.ErrorMoment = CurTime()
+        end
+    end
+
+    if self.State == 5 and self.Menu == 4 then
+        self.Train:SetNW2Bool("IBISError",false)
+        if CurTime() - self.ErrorMoment > 2 then
+            if self.KeyInput == "Enter" then
+                self.State = 2
+                self.Menu = 4
+            end
         end
     end
     
@@ -694,8 +714,19 @@ function TRAIN_SYSTEM:Think()
             self.Menu = 6
         end
     elseif self.State == 1 and self.Menu == 1 then
-        if self.KeyInput == "Enter" then
+        if self.KeyInput == "Enter" and self.IndexValid == true and self.RBLRegistered == true then
             self.Menu = 0
+        elseif self.KeyInput == "Enter" and self.IndexValid == false then
+            self.Menu = 1
+            self.State = 5
+            --print("Index Number invalid")
+            self.Train:SetNW2Bool("IBISError",true)
+            self.ErrorMoment = CurTime()
+        elseif self.KeyInput == "Enter" and self.RBLRegisterFailed == true then
+            self.State = 5
+            self.Menu = 1
+            self.Train:SetNW2Bool("IBISError",true)
+            self.ErrorMoment = CurTime()
         end
     elseif self.State == 1 and self.Menu == 2 then
         if self.KeyInput == "Enter" and self.IndexValid == true then
@@ -706,7 +737,7 @@ function TRAIN_SYSTEM:Think()
             self.State = 3
             --print("Index Number invalid")
             self.Train:SetNW2Bool("IBISError",true)
-            self.ErrorMoment = RealTime()
+            self.ErrorMoment = CurTime()
         end
     elseif self.State == 1 and self.Menu == 3 then
         if self.KeyInput == "Enter" then
@@ -722,7 +753,7 @@ function TRAIN_SYSTEM:Think()
             else
                 self.State = 3
                 self.Train:SetNW2Bool("IBISError",true)
-                self.ErrorMoment = RealTime()
+                self.ErrorMoment = CurTime()
             end
         end
     end
@@ -801,11 +832,16 @@ function TRAIN_SYSTEM:ReadDataset()
         if self.CourseChar1 > -1 and self.CourseChar2 > -1 and self.CourseChar3 > -1 and self.CourseChar4 > -1 then --reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
             local line = self.CourseChar1..self.CourseChar2
             if self.LineTable[line] then
-                self.IndexValid = true
-                --print(line.."Line Index")
+                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == true then
+                    self.IndexValid = true
+                    self.RBLRegistered = true
+                else
+                    self.IndexValid = true
+                    self.RBLRegisterFailed = true
+                    self.RBLRegistered = false
+                end   
             else
                 self.IndexValid = false
-                --print(line.."Line Index invalid")
             end
             
         end

@@ -11,6 +11,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("DoorsCloseConfirm","Relay","Switch", {bass = true})
     self.Train:LoadSystem("DoorsSelectRight","Relay","Switch", {bass = true})
     self.Train:LoadSystem("DoorsSelectLeft","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("Door1","Relay","Switch",{bass = true})
     self.Train:LoadSystem("Battery","Relay","Switch", {bass = true})
     self.Train:LoadSystem("Headlights","Relay","Switch", {bass = true})
     self.Train:LoadSystem("WarnBlink","Relay","Switch", {bass = true, normally_closed = true})
@@ -59,7 +60,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Destination = 0
     self.DateAndTime = 0
     self.SpecialAnnouncements = 0
-
+    self.Door1 = 0
     self.Bell = 0
     self.Horn = 0
     self.WarningAnnouncement = 0
@@ -74,7 +75,6 @@ function TRAIN_SYSTEM:Initialize()
     self.SetPointRight = 0
     self.SetPointLeft = 0
     self.ThrowCoupler = 0
-    self.OpenDoor1 = 0
     self.DoorsUnlock = 0
     self.DoorCloseSignal = 0
 
@@ -84,5 +84,5 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return {"WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "PassengerLightsOn","PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "DoorsUnlock", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements","Headlights"}
+    return {"WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "PassengerLightsOn","PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements","Headlights"}
 end
