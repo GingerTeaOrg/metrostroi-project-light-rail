@@ -35,8 +35,6 @@ end
 hook.Add("EntityRemoved","UFTrains",function(ent)
     if UF.SpawnedTrains[ent] then
         UF.SpawnedTrains[ent] = nil
-    end
-    if UF.IBISRegisteredTrains[ent] then
         UF.IBISRegisteredTrains[ent] = nil
     end
 end)
@@ -70,6 +68,8 @@ UF.IBISDevicesRegistered = {}
 UF.IBISRegisteredTrains = {}
 
 function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL simulation
+
+    local output = false
     -- Step 1: Check if LineCourse and train are falsy values
     if not LineCourse and not train then
         -- Print statement for Step 1
@@ -78,14 +78,17 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
     end
     if LineCourse == "0000" and next(UF.IBISRegisteredTrains) ~= nil then
         -- If the input is all zeros, we delete ourselves from the table
-        table.remove(UF.IBISRegisteredTrains, train)
-                
-               
+        local line = table.insert(UF.IBISRegisteredTrains, train)
+        print("RBL: Logging IBIS off")
+        
+        UF.IBISRegisteredTrains[line].LineCourse = nil
+        output = "logoff"        
+        
         
     
 
     -- Step 2: Check if UF.IBISRegisteredTrains table is empty
-    elseif next(UF.IBISRegisteredTrains) == nil then
+    elseif next(UF.IBISRegisteredTrains) == nil and LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil then
         -- Print statement for Step 2
         print("UF.IBISRegisteredTrains table is empty. Registering train.")
 
@@ -98,21 +101,22 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         -- Print statement for Step 3
         print("Train registered successfully with LineCourse:", LineCourse)
         
-        return true -- Return true to indicate successful registration
-    else
+        output = true -- Return true to indicate successful registration
+    elseif LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil then
         -- Print statement for Step 4
         print("UF.IBISRegisteredTrains table is not empty. Checking for existing registrations.")
         
         -- Step 4: Iterate over UF.IBISRegisteredTrains table
-        for k, v in ipairs(UF.IBISRegisteredTrains) do
+        for k, v in pairs(UF.IBISRegisteredTrains) do
             -- Step 4b: Check if current train's LineCourse matches the provided LineCourse
-            if v.LineCourse == LineCourse and v ~= train then
+            if v ~= train and v.LineCourse == LineCourse then
                 -- Print statement for Step 4b
                 print("Another train is already registered on the same line course. Registration failed.")
-                return false -- Return false if the train is already registered on the same line course
-            elseif v == train then
+                output = false -- Return false if the train is already registered on the same line course
+                break
+            elseif v == train and v.LineCourse ~= LineCourse then
                 -- Print statement for Step 4c
-                print("Registering train on a different line course.")
+                print("Registering existing train on a different line course.")
 
                 -- Step 4c: Insert train into UF.IBISRegisteredTrains table
                 local line = table.insert(UF.IBISRegisteredTrains, train)
@@ -123,24 +127,16 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
                 -- Print statement for Step 4
                 print("Train registered successfully with LineCourse:", LineCourse)
                 
-                return true -- Return true to indicate successful registration
-            else
-                -- Print statement for Step 4c
-                print("Train is not registered at all, register anew.")
-
-                -- Step 4c: Insert train into UF.IBISRegisteredTrains table
-                local line = table.insert(UF.IBISRegisteredTrains, train)
-                
-                -- Step 4c: Assign LineCourse to the LineCourse field of the newly inserted train
-                UF.IBISRegisteredTrains[line].LineCourse = LineCourse
-                
-                -- Print statement for Step 4
-                print("Train registered successfully with LineCourse:", LineCourse)
-                
-                return true -- Return true to indicate successful registration
+                output = true -- Return true to indicate successful registration
+                break
+            elseif v == train and v.LineCourse == LineCourse then
+                print("Train is already registered by this exact Course. Doing Nothing.")
+                output = true
+                break
             end
         end
     end
+    return output
 end
 
 

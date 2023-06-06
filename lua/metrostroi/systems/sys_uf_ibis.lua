@@ -22,9 +22,14 @@ function TRAIN_SYSTEM:Initialize()
     self.NextStation = 0
     
     self.LineTable = UF.IBISLines[1]
+
+    self.LineLookupComplete = false
+    self.DestinationLookupComplete = false
+    self.RouteLookupComplete = false
     
     self.RBLRegisterFailed = false
     self.RBLRegistered = false
+    self.RBLSignedOff = true
     
     self.RouteTable = UF.IBISRoutes[1]
     
@@ -554,6 +559,10 @@ function TRAIN_SYSTEM:Think()
         self:ReadDataset()
     end
     
+    if self.Menu == 0 and self.State > 0 then
+        self.LineLookupComplete = false
+    end
+
     
     
     
@@ -572,15 +581,18 @@ function TRAIN_SYSTEM:Think()
     
     if self.DestinationChar1 ~= nil and self.DestinationChar1 < 0 then
         self.DisplayedDestinationChar1 = " "
-    else self.DisplayedDestinationChar1 = tostring(self.DestinationChar1)
+    else 
+        self.DisplayedDestinationChar1 = tostring(self.DestinationChar1)
     end
     if self.DestinationChar2 ~= nil and self.DestinationChar2 < 0 then
         self.DisplayedDestinationChar2 = " "
-    else self.DisplayedDestinationChar2 = tostring(self.DestinationChar2)
+    else 
+        self.DisplayedDestinationChar2 = tostring(self.DestinationChar2)
     end
     if self.DestinationChar3 ~= nil and self.DestinationChar3 < 0 then
         self.DisplayedDestinationChar3 = " "
-    else self.DisplayedDestinationChar3 = tostring(self.DestinationChar3)
+    else 
+        self.DisplayedDestinationChar3 = tostring(self.DestinationChar3)
     end
     
     if self.CourseChar1 < 0 then
@@ -646,6 +658,19 @@ function TRAIN_SYSTEM:Think()
             self.Menu = 4
             self.Train:SetNW2Bool("IBISError",true)
             self.ErrorMoment = CurTime()
+        elseif self.KeyInput == "Enter" and self.RBLRegistered == false and self.RBLSignedOff == true then
+            print("IBIS logged off RBL")
+            self.CourseChar1 = "0"
+            self.CourseChar2 = "0"
+            self.CourseChar3 = "0"
+            self.CourseChar4 = "0"
+            self.RouteChar1 = "0"
+            self.RouteChar2 = "0"
+            self.DestinationChar1 = "0"
+            self.DestinationChar2 = "0"
+            self.DestinationChar3 = "0"
+            self.State = 1
+            self.Menu = 0
         end
     end
     
@@ -675,7 +700,7 @@ function TRAIN_SYSTEM:Think()
     end
     
     if self.State == 3 then --IBIS ran into a missing index number of any sort, bumb the current state to 3
-        
+        self.LineLookupComplete = false
         if RealTime() - self.ErrorMoment > 5 then
             if self.KeyInput == "Enter" then
                 self.State = 2
@@ -721,18 +746,31 @@ function TRAIN_SYSTEM:Think()
         end
     elseif self.State == 1 and self.Menu == 1 then
         if self.KeyInput == "Enter" and self.IndexValid == true and self.RBLRegistered == true then
-            self.Menu = 0
+            self.Menu = 5
+            
         elseif self.KeyInput == "Enter" and self.IndexValid == false then
-            self.Menu = 1
-            self.State = 5
+            self.Menu = 4
+            self.State = 3
             --print("Index Number invalid")
             self.Train:SetNW2Bool("IBISError",true)
             self.ErrorMoment = CurTime()
-        elseif self.KeyInput == "Enter" and self.RBLRegisterFailed == true then
+        elseif self.KeyInput == "Enter" and self.RBLRegisterFailed == true and self.IndexValid == true then
             self.State = 5
-            self.Menu = 1
+            self.Menu = 4
             self.Train:SetNW2Bool("IBISError",true)
             self.ErrorMoment = CurTime()
+        elseif self.KeyInput == "Enter" and self.RBLRegistered == false and self.RBLSignedOff == true then
+            self.CourseChar1 = "0"
+            self.CourseChar2 = "0"
+            self.CourseChar3 = "0"
+            self.CourseChar4 = "0"
+            self.RouteChar1 = "0"
+            self.RouteChar2 = "0"
+            self.DestinationChar1 = "0"
+            self.DestinationChar2 = "0"
+            self.DestinationChar3 = "0"
+            self.State = 1
+            self.Menu = 0
         end
     elseif self.State == 1 and self.Menu == 2 then
         if self.KeyInput == "Enter" and self.IndexValid == true then
@@ -872,6 +910,9 @@ function TRAIN_SYSTEM:findNestedValue(table,targetValue)
     
 end
 
+function TRAIN_SYSTEM:RBLPhoneHome()
+end
+
 function TRAIN_SYSTEM:ReadDataset()
     ----print(tonumber(self.CourseChar1..self.CourseChar2,10))
     ----print(self.LineTable[1])
@@ -881,24 +922,36 @@ function TRAIN_SYSTEM:ReadDataset()
         
         if self.CourseChar1 > -1 and self.CourseChar2 > -1 and self.CourseChar3 > -1 and self.CourseChar4 > -1 then --reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
             local line = self.CourseChar1..self.CourseChar2
-            local registered = false
-            if self.LineTable[line] then
+            
+            if self.LineTable[line] ~=nil and self.LineLookupComplete == false then
+                self.LineLookupComplete = true
                 
-                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == true and self.RBLRegistered == false then
+                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == true and self.RBLRegistered == false and self.KeyInput == "Enter" then
                     self.IndexValid = true
                     self.RBLRegistered = true
-                    
+                    self.RBLSignedOff = false
+                    print("IBIS logged onto RBL")
                 elseif self.RBLRegistered == true then
                     self.IndexValid = true
                     self.RBLRegistered = true
-                else
+                    self.RBLRegisterFailed = false
+                    print("IBIS logged onto RBL")
+                elseif UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == false and self.RBLRegistered == false then
                     self.IndexValid = true
                     self.RBLRegisterFailed = true
                     self.RBLRegistered = false
-                    --print("RBL Failed")
-                end   
-            else
+                    
+                end
+            elseif UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == "logoff" and self.RBLRegistered == true then
+                self.IndexValid = true
+                self.RBLSignedOff = true
+                self.RBLRegistered = false
+                self.RBLRegisterFailed = false
+                self.LineLookupComplete = true
+                print("RegisterTrain logged off")
+            elseif self.LineTable[line] == nil and self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4 ~= "0000" then
                 self.IndexValid = false
+                print("Index invalid")
             end
             
         end
@@ -922,16 +975,19 @@ function TRAIN_SYSTEM:ReadDataset()
                     self.Route = 0
                     self.IndexValid = false
                 end
-                
+            elseif self.RouteChar1..self.RouteChar2 == "00" then
+                self.IndexValid = true
             end
         end
         
     elseif self.Menu == 3 and self.State < 3 then
         
-        if tonumber(self.Destination) and tonumber(self.Destination) > 0 then --reference the destination index number with the dataset
+        if tonumber(self.Destination) and tonumber(self.Destination) > -1 then --reference the destination index number with the dataset
             
             if self.DestinationTable[self.Destination] then
                 self.Destination = self.Destination
+                self.IndexValid = true
+            elseif self.DestinationChar1..self.DestinationChar2..self.DestinationChar3 == "000" then
                 self.IndexValid = true
             else
                 self.IndexValid = false

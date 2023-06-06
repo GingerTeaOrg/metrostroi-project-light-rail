@@ -427,6 +427,9 @@ function ENT:Initialize()
 		self.ScrollMomentRecorded = false
 		
 		self.IBISKeyPassed = false
+
+		self.IBISUnlocked = false
+		self.IBISKeyInserted = false
 		
 		self.ScrollModifier = 0
 		
@@ -562,7 +565,7 @@ function ENT:Initialize()
 			[35] = { "light",Vector(326.738,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
 			[36] = { "light",Vector(151.5,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
 			[37] = { "light",Vector(83.7,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
-			[38] = { "light",Vector(416.31,8.34,54.4798), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
+			[38] = { "light",Vector(416.20,8.20,54.4798), Angle(0,0,0), Color(0,90,59),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
 		}
 		
 		
