@@ -570,15 +570,15 @@ function TRAIN_SYSTEM:Think()
         self.DisplayedRouteChar2 = tostring(self.RouteChar2)
     end
     
-    if self.DestinationChar1 < 0 then
+    if self.DestinationChar1 ~= nil and self.DestinationChar1 < 0 then
         self.DisplayedDestinationChar1 = " "
     else self.DisplayedDestinationChar1 = tostring(self.DestinationChar1)
     end
-    if self.DestinationChar2 < 0 then
+    if self.DestinationChar2 ~= nil and self.DestinationChar2 < 0 then
         self.DisplayedDestinationChar2 = " "
     else self.DisplayedDestinationChar2 = tostring(self.DestinationChar2)
     end
-    if self.DestinationChar3 < 0 then
+    if self.DestinationChar3 ~= nil and self.DestinationChar3 < 0 then
         self.DisplayedDestinationChar3 = " "
     else self.DisplayedDestinationChar3 = tostring(self.DestinationChar3)
     end
