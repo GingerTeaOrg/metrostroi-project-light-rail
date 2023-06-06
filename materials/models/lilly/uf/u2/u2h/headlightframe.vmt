@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u2/u2h/headlightframe"
+	$envmap			env_cubemap
+	"$envmapmask" "models/lilly/uf/u2/u2h/headlightframe_b"
+	"$model"	1
+}
