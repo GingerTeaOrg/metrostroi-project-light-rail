@@ -212,9 +212,29 @@ ENT.Spawner = {
 	interim = "gmod_subway_uf_u2_section_a",
 	Metrostroi.Skins.GetTable("Texture","Spawner.Texture",false,"train"),
 	Metrostroi.Skins.GetTable("Texture","Spawner.Texture",false,"cab"),
+
+	--[[spawnfunc = function(i,tbls,tblt)
+        local WagNum = tbls.WagNum
+        if WagNum > 1 then
+			WagNum = 1
+			return WagNum
+			return "gmod_subway_uf_u2_section_a"
+		else
+			return "gmod_subway_uf_u2_section_a"
+		end
+    end,]]
 	
-	{"SpawnMode","Spawner.Common.SpawnMode","List",{"Test",},nil,function(ent,val,rollsign,subtype)end},
-	
+	{"RetroMode","Spawner.U2.RetroMode","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("RetroMode",val and not rot or not val and rot) end},
+	{"IBISData","Spawner.U2.IBISDataset","List",function()
+        local Announcer = {}
+        for k,v in pairs(UF.IBISLines or {}) do Announcer[k] = v.name or k end
+        return Announcer
+    end},
+	{"Rollsign","Spawner.U2.Rollsign","List",function()
+        local Schemes = {}
+        for k,v in pairs(Metrostroi.Skins["U2Rollsigns"] or {}) do Schemes[k] = v.name or k end
+        return Schemes
+    end},
 }
 if CLIENT then
 	function ENT:PlayOnceIBIS(soundid,range,pitch)

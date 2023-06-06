@@ -668,9 +668,11 @@ function TRAIN_SYSTEM:MUHandler()
 	end
 	
 	
-	if self.ThrottleState ~= 0 and self.ReverserState ~= 1 and self.ReverserState ~= 0 then
+	if self.ThrottleState ~= 0 and self.ReverserState ~= 1 and self.ReverserState ~= 0 and self.BatteryOn == true then
 		self.FanTimer = CurTime()
 		self.Train:SetNW2Bool("Fans",true)
+	elseif self.BatteryOn == false then
+		self.Train:SetNW2Bool("Fans",false)
 	end
 	
 	if CurTime() - self.FanTimer > 5 and self.Speed < 5 then

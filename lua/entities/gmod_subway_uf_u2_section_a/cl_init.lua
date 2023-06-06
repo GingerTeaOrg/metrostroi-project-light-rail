@@ -47,6 +47,14 @@ ENT.ClientProps["switching_iron"] = {
     nohide=true,
 }
 
+ENT.ClientProps["RetroEquipment"] = {
+    model = "models/lilly/uf/u2/retroprop.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide=true,
+}
+
 
 
 ENT.ClientProps["Door_fr1"] = {
@@ -54,7 +62,7 @@ ENT.ClientProps["Door_fr1"] = {
 	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
-    hideseat = 1000000,
+    nohide = true,
 }
 
 ENT.ClientProps["Door_fr2"] = {
@@ -62,7 +70,7 @@ ENT.ClientProps["Door_fr2"] = {
 	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
-    hideseat = 1000000,
+    nohide = true,
 }
 
 ENT.ClientProps["Door_fl1"] = {
@@ -70,7 +78,7 @@ ENT.ClientProps["Door_fl1"] = {
 	pos = Vector(721.5,0,0),
 	ang = Angle(0,180,0),
 	scale = 1,
-    hideseat = 1000000,
+    nohide = true,
 }
 
 ENT.ClientProps["Door_fl2"] = {
@@ -78,39 +86,39 @@ ENT.ClientProps["Door_fl2"] = {
 	pos = Vector(721.5,0,0),
 	ang = Angle(0,180,0),
 	scale = 1,
-    hideseat = 1000000,
+    nohide = true,
 }
 
 ENT.ClientProps["Door_rr1"] = {
 	model = "models/lilly/uf/u2/door_h_fr1.mdl",
-	pos = Vector(-243,0,0),
+	pos = Vector(-242,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
-    hideseat = 1000000,
+    nohide = true,
 }
 
 ENT.ClientProps["Door_rr2"] = {
 	model = "models/lilly/uf/u2/door_h_fr2.mdl",
-	pos = Vector(-243,0,0),
+	pos = Vector(-242,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
-    hideseat = 1000000,
+    nohide = true,
 }
 
 ENT.ClientProps["Door_rl1"] = {
 	model = "models/lilly/uf/u2/door_h_fr1.mdl",
-	pos = Vector(478,0,0),
+	pos = Vector(479,0,0),
 	ang = Angle(0,180,0),
 	scale = 1,
-    hideseat = 1000000,
+    nohide = true,
 }
 
 ENT.ClientProps["Door_rl2"] = {
 	model = "models/lilly/uf/u2/door_h_fr2.mdl",
-	pos = Vector(478,0,0),
+	pos = Vector(479,0,0),
 	ang = Angle(0,180,0),
 	scale = 1,
-    hideseat = 1000000,
+    nohide = true,
 }
 
 
@@ -121,12 +129,12 @@ ENT.ClientProps["IBIS"] = {
 	scale = 1,
 }
 
---[[ENT.ClientProps["Pantograph"] = {
+ENT.ClientProps["Pantograph"] = {
 	model = "models/lilly/uf/common/pantograph.mdl",
 	pos = Vector(0,0,0),
 	ang = Angle(0,0,0),
 	scale = 1,
-}]]
+}
 
 ENT.ClientProps["window_cab_l"] = {
 	model = "models/lilly/uf/u2/window_cab_l.mdl",
@@ -146,28 +154,35 @@ ENT.ClientProps["Throttle"] = {
     model = "models/lilly/uf/common/cab/throttle.mdl",
     pos = Vector(0,0,0),
     ang = Angle(0,0,0),
-    hideseat = 0.2,
+    nohide=true,
 }
 
 ENT.ClientProps["drivers_door"] = {
     model = "models/lilly/uf/u2/drivers_door.mdl",
     pos = Vector(0,0,0),
     ang = Angle(0,0,0),
-    hideseat = 5,
+    nohide = true,
 }
 
 ENT.ClientProps["Mirror"] = {
     model = "models/lilly/uf/u2/mirror.mdl",
     pos = Vector(0,0,0),
     ang = Angle(0,0,0),
-    hideseat = 5,
+    nohide = true,
+}
+
+ENT.ClientProps["Mirror_vintage"] = {
+    model = "models/lilly/uf/u2/mirror_vintage.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    nohide = true,
 }
 
 ENT.ClientProps["Speedo"] = {
     model = "models/lilly/uf/u2/cab/speedo.mdl",
     pos = Vector(418.192,10,54.66),
     ang = Angle(-8.7,0,0),
-    hideseat = 0.2,
+    nohide = true,
 }
 
 --[[ENT.ClientProps["BatterySwitch"] = {
@@ -781,6 +796,8 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 
 	
+
+
 	self.IBIS = self:CreateRT("IBIS",512,128)
 	
 
@@ -857,6 +874,14 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 
     self.Speed = self:GetNW2Int("Speed")
+
+    if self:GetNW2Bool("RetroMode",false) == false then
+        self:ShowHide("Mirror_vintage",false)
+        self:ShowHide("Mirror",true)
+    elseif self:GetNW2Bool("RetroMode",false) == true then
+        self:ShowHide("Mirror",false)
+        self:ShowHide("Mirror_vintage",true)
+    end
 	
     if self:GetPackedBool("FlickBatterySwitchOn",false) == true then
         self.BatterySwitch = 1
@@ -867,10 +892,11 @@ function ENT:Think()
     end
     
     self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,0)
+    self:Animate("Mirror_vintage",self:GetNW2Float("Mirror",0),0,100,17,1,0)
     self:Animate("drivers_door",self:GetNW2Float("DriversDoorState",0),0,100,1,1,false)
     self:Animate("blinds_l",self:GetNW2Float("Blinds",0),0,100,50,9,false)
 
-
+    self:ShowHide("RetroEquipment",self:GetNW2Bool("RetroMode",false))
     if self:GetNW2Float("ThrottleStateAnim",0) >= 0.5 then
 	    self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,50,8,false)
     elseif self:GetNW2Float("ThrottleStateAnim",0) <= 0.5 then
@@ -1072,7 +1098,7 @@ function ENT:Think()
                 self:SetSoundState("Fan1",0.4,1,0 )
                 self:SetSoundState("Fan2",0.4,1,0 )
                 self:SetSoundState("Fan3",0.4,1,0 )
-        elseif self:GetNW2Bool("Fans",false) == false and self:GetNW2Bool("BatteryOn",false) == false then
+        elseif self:GetNW2Bool("Fans",false) == false and self:GetNW2Bool("BatteryOn",false) == false or self:GetNW2Bool("Fans",false) == true and self:GetNW2Bool("BatteryOn",false) == false then
 
             self:SetSoundState("Fan1",0,1,1 )
             self:SetSoundState("Fan2",0,1,1 )
@@ -1109,8 +1135,8 @@ function ENT:Think()
 	    
 		if self.StartupSoundPlayed == false then
 		    self.StartupSoundPlayed = true
-		    self:PlayOnce("Startup","cabin",0.4,1)
-            self:PlayOnce("Battery_breaker_on",0.4,1)
+		    --self:PlayOnce("Startup","cabin",0.4,1)
+            self:PlayOnce("Battery_breaker","cabin",20,1)
             self.BatteryBreakerOffSoundPlayed = false
 		end    
 	    
@@ -1121,7 +1147,7 @@ function ENT:Think()
 		self.StartupSoundPlayed = false	
         if self.BatteryBreakerOffSoundPlayed == false then
             self.BatteryBreakerOffSoundPlayed = true
-            self:PlayOnce("Battery_breaker_off",0.4,1)
+            self:PlayOnce("Battery_breaker_off","cabin",20,1)
         end
 
     end

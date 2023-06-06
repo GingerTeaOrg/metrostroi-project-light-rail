@@ -1,5 +1,5 @@
 Metrostroi.AddSkin("train","Def_U2SW",{
-    name = "1978 Stadtwerke",
+    name = "1968 Stadtwerke",
     typ = "U2h",
     textures = {
         main = "models/lilly/uf/u2/u2h/main",
@@ -9,7 +9,7 @@ Metrostroi.AddSkin("train","Def_U2SW",{
 })
 
 Metrostroi.AddSkin("train","Def_U2FVV",{
-    name = "1978 FVV",
+    name = "1968 FVV",
     typ = "U2h",
     textures = {
         decals = "models/lilly/uf/u2/u2h/decals-FVV",
@@ -17,7 +17,7 @@ Metrostroi.AddSkin("train","Def_U2FVV",{
     }
 })
 Metrostroi.AddSkin("train","Def_U2FVV_b",{
-    name = "1978 FVV",
+    name = "1968 FVV",
     typ = "U2hb",
     textures = {
         decals = "models/lilly/uf/u2/u2h/decals-FVV",
@@ -89,7 +89,7 @@ Metrostroi.AddSkin("train","pride_b",{
     }
 })
 Metrostroi.AddSkin("train","SVB",{
-    name = "Subaru VistaBlue VGF",
+    name = "1996",
     typ = "U2h",
     textures = {
 		main_b = "models/lilly/uf/u2/u2h/svb-main_b",
@@ -97,11 +97,12 @@ Metrostroi.AddSkin("train","SVB",{
         main_left = "models/lilly/uf/u2/u2h/svb-main-left",
 		door_external = "models/lilly/uf/u2/u2h/door_external_svb",
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
+        jointdecal = "models/lilly/uf/u2/u2h/jointdecal_vgf",
 
     }
 })
 Metrostroi.AddSkin("train","SVB_b",{
-    name = "Subaru VistaBlue VGF",
+    name = "1996",
     typ = "U2hb",
     textures = {
         main_b = "models/lilly/uf/u2/u2h/svb-main_b",
@@ -112,7 +113,7 @@ Metrostroi.AddSkin("train","SVB_b",{
 })
 
 Metrostroi.AddSkin("train","OrEb",{
-    name = "Orange Ebony VGF",
+    name = "1981 VGF",
     typ = "U2h",
     textures = {
         main = "models/lilly/uf/u2/u2h/orange-main",
@@ -123,7 +124,7 @@ Metrostroi.AddSkin("train","OrEb",{
     }
 })
 Metrostroi.AddSkin("train","OrEb_b",{
-    name = "Orange Ebony VGF",
+    name = "1981 VGF",
     typ = "U2hb",
     textures = {
         main_b = "models/lilly/uf/u2/u2h/orange_main-b",
@@ -134,7 +135,7 @@ Metrostroi.AddSkin("train","OrEb_b",{
 })
 
 Metrostroi.AddSkin("train","OrEbSW",{
-    name = "Orange Ebony Stadtwerke",
+    name = "1981 Stadtwerke",
     typ = "U2h",
     textures = {
         main = "models/lilly/uf/u2/u2h/orange-main",
@@ -145,7 +146,7 @@ Metrostroi.AddSkin("train","OrEbSW",{
     }
 })
 Metrostroi.AddSkin("train","OrEbSW_b",{
-    name = "Orange Ebony Stadtwerke",
+    name = "1981 Stadtwerke",
     typ = "U2hb",
     textures = {
         main_b = "models/lilly/uf/u2/u2h/orange_main-b",
@@ -155,6 +156,8 @@ Metrostroi.AddSkin("train","OrEbSW_b",{
         door_external = "models/lilly/uf/u2/u2h/door_external_orange",
     }
 })
+
+
 
 --[[
 

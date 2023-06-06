@@ -280,7 +280,12 @@ ENT.SyncTable = {"Headlights","WarnBlink","Microphone","BellEngage","Horn","Warn
 function ENT:Initialize()
 	
 	-- Set model and initialize
-	self:SetModel("models/lilly/uf/u2/u2h.mdl")
+	if self:GetNW2Bool("RetroMode",false) == true then
+		self:SetModel("models/lilly/uf/u2/u2_vintage.mdl")
+	elseif self:GetNW2Bool("RetroMode",false) == false then
+		self:SetModel("models/lilly/uf/u2/u2h.mdl")
+	end
+	print(self:GetNW2Bool("RetroMode"))
 	self.BaseClass.Initialize(self)
 	self:SetPos(self:GetPos() + Vector(0,0,10))  --set to 200 if one unit spawns in ground
 	
@@ -306,12 +311,12 @@ function ENT:Initialize()
 		["Door34a"] = 0,
 		["Door56a"] = 0,
 		["Door78a"] = 0,}
-		self.DoorStatesLeft = {
-			["Door12b"] = 0,
-			["Door34b"] = 0,
-			["Door56b"] = 0,
-			["Door78b"] = 0,
-		}
+	self.DoorStatesLeft = {
+		["Door12b"] = 0,
+		["Door34b"] = 0,
+		["Door56b"] = 0,
+		["Door78b"] = 0,
+	}
 		self.DoorsUnlocked = false
 		self.DoorsPreviouslyUnlocked = false
 		self.RandomnessCalulated = false
@@ -341,7 +346,7 @@ function ENT:Initialize()
 		
 		self.DoorsOpen = false
 		-- Create bogeys
-		self.FrontBogey = self:CreateBogeyUF(Vector( 300,0,0),Angle(0,180,0),true,"duewag_motor")
+		self.FrontBogey = self:CreateBogeyUF(Vector( 295,0,0),Angle(0,180,0),true,"duewag_motor")
 		self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,0),Angle(0,0,0),false,"u2joint")
 		self:SetNW2Entity("FrontBogey",self.FrontBogey)
 		self.MiddleBogey:SetNW2Entity("MainTrain",self)
@@ -355,7 +360,7 @@ function ENT:Initialize()
 		
 		-- Create U2 Section B
 		self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
-		self.RearBogey = self:CreateBogeyUF_b(Vector( -300,0,0),Angle(0,180,0),false,"duewag_motor")
+		self.RearBogey = self:CreateBogeyUF_b(Vector( -295,0,0),Angle(0,180,0),false,"duewag_motor")
 		self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,2),Angle(0,180,0),true,"u2")	
 		--self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
 		--self:GetPhysicsObject():SetMass(50000)
@@ -572,9 +577,14 @@ function ENT:Initialize()
 			},
 			
 		}
-		
-		
+	if self:GetNW2Bool("RetroMode",false) == true then
+		self:SetModel("models/lilly/uf/u2/u2_vintage.mdl")
+	elseif self:GetNW2Bool("RetroMode",false) == false then
+		self:SetModel("models/lilly/uf/u2/u2h.mdl")
 	end
+		
+		
+end
 	
 	
 	
@@ -617,9 +627,15 @@ function ENT:Initialize()
 	
 	function ENT:Think(dT)
 		self.BaseClass.Think(self)
+
+
+		if self:GetNW2Bool("RetroMode",false) == true and self:GetNW2Bool("ModelOverrideDone",false) == false then
+			self:SetModel("models/lilly/uf/u2/u2_vintage.mdl")
+			self:SetNW2Bool("ModelOverrideDone",true)
+		end
 		
 		--print(table.ToString(UF.IBISLines[1]))
-		print(UF.RegisterTrain("0123",self))
+		--print(UF.RegisterTrain("0123",self))
 		
 		if self.DoorSideUnlocked == "Left" and self.DoorsUnlocked == true and self.Door1 ~= true then
 			self:DoorHandler(true,true,false,false)

@@ -2,7 +2,9 @@ Metrostroi.DefineSystem("IBIS")
 TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 function TRAIN_SYSTEM:Initialize()
+    
 
+    
     if self.Train.WagNum then self.SerialNum = self.Train.WagNum..math.random(1000,2000) end
     self.Route = 0 --Route index number
     self.RouteChar1 = -1
@@ -56,7 +58,7 @@ function TRAIN_SYSTEM:Initialize()
     self.IndexValid = false
     
     self.DefectChance = math.random(0,100)
-    self.LastRoll = RealTime()
+    self.LastRoll = CurTime()
     
     self.Destination = 0 --Destination index number
     self.DestinationChar1 = -1
@@ -65,7 +67,7 @@ function TRAIN_SYSTEM:Initialize()
     self.DisplayedDestinationChar1 = 0
     self.DisplayedDestinationChar2 = 0
     self.DisplayedDestinationChar3 = 0
-
+    
     self.AnnouncementChar1 = 0
     self.AnnouncementChar2 = 0
     self.SpecialAnnouncement = 0
@@ -129,6 +131,8 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 if TURBOSTROI then return end
+
+
 
 function TRAIN_SYSTEM:Inputs()
     return {"KeyInput","Power"}
@@ -273,7 +277,7 @@ function TRAIN_SYSTEM:Trigger(name,time)
             else
                 self.KeyInput = nil
             end
-              
+            
         elseif name == nil then
             self.KeyInput = nil
             self.KeyRegistered = false
@@ -484,13 +488,13 @@ function TRAIN_SYSTEM:IBISScreen(Train)
             self:PrintText(11,1.5,Destination)
             return 
         end
-
+        
         if Menu == 6 then
             self:PrintText(0,1.5,"Ansage      :")
             self:PrintText(13.5,1.5,SpecialAnnouncement)
             return
         end
-
+        
         if Menu == 0 then
             self:PrintText(1.5,6,Destination)
             self:PrintText(5.6,6,Course)
@@ -540,7 +544,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     if State == 5 and Menu == 4 or State == 5 and Menu == 1 then
         self:BlinkText(true,"Kurs besetzt")
     end
-
+    
     return
 end
 
@@ -549,6 +553,8 @@ function TRAIN_SYSTEM:Think()
     if self.Menu > 0 then
         self:ReadDataset()
     end
+    
+    
     
     
     --Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
@@ -642,7 +648,7 @@ function TRAIN_SYSTEM:Think()
             self.ErrorMoment = CurTime()
         end
     end
-
+    
     if self.State == 5 and self.Menu == 4 then
         self.Train:SetNW2Bool("IBISError",false)
         if CurTime() - self.ErrorMoment > 2 then
@@ -664,7 +670,7 @@ function TRAIN_SYSTEM:Think()
             self.Train:SetNW2Bool("IBISError",true)
             self.ErrorMoment = RealTime()
         end
-    
+        
         
     end
     
@@ -677,7 +683,7 @@ function TRAIN_SYSTEM:Think()
             end
         end
     end
-
+    
     if self.State == 4 then --We're in the defect state
         
         if self.KeyInput == "Enter" then --just confirm. Some IBIS devices just thought stuff was broken while it wasn't.
@@ -757,8 +763,52 @@ function TRAIN_SYSTEM:Think()
             end
         end
     end
-
     
+    if self.State == 0 then
+        
+        self.BootupComplete = false
+        self.Course = 0 --Course index number, format is LineLineCourseCourse
+        self.CourseChar1 = -1
+        self.CourseChar2 = -1
+        self.CourseChar3 = -1
+        self.CourseChar4 = -1
+        self.CourseChar5 = -1
+        self.DisplayedCourseChar1 = 0
+        self.DisplayedCourseChar2 = 0
+        self.DisplayedCourseChar3 = 0
+        self.DisplayedCourseChar4 = 0
+        self.DisplayedCourseChar5 = 0
+        
+        self.Route = 0 --Route index number
+        self.RouteChar1 = -1
+        self.RouteChar2 = -1
+        self.DisplayedRouteChar1 = 0
+        self.DisplayedRouteChar2 = 0
+        
+        self.DestinationText = ""
+        self.Destination = ""
+        self.FirstStation = 0
+        self.FirstStationString = ""
+        self.CurrentStatonString = ""
+        self.CurrentStation = 0
+        self.NextStationString = ""
+        self.NextStation = 0
+        self.JustBooted = false
+        self.PowerOn = 0
+        self.Destination = 0 --Destination index number
+        self.DestinationChar1 = -1
+        self.DestinationChar2 = -1
+        self.DestinationChar3 = -1
+        self.DisplayedDestinationChar1 = 0
+        self.DisplayedDestinationChar2 = 0
+        self.DisplayedDestinationChar3 = 0
+        
+        self.AnnouncementChar1 = 0
+        self.AnnouncementChar2 = 0
+        self.SpecialAnnouncement = 0
+        
+        self.CurrentStationInternal = 0
+    end
     
     
     
@@ -827,26 +877,32 @@ function TRAIN_SYSTEM:ReadDataset()
     ----print(self.LineTable[1])
     ----print(tonumber(string.sub(self.Course, 1, 2)))
     --print(self.LineTable["01"])
-    if self.Menu == 1 or self.Menu == 4 then
+    if self.Menu == 1 and self.State < 3 or self.Menu == 4 and self.State < 3 then
         
         if self.CourseChar1 > -1 and self.CourseChar2 > -1 and self.CourseChar3 > -1 and self.CourseChar4 > -1 then --reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
             local line = self.CourseChar1..self.CourseChar2
+            local registered = false
             if self.LineTable[line] then
-                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == true then
+                
+                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == true and self.RBLRegistered == false then
                     self.IndexValid = true
                     self.RBLRegistered = true
-                elseif UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == false then
+                    
+                elseif self.RBLRegistered == true then
+                    self.IndexValid = true
+                    self.RBLRegistered = true
+                else
                     self.IndexValid = true
                     self.RBLRegisterFailed = true
                     self.RBLRegistered = false
-                    print("RBL Failed")
+                    --print("RBL Failed")
                 end   
             else
                 self.IndexValid = false
             end
             
         end
-    elseif self.Menu == 2 or self.Menu == 5 then
+    elseif self.Menu == 2 and self.State < 3 or self.Menu == 5 and self.State < 3 then
         if self.RouteChar1 > -1 and self.RouteChar2 > -1 then
             local line = self.CourseChar1..self.CourseChar2
             if self.RouteTable[line] then
@@ -870,7 +926,7 @@ function TRAIN_SYSTEM:ReadDataset()
             end
         end
         
-    elseif self.Menu == 3 then
+    elseif self.Menu == 3 and self.State < 3 then
         
         if tonumber(self.Destination) and tonumber(self.Destination) > 0 then --reference the destination index number with the dataset
             
@@ -881,7 +937,7 @@ function TRAIN_SYSTEM:ReadDataset()
                 self.IndexValid = false
             end
         end
-    elseif self.Menu == 6 then
+    elseif self.Menu == 6 and self.State < 3 then
         
         if self.ServiceAnnouncements[self.ServiceAnnouncement] then
             self.ServiceAnnouncement = self.ServiceAnnouncement
@@ -1133,7 +1189,7 @@ if SERVER then
                     self.AnnouncementChar1 = self.AnnouncementChar2					
                     
                     
-                        self.AnnouncementChar2 = self.KeyInput
+                    self.AnnouncementChar2 = self.KeyInput
                     
                 end
             end
@@ -1142,7 +1198,7 @@ if SERVER then
 end
 
 function TRAIN_SYSTEM:DisasterTicker() --Generate a random chance for defect simulation
-
+    
     if CurTime() - self.LastRoll > 10 and self.State ~= 4 then
         local randomNumber = math.Random(1, 10000)
         if randomnumber <= 1 then
@@ -1151,8 +1207,8 @@ function TRAIN_SYSTEM:DisasterTicker() --Generate a random chance for defect sim
         end
         self.LastRoll = CurTime()
     end
-
-
-
-
+    
+    
+    
+    
 end

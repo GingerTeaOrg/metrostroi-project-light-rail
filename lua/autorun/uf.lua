@@ -1,6 +1,4 @@
-if SERVER then
-    --include("autorun/metrostroi.lua")
-end
+
 if not UF then
     -- Global library
     UF = {}
@@ -71,20 +69,81 @@ UF.IBISDevicesRegistered = {}
 
 UF.IBISRegisteredTrains = {}
 
-function UF.RegisterTrain(LineCourse,train)
-    if not LineCourse and not train then return end
-    for key, value in ipairs(UF.IBISRegisteredTrains) do
-        if value == LineCourse then
-            return false
-        else
-            table.insert(UF.IBISRegisteredTrains, train[LineCourse])
-            --UF.IBISRegisteredTrains[train] = LineCourse
-            return true
-        end
+function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL simulation
+    -- Step 1: Check if LineCourse and train are falsy values
+    if not LineCourse and not train then
+        -- Print statement for Step 1
+        print("LineCourse and train are falsy values. Exiting function.")
+        return -- Return without performing any further actions
     end
+    if LineCourse == "0000" and next(UF.IBISRegisteredTrains) ~= nil then
+        -- If the input is all zeros, we delete ourselves from the table
+        table.remove(UF.IBISRegisteredTrains, train)
+                
+               
+        
     
 
+    -- Step 2: Check if UF.IBISRegisteredTrains table is empty
+    elseif next(UF.IBISRegisteredTrains) == nil then
+        -- Print statement for Step 2
+        print("UF.IBISRegisteredTrains table is empty. Registering train.")
+
+        -- Step 3a: Insert train into UF.IBISRegisteredTrains table
+        local line = table.insert(UF.IBISRegisteredTrains, train)
+        
+        -- Step 3b: Assign LineCourse to the LineCourse field of the newly inserted train
+        UF.IBISRegisteredTrains[line].LineCourse = LineCourse
+        
+        -- Print statement for Step 3
+        print("Train registered successfully with LineCourse:", LineCourse)
+        
+        return true -- Return true to indicate successful registration
+    else
+        -- Print statement for Step 4
+        print("UF.IBISRegisteredTrains table is not empty. Checking for existing registrations.")
+        
+        -- Step 4: Iterate over UF.IBISRegisteredTrains table
+        for k, v in ipairs(UF.IBISRegisteredTrains) do
+            -- Step 4b: Check if current train's LineCourse matches the provided LineCourse
+            if v.LineCourse == LineCourse and v ~= train then
+                -- Print statement for Step 4b
+                print("Another train is already registered on the same line course. Registration failed.")
+                return false -- Return false if the train is already registered on the same line course
+            elseif v == train then
+                -- Print statement for Step 4c
+                print("Registering train on a different line course.")
+
+                -- Step 4c: Insert train into UF.IBISRegisteredTrains table
+                local line = table.insert(UF.IBISRegisteredTrains, train)
+                
+                -- Step 4c: Assign LineCourse to the LineCourse field of the newly inserted train
+                UF.IBISRegisteredTrains[line].LineCourse = LineCourse
+                
+                -- Print statement for Step 4
+                print("Train registered successfully with LineCourse:", LineCourse)
+                
+                return true -- Return true to indicate successful registration
+            else
+                -- Print statement for Step 4c
+                print("Train is not registered at all, register anew.")
+
+                -- Step 4c: Insert train into UF.IBISRegisteredTrains table
+                local line = table.insert(UF.IBISRegisteredTrains, train)
+                
+                -- Step 4c: Assign LineCourse to the LineCourse field of the newly inserted train
+                UF.IBISRegisteredTrains[line].LineCourse = LineCourse
+                
+                -- Print statement for Step 4
+                print("Train registered successfully with LineCourse:", LineCourse)
+                
+                return true -- Return true to indicate successful registration
+            end
+        end
+    end
 end
+
+
 
 function UF.AddIBISCommonFiles(name,datatable)
     if not datatable then return end
