@@ -48,7 +48,7 @@ function TRAIN_SYSTEM:Initialize()
     self.KeyInputDone = false
     
     self.BootupComplete = false
-    self.Course = 0 --Course index number, format is LineLineCourseCourse
+    self.Course = "0" --Course index number, format is LineLineCourseCourse
     self.CourseChar1 = -1
     self.CourseChar2 = -1
     self.CourseChar3 = -1
@@ -923,6 +923,7 @@ function TRAIN_SYSTEM:Think()
     
     self:InputProcessor(self.KeyInput)
     self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4
+    --print(self.Course)
     if self.KeyInput ~= nil then
         --print(self.KeyInput)
     end
@@ -933,7 +934,7 @@ function TRAIN_SYSTEM:Think()
     else
     end
     
-    if self.CurrentStation > -1 and self.CurrentStation ~= nil and self.CurrentStation ~= 0 then
+    if self.CurrentStation ~= -1 and self.CurrentStation ~= nil and self.CurrentStation ~= 0 then
         self.Train:SetNW2String("CurrentStation",self.DestinationTable[self.CurrentStation])
     elseif self.CurrentStation == 0 then
         self.Train:SetNW2String("CurrentStation"," ")
@@ -970,7 +971,7 @@ function TRAIN_SYSTEM:ReadDataset()
             if self.LineTable[line] ~=nil then
                 
                 
-                if self:RBLPhoneHome() == true and self.RBLRegistered == false and self.KeyInput == "Enter" then
+                if self:RBLPhoneHome() == true and self.RBLRegistered == false then
                     self.IndexValid = true
                     self.RBLRegistered = true
                     self.RBLSignedOff = false
@@ -1027,9 +1028,16 @@ function TRAIN_SYSTEM:ReadDataset()
                 self.IndexValid = true
                 self.Route = 0
                 self.CurrentStation = 0
+                self.CurrentStationInternal = 0
             end
         end
-        
+    elseif self.Menu == 1 and self.State < 3 or self.Menu == 4 and self.State < 3 then
+        if self.RouteChar1..self.RouteChar2 == "00" then
+                self.IndexValid = true
+                self.Route = 0
+                self.CurrentStation = 0
+                self.CurrentStationInternal = 0
+        end
     elseif self.Menu == 3 and self.State < 3 then
         
         if tonumber(self.Destination) and tonumber(self.Destination) > -1 then --reference the destination index number with the dataset
@@ -1133,7 +1141,6 @@ if SERVER then
     
     function TRAIN_SYSTEM:InputProcessor(Input)
         if self.Menu == 4 or self.Menu == 1 then
-            self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4
             if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter"  then
                 if self.CourseChar4 == -1 and self.CourseChar3 == -1 and self.CourseChar2 == -1 and self.CourseChar1 == -1 then
                     

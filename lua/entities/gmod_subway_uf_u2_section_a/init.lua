@@ -274,7 +274,7 @@ end
 ENT.BogeyDistance = 1100
 
 
-ENT.SyncTable = {"Headlights","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm","PassengerLights", "SetHoldingBrake", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
+ENT.SyncTable = {"SetHoldingBrake","DoorsLock","DoorsUnlock","PantographRaise","PantographLower","Headlights","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm","ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "SetPointRight", "SetPointLeft", "ThrowCoupler", "OpenDoor1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
 
 
 function ENT:Initialize()
@@ -457,7 +457,7 @@ function ENT:Initialize()
 			[KEY_SPACE] = "DeadmanSet",
 			[KEY_W] = "ReverserUpSet",
 			[KEY_S] = "ReverserDownSet",
-			[KEY_P] = "PantoUpSet",
+			[KEY_P] = "PantographRaiseSet",
 			[KEY_O] = "DoorsUnlockSet",
 			[KEY_I] = "DoorsLockSet",
 			[KEY_K] = "DoorsCloseConfirmSet",
@@ -492,7 +492,7 @@ function ENT:Initialize()
 				[KEY_B] = "BatteryDisableToggle",
 				[KEY_PAGEUP] = "Rollsign+",
 				[KEY_PAGEDOWN] = "Rollsign-",
-				[KEY_O] = "OpenDoor1Set",
+				[KEY_O] = "Door1Set",
 				[KEY_1] = "Throttle10-Pct",
 				[KEY_2] = "Throttle20-Pct",
 				[KEY_3] = "Throttle30-Pct",
@@ -502,6 +502,7 @@ function ENT:Initialize()
 				[KEY_7] = "Throttle70-Pct",
 				[KEY_8] = "Throttle80-Pct",
 				[KEY_9] = "Throttle90-Pct",
+				[KEY_P] = "PantographLowerSet",
 			},
 			
 			[KEY_LALT] = {
@@ -680,13 +681,11 @@ end
 		
 		------print(self:GetNW2Float("MotorPower"))
 		
-		self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
+		--self:SetPackedBool("WarnBlink",Panel.WarnBlink > 0)
 		self:SetPackedBool("WarningAnnouncement",Panel.WarningAnnouncement > 0)
-		self:SetPackedBool("SetHoldingBrake",Panel.SetHoldingBrake > 0)
-		self:SetPackedBool("PassengerOverground",Panel.PassengerLightsOff > 0)
-		self:SetPackedBool("PassengerUnderground",Panel.PassengerLightsOn > 0)
-		self:SetPackedBool("SetPointLeft",Panel.SetPointLeft > 0)
-		self:SetPackedBool("SetPointRight",Panel.SetPointLeft > 0)
+		--self:SetPackedBool("SetHoldingBrake",Panel.SetHoldingBrake > 0)
+		--self:SetPackedBool("SetPointLeft",Panel.SetPointLeft > 0)
+		--self:SetPackedBool("SetPointRight",Panel.SetPointLeft > 0)
 		self:SetPackedBool("AnnPlay",self.Panel.AnnouncerPlaying > 0)
 		
 		
@@ -1273,8 +1272,20 @@ end
 
 
 function ENT:OnButtonPress(button,ply)
+
+	if button == "PassengerOvergroundSet" then
+		self.Panel.PassengerOverground = 1
+	end
+	if button == "PassengerUndergroundSet" then
+		self.Panel.PassengerUnderground = 1
+	end
 	
-	
+	if button == "SetPointLeftSet" then
+		self.Panel.SetPointLeft = 1
+	end
+	if button == "SetPointRightSet" then
+		self.Panel.SetPointRight = 1
+	end
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
 	if self.Duewag_U2.ThrottleRate == 0 then
 		if button == "ThrottleUp" then self.Duewag_U2.ThrottleRate = 3 end
@@ -1293,16 +1304,11 @@ function ENT:OnButtonPress(button,ply)
 		
 	end
 	
-	if button == "OpenDoor1Set" then
-		
-		if self.Door1 == false then
-			self.Door1 = true
-		end
-	end
 	
 	
 	if button == "Door1Set" then
 		self.Door1 = true
+		self.Panel.Door1 = 1
 	end
 	
 	if self.Duewag_U2.ThrottleRate == 0 then
@@ -1369,21 +1375,8 @@ function ENT:OnButtonPress(button,ply)
 		self.Duewag_U2.ThrottleState = -90
 	end
 	
-	if button == "PantoUp" then
-		if self.PantoUp == false then
-			self.PantoUp = true 
-			self.Duewag_U2:TriggerInput("PantoUp",self.KeyPantoUp)
-			self:SetPackedBool("PantoUp",true)
-			PrintMessage(HUD_PRINTTALK, "Panto is up")
-		else
-			
-			if  self.PantoUp == true then
-				self.PantoUp = false
-				self.Duewag_U2:TriggerInput("PantoUp",0)
-				self:SetPackedBool("PantoUp",0)
-				PrintMessage(HUD_PRINTTALK, "Panto is down")
-			end
-		end
+	if button == "PantographRaiseSet" then
+		self.Panel.PantographRaise = 1
 		
 	end
 	
@@ -1602,7 +1595,7 @@ function ENT:OnButtonPress(button,ply)
 		if self:ReadTrainWire(5) > 1 and self.Duewag_U2.Speed < 1 then
 			self.FrontCouple:Decouple()
 		end
-		self:SetPackedBool("ThrowCoupler",true)
+		self.Panel.ThrowCoupler = 1
 	end
 	
 	if button == "DriverLightToggle" then
@@ -1685,7 +1678,7 @@ function ENT:OnButtonPress(button,ply)
 		
 		self.DoorsUnlocked = true
 		self.DepartureConfirmed = false
-		
+		self.Panel.DoorsUnlockSet = 1
 	end
 	
 	
@@ -1701,7 +1694,7 @@ function ENT:OnButtonPress(button,ply)
 		self.RandomnessCalculated = false
 		self.DoorsUnlocked = false
 		self.Door1 = false
-		
+		self.Panel.DoorsLock = 1
 		
 	end
 	
@@ -1714,7 +1707,13 @@ function ENT:OnButtonPress(button,ply)
 	if button == "SetHoldingBrakeSet" then
 		
 		self.Duewag_U2.ManualRetainerBrake = true
+		self.Panel.SetHoldingBrake = 1
 	end
+
+	if button == "ReleaseHoldingBrakeSet" then
+		
+		self.Panel.ReleaseHoldingBrake = 1
+	end	
 	
 	if button == "ReleaseHoldingBrakeSet" then
 		
@@ -1914,11 +1913,55 @@ end
 
 
 function ENT:OnButtonRelease(button,ply)
+
+	if button == "PassengerOvergroundSet" then
+		self.Panel.PassengerOverground = 0
+	end
+	if button == "PassengerUndergroundSet" then
+		self.Panel.PassengerUnderground = 0
+	end
+
+
+	if button == "ReleaseHoldingBrakeSet" then
+		
+		self.Panel.ReleaseHoldingBrake = 0
+	end	
+
+
+	if button == "SetHoldingBrakeSet" then
+		
+
+		self.Panel.SetHoldingBrake = 0
+	end
+
+	if button == "SetPointLeftSet" then
+		self.Panel.SetPointLeft = 0
+	end
+	if button == "SetPointRightSet" then
+		self.Panel.SetPointRight = 0
+	end
+
+	if button == "DoorsLockSet"  then
+		
+		self.Panel.DoorsLock = 0
+		
+	end
+	if button == "DoorsUnlockSet"  then
+		self.Panel.DoorsUnlockSet = 0
+	end
 	
-	
-	
+	if button == "Door1Set" then
+		self.Panel.Door1 = 0
+	end
+	if button == "PantographRaiseSet" then
+		self.Panel.PantographRaise = 0
+		
+	end
+	if button == "ThrowCouplerSet" then
+		self.Panel.ThrowCoupler = 0
+	end
 	if button == "EmergencyBrakeSet" then
-		--self:SetNW2Bool("EmergencyBrake",false)
+		
 	end
 	
 	if (button == "ThrottleUp" and self.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDown" and self.Duewag_U2.ThrottleRate < 0) then

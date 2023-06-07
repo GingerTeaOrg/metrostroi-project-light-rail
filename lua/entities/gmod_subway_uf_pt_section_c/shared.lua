@@ -17,7 +17,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_Deadman")
 	self:LoadSystem("Duewag_Pt")
 end
-
+ENT.NumberRanges = {{700,780}}
 ENT.SubwayTrain = {
     Type = "P8",
     Name = "Pt",

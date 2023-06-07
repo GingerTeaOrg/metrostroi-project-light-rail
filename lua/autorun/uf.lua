@@ -87,7 +87,7 @@ end]]
 
 function UF.checkDuplicateValue(table, target)
     local foundDuplicate = false -- Initialize variable to track duplicate value
-    for key, value in pairs(table) do
+    for key, value in ipairs(table) do
         -- Check if the value is equal to the target
         if value == target then
             foundDuplicate = true -- Found a duplicate value
@@ -129,9 +129,6 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             return -- Return without performing any further actions
         end
         if LineCourse == "0000" and next(UF.IBISRegisteredTrains) ~= nil then
-            output = "logoff"
-        end
-        if LineCourse == "0000" and next(UF.IBISRegisteredTrains) ~= nil then
             -- If the input is all zeros, we delete ourselves from the table
             for i, v in ipairs(UF.IBISRegisteredTrains) do
                 if v == train then
@@ -151,7 +148,7 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             -- Step 3b: Assign LineCourse to the LineCourse field of the newly inserted train
             
             UF.IBISRegisteredTrains[train] = LineCourse
-            
+            print(train, LineCourse)
             -- Print statement for Step 3
             print("Train registered successfully with LineCourse:", LineCourse)
             
@@ -159,7 +156,7 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             
         elseif LineCourse ~= "0000" and #LineCourse == 4 and LineCourse then
             
-            if UF.IBISRegisteredTrains[train].LineCourse == LineCourse then
+            if UF.IBISRegisteredTrains[train] and UF.IBISRegisteredTrains[train].LineCourse == LineCourse then
                 print("Train is already registered by this exact Course. Doing Nothing.")
                 output = true
                 
@@ -187,7 +184,8 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             
             
         end
-        print(output)
+        --print(output)
+        --print(LineCourse)
         return output
     end
     
