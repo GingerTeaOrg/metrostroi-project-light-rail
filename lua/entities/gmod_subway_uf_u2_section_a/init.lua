@@ -551,8 +551,8 @@ function ENT:Initialize()
 			[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
 			[54] = { "light",Vector(426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
 			[55] = { "light",Vector(426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-			[56] = { "light",Vector(426.5,31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-			[57] = { "light",Vector(426.5,-31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+			[56] = { "light",Vector(426,31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+			[57] = { "light",Vector(426,-31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
 			[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 			[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 			[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
@@ -2149,19 +2149,10 @@ function ENT:Blink(enable, left, right)
 		self:SetLightPower(49,self.BlinkerOn and right)
 		self:SetLightPower(38,self.BlinkerOn and right or left and self.BlinkerOn)
 		self.u2sectionb.BlinkerRight = self.BlinkerOn and right
+		self:SetLightPower(56,self.BlinkerOn and left and right)
+		self:SetLightPower(57,self.BlinkerOn and left and right)
 		
-		if self.BlinkerOn and left and right then
-			self:SetLightPower(56,self.BlinkerOn)
-			self:SetLightPower(57,self.BlinkerOn)
-			self:SetLightPower(38,self.BlinkerOn and left and right)
-		end
 		
-		if self.BlinkerOn and left == true then
-			self:SetLightPower(38,self.BlinkerOn and left)
-		end
-		if self.BlinkerOn and right == true then
-			self:SetLightPower(38,self.BlinkerOn and right)
-		end
 		
 		self:SetNW2Bool("BlinkerTick",self.BlinkerOn) --one tick sound for the blinker relay
 	end

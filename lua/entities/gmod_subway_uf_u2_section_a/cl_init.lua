@@ -516,8 +516,8 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },]]
-    {ID = "DoorSideSelectToggle", x=531, y=46, radius=10, tooltip = "Select door set to unlock", model = {
-        model = "models/lilly/uf/common/cab/button_orange.mdl", z=0, ang=0,
+    {ID = "DoorSideSelectToggle", x=396.5, y=18, radius=10, tooltip = "Select door set to unlock", model = {
+        model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=0, ang=180,
         var="main",speed=1, vmin=0, vmax=1,
         sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
@@ -745,7 +745,7 @@ ENT.ButtonMap["Left"] = {
             model="models/lilly/uf/u2/cab/switch_flick.mdl",
             z=-3, ang=180,
             var="WarningBlinker",
-            sndvol = 1, snd = function(val) return val and "button" or "button" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
+            sndvol = 1, snd = function(val,val2) return val and "switch_panel_up" or "switch_panel_down" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
         {ID = "ReduceBrakeSet", x=44, y=11.5, radius=7, tooltip = "Reduce track brake intensity", model = {
             z=-5, ang=0,
@@ -959,17 +959,17 @@ function ENT:Think()
         	self:ShowHide("reverser",false,0)
     	end
 
-    self:Animate("Door_fr2",self:GetNW2Float("Door12a"),0,100,1,0,false)
-    self:Animate("Door_fr1",self:GetNW2Float("Door12a"),0,100,1,0,false)
+    self:Animate("Door_fr2",self:GetNW2Float("Door12a"),0,100,50,0,0)
+    self:Animate("Door_fr1",self:GetNW2Float("Door12a"),0,100,50,0,0)
 
-    self:Animate("Door_rr2",self:GetNW2Float("Door34a"),0,100,1,0,false)
-    self:Animate("Door_rr1",self:GetNW2Float("Door34a"),0,100,1,0,false)
+    self:Animate("Door_rr2",self:GetNW2Float("Door34a"),0,100,50,0,0)
+    self:Animate("Door_rr1",self:GetNW2Float("Door34a"),0,100,50,0,0)
 
-    self:Animate("Door_fl2",self:GetNW2Float("Door78b"),0,100,1,0,false)
-    self:Animate("Door_fl1",self:GetNW2Float("Door78b"),0,100,1,0,false)
+    self:Animate("Door_fl2",self:GetNW2Float("Door78b"),0,100,50,0,0)
+    self:Animate("Door_fl1",self:GetNW2Float("Door78b"),0,100,50,0,0)
     
-    self:Animate("Door_rl2",self:GetNW2Float("Door56b"),0,100,1,0,false)
-    self:Animate("Door_rl1",self:GetNW2Float("Door56b"),0,100,1,0,false)
+    self:Animate("Door_rl2",self:GetNW2Float("Door56b"),0,100,50,0,0)
+    self:Animate("Door_rl1",self:GetNW2Float("Door56b"),0,100,50,0,0)
 
     if self:GetNW2Bool("Microphone",false) == true then
         if self.Microphone == false then

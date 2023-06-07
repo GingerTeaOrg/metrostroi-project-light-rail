@@ -148,8 +148,8 @@ end
 
 -- This feels so wrong, any ideas how to improve this?
 local function CanCoupleTogether(ent1,ent2)
-    if not (ent1.CanCouple and ent1:CanCouple()) then print("ent1 can couple") return false end
-    if not (ent2.CanCouple and ent2:CanCouple()) then print("ent2 can couple") return false end
+    if not (ent1.CanCouple and ent1:CanCouple()) then return false end
+    if not (ent2.CanCouple and ent2:CanCouple()) then return false end
     if      ent2:GetClass() ~= ent1:GetClass() then return false end
     if not AreInCoupleDistance(ent1,ent2) then return false end
     if not AreFacingEachother(ent1,ent2) then return false end

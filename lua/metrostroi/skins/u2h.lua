@@ -157,7 +157,26 @@ Metrostroi.AddSkin("train","OrEbSW_b",{
     }
 })
 
+Metrostroi.AddSkin("train","White",{
+    name = "White",
+    typ = "U2h",
+    textures = {
+        main = "models/lilly/uf/u2/u2h/white",
+        main_left = "models/lilly/uf/u2/u2h/white-left",
+		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke",
 
+    },
+})
+Metrostroi.AddSkin("train","White_b",{
+    name = "White",
+    typ = "U2hb",
+    textures = {
+        main_b = "models/lilly/uf/u2/u2h/white",
+        main = "models/lilly/uf/u2/u2h/white",
+        main_left = "models/lilly/uf/u2/u2h/white-left",
+		decals = "models/lilly/uf/u2/u2h/decals-modern",
+    },
+})
 
 --[[
 
