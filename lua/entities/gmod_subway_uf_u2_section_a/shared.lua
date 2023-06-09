@@ -78,6 +78,9 @@ function ENT:InitializeSounds()
 	
 	self.SoundNames["IBIS_bootup"] = {"lilly/uf/IBIS/startup_chime.mp3"}
 	self.SoundPositions["IBIS_bootup"] = {1100,1e9,Vector(412,-12,55),1}
+
+	self.SoundNames["IBIS_error"] = {"lilly/uf/IBIS/error.mp3"}
+	self.SoundPositions["IBIS_error"] = {1100,1e9,Vector(412,-12,55),1}
 	
 	self.SoundNames["Fan1"] = {loop=10.5, "lilly/uf/u2/fan_start.mp3", "lilly/uf/u2/fan.mp3", "lilly/uf/u2/fan_end.mp3"}
 	self.SoundPositions ["Fan1"] = {1100,1e9,Vector(350,0,70),0.035}

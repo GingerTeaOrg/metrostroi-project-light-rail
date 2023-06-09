@@ -229,7 +229,7 @@ function ENT:CreateCouplerUF_b(pos,ang,forward,typ)
 	table.insert(self.JointPositions,index,x)
 	-- Constraint bogey to the train
 	if self.NoPhysics then
-		bogey:SetParent(coupler)
+		coupler:SetParent(self)
 	else
 		constraint.AdvBallsocket(
 		self.u2sectionb,
@@ -549,7 +549,7 @@ function ENT:Initialize()
 			[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 			[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
 			[49] = { "light",Vector(327,-52,68), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom right
-			[30] = { "light",Vector(397.343,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 1
+			[30] = { "light",Vector(397,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 1
 			[31] = { "light",Vector(326.738,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 2
 			[32] = { "light",Vector(151.5,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 3
 			[33] = { "light",Vector(83.7,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 4
@@ -937,6 +937,15 @@ if self.DoorsUnlocked == true then
 		self:SetLightPower(35,false)
 		self:SetLightPower(36,false)
 		self:SetLightPower(37,false)
+		self.u2sectionb:SetLightPower(30,true)
+		self.u2sectionb:SetLightPower(31,true)
+		self.u2sectionb:SetLightPower(32,true)
+		self.u2sectionb:SetLightPower(33,true)
+		
+		self.u2sectionb:SetLightPower(34,false)
+		self.u2sectionb:SetLightPower(35,false)
+		self.u2sectionb:SetLightPower(36,false)
+		self.u2sectionb:SetLightPower(37,false)
 	elseif self.DoorSideUnlocked == "None" then
 		self:SetLightPower(30,false)
 		self:SetLightPower(31,false)
@@ -946,6 +955,15 @@ if self.DoorsUnlocked == true then
 		self:SetLightPower(35,false)
 		self:SetLightPower(36,false)
 		self:SetLightPower(37,false)
+
+		self.u2sectionb:SetLightPower(30,false)
+		self.u2sectionb:SetLightPower(31,false)
+		self.u2sectionb:SetLightPower(32,false)
+		self.u2sectionb:SetLightPower(33,false)
+		self.u2sectionb:SetLightPower(34,false)
+		self.u2sectionb:SetLightPower(35,false)
+		self.u2sectionb:SetLightPower(36,false)
+		self.u2sectionb:SetLightPower(37,false)
 	elseif self.DoorSideUnlocked == "Right" then
 		self:SetLightPower(34,true)
 		self:SetLightPower(35,true)
@@ -956,6 +974,16 @@ if self.DoorsUnlocked == true then
 		self:SetLightPower(31,false)
 		self:SetLightPower(32,false)
 		self:SetLightPower(33,false)
+
+		self.u2sectionb:SetLightPower(34,true)
+		self.u2sectionb:SetLightPower(35,true)
+		self.u2sectionb:SetLightPower(36,true)
+		self.u2sectionb:SetLightPower(37,true)
+		
+		self.u2sectionb:SetLightPower(30,false)
+		self.u2sectionb:SetLightPower(31,false)
+		self.u2sectionb:SetLightPower(32,false)
+		self.u2sectionb:SetLightPower(33,false)
 		
 	end
 	
@@ -1729,6 +1757,37 @@ function ENT:OnButtonPress(button,ply)
 		end
 	end
 	
+		if button == "Button1b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness1 == 0 then
+				self.DoorRandomness1 = 4
+			end
+		end
+	end
+	
+	if button == "Button2b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness1 == 0 then
+				self.DoorRandomness1 = 4
+			end
+		end
+	end
+	
+	if button == "Button3b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness2 == 0 then
+				self.DoorRandomness2 = 4
+			end
+		end
+	end
+	
+	if button == "Button4b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness2 == 0 then
+				self.DoorRandomness2 = 4
+			end
+		end
+	end
 	
 	if button == "DoorsUnlockSet"  then
 		
@@ -2287,6 +2346,8 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 			self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] + 0.1
 		end
 	end
+
+	
 	----------------------------------------------------------------------	
 	if unlock then 
 		if right then
@@ -2301,25 +2362,25 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 			end
 			if self.DoorRandomness1 == 3 then
 				if self.DoorStatesRight["Door12a"] < 1 then
-					self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] + 0.1
+					self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] + 0.1 + self.DeltaTime
 				end
 				
 			end
 			if self.DoorRandomness2 == 3 then
 				if self.DoorStatesRight["Door34a"] < 1 then
-					self.DoorStatesRight["Door34a"] = self.DoorStatesRight["Door34a"] + 0.1
+					self.DoorStatesRight["Door34a"] = self.DoorStatesRight["Door34a"] + 0.1 + self.DeltaTime
 				end
 				
 			end
 			if self.DoorRandomness3 == 3 then
 				if self.DoorStatesRight["Door56a"] < 1 then
-					self.DoorStatesRight["Door56a"] = self.DoorStatesRight["Door56a"] + 0.1
+					self.DoorStatesRight["Door56a"] = self.DoorStatesRight["Door56a"] + 0.1 + self.DeltaTime
 				end
 				
 			end
 			if self.DoorRandomness4 == 3 then
 				if self.DoorStatesRight["Door78a"] < 1 then
-					self.DoorStatesRight["Door78a"] = self.DoorStatesRight["Door78a"] + 0.1
+					self.DoorStatesRight["Door78a"] = self.DoorStatesRight["Door78a"] + 0.1 + self.DeltaTime
 				end
 				
 			end
@@ -2333,22 +2394,22 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 			end
 			if self.DoorRandomness1 == 3 then
 				if self.DoorStatesLeft["Door12b"] < 1 then
-					self.DoorStatesLeft["Door12b"] = self.DoorStatesLeft["Door12b"] + 0.1
+					self.DoorStatesLeft["Door12b"] = self.DoorStatesLeft["Door12b"] + 0.1 + self.DeltaTime
 				end
 			end
 			if self.DoorRandomness2 == 3 then
 				if self.DoorStatesLeft["Door34b"] < 1 then
-					self.DoorStatesLeft["Door34b"] = self.DoorStatesLeft["Door34b"] + 0.1
+					self.DoorStatesLeft["Door34b"] = self.DoorStatesLeft["Door34b"] + 0.1 + self.DeltaTime
 				end
 			end
 			if self.DoorRandomness3 == 3 then
 				if self.DoorStatesLeft["Door56b"] < 1 then
-					self.DoorStatesLeft["Door56b"] = self.DoorStatesLeft["Door56b"] + 0.1
+					self.DoorStatesLeft["Door56b"] = self.DoorStatesLeft["Door56b"] + 0.1 + self.DeltaTime
 				end
 			end
 			if self.DoorRandomness4 == 3 then
 				if self.DoorStatesLeft["Door78b"] < 1 then
-					self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] + 0.1
+					self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] + 0.1 + self.DeltaTime
 				end
 			end
 		end
@@ -2357,43 +2418,43 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 			
 			
 			if self.DoorStatesRight["Door12a"] > 0 then
-				self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] - 0.05
+				self.DoorStatesRight["Door12a"] = self.DoorStatesRight["Door12a"] - 0.05 - self.DeltaTime
 			end
 			
 			
 			if self.DoorStatesRight["Door34a"] > 0 then
-				self.DoorStatesRight["Door34a"] = self.DoorStatesRight["Door34a"] - 0.05
+				self.DoorStatesRight["Door34a"] = self.DoorStatesRight["Door34a"] - 0.05 - self.DeltaTime
 			end
 			
 			
 			if self.DoorStatesRight["Door56a"] > 0 then
-				self.DoorStatesRight["Door56a"] = self.DoorStatesRight["Door56a"] - 0.05
+				self.DoorStatesRight["Door56a"] = self.DoorStatesRight["Door56a"] - 0.05 - self.DeltaTime
 			end
 			
 			
 			if self.DoorStatesRight["Door78a"] > 0 then
-				self.DoorStatesRight["Door78a"] = self.DoorStatesRight["Door78a"] - 0.05
+				self.DoorStatesRight["Door78a"] = self.DoorStatesRight["Door78a"] - 0.05 - self.DeltaTime
 			end
 			
 		elseif left then
 			
 			if self.DoorStatesLeft["Door12b"] > 0 then
-				self.DoorStatesLeft["Door12b"] = self.DoorStatesLeft["Door12b"] - 0.05
+				self.DoorStatesLeft["Door12b"] = self.DoorStatesLeft["Door12b"] - 0.05 - self.DeltaTime
 			end
 			
 			
 			if self.DoorStatesLeft["Door34b"] > 0 then
-				self.DoorStatesLeft["Door34b"] = self.DoorStatesLeft["Door34b"] - 0.05
+				self.DoorStatesLeft["Door34b"] = self.DoorStatesLeft["Door34b"] - 0.05 - self.DeltaTime
 			end
 			
 			
 			if self.DoorStatesLeft["Door56b"] > 0 then
-				self.DoorStatesLeft["Door56b"] = self.DoorStatesLeft["Door56b"] - 0.05
+				self.DoorStatesLeft["Door56b"] = self.DoorStatesLeft["Door56b"] - 0.05 - self.DeltaTime
 			end
 			
 			
 			if self.DoorStatesLeft["Door78b"] > 0 then
-				self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] - 0.05
+				self.DoorStatesLeft["Door78b"] = self.DoorStatesLeft["Door78b"] - 0.05 - self.DeltaTime
 			end
 			
 		end

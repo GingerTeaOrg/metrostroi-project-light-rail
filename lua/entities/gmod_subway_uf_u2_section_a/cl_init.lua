@@ -339,6 +339,76 @@ ENT.ButtonMap["Button4a"] = {
     }
 }
 
+ENT.ButtonMap["Button1b"] = {
+    pos = Vector(396.3,51,50.5),
+    ang = Angle(0,0,-90),
+    width = 5,
+    height = 5,
+    scale = 0.4,
+    buttons = {
+        {ID = "Button1b",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button1b",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
+
+ENT.ButtonMap["Button2b"] = {
+    pos = Vector(326,51,50.5),
+    ang = Angle(0,0,-90),
+    width = 5,
+    height = 5,
+    scale = 0.4,
+    buttons = {
+        {ID = "Button2b",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button2b",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
+ENT.ButtonMap["Button3b"] = {
+    pos = Vector(150.6,51,50.5),
+    ang = Angle(0,0,-90),
+    width = 5,
+    height = 5,
+    scale = 0.4,
+    buttons = {
+        {ID = "Button3a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button3b",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
+
+ENT.ButtonMap["Button4b"] = {
+    pos = Vector(82.8,51,50.5),
+    ang = Angle(0,0,-90),
+    width = 5,
+    height = 5,
+    scale = 0.4,
+    buttons = {
+        {ID = "Button4a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button4b",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
 
 ENT.ButtonMap["Cab"] = {
     pos = Vector(419.6,24.88,55.2),
@@ -1292,10 +1362,10 @@ function ENT:Think()
     local rolling1 = self.Speed / 10
     local rolling2 = self.Speed / 40
     
-    self:SetSoundState("rumb1"    ,rol10*rollings,rol10p+0.9) --15
+    --self:SetSoundState("rumb1"    ,rol10*rollings,rol10p+0.9) --15
     self:SetSoundState("Cruise",rol40*rollings,rol40p) --57
-    --self:SetSoundState("rolling_medium1",0 or rol40*rollings,rol40p) --57
-    self:SetSoundState("Cruise"  ,rol70*rollings,rol70p) --70
+    self:SetSoundState("rumb1",0 or rol40*rollings,rol40p) --57
+    --self:SetSoundState("Cruise"  ,rol70*rollings,rol70p) --70
     
     --self:U2SoundEngine()
 	self:ScrollTracker()

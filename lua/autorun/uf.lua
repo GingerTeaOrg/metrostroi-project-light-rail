@@ -37,9 +37,9 @@ hook.Add("EntityRemoved","UFTrains",function(ent)
     UF.SpawnedTrains[ent] = nil
     
 end]]
-for i, v in ipairs(UF.IBISRegisteredTrains) do
-    if v == ent then
-        table.remove(UF.IBISRegisteredTrains,i)
+for i, v in pairs(UF.IBISRegisteredTrains) do
+    if i == ent then
+        UF.SpawnedTrains[ent] = nil
         print("Cleared entity at index: ", i)
     end
 end
@@ -85,32 +85,16 @@ end
 return true -- No duplicate value found
 end]]
 
-function UF.checkDuplicateValue(table, target)
+function UF.checkDuplicateTrain(table, train, LC)
     local foundDuplicate = false -- Initialize variable to track duplicate value
-    for key, value in ipairs(table) do
+    for key, value in pairs(table) do
         -- Check if the value is equal to the target
-        if value == target then
+        if key ~= train and LC == value then
             foundDuplicate = true -- Found a duplicate value
             break -- Exit the loop since a duplicate value is found
-        end
-    end
-    
-    
-    -- Check if the table is empty
-    if key == nil then
-        return true -- No duplicate value found in an empty table
-    end
-    
-    -- Check the first key-value pair
-    if value == target then
-        foundDuplicate = true -- Found a duplicate value
-    end
-    
-    -- Check the remaining key-value pairs
-    if not foundDuplicate then
-        key, value = next(table, key)
-        if value == target then
-            foundDuplicate = true -- Found a duplicate value
+        else
+            foundDuplicate = false
+            break
         end
     end
     
@@ -130,7 +114,7 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         end
         if LineCourse == "0000" and next(UF.IBISRegisteredTrains) ~= nil then
             -- If the input is all zeros, we delete ourselves from the table
-            for i, v in ipairs(UF.IBISRegisteredTrains) do
+            for i, v in pairs(UF.IBISRegisteredTrains) do
                 if v == train then
                     table.remove(UF.IBISRegisteredTrains,i)
                     print("RBL: Logging IBIS off")
@@ -138,7 +122,7 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             end
             output = "logoff"        
             -- Step 2: Check if UF.IBISRegisteredTrains table is empty
-        elseif next(UF.IBISRegisteredTrains) == nil and LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil then
+        elseif not UF.IBISRegisteredTrains and LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil then
             -- Print statement for Step 2
             print("UF.IBISRegisteredTrains table is empty. Registering train.")
             
@@ -167,11 +151,11 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             if not complete then
                 print("UF.IBISRegisteredTrains table is not empty. Checking for existing registrations.")
                 -- Step 4: Iterate over UF.IBISRegisteredTrains table
-                if UF.findKeyValue(UF.IBISRegisteredTrains, LineCourse) == false then
+                if UF.checkDuplicateTrain(UF.IBISRegisteredTrains, train, LineCourse) == false then
                     -- Print statement for Step 4b
                     print("Another train is already registered on the same line course. Registration failed.")
                     output = false -- Return false if the train is already registered on the same line course
-                elseif UF.findKeyValue(UF.IBISRegisteredTrains, LineCourse) == true then
+                elseif UF.checkDuplicateTrain(UF.IBISRegisteredTrains, train, LineCourse) == true then
                     UF.IBISRegisteredTrains[train] = LineCourse
                     print("No conflicting train with LineCourse found. Registering new train.", LineCourse)
                     output = true
