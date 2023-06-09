@@ -94,6 +94,9 @@ function TRAIN_SYSTEM:Initialize()
 	self.PrevResistorBank = 0
 	
 	self.TractionJerk = 0
+
+	self.Orientation = 0
+	self.ReverseOrientation = 0
 	
 	
 	
@@ -142,6 +145,8 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	self:IsLeadingCab()
 	self:IsLeadingUnit()
+
+
 	
 	if self.ManualRetainerBrake == true then
 		self.Train:SetRetainerBrake(true)
@@ -184,6 +189,8 @@ end]]
 
 ----print(self.Train)
 
+self.Orientation = self.Train:ReadTrainWire(14) > 0
+self.RevOrientation = self.Train:ReadTrainWire(13) > 0
 
 --Is the throttle engaged? We need to know that for a few things!
 if self.ThrottleState > 0 then
@@ -247,7 +254,11 @@ end
 
 
 self.ReverserInserted = self.Train:GetNW2Bool("ReverserInserted") --get from the train whether the reverser is present
-
+if self.ReverserInserted == true then
+	self.Train:TriggerInput("DriversWrenchPresent",1)
+else
+	self.Train:TriggerInput("DriversWrenchPresent",0)
+end
 
 if self.Train:GetNW2Bool("EmergencyBrake",false) == true then
 	self.EmergencyBrake = true
@@ -319,6 +330,15 @@ if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(
 end
 
 ----print(tostring(self.VZ).."VZ")
+
+
+	if self.Train.Panel.BlinkerLeft > 0 then
+		self.Train:SetNW2Float("BlinkerStatus",1)
+	elseif self.Train.Panel.BlinkerRight > 0 and self.Train.Panel.BlinkerLeft < 1 then
+		self.Train:SetNW2Float("BlinkerStatus",0)
+	elseif self.Train.Panel.BlinkerLeft < 1 and self.Train.Panel.BlinkerRight < 1 then
+		self.Train:SetNW2Float("BlinkerStatus",0.5)
+	end
 
 if self.TractionConditionFulfilled == true then
 	if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
@@ -680,6 +700,8 @@ function TRAIN_SYSTEM:MUHandler()
 		self.Train:SetNW2Bool("Fans",false)
 		
 	end
+
+
 	--print(self.Train:GetNW2Bool("Fans"))
 end
 

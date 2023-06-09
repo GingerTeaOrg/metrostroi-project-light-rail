@@ -18,6 +18,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("DriverLight","Relay","Switch", {bass = true})
     self.Train:LoadSystem("BatteryDisable","Relay","Switch", {bass = true})
     self.Train:LoadSystem("BlinkerRight","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("BlinkerLeft","Relay","Switch", {bass = true})
     self.Train:LoadSystem("PassengerOverground","Relay","Switch", {bass = true})
     self.Train:LoadSystem("PassengerUnderground","Relay","Switch", {bass = true})
     self.Train:LoadSystem("PantographRaise","Relay","Switch", {bass = true})
@@ -47,6 +48,12 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("AnnouncerPlaying", "Relay", {bass = true})
     self.Train:LoadSystem("Parralel", "Relay", "Switch", {bass = true})
 
+    self.Train:LoadSystem("Blinker", "Relay", {bass = true})
+
+    self.Blinker = 0
+
+    self.BlinkerLeft = 0
+    self.BlinkerRight = 0
     self.DoorsLock = 0
     self.WarnBlink = 0
     self.AnnouncerPlaying = 0
@@ -91,5 +98,5 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return {"WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn","PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements","Headlights"}
+    return {"BlinkerRight","BlinkerLeft","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn","PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements","Headlights"}
 end

@@ -5,7 +5,7 @@ function ENT:Initialize()
 	self:SetModel("models/metrostroi/signals/box.mdl")
 	Metrostroi.DropToFloor(self)
 	
-	self.AutomaticRouting = false --radio-controlled by INDUSI/PZB when in tram operation or by dispatcher
+	self.AutomaticRouting = false --radio-controlled by INDUSI/PZB when in tram operation or by dispatcher/manually
 	-- Initial state of the switch
 	self.AlternateTrack = false
 	self.InhibitSwitching = false

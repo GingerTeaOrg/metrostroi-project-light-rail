@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 
-ENT.TriTone = Sound( "subway_stations/tritone.mp3" )
+
 function ENT:PlayAnnounce(arriving,Ann)
     if not arriving then
         if self.MustPlayAnnounces then
@@ -22,8 +22,7 @@ function ENT:PlayAnnounce(arriving,Ann)
             timer.Remove("metrostroi_station_announce_"..self:EntIndex())
         end
     elseif arriving == 1 then
-        sound.Play(self.TriTone,self:LocalToWorld(Vector(0,-1200,200)),120,self.TritonePitch,1)
-        sound.Play(self.TriTone,self:LocalToWorld(Vector(0,1200,200)),120,self.TritonePitch,1)
+
     elseif arriving == 2 then
         sound.Play(Ann,self:LocalToWorld(Vector(-1200,0,50)),120,100,0.4)
         sound.Play(Ann,self:LocalToWorld(Vector(1200,0,50)),120,100,0.4)
@@ -47,9 +46,6 @@ function ENT:Initialize()
     self.PlatformLast       = (self.VMF.PlatformLast == "yes")
     self.PlatformX0         = self.VMF.PlatformX0 or 0.80
     self.PlatformSigma      = self.VMF.PlatformSigma or 0.25
-    self.HorliftStation     = tonumber(self.VMF.HorliftStation) or 0
-    self.HorliftHaveSignal      = (tonumber(self.VMF.HorliftHaveSignal) or 0) > 0
-    self.TritonePitch = math.random(90,110)
     if not self.PlatformStart then
         self.VMF.PlatformStart  = "station"..self.StationIndex.."_"..(self.VMF.PlatformStart or "")
         self.PlatformStart      = ents.FindByName(self.VMF.PlatformStart or "")[1]
@@ -103,10 +99,6 @@ function ENT:Initialize()
     local ars_ents = ents.FindInSphere(self.PlatformEnd,768)
     for k,v in pairs(ars_ents) do
         local delta_z = math.abs(self.PlatformEnd.z-v:GetPos().z)
-        if (v:GetClass() == "gmod_track_pui") and (delta_z < 160) then
-            self.PUI = v
-            v.Horlift = self.HorliftStation > 0
-        end
     end
     --[[
     self.NoEntry = {}
@@ -200,18 +192,7 @@ local function getTrainDriver(train,checked)
     return getTrainDriver(train.RearTrain,checked) or getTrainDriver(train.FrontTrain,checked)
 end
 
-function ENT:FireHorliftDoors(input)
-    if not self.Doors then
-        self.Doors = {}
-        local doors = ents.FindByName("station"..self.StationIndex.."_platform"..self.PlatformIndex.."_door")
-        for _,v in pairs(doors) do
-            table.insert(self.Doors,v)
-        end
-    end
-    for _,v in pairs(self.Doors) do
-        v:Fire(input,"","1")
-    end
-end
+
 function ENT:GetDoorState()
     if not self.Doors then
         self.Doors = {}
@@ -257,7 +238,7 @@ function ENT:Think()
     local PeopleGoing = false
     local boarding = false
 
-    local BoardTime = 8+7*self.HorliftStation
+    local BoardTime = 8+7
     for k,v in pairs(ents.FindByClass("gmod_subway_*")) do
         if v.Base ~= "gmod_subway_base" and v:GetClass() ~= "gmod_subway_base" then continue end
         if not IsValid(v) or v:GetPos():Distance(self:GetPos()) > self.PlatformStart:Distance(self.PlatformEnd) then continue end
@@ -287,7 +268,6 @@ function ENT:Think()
 
         if -0.2 < train_start and train_start < 1.2  then
             v.BoardTime = self.Timer and CurTime()-self.Timer
-            v.Horlift = self.HorliftStation > 0
         end
 
         if 0 < train_start  and train_start < 1 and (not TrainArrivedDist or TrainArrivedDist < train_start)  then
@@ -297,29 +277,9 @@ function ENT:Think()
 
         -- Check horizontal lift station logic
         local passengers_can_board = false
-        if self.HorliftStation > 0 then
-            -- Check fine stop
-            local stopped_fine = false
-            for i=0,4 do
-                local x_s = 0.99086 - i*0.1929
-                local x_e = 0.97668 - i*0.1929
-                stopped_fine = stopped_fine or ((train_start < x_s) and (train_start > x_e))
-            end
-
-            -- Open doors on station
-            if stopped_fine and v.SOSD  then
-                self.HorliftTimer1 = self.HorliftTimer1 or CurTime()
-                if ((CurTime() - self.HorliftTimer1) > 0.5) then
-                    if not self.HorliftTimer2 then self:FireHorliftDoors("Open") end
-                    self.HorliftTimer2 = CurTime()
-                end
-            end
-
-            -- Allow boarding
-            if self.HorliftTimer2 and self:GetDoorState() then passengers_can_board = doors_open end
-        else
-            passengers_can_board = doors_open
-        end
+        
+        passengers_can_board = doors_open
+        
 
         -- Board passengers
         if passengers_can_board then
@@ -411,9 +371,9 @@ function ENT:Think()
                 end
             end
             if v.AnnouncementToLeaveWagonAcknowledged then
-                BoardTime = math.max(BoardTime,8+7*self.HorliftStation+(v.PassengersToLeave or 0)*dT*0.6)
+                BoardTime = math.max(BoardTime,8+7+(v.PassengersToLeave or 0)*dT*0.6)
             else
-                BoardTime = math.max(BoardTime,8+7*self.HorliftStation+math.max((v.PassengersToLeave or 0)*dT,self:PopulationCount()*dT)*0.5)
+                BoardTime = math.max(BoardTime,8+7+math.max((v.PassengersToLeave or 0)*dT,self:PopulationCount()*dT)*0.5)
             end
             -- Add doors to boarding list
             --print("BOARDING",boarding_rate,"DELTA = "..passenger_delta,self.PlatformLast,v:GetNW2Int("PassengerCount"))
@@ -436,7 +396,7 @@ function ENT:Think()
     if not self.CurrentTrain and self.Timer then self.Timer = nil end
     if self.Timer then
         self.BoardTimer = -(CurTime()-self.Timer)
-        self.AnnouncerPlay = self.BoardTimer < 8+7*self.HorliftStation+0.2
+        self.AnnouncerPlay = self.BoardTimer < 8+7+0.2
         --print(self.PlatformIndex,self.BoardTimer,self.AnnouncerPlay)
     else
         self.BoardTimer = 20
@@ -469,7 +429,7 @@ function ENT:Think()
 
 
             self.PUI.BoardTime = self.BoardTimer
-            local time = 8+7*self.HorliftStation
+            local time = 8+7
             self.PUI.Lamp = time-0.2 < self.BoardTimer and self.BoardTimer < time+0.3
         else
             self.PUIStartGoing = false
@@ -477,45 +437,6 @@ function ENT:Think()
             self.PUI.Lamp = false
         end
     end
-    --[[
-    if self.CurrentTrain and not self.SignOff then
-        if not self.TritonePlayed then
-            if false and self.CurrentTrain.SignsList and (self.CurrentTrain.SignsList[self.CurrentTrain.SignsIndex] == "" or self.CurrentTrain.SignsList[self.CurrentTrain.SignsIndex] and self.CurrentTrain.SignsList[self.CurrentTrain.SignsIndex][3]) then
-                self:PlayAnnounce(2,self.NoEntry.arr)
-                timer.Simple(20,function()
-                    if not IsValid(self.CurrentTrain) then return end
-                    self:PlayAnnounce(2,self.NoEntry.dep)
-                    if self.CurrentTrain.SignsIndex == #self.CurrentTrain.SignsList-3 then
-                        timer.Simple(15,function() self:PlayAnnounce(2,self.NoEntry.depot) end)
-                    end
-                end)
-            else
-                local spec = false
-                if self.NoEntry.specarr then
-                    for k,v in pairs( self.CurrentTrain.SignsList or {}) do
-                        if v ==  self.CurrentTrain.SignsIndex then
-                            if Metrostroi.StationAnnouncesTo[self.StationIndex][2] == k then
-                                spec = true
-                                break
-                            end
-                        end
-                    end
-                end
-                if spec then
-                    self:PlayAnnounce(2,self.NoEntry.specarr)
-                    timer.Simple(20,function()
-                        if not IsValid(self.CurrentTrain) then return end
-                        self:PlayAnnounce(2,self.NoEntry.specdep)
-                    end)
-                else
-                    self:PlayAnnounce(1)
-                end
-            end
-            self.TritonePlayed = true
-        end
-    else
-        self.TritonePlayed = nil
-    end]]
     -- Add passengers
     if (not self.PlatformLast) and (#boardingDoorList == 0) then
         local target = GetConVarNumber("metrostroi_passengers_scale",50)*self.PopularityIndex --300
@@ -536,19 +457,6 @@ function ENT:Think()
         end
     end
 
-    if self.HorliftStation > 0 then
-        if self.HorliftTimer2 then
-            if (CurTime() - self.HorliftTimer2) > 1 then
-                self:FireHorliftDoors("Close")
-                self.HorliftTimer1 = nil
-                self.HorliftTimer2 = nil
-                self.HorliftTimer3 = CurTime()
-            end
-        end
-        if self.HorliftTimer3 and (CurTime() - self.HorliftTimer3) > 2.5 then
-            self.HorliftTimer3 = nil
-        end
-    end
     if self.OldOpened ~= self:GetDoorState() or self.OldPeopleGoing ~= PeopleGoing then
         self.ARSOverride = true
         self.OldOpened = self:GetDoorState()
@@ -562,11 +470,6 @@ function ENT:Think()
             local delta_z = math.abs(self.PlatformEnd.z-v:GetPos().z)
             if (v:GetClass() == "gmod_track_signal") and (delta_z < 128) then
                 v.OverrideTrackOccupied = self:GetDoorState()
-            end
-            if (v:GetClass() == "gmod_track_horlift_signal") and (delta_z < 90 and v:GetNWInt("Type") == 0 or v:GetNWInt("Type") == 1) then
-                v.WhiteSignal = self:GetDoorState()
-                v.YellowSignal = not self:GetDoorState()
-                v.PeopleGoing = PeopleGoing
             end
         end
 

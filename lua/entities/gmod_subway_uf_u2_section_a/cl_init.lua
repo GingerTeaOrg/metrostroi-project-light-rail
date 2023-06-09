@@ -224,7 +224,7 @@ ENT.ClientProps["Amps"] = {
 
 ENT.ClientProps["reverser"] = {
     model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
-    pos = Vector(0,-0.15,0),
+    pos = Vector(-0.1,-0.25,0),
     ang = Angle(0,0,0),
     hideseat = 0.2,
 }
@@ -356,13 +356,11 @@ ENT.ButtonMap["Cab"] = {
         }
     },
 
-    {ID = "BlinkerLamp", x=271, y=58, radius=10, tooltip = "Blinker Status Lamp", model = {lamp = {model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",var="Blinker",z=0,anim=true,
-            lcolor=Color(0,138,11),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
-        model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
-        var="Blinker", speed=15,
-        sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-        }
-    },
+    {ID = "BlinkerLamp", x=271, y=58, radius=10, tooltip = "Blinker Status Lamp", model = {model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",z=-5,
+            name="BlinkerLamp",
+            sprite = {bright=0.3,size=0.15,scale=0.03,vscale=0.02,color=Color(0,109,0),z=7.7}
+    }},
+    
     {ID = "DepartureBlockedLamp", x=242, y=58, radius=10, tooltip = "Train not cleared for departure", model = {lamp = {model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",var="DepartureBlocked",z=0,anim=true,
             lcolor=Color(255,0,0),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
         model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=0,
@@ -370,7 +368,7 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "VentilationSet", x=334, y=59, radius=10, tooltip = "Enable motor fans", model = {
+    {ID = "VentilationSet", x=335, y=58, radius=10, tooltip = "Enable motor fans", model = {
         model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
         getfunc = function(ent) return ent:GetPackedRatio("Ventilation") end,var="Ventilation", speed=4,min=0,max=1,
         var="Ventilation",speed=1, vmin=0, vmax=1,
@@ -484,16 +482,22 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "BlinkerLeftToggle", x=260, y=88, radius=8, tooltip = "Indicators Left", model = {
+    {ID = "BlinkerLeftSet", x=260, y=88, radius=8, tooltip = "Indicators Left", model = {
         z=0, ang=0,
         var="BlinkerLeft",speed=15, vmin=0, vmax=1,
         sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "BlinkerRightToggle", x=280, y=88, radius=8, tooltip = "Indicators Right", model = {
+    {ID = "BlinkerRightSet", x=280, y=88, radius=8, tooltip = "Indicators Right", model = {
         z=0, ang=0,
         var="BlinkerRight",speed=10, vmin=0, vmax=1,
         sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "BlinkerSwitch", x=271, y=91, radius=0.1, tooltip = "Indicator Switch", model = {model = "models/lilly/uf/u2/cab/battery_switch.mdl",
+        z=0, ang=45,getfunc = function(ent) return ent:GetNW2Float("BlinkerStatus") end,
+        var="BlinkerStatus",speed=10, vmin=0, vmax=1,
+        sndvol = 20,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
     {ID = "PantographLowerSet", x=303.5, y=91, radius=8, tooltip = "Lower Pantograph", model = { model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", anim=true,
@@ -526,10 +530,17 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
-    {ID = "MalfunctionLamp", x=364, y=91, radius=10, tooltip = "Malfunction detected", model = { lamp = {var="DepartureBlocked",z=0,anim=true,
+    {ID = "MalfunctionLamp", x=364, y=57.7, radius=10, tooltip = "Malfunction detected", model = { lamp = {var="DepartureBlocked",z=0,anim=true,
             lcolor=Color(129,0,0),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
         model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=0,
         var="Malfunction",speed=10, vmin=0, vmax=1,
+        sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+    },
+    {ID = "SandLamp", x=431, y=90, radius=10, tooltip = "Sander indicator", model = { lamp = {var="Sand",z=0,anim=true,
+            lcolor=Color(129,0,0),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
+        model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-7, ang=0,
+        var="Sand",speed=10, vmin=0, vmax=1,
         sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
@@ -563,8 +574,9 @@ ENT.ButtonMap["Cab"] = {
         sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
         }
     },
+    }
 }
-}
+
 
 
 ENT.ButtonMap["BOStrab"] = {
@@ -782,7 +794,7 @@ ENT.ButtonMap["Left"] = {
             var="WarnBlink",
             sndvol = 1, snd = function(val,val2) return val and "switch_panel_up" or "switch_panel_down" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
         },
-        {ID = "ReduceBrakeSet", x=43.2, y=10, radius=7, tooltip = "Reduce track brake intensity", model = {model = "models/lilly/uf/u2/cab/button_indent_white.mdl",
+        {ID = "ReduceBrakeSet", x=42.8, y=10, radius=7, tooltip = "Reduce track brake intensity", model = {model = "models/lilly/uf/u2/cab/button_indent_white.mdl",
             z=-3, ang=0,
             var="ReduceBrakeSet",speed=1, vmin=0, vmax=1,
             sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),},
@@ -971,13 +983,6 @@ function ENT:Think()
     --player:PrintMessage(HUD_PRINTTALK,self:GetNW2Float("CabWindowL",0))
 
 
-    if self:GetNW2String("BlinkerDirection","none") == "none" then
-        self:Animate("BlinkerSwitch",0.5,0,100,100,10,false)
-    elseif self:GetNW2String("BlinkerDirection","none") == "left" then
-        self:Animate("BlinkerSwitch",1,0,100,100,10,false)
-    elseif self:GetNW2String("BlinkerDirection","none") == "right" then
-        self:Animate("BlinkerSwitch",0,0,100,100,10,false)
-    end
 
     if self:GetNWString("DoorSide","none") == "left" then
         self:Animate("DoorSwitch",1,0,100,100,10,false)
@@ -1167,12 +1172,12 @@ function ENT:Think()
             end
         end
 	
-	    
+	    self.BatteryBreakerOffSoundPlayed = false
 		if self.StartupSoundPlayed == false then
 		    self.StartupSoundPlayed = true
 		    --self:PlayOnce("Startup","cabin",0.4,1)
             self:PlayOnce("Battery_breaker","cabin",20,1)
-            self.BatteryBreakerOffSoundPlayed = false
+            
 		end    
 	    
 		if self:GetPackedBool("WarningAnnouncement") == true then

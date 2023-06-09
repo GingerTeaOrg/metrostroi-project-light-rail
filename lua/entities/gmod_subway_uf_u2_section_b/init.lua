@@ -116,13 +116,13 @@ function ENT:Initialize()
 	--self.Wheels = self.FrontBogey.Wheels
    
 	self.Lights = {
-	[61] = { "light",Vector(-426.5,50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
-    [62] = { "light",Vector(-426.5,-50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" },
-	[63] = { "light",Vector(-426.5,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" },
-	[64] = { "light",Vector(-426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
-	[65] = { "light",Vector(-426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-	[66] = { "light",Vector(-426.5,31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light left
-	[67] = { "light",Vector(-426.5,-31.5,26), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light right
+	[61] = { "light",Vector(-426.5,50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight 1
+    [62] = { "light",Vector(-426.5,-50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight 2
+	[63] = { "light",Vector(-426.5,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight 3
+	[64] = { "light",Vector(-426.5,31.5,26), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+	[65] = { "light",Vector(-426.5,-31.5,26), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+	[66] = { "light",Vector(-426.5,31.5,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light left
+	[67] = { "light",Vector(-426.5,-31.5,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light right
 	[158] = { "light",Vector(-327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 	[159] = { "light",Vector(-327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 	[148] = { "light",Vector(-327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
@@ -417,74 +417,19 @@ function ENT:Think()
 	--self:SetLightPower(112,true)
 	--self:SetLightPower(113,true)
 
-	if self.BatteryOn == true then 
-		self.CabEnabled = true
-		self:SetNW2Bool("CabBEnabled",true)
-	end
-
-
-
-
-
-		self:SetLightPower(148,self.BlinkerLeft)
-		self:SetLightPower(158,self.BlinkerLeft)
-
-
-		self:SetLightPower(149,self.BlinkerRight)
-		self:SetLightPower(159,self.BlinkerRight)
-
-		if self.BlinkerLeft == true then
-			self:SetNW2Bool("BlinkerShineLeft",true)
-		else
-			self:SetNW2Bool("BlinkerShineLeft",false)
-		end
 
 
 
 
 
 
-	if self.ParentTrain.RearCouple.CoupledEnt ~= nil then
-		self:SetNW2Bool("BIsCoupled", true)
-	else
-		self:SetNW2Bool("BIsCoupled",false)
-	end
+
 	--self:SetNW2Bool("BIsCoupled",self.RearCouple:AreCoupled(self.RearCouple))
     
 	
-		if self.ParentTrain.RearCouple.CoupledEnt == nil then
-			if self.ParentTrain:ReadTrainWire(3) == 1 then
-				self:SetLightPower(61,false)
-    			self:SetLightPower(62,false)
-				self:SetLightPower(63,false)
-				self:SetLightPower(64,true)
-				self:SetLightPower(65,true)
-			elseif self.ParentTrain:ReadTrainWire(4) == 1 then
-				if self:GetNW2Bool("HeadlightsSwitch",false) == true then
-				self:SetLightPower(61,true)
-    			self:SetLightPower(62,true)
-				self:SetLightPower(63,true)
-				end
-				self:SetLightPower(64,false)
-				self:SetLightPower(65,false)
-			end
-		elseif self.ParentTrain.RearCouple.CoupledEnt ~= nil then
-			if self.ParentTrain:ReadTrainWire(3) == 1 then
-				self:SetLightPower(61,false)
-   		 		self:SetLightPower(62,false)
-				self:SetLightPower(63,false)
-				self:SetLightPower(64,false)
-				self:SetLightPower(65,false)
-			elseif self.ParentTrain:ReadTrainWire(4) == 1 then
-				self:SetLightPower(61,false)
-    			self:SetLightPower(62,false)
-				self:SetLightPower(63,false)
-				self:SetLightPower(64,false)
-				self:SetLightPower(65,false)
-			end
-		end
+
 	
-	if self.ParentTrain:GetNW2Bool("Braking",true) == true and self.ParentTrain:GetNW2Bool("BIsCoupled",false) == false then
+	--[[if self.ParentTrain:GetNW2Bool("Braking",true) == true and self.ParentTrain:GetNW2Bool("BIsCoupled",false) == false then
 		self:SetLightPower(66,true)
 		self:SetLightPower(67,true)
 	elseif self.ParentTrain:GetNW2Bool("BIsCoupled",false) == true then
@@ -493,7 +438,7 @@ function ENT:Think()
 	elseif self.ParentTrain:GetNW2Bool("Braking",true) == false then 
 		self:SetLightPower(66,false)
 		self:SetLightPower(67,false)
-	end
+	end]]
 	
 
 end

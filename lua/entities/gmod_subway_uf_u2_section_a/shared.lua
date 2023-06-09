@@ -199,7 +199,12 @@ ENT.SubwayTrain = {
 }
 
 
-
+function ENT:DeltaTime()
+    ENT.PrevTime = ENT.PrevTime or RealTime()
+    ENT.DeltaTime = (RealTime() - ENT.PrevTime)
+    ENT.PrevTime = RealTime()
+	return ENT.DeltaTime
+end
 
 
 
@@ -225,7 +230,8 @@ ENT.Spawner = {
     end,]]
 	
 	{"RetroMode","Spawner.U2.RetroMode","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("RetroMode",val and not rot or not val and rot) end},
-	{"IBISData","Spawner.U2.IBISDataset","List",function()
+	{"Old Mirror","Spawner.U2.OldMirror","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("OldMirror",val and not rot or not val and rot) end},
+	{"IBISData","Spawner.U2.IBISDataset","List",function(ent)
         local Announcer = {}
         for k,v in pairs(UF.IBISLines or {}) do Announcer[k] = v.name or k end
         return Announcer
