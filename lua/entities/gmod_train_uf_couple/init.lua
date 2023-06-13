@@ -64,7 +64,7 @@ local function AreCoupled(ent1,ent2)
     return coupled
 end
 
-function ENT:AreCoupled(ent1)--,ent2)
+function ENT:AreCoupled(ent1,ent2)
 
 
         --if ent1.Coupled or ent2.Coupled then return false end

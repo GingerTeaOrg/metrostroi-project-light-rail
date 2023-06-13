@@ -26,7 +26,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.DoorFRState = 100
 	self.DoorRRState = 100
 	
-	self.LeadingCab = 0
+	self.LeadingCabA = 0
 	
 	self.ResetTrainWires = false
 	
@@ -48,9 +48,16 @@ function TRAIN_SYSTEM:Initialize()
 	
 	
 	self.ReverserInserted = false
-	self.ReverserState = 0 --internal registry for forwards, neutral, backwards
-	self.ReverserLeverState = 0 --for the reverser lever setting. -1 is reverse, 0 is neutral, 1 is startup, 2 is single unit, 3 is multiple unit
+	self.ReverserInsertedA = false
+	self.ReverserInsertedB = false
 	
+	self.ReverserLeverStateA = 0 --for the reverser lever setting. -1 is reverse, 0 is neutral, 1 is startup, 2 is single unit, 3 is multiple unit
+	self.ReverserLeverStateB = 0
+	
+	
+	self.ReverserState = 0 --internal registry for forwards, neutral, backwards
+
+
 	self.VZ = false -- multiple unit mode
 	self.VE = false --single unit mode
 	
@@ -64,6 +71,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.TractionCutOut = false
 	
 	self.ThrottleStateAnim = 0 --whether to stop listening to the throttle input
+	self.ThrottleStateAnimB = 0
 	
 	self.ThrottleCutOut = 0
 	
@@ -94,9 +102,11 @@ function TRAIN_SYSTEM:Initialize()
 	self.PrevResistorBank = 0
 	
 	self.TractionJerk = 0
-
+	
 	self.Orientation = 0
 	self.ReverseOrientation = 0
+
+	
 	
 	
 	
@@ -145,14 +155,6 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	self:IsLeadingCab()
 	self:IsLeadingUnit()
-
-
-	
-	if self.ManualRetainerBrake == true then
-		self.Train:SetRetainerBrake(true)
-	else
-		self.Train:SetRetainerBrake()
-	end
 	
 	self.Speed = self.Train.Speed
 	
@@ -164,174 +166,164 @@ function TRAIN_SYSTEM:Think(Train)
 	local dT = self.DeltaTime
 	
 	
-	self.ThrottleState = self.ThrottleState + self.ThrottleRate --* dT * 2 --todo: enable deltaTime correction
+	self.ThrottleState = self.ThrottleState + self.ThrottleRate * dT
 	
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
 	
-	--[[if self.ThrottleState >= 1 and self.ThrottleState <= 5 then
-	self.ThrottleNotchTraction = true
-	self.ActualThrottleState = 6
-elseif self.ThrottleState > 5 then
-	self.ThrottleNotchTraction = false
-	self.ActualThrottleState = self.ThrottleState
-elseif self.ThrottleState <= -1 and self.ThrottleState >= -5 then
-	self.ThrottleNotchBraking = true
-	self.ActualThrottleState = -6
-elseif self.ThrottleState <= -6 and self.ThrottleState =< -89 then
-	self.ActualThrottleState = self.ThrottleState
-elseif self.ThrottleState <= -90 and self.ThrottleState >= -100 then
-	self.ThrottleNotchEmergency = true
-	self.ActualThrottleState = -100
-end]]
+	self.Train.u2sectionb:SetNW2Int("ThrottleAnim",self.ThrottleStateAnimB)
+	
+	----print(#self.Train.WagonList)
+	
+	----print(self.Train)
+	
+	self.Orientation = self.Train:ReadTrainWire(14) > 0
+	self.RevOrientation = self.Train:ReadTrainWire(13) > 0
+	
+	--Is the throttle engaged? We need to know that for a few things!
+	if self.ThrottleState > 0 then
+		self.ThrottleEngaged = true
+		self.Train:SetNW2Bool("ThrottleEngaged",true)
+	elseif self.ThrottleState <= 0 then
+		self.ThrottleEngaged = false
+		self.Train:SetNW2Bool("ThrottleEngaged",false)
+	end
+	
+	
 
+	
 
-----print(#self.Train.WagonList)
-
-----print(self.Train)
-
-self.Orientation = self.Train:ReadTrainWire(14) > 0
-self.RevOrientation = self.Train:ReadTrainWire(13) > 0
-
---Is the throttle engaged? We need to know that for a few things!
-if self.ThrottleState > 0 then
-	self.ThrottleEngaged = true
-	self.Train:SetNW2Bool("ThrottleEngaged",true)
-elseif self.ThrottleState <= 0 then
-	self.ThrottleEngaged = false
-	self.Train:SetNW2Bool("ThrottleEngaged",false)
-end
-
-
-
-
-self.ReverserLeverState = math.Clamp(self.ReverserLeverState, -1, 3)
-
-if self.BatteryStartUnlock == false then --Only on the * Setting of the reverser lever should the battery turn on
-	self.BatteryOn = self.BatteryOn
-	--self.Train:WriteTrainWire(7,self.Train:ReadTrainWire(7))
-elseif self.BatteryStartUnlock == true then
-	self.BatteryOn = self.Train:GetNW2Bool("BatteryOn",false)
-	if self.Train:GetNW2Bool("BatteryOn",false) == true then
+	
+	self.ReverserLeverStateA = math.Clamp(self.ReverserLeverStateA, -1, 3)
+	self.ReverserLeverStateB = math.Clamp(self.ReverserLeverStateB, -1, 3)
+	if self.ReverserLeverStateA == 2 or self.ReverserLeverStateB == 2 then
 		self.Train:WriteTrainWire(7,1)
-	end
-	if self.Train:GetNW2Bool("BatteryOn",false) == false then
+		self.Train.Duewag_Battery:TriggerInput("Charge",0.05)
+		self.Train.Duewag_Battery.Charging = 1
+	else
 		self.Train:WriteTrainWire(7,0)
+		self.Train.Duewag_Battery:TriggerInput("Charge",0)
+		self.Train.Duewag_Battery.Charging = 0
 	end
-elseif self.BatteryStartUnlock == true or self.Train:ReadTrainWire(7) == 1 then --Except if the leading cab turns the batteries on for the entire train
-	self.BatteryOn = true
-	self.Train:SetNW2Bool("BatteryOn",true)
-end
-
-
-
-self.ReverserLeverState = math.Clamp(self.ReverserLeverState, -1, 3)
-
-
-
--- Implement reverser state via two separate train wires, so that train wires can be crossed for proper MU setup
---[[if self.ReverserState == 1 and self.Train:ReadTrainWire(6) > 0 then --if the reverser is set forward and the MU wire (6) is raised to high
-self.Train:WriteTrainWire(3,1)
-self.Train:WriteTrainWire(4,0)
-self.Train:SetNW2Int("ReverserState",1)
-elseif self.ReverserState == -1 then
-	self.Train:WriteTrainWire(4,1)
-	self.Train:WriteTrainWire(3,0)
-	self.Train:SetNW2Int("ReverserState",-1)
-elseif self.ReverserState == 0 then
-	self.Train:WriteTrainWire(3,0)
-	self.Train:WriteTrainWire(4,0)
-	self.Train:SetNW2Int("ReverserState",0)
+	if self.ReverserLeverStateA == 1 then
+		self.Train:SetNW2Float("ReverserAnimate",0.4)
 	
-end]]
-
-----print("MU Wire:"..self.Train:ReadTrainWire(6))
-
-
-
-if self.Train:GetNW2Bool("BatteryOn",false) == true then --if the battery is on, we can command the pantograph
-	self.PantoUp = self.Train:GetNW2Bool("PantoUp")
-end
-
-
-self.ReverserInserted = self.Train:GetNW2Bool("ReverserInserted") --get from the train whether the reverser is present
-if self.ReverserInserted == true then
-	self.Train:TriggerInput("DriversWrenchPresent",1)
-else
-	self.Train:TriggerInput("DriversWrenchPresent",0)
-end
-
-if self.Train:GetNW2Bool("EmergencyBrake",false) == true then
-	self.EmergencyBrake = true
-else
-	self.EmergencyBrake = false
-end
-
-if self.EmergencyBrake == true then
-	if self.TractionConditionFulfilled == true then
-		self.Train:WriteTrainWire(10,1)
+	elseif self.ReverserLeverStateA == 0 then
+		self.Train:SetNW2Float("ReverserAnimate",0.25)
+	
+	elseif self.ReverserLeverStateA == 3 then
+		self.Train:SetNW2Float("ReverserAnimate",1)
+	
+	elseif self.ReverserLeverStateA == 2 then
+		self.Train:SetNW2Float("ReverserAnimate",0.7)
+	
+	elseif self.ReverserLeverStateA == -1 then
+		self.Train:SetNW2Float("ReverserAnimate",0)
 	end
-else
-	self.Train:WriteTrainWire(10,0)
-end
 
-
---print(#self.Train.WagonList)
-
-if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(7) > 0 then --if either the battery is on or the EMU cables signal multiple unit mode
-	
-	if self.Train.Duewag_Deadman.IsPressed > 0 then --set up the deadman state as a wire, for easier adaptation into the consist
-		self.Train:WriteTrainWire(12,1)
-	elseif self.Train.Duewag_Deadman.IsPressed < 1 then
-		self.Train:WriteTrainWire(12,0)
+	self.Train.u2sectionb:SetNW2Int("ReverserLever",self.ReverserLeverStateB)
+	if self.BatteryStartUnlock == false then --Only on the * Setting of the reverser lever should the battery turn on
+		self.BatteryOn = self.BatteryOn
+		--self.Train:WriteTrainWire(7,self.Train:ReadTrainWire(7))
+	elseif self.BatteryStartUnlock == true then
+		self.BatteryOn = self.Train:GetNW2Bool("BatteryOn",false)
+		if self.Train:GetNW2Bool("BatteryOn",false) == true then
+			self.Train:WriteTrainWire(7,1)
+		end
+		if self.Train:GetNW2Bool("BatteryOn",false) == false then
+			self.Train:WriteTrainWire(7,0)
+		end
+	elseif self.BatteryStartUnlock == true or self.Train:ReadTrainWire(7) == 1 then --Except if the leading cab turns the batteries on for the entire train
+		self.BatteryOn = true
+		self.Train:SetNW2Bool("BatteryOn",true)
 	end
 	
 	
-	if self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(12) > 0 then
-		self.TractionConditionFulfilled = true
-	elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Duewag_Deadman.IsPressed > 0 then
-		self.TractionConditionFulfilled = true
-	elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Duewag_Deadman.IsPressed < 1 then
-		self.TractionConditionFulfilled = false
-	elseif self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(12) < 1 then
-		self.TractionConditionFulfilled = false
+	
+	
+	if self.Train:GetNW2Bool("BatteryOn",false) == true then --if the battery is on, we can command the pantograph
+		self.PantoUp = self.Train:GetNW2Bool("PantoUp")
 	end
 	
-	if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 then
-		self.TractionConditionFulfilled = true
+	
+	self.ReverserInserted = self.Train:GetNW2Bool("ReverserInserted") --get from the train whether the reverser is present
+	if self.ReverserInserted == true then
+		self.Train:TriggerInput("DriversWrenchPresent",1)
+	else
+		self.Train:TriggerInput("DriversWrenchPresent",0)
+	end
+	
+	if self.Train:GetNW2Bool("EmergencyBrake",false) == true then
+		self.EmergencyBrake = true
+	else
+		self.EmergencyBrake = false
+	end
+	
+	if self.EmergencyBrake == true then
+		if self.TractionConditionFulfilled == true then
+			self.Train:WriteTrainWire(10,1)
+		end
+	else
+		self.Train:WriteTrainWire(10,0)
+	end
+	
+	
+	
+	
+	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(7) > 0 then --if either the battery is on or the EMU cables signal multiple unit mode
 		
-	elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 then
-		self.TractionConditionFulfilled = false
+		if self.Train.Duewag_Deadman.IsPressed > 0 then --set up the deadman state as a wire, for easier adaptation into the consist
+			self.Train:WriteTrainWire(12,1)
+		elseif self.Train.Duewag_Deadman.IsPressed < 1 then
+			self.Train:WriteTrainWire(12,0)
+		end
 		
-	elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 then
-		self.TractionConditionFulfilled = false
 		
-	elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 1 then
-		self.TractionConditionFulfilled = true
+		if self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(12) > 0 then
+			self.TractionConditionFulfilled = true
+		elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Duewag_Deadman.IsPressed > 0 then
+			self.TractionConditionFulfilled = true
+		elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Duewag_Deadman.IsPressed < 1 then
+			self.TractionConditionFulfilled = false
+		elseif self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(12) < 1 then
+			self.TractionConditionFulfilled = false
+		end
 		
-	elseif self.ReverserState == 0 then
-		self.TractionConditionFulfilled = false
-	elseif self.Train:ReadTrainWire(3) > 0 and self.Train:ReadTrainWire(6) > 0 or self.Train:ReadTrainWire(4) > 0 then
-		self.TractionConditionFulfilled = true
+		if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 then
+			self.TractionConditionFulfilled = true
+			
+		elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 then
+			self.TractionConditionFulfilled = false
+			
+		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 then
+			self.TractionConditionFulfilled = false
+			
+		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 1 then
+			self.TractionConditionFulfilled = true
+			
+		elseif self.ReverserState == 0 then
+			self.TractionConditionFulfilled = false
+		elseif self.Train:ReadTrainWire(3) > 0 and self.Train:ReadTrainWire(6) > 0 or self.Train:ReadTrainWire(4) > 0 then
+			self.TractionConditionFulfilled = true
+		end
+		
+		if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState > 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
+		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState > 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
+		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+		elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+		elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 and self.ThrottleState < 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 1 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+		end
 	end
 	
-	if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState > 0 then
-		self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
-	elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState > 0 then
-		self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
-	elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
-		self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
-	elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
-		self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
-	elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 and self.ThrottleState < 0 then
-		self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
-	elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 1 then
-		self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
-	end
-end
-
-----print(tostring(self.VZ).."VZ")
-
-
+	----print(tostring(self.VZ).."VZ")
+	
+	
 	if self.Train.Panel.BlinkerLeft > 0 then
 		self.Train:SetNW2Float("BlinkerStatus",1)
 	elseif self.Train.Panel.BlinkerRight > 0 and self.Train.Panel.BlinkerLeft < 1 then
@@ -339,133 +331,133 @@ end
 	elseif self.Train.Panel.BlinkerLeft < 1 and self.Train.Panel.BlinkerRight < 1 then
 		self.Train:SetNW2Float("BlinkerStatus",0.5)
 	end
-
-if self.TractionConditionFulfilled == true then
-	if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
-		
-		if self.CamshaftFinishedMoving == true then
-			self.Traction = math.Clamp(self.ThrottleState * 0.01,-100,100)
-		else
-			self.Traction = self.Traction
-		end 
-		if self.VZ == true then
-			if self.Traction > 0 then
-				self.Train:WriteTrainWire(2,0)
-				self.Train:WriteTrainWire(1,math.Clamp(self.Traction,0,100))
-				self.Train:SetNW2Bool("ElectricBrakes",false)
-				self.Train:SetNW2Int("BrakePressure",0)
-				self.BrakePressure = 0
+	
+	if self.TractionConditionFulfilled == true then
+		if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
+			
+			if self.CamshaftFinishedMoving == true then
+				self.Traction = math.Clamp(self.ThrottleState * 0.01,-100,100)
+			else
+				self.Traction = self.Traction
+			end 
+			if self.VZ == true then
+				if self.Traction > 0 then
+					self.Train:WriteTrainWire(2,0)
+					self.Train:WriteTrainWire(1,math.Clamp(self.Traction,0,100))
+					self.Train:SetNW2Bool("ElectricBrakes",false)
+					self.Train:SetNW2Int("BrakePressure",0)
+					self.BrakePressure = 0
+					
+					----print("traction applied")
+					
+				elseif self.Traction < 0 then
+					----print("braking applied")
+					self.Train:WriteTrainWire(2,1)
+					if self.Speed > 3.5 and self.Train:ReadTrainWire(2) > 0 then
+						self.Train:WriteTrainWire(1,self.Traction * -1)
+					elseif self.Speed < 1.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) == 2.7 then
+						self.Traction = 0
+					elseif self.Speed > 1.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) < 2.7 then
+						self.Traction = self.Traction
+					end
+				end
 				
-				----print("traction applied")
-				
-			elseif self.Traction < 0 then
-				----print("braking applied")
-				self.Train:WriteTrainWire(2,1)
-				if self.Speed > 3.5 and self.Train:ReadTrainWire(2) > 0 then
-					self.Train:WriteTrainWire(1,self.Traction * -1)
-				elseif self.Speed < 1.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) == 2.7 then
-					self.Traction = 0
-				elseif self.Speed > 1.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) < 2.7 then
+				if self.Traction == 0 then
+					self.Train:WriteTrainWire(1,self.Traction)
+					--self.Train:WriteTrainWire(2,0)
+				end
+			elseif self.VE == true then
+				if self.Traction > 0 then
 					self.Traction = self.Traction
+					--self.Train:WriteTrainWire(2,0)
+					self.BrakePressure = 0
+				end
+				if self.Traction < 0 then
+					if self.Speed > 3.5 and self.ThrottleState < 0 then
+						self.Traction = self.Traction * -1
+					elseif self.Speed < 0.2 and self.ThrottleState < 0 and self.BrakePressure == 2.7 then
+						self.Traction = 0
+					elseif self.Speed > 2 and self.ThrottleState > 0 and self.BrakePressure == 0 then
+						self.Traction = self.Traction
+					elseif self.Speed < 0.2 and self.ThrottleState > 0 and self.BrakePressure == 2.7 then
+						self.Traction = self.Traction
+						self.BrakePressure = 0
+					elseif self.Speed > 2 and self.ThrottleState > 0 and self.BrakePressure == 0 then
+						self.Traction = self.Traction
+						self.BrakePressure = 2.7
+					end
+				end
+				if self.Traction == 0 then
+					self.Traction = self.Traction
+					--self.BrakePressure = 0
 				end
 			end
 			
-			if self.Traction == 0 then
-				self.Train:WriteTrainWire(1,self.Traction)
-				--self.Train:WriteTrainWire(2,0)
-			end
-		elseif self.VE == true then
-			if self.Traction > 0 then
-				self.Traction = self.Traction
-				--self.Train:WriteTrainWire(2,0)
-				self.BrakePressure = 0
-			end
-			if self.Traction < 0 then
-				if self.Speed > 3.5 and self.ThrottleState < 0 then
-					self.Traction = self.Traction * -1
-				elseif self.Speed < 0.2 and self.ThrottleState < 0 and self.BrakePressure == 2.7 then
-					self.Traction = 0
-				elseif self.Speed > 2 and self.ThrottleState > 0 and self.BrakePressure == 0 then
-					self.Traction = self.Traction
-				elseif self.Speed < 0.2 and self.ThrottleState > 0 and self.BrakePressure == 2.7 then
-					self.Traction = self.Traction
-					self.BrakePressure = 0
-				elseif self.Speed > 2 and self.ThrottleState > 0 and self.BrakePressure == 0 then
-					self.Traction = self.Traction
-					self.BrakePressure = 2.7
-				end
-			end
-			if self.Traction == 0 then
-				self.Traction = self.Traction
-				--self.BrakePressure = 0
-			end
+			
+			
+			--end
+		elseif self.Train:GetNW2Bool("DeadmanTripped",false) == true then
+			
+		end
+	end		
+	
+	
+	if self.ThrottleState <= 100 then --Throttle animation handling. Adapt the value to the pose parameter on the model
+		self.ThrottleStateAnim = self.ThrottleState / 200 + 0.5
+	elseif (self.ThrottleState >= 0) then
+		self.ThrottleStateAnim = (self.ThrottleState * -0.1)
+		
+	end		
+	
+	if self.ThrottleState < 0 and self.Train:GetNW2Float("Speed",0) < 8 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
+		
+		if self.Train:ReadTrainWire(6) == 1 then --in MU mode we write that to the train wire for the train script to handle
+			self.Train:WriteTrainWire(5,2.7)
+			----print("Brake applied")
+			
+		elseif self.Train:ReadTrainWire(6) == 0 then --in single unit mode we write that directly to the brake pressure
+			self.BrakePressure = 2.7
+			self.Train:SetNW2Int("BrakePressure",2.7)
 		end
 		
-		
-		
-		--end
-	elseif self.Train:GetNW2Bool("DeadmanTripped",false) == true then
+	elseif self.ThrottleState > 0 then
+		if self.Train:ReadTrainWire(6) > 1 then --in MU mode we write that to the train wire for the train script to handle
+			self.Train:WriteTrainWire(5,0)
+			----print("brake released")
+			self.BrakePressure = 0
+		elseif self.Train:ReadTrainWire(6) < 1 then --in single unit mode we write that directly to the brake pressure
+			self.BrakePressure = 0
+			self.Train:SetNW2Int("BrakePressure",0)
+		end
 		
 	end
-end		
-
-
-if self.ThrottleState <= 100 then --Throttle animation handling. Adapt the value to the pose parameter on the model
-	self.ThrottleStateAnim = self.ThrottleState / 200 + 0.5
-elseif (self.ThrottleState >= 0) then
-	self.ThrottleStateAnim = (self.ThrottleState * -0.1)
 	
-end		
-
-if self.ThrottleState < 0 and self.Train:GetNW2Float("Speed",0) < 8 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
-	
-	if self.Train:ReadTrainWire(6) == 1 then --in MU mode we write that to the train wire for the train script to handle
-		self.Train:WriteTrainWire(5,2.7)
-		----print("Brake applied")
+	if self.ThrottleState > 0 and self.Train:GetNW2Float("Speed",0) < 3 then
 		
-	elseif self.Train:ReadTrainWire(6) == 0 then --in single unit mode we write that directly to the brake pressure
-		self.BrakePressure = 2.7
-		self.Train:SetNW2Int("BrakePressure",2.7)
+		if self.Train:ReadTrainWire(6) == 1 then
+			
+			self.Train:WriteTrainWire(5,0)
+			
+		elseif self.Train:ReadTrainWire(6) == 0 then
+			
+			self.BrakePressure = 0
+			self.Train:SetNW2Int("BrakePressure",0)
+		end
+		
 	end
 	
-elseif self.ThrottleState > 0 then
-	if self.Train:ReadTrainWire(6) > 1 then --in MU mode we write that to the train wire for the train script to handle
-		self.Train:WriteTrainWire(5,0)
-		----print("brake released")
-		self.BrakePressure = 0
-	elseif self.Train:ReadTrainWire(6) < 1 then --in single unit mode we write that directly to the brake pressure
-		self.BrakePressure = 0
-		self.Train:SetNW2Int("BrakePressure",0)
+	
+	
+	if self.Train.DepartureConfirmed == true then
+		self.Train:WriteTrainWire(9,0)
+		----print("Departure confirmed")
+	else
+		self.Train:WriteTrainWire(9,1)
 	end
 	
-end
-
-if self.ThrottleState > 0 and self.Train:GetNW2Float("Speed",0) < 3 then
 	
-	if self.Train:ReadTrainWire(6) == 1 then
-		
-		self.Train:WriteTrainWire(5,0)
-		
-	elseif self.Train:ReadTrainWire(6) == 0 then
-		
-		self.BrakePressure = 0
-		self.Train:SetNW2Int("BrakePressure",0)
-	end
 	
-end
-
-
-
-if self.Train.DepartureConfirmed == true then
-	self.Train:WriteTrainWire(9,0)
-	----print("Departure confirmed")
-else
-	self.Train:WriteTrainWire(9,1)
-end
-
-
-
-
+	
 end
 
 
@@ -518,7 +510,7 @@ function TRAIN_SYSTEM:U2Engine()
 		self.ResistorBank = 20
 	end
 	
-
+	
 	
 	
 	
@@ -537,12 +529,12 @@ function TRAIN_SYSTEM:U2Engine()
 	end
 	
 	if self.ReverserState ~= 0 then --camshaft only moves when you're actually in gear
-			if CurTime() - self.CamshaftMoveTimer > 0.4  then
-				self.CamshaftFinishedMoving = true
-				self.Train:SetNW2Bool("CamshaftMoved",true)
-				
-				
-			end
+		if CurTime() - self.CamshaftMoveTimer > 0.4  then
+			self.CamshaftFinishedMoving = true
+			self.Train:SetNW2Bool("CamshaftMoved",true)
+			
+			
+		end
 		
 		
 	end
@@ -562,11 +554,11 @@ end
 function TRAIN_SYSTEM:IsLeadingCab()
 	
 	if self.ReverserInserted == true and self.VZ == true then
-		self.LeadingCab = 1
+		self.LeadingCabA = 1
 	elseif self.ReverserInserted == false and self.VZ == true then
-		self.LeadingCab = 0
+		self.LeadingCabA = 0
 	end
-	----print("leadingcab"..self.LeadingCab)
+	----print("leadingcab"..self.LeadingCabA)
 end
 
 function TRAIN_SYSTEM:IsLeadingUnit()
@@ -599,12 +591,12 @@ function TRAIN_SYSTEM:MUHandler()
 	
 	
 	--Set reverser logic directly if we're the leading unit
-	if self.ReverserLeverState == 0 then
-		if self.LeadingCab == 1 then
+	if self.ReverserLeverStateA == 0 then
+		if self.LeadingCabA == 1 then
 			self.ReverserState = 0
 			--self.Train:WriteTrainWire(3,0)
 			--self.Train:WriteTrainWire(4,0)
-		elseif self.LeadingCab == 0 then
+		elseif self.LeadingCabA == 0 then
 			if self.Train:ReadTrainWire(6) < 1 then
 				self.VE = false
 				self.VZ = false
@@ -615,42 +607,71 @@ function TRAIN_SYSTEM:MUHandler()
 		end
 		
 		--self.Train:WriteTrainWire(6,0)
-	elseif self.ReverserLeverState == -1 then
-		if self.LeadingCab == 1 then
+	elseif self.ReverserLeverStateA == -1 and self.ReverserLeverStateB == 0 then
+		if self.LeadingCabA == 1 then
 			self.ReverserState = -1
 		end
 		self.VE = true
 		self.VZ = false
 		--self.Train:WriteTrainWire(6,0)
-	elseif self.ReverserLeverState == 1 then
-		if self.LeadingCab == 1 then
+	elseif self.ReverserLeverStateA == 1 and self.ReverserLeverStateB == 0 then
+		if self.LeadingCabA == 1 then
 			self.ReverserState = 0
 		end
 		self.BatteryStartUnlock = true
 		self.VE = false
 		self.VZ = false
 		--self.Train:WriteTrainWire(6,0)
-	elseif self.ReverserLeverState == 2 then
+	elseif self.ReverserLeverStateA == 2 and self.ReverserLeverStateB == 0 then
 		self.VZ = true
 		self.VE = false
 		self.ReverserState = 1
 		
 		self.Train:WriteTrainWire(3,1)
-		self.Train:WriteTrainWire(4,0)
 		self.Train:WriteTrainWire(6,1)
 		----print(self.Train.FrontBogey.BrakeCylinderPressure)
-	elseif self.ReverserLeverState == 3 then --We're at position 3 of the reverser forwards, that means we don't talk to coupled units.
+	elseif self.ReverserLeverStateA == 3 and self.ReverserLeverStateB == 0 then --We're at position 3 of the reverser forwards, that means we don't talk to coupled units.
 		self.VZ = false
 		self.VE = true
-		if self.LeadingCab == 1 then
+		if self.LeadingCabA == 1 then
+			--self.Train:WriteTrainWire(6,0)
+			self.ReverserState = 1
+		end
+
+	elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == -1 then
+		if self.LeadingCabA == 1 then
+			self.ReverserState = -1
+		end
+		self.VE = true
+		self.VZ = false
+		--self.Train:WriteTrainWire(6,0)
+	elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 0 then
+		if self.LeadingCabA == 1 then
+			self.ReverserState = 0
+		end
+		self.BatteryStartUnlock = true
+		self.VE = false
+		self.VZ = false
+		--self.Train:WriteTrainWire(6,0)
+	elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 2 then
+		self.VZ = true
+		self.VE = false
+		self.ReverserState = 1
+		
+		self.Train:WriteTrainWire(3,0)
+		self.Train:WriteTrainWire(4,1)
+		self.Train:WriteTrainWire(6,1)
+		----print(self.Train.FrontBogey.BrakeCylinderPressure)
+	elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 3 then --We're at position 3 of the reverser forwards, that means we don't talk to coupled units.
+		self.VZ = false
+		self.VE = true
+		if self.LeadingCabA == 1 then
 			--self.Train:WriteTrainWire(6,0)
 			self.ReverserState = 1
 		end
 	end
-	--end
-	--print(self.ReverserLeverState)
 	
-	if self.LeadingCab == 0 and self.Train:ReadTrainWire(6) > 0 then --if we're not the leading train, read this stuff from train wires
+	if self.LeadingCabA == 0 and self.Train:ReadTrainWire(6) > 0 then --if we're not the leading train, read this stuff from train wires
 		self.VZ = true
 		if self.Train:ReadTrainWire(3) > 0 and self.Train:ReadTrainWire(4) < 1 then --wire 3 high and wire 4 high that means
 			self.ReverserState = 1	--forwards
@@ -660,7 +681,7 @@ function TRAIN_SYSTEM:MUHandler()
 		elseif self.Train:ReadTrainWire(3) < 1 and self.Train:ReadTrainWire(4) < 1 then
 			self.ReverserState = 0
 		end
-	elseif self.LeadingCab == 1 and self.Train:ReadTrainWire(6) < 1 then
+	elseif self.LeadingCabA == 1 and self.Train:ReadTrainWire(6) < 1 then
 		self.VZ = false
 	end
 	
@@ -700,8 +721,7 @@ function TRAIN_SYSTEM:MUHandler()
 		self.Train:SetNW2Bool("Fans",false)
 		
 	end
-
-
+	
+	
 	--print(self.Train:GetNW2Bool("Fans"))
 end
-

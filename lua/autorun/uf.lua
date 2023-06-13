@@ -6,6 +6,7 @@ if not UF then
     -- Supported train classes
     UF.TrainClasses = {}
     UF.IsTrainClass = {}
+    UF.SpawnedTrains = {}
     -- Supported train classes
     UF.TrainSpawnerClasses = {}
     timer.Simple(0.05, function()
@@ -24,13 +25,16 @@ if not UF then
     
 end
 
---List of spawned trains
-UF.SpawnedTrains = {}
---[[for k,ent in pairs(ents.GetAll()) do
-if  string.find(ent.ClassName,"gmod_subway_uf",0,true) then
-    UF.SpawnedTrains[ent] = true
-end
-end]]
+timer.Create("RBLHousekeeping", 30, 0, function()
+    for name in pairs(ents.GetAll()) do
+        local prefix = "gmod_subway_uf_"
+        if string.sub(name,1,#prefix) == prefix and name ~= "gmod_subway_uf_u2_section_b" then --fixme: don't hardcode entity names!
+            print("Did housekeeping on entity", name)
+            UF.IBISRegisteredTrains[name] = name.IBIS.Course
+            
+        end
+    end
+end)
 
 hook.Add("EntityRemoved","UFTrains",function(ent)
     --[[if UF.SpawnedTrains[ent] then
@@ -47,7 +51,8 @@ end
 end)
 if SERVER then
     hook.Add("OnEntityCreated","UFTrains",function(ent)
-        if ent:GetClass() == "gmod_subway_uf" then
+        local prefix = "gmod_subway_uf_"
+        if string.sub(ent:GetClass(), 1, #prefix) == prefix then
             UF.SpawnedTrains[ent] = true
         end
     end)
@@ -103,28 +108,29 @@ end
 
 
 
-function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL simulation
+function UF.RegisterTrain(LineCourse, train, logoff) --Registers a train for the RBL simulation
     
     local output
     -- Step 1: Check if LineCourse and train are falsy values
     if not LineCourse and not train then
         -- Print statement for Step 1
         print("LineCourse and train are falsy values. Exiting function.")
-            return -- Return without performing any further actions
-        end
+        return -- Return without performing any further actions
+    end
         if LineCourse == "0000" and next(UF.IBISRegisteredTrains) ~= nil then
             -- If the input is all zeros, we delete ourselves from the table
             for i, v in pairs(UF.IBISRegisteredTrains) do
-                if v == train then
-                    table.remove(UF.IBISRegisteredTrains,i)
+                if i == train then
+                    UF.IBISRegisteredTrains[i] = nil
                     print("RBL: Logging IBIS off")
                 end
             end
-            output = "logoff"        
+            output = "logoff"
+            return output     
             -- Step 2: Check if UF.IBISRegisteredTrains table is empty
-        elseif not UF.IBISRegisteredTrains and LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil then
+        elseif next(UF.IBISRegisteredTrains) == nil and LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil then
             -- Print statement for Step 2
-            print("UF.IBISRegisteredTrains table is empty. Registering train.")
+            print("RBL: Table is empty. Registering train.")
             
             -- Step 3a: Insert train into UF.IBISRegisteredTrains table
             --local line = table.insert(UF.IBISRegisteredTrains, train)
@@ -134,44 +140,47 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             UF.IBISRegisteredTrains[train] = LineCourse
             print(train, LineCourse)
             -- Print statement for Step 3
-            print("Train registered successfully with LineCourse:", LineCourse)
+            print("RBL: Train registered successfully with LineCourse:", LineCourse)
             
             output = true -- Return true to indicate successful registration
+            return output
+        elseif LineCourse ~= "0000" and #LineCourse == 4 then
             
-        elseif LineCourse ~= "0000" and #LineCourse == 4 and LineCourse then
-            
-            if UF.IBISRegisteredTrains[train] and UF.IBISRegisteredTrains[train].LineCourse == LineCourse then
+            if UF.IBISRegisteredTrains[train] and UF.IBISRegisteredTrains[train] == LineCourse then
                 print("Train is already registered by this exact Course. Doing Nothing.")
                 output = true
-                
+                return output
             end
-        elseif LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil and #LineCourse == 4 and UF.IBISRegisteredTrains[train].LineCourse ~= LineCourse then
+        elseif LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil and #LineCourse == 4 and UF.IBISRegisteredTrains[train] ~= LineCourse then
             -- Print statement for Step 4
-            local complete
-            if not complete then
-                print("UF.IBISRegisteredTrains table is not empty. Checking for existing registrations.")
+            print("UF.IBISRegisteredTrains table is not empty. Checking for existing registrations.")
+            --local complete
+            --if not complete then
+                
                 -- Step 4: Iterate over UF.IBISRegisteredTrains table
                 if UF.checkDuplicateTrain(UF.IBISRegisteredTrains, train, LineCourse) == false then
                     -- Print statement for Step 4b
-                    print("Another train is already registered on the same line course. Registration failed.")
+                    print("RBL: Another train is already registered on the same line course. Registration failed.")
+                    
                     output = false -- Return false if the train is already registered on the same line course
+                    return output
                 elseif UF.checkDuplicateTrain(UF.IBISRegisteredTrains, train, LineCourse) == true then
                     UF.IBISRegisteredTrains[train] = LineCourse
-                    print("No conflicting train with LineCourse found. Registering new train.", LineCourse)
+                    print("RBL: No conflicting train with LineCourse found. Registering new train.", LineCourse)
                     output = true
-                    complete = true
+                    return output
                 end
                 
-            else
+           -- else
                 
-            end
+            --end
             
             
         end
         --print(output)
         --print(LineCourse)
         return output
-    end
+end
     
     
     

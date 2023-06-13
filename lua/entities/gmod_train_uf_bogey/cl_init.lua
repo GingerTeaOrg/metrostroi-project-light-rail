@@ -2,8 +2,9 @@ include("shared.lua")
 
 -- Bogey-related sounds
 ENT.SoundNames = {}
-ENT.SoundNames["ted1_703"]  = "lilly/uf/u2/overhaul/u2_engine_primary_pitch.mp3"
-ENT.SoundNames["ted2_703"]  = "lilly/uf/u2/overhaul/u2_engine_secondary.mp3"
+ENT.SoundNames["u2_1"]  = "lilly/uf/u2/overhaul/u2_engine_primary_pitch.mp3"
+ENT.SoundNames["u2_2"]  = "lilly/uf/u2/overhaul/u2_engine_primary_mid.mp3"
+ENT.SoundNames["u2_3"]  = "lilly/uf/u2/overhaul/u2_engine_secondary.mp3"
 
 
 
@@ -28,8 +29,9 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 
 ENT.EngineSNDConfig = {
     {
-        {"ted1_703" ,35,0,1,1}, --initial speed, 
-        {"ted2_703" ,35,80,80,2},
+        {"u2_1" ,35,0,1,1}, --speed, 
+        {"u2_2" ,60,0,1,1},
+        {"u2_3" ,100,80,80,2},
     },
 }
 
@@ -115,7 +117,7 @@ function ENT:Think()
     local streetC,tunnelC = 0,0.9
     if IsValid(train) then
         streetC,tunnelC = train.StreetCoeff or 0,train.TunnelCoeff or 1
-        soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
+        soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.8,0,2)
     end
 
     local speed = self:GetSpeed()
@@ -165,10 +167,7 @@ function ENT:Think()
                     volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
                 end
 
-                
                 local pitch = math.max(0,speed/snd[2])+0.06*streetC
-                
-
                 self:SetSoundState(snd[1],motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2))
             end
         end

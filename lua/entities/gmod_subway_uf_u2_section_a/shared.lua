@@ -28,9 +28,9 @@ end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["bell"] = {1100,1e9,Vector(386,-20,8),0.7}
+	self.SoundPositions["bell"] = {1100,1e9,Vector(386,20,8),0.7}
 	self.SoundNames["bell_in"] = {loop=0.01,"lilly/uf/u2/insidecab/Bell_start.mp3","lilly/uf/u2/insidecab/Bell_loop.mp3", "lilly/uf/u2/insidecab/Bell_end.mp3"}	
-	self.SoundPositions["bell_in"] = {800,1e9,Vector(386,-20,50),1}
+	self.SoundPositions["bell_in"] = {800,1e9,Vector(386,20,50),1}
 	
 	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.mp3"}	
 	self.SoundPositions["Startup"] = {800,1e9,Vector(550,0,55),1}
@@ -150,7 +150,10 @@ ENT.AnnouncerPositions = {
 	{Vector(-3,-60, 62),300,0.2},
 	{Vector(-3,60 ,62),300,0.2},
 }
-
+if CLIENT then
+ENT.DecalPos = Vector(0,0,0)
+ENT.CarNumPos = Vector(0,0,0)
+end
 local function GetDoorPosition(i,k)
 	
 	--math.random
@@ -233,7 +236,7 @@ ENT.Spawner = {
     end,]]
 	
 	{"RetroMode","Spawner.U2.RetroMode","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("RetroMode",val and not rot or not val and rot) end},
-	{"Old Mirror","Spawner.U2.OldMirror","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("OldMirror",val and not rot or not val and rot) end},
+	{"Old Mirror","Spawner.U2.OldMirror","Boolean",true,function(ent,val,rot) ent:SetNW2Bool("OldMirror",val and not rot or not val and rot) end},
 	{"IBISData","Spawner.U2.IBISDataset","List",function(ent)
         local Announcer = {}
         for k,v in pairs(UF.IBISLines or {}) do Announcer[k] = v.name or k end

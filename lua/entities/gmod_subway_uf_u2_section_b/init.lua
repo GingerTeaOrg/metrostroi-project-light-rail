@@ -48,53 +48,88 @@ function ENT:Initialize()
 	self.ReverserState = 0
 	self.ReverserEngaged = 0
 	
-	self.DriverSeat = self:CreateSeat("driver",Vector(-500,-17,55), Angle(0,180,0))
-	self.KeyMap = {
-		[KEY_A] = "ThrottleUp",
-		[KEY_D] = "ThrottleDown",
-		[KEY_H] = "BellEngage",
-		[KEY_SPACE] = "Deadman",
-		[KEY_W] = "ReverserUp",
-		[KEY_S] = "ReverserDown",
-		[KEY_P] = "PantoUp",
-		[KEY_O] = "DoorUnlock",
-		[KEY_I] = "DoorLock",
-		[KEY_K] = "DoorConfirm",
-		[KEY_Z] = "WarningAnnouncementSet",
-		[KEY_PAD_4] = "BlinkerLeft",
-		[KEY_PAD_5] = "BlinkerNeutral",
-		[KEY_PAD_6] = "BlinkerRight",
-		[KEY_PAD_8] = "BlinkerWarn",
-		[KEY_J] = "DoorSelectLeft",
-		[KEY_L] = "DoorSelectRight",
-		[KEY_B] = "Battery",
-		--[KEY_0] = "KeyTurnOn",
-		
-		[KEY_LSHIFT] = {
-							[KEY_0] = "KeyInsert",
-							[KEY_9] = "ReverserInsert",
-							[KEY_A] = "ThrottleUpFast",
-							[KEY_D] = "ThrottleDownFast",
-							[KEY_S] = "ThrottleZero",
-							[KEY_H] = "Horn"},
-		[KEY_RALT] = {
-							[KEY_PAD_1] = "Number1",
-							[KEY_PAD_2] = "Number2",
-							[KEY_PAD_3] = "Number3",
-							[KEY_PAD_4] = "Number4",
-							[KEY_PAD_5] = "Number5",
-							[KEY_PAD_6] = "Number6",
-							[KEY_PAD_7] = "Number7",
-							[KEY_PAD_8] = "Number8",
-							[KEY_PAD_9] = "Number9",
-							[KEY_PAD_0] = "Number0",
-							[KEY_PAD_ENTER] = "Enter",
-							[KEY_PAD_DECIMAL] = "Delete",
-							[KEY_PAD_DIVIDE] = "Destination",
-							[KEY_PAD_MULTIPLY] = "SpecialAnnouncements",
-							[KEY_PAD_MINUS] = "TimeAndDate",
-		},
-	}
+	self.DriverSeat = self:CreateSeat("driver",Vector(-395,-15,34),Angle(0,180,0))
+	-- Initialize key mapping
+		self.KeyMap = {
+			[KEY_A] = "ThrottleUp",
+			[KEY_D] = "ThrottleDown",
+			[KEY_F] = "ReduceBrake",
+			[KEY_H] = "BellEngageSet",
+			[KEY_SPACE] = "DeadmanSet",
+			[KEY_W] = "ReverserUpSet",
+			[KEY_S] = "ReverserDownSet",
+			[KEY_P] = "PantographRaiseSet",
+			[KEY_O] = "DoorsUnlockSet",
+			[KEY_I] = "DoorsLockSet",
+			[KEY_K] = "DoorsCloseConfirmSet",
+			[KEY_Z] = "WarningAnnouncementSet",
+			[KEY_J] = "DoorsSelectLeftToggle",
+			[KEY_L] = "DoorsSelectRightToggle",
+			[KEY_B] = "BatteryToggle",
+			[KEY_V] = "HeadlightsToggle",
+			[KEY_M] = "Mirror",
+			[KEY_1] = "Throttle10Pct",
+			[KEY_2] = "Throttle20Pct",
+			[KEY_3] = "Throttle30Pct",
+			[KEY_4] = "Throttle40Pct",
+			[KEY_5] = "Throttle50Pct",
+			[KEY_6] = "Throttle60Pct",
+			[KEY_7] = "Throttle70Pct",
+			[KEY_8] = "Throttle80Pct",
+			[KEY_9] = "Throttle90Pct",
+			[KEY_PERIOD] = "BlinkerRightSet",
+			
+			[KEY_COMMA] = "BlinkerLeftSet",
+			--[KEY_0] = "KeyTurnOn",
+			
+			[KEY_LSHIFT] = {
+				[KEY_0] = "ReverserInsert",
+				[KEY_A] = "ThrottleUpFast",
+				[KEY_D] = "ThrottleDownFast",
+				[KEY_S] = "ThrottleZero",
+				[KEY_H] = "Horn",
+				[KEY_V] = "DriverLightToggle",
+				[KEY_COMMA] = "WarnBlinkToggle",
+				[KEY_B] = "BatteryDisableToggle",
+				[KEY_PAGEUP] = "Rollsign+",
+				[KEY_PAGEDOWN] = "Rollsign-",
+				[KEY_O] = "Door1Set",
+				[KEY_1] = "Throttle10-Pct",
+				[KEY_2] = "Throttle20-Pct",
+				[KEY_3] = "Throttle30-Pct",
+				[KEY_4] = "Throttle40-Pct",
+				[KEY_5] = "Throttle50-Pct",
+				[KEY_6] = "Throttle60-Pct",
+				[KEY_7] = "Throttle70-Pct",
+				[KEY_8] = "Throttle80-Pct",
+				[KEY_9] = "Throttle90-Pct",
+				[KEY_P] = "PantographLowerSet",
+			},
+			
+			[KEY_LALT] = {
+				[KEY_PAD_1] = "Number1Set",
+				[KEY_PAD_2] = "Number2Set",
+				[KEY_PAD_3] = "Number3Set",
+				[KEY_PAD_4] = "Number4Set",
+				[KEY_PAD_5] = "Number5Set",
+				[KEY_PAD_6] = "Number6Set",
+				[KEY_PAD_7] = "Number7Set",
+				[KEY_PAD_8] = "Number8Set",
+				[KEY_PAD_9] = "Number9Set",
+				[KEY_PAD_0] = "Number0Set",
+				[KEY_PAD_ENTER] = "EnterSet",
+				[KEY_PAD_DECIMAL] = "DeleteSet",
+				[KEY_PAD_DIVIDE] = "DestinationSet",
+				[KEY_PAD_MULTIPLY] = "SpecialAnnouncementsSet",
+				[KEY_PAD_MINUS] = "TimeAndDateSet",
+				[KEY_V] = "PassengerLightsSet",
+				[KEY_D] = "EmergencyBrakeSet",
+				[KEY_N] = "Parrallel",
+				
+				
+				
+			},
+		}
 	self.ParentTrain = self:GetNW2Entity("U2a")
 	self.RearCouple = self.ParentTrain.RearCouple
     --self.FrontCouple = self:CreateCoupleUF(Vector( 0,0,23),Angle(0,180,0),true,"u2")	
@@ -180,217 +215,884 @@ end
 
 function ENT:OnButtonPress(button,ply)
 
-	----THROTTLE CODE -- Initial Concept credit Toth Peter
-	--[[if self.ThrottleRate == 0 then
-		if button == "ThrottleUp" then self.ThrottleRate = 2 end
-		if button == "ThrottleDown" then self.ThrottleRate = -2 end
-	end
-
-	if self.ThrottleRate == 0 then
-		if button == "ThrottleUpFast" then self.ThrottleRate = 5.5 end
-		if button == "ThrottleDownFast" then self.ThrottleRate = -5.5 end
-	end
-
-	if self.ThrottleRate == 0 then
-		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
-	end]]
-
-	
-	--[[if button == "PantoUp" then
-		if self.PantoUp == false then
-			self.PantoUp = true 
-			self.Duewag_U2:TriggerInput("PantoUp",self.KeyPantoUp)
-			self:SetPackedBool("PantoUp",true)
-			PrintMessage(HUD_PRINTTALK, "Panto is up")
+	if button == "HighbeamToggle" then
+		if self.Panel.Highbeam == 0 then
+			self.Panel.Highbeam = 1
 		else
-		
-			if  self.PantoUp == true then
-			self.PantoUp = false
-			self.Duewag_U2:TriggerInput("PantoUp",0)
-			self:SetPackedBool("PantoUp",0)
-			PrintMessage(HUD_PRINTTALK, "Panto is down")
+			self.Panel.Highbeam = 0
 		end
 	end
+
+	if button == "PassengerOvergroundSet" then
+		self.Panel.PassengerOverground = 1
+	end
+	if button == "PassengerUndergroundSet" then
+		self.Panel.PassengerUnderground = 1
+	end
+	
+	if button == "SetPointLeftSet" then
+		self.Panel.SetPointLeft = 1
+	end
+	if button == "SetPointRightSet" then
+		self.Panel.SetPointRight = 1
+	end
+	----THROTTLE CODE -- Initial Concept credit Toth Peter
+	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
+		if button == "ThrottleUp" then self.ParentTrain.Duewag_U2.ThrottleRate = 3 end
+		if button == "ThrottleDown" then self.ParentTrain.Duewag_U2.ThrottleRate = -3 end
+	end
+	
+	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
+		if button == "ThrottleUpFast" then self.ParentTrain.Duewag_U2.ThrottleRate = 8 end
+		if button == "ThrottleDownFast" then self.ParentTrain.Duewag_U2.ThrottleRate = -8 end
+		
+	end
+	
+	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
+		if button == "ThrottleUpReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRate = 10 end
+		if button == "ThrottleDownReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRate = -10 end
+		
+	end
+	
+	
+	
+	if button == "Door1Set" then
+		self.Door1 = true
+		self.Panel.Door1 = 1
+	end
+	
+	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
+		if button == "ThrottleZero" then self.ParentTrain.Duewag_U2.ThrottleState = 0 end
+		if self:GetNW2Bool("EmergencyBrake",false) == true then
+			self:SetNW2Bool("EmergencyBrake",false)
+		end
+	end
+	
+	if button == "Throttle10Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 10
+	end
+	
+	if button == "Throttle20Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 20
+	end
+	
+	if button == "Throttle30Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 30
+	end
+	if button == "Throttle40Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 40
+	end
+	if button == "Throttle50Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 50
+	end
+	if button == "Throttle60Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 60
+	end
+	if button == "Throttle70Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 70
+	end
+	if button == "Throttle80Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 80
+	end
+	if button == "Throttle90Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = 90
+	end
+	
+	if button == "Throttle10-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -10
+	end
+	
+	if button == "Throttle20-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -20
+	end
+	
+	if button == "Throttle30-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -30
+	end
+	if button == "Throttle40-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -40
+	end
+	if button == "Throttle50-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -50
+	end
+	if button == "Throttle60-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -60
+	end
+	if button == "Throttle70-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -70
+	end
+	if button == "Throttle80-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -80
+	end
+	if button == "Throttle90-Pct" then
+		self.ParentTrain.Duewag_U2.ThrottleState = -90
+	end
+	
+	if button == "PantographRaiseSet" then
+		self.Panel.PantographRaise = 1
+		
+	end
+	
+	
+	if button == "EmergencyBrakeSet" and self:GetNW2Bool("EmergencyBrake",false) == false then
+		self:SetNW2Bool("EmergencyBrake",true)
+	elseif button == "EmergencyBrakeSet" and self:GetNW2Bool("EmergencyBrake",false) == true then
+		self:SetNW2Bool("EmergencyBrake",false)
+	end
+	
+	if button == "Rollsign+" then
+		self:SetNW2Bool("Rollsign+",true)
+		self.ScrollMoment = CurTime()
+	end
+	if button == "Rollsign-" then
+		self:SetNW2Bool("Rollsign-",true)
+		self.ScrollMoment = CurTime()
+	end
+	
+	
+	
+	if button == "CabWindowR+" then
+		
+		self.CabWindowR = self.CabWindowR - 0.1
+		------print(self:GetNW2Float("CabWindowR"))
+		
+	end
+	
+	if button == "CabWindowR-" then
+		
+		self.CabWindowR = self.CabWindowR + 0.1
+		------print(self:GetNW2Float("CabWindowR"))
+		
+	end
+	
+	if button == "CabWindowL+" then
+		self.CabWindowL = self.CabWindowL - 0.1
+		------print(self:GetNW2Float("CabWindowL"))
+		
+	end
+	
+	if button == "CabWindowL-" then
+		
+		self.CabWindowL = self.CabWindowL + 0.1
+		------print(self:GetNW2Float("CabWindowL"))
 		
 	end
 	
 	if button == "WarningAnnouncementSet" then
-			self:Wait(1)
-			self:SetNW2Bool("WarningAnnouncement", true)
-	end
-
-	
-	if button == "ReverserUp" then
-			if 
-				not self.Duewag_U2.ThrottleEngaged == true  then
-					if self.Duewag_U2.ReverserInserted == true then
-					self.ReverserState = self.ReverserState + 1
-					self.ReverserState = math.Clamp(self.ReverserState,-1,1)
-					self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
-					PrintMessage(HUD_PRINTTALK,self.ReverserState)
-					end
-			end
-	end
-	if button == "ReverserDown" then
-			if 
-				not self.Duewag_U2.ThrottleEngaged == true and self.Duewag_U2.ReverserInserted == true then
-				self.ReverserState = self.ReverserState - 1
-				self.ReverserState = math.Clamp(self.ReverserState,-1,1)
-				self.Duewag_U2:TriggerInput("ReverserState",self.ReverserState)
-			end
+		--self:Wait(1)
+		self:SetNW2Bool("WarningAnnouncement", true)
 	end
 	
-	
-	
-	
-	if button == "ReverserInsert" then
-		if self.ReverserInsert == false then
-			self.ReverserInsert = true
-			self.Duewag_U2:TriggerInput("ReverserInserted",self.ReverserInsert)
-			self:SetNW2Bool("ReverserInserted",true)
-			PrintMessage(HUD_PRINTTALK, "Reverser is in")
+	if button == "Blinds+" then
 		
-		elseif  self.ReverserInsert == true then
-			self.ReverserInsert = false
-			self.Duewag_U2:TriggerInput("ReverserInserted",false)
-			self:SetNW2Bool("ReverserInserted",false)
-			PrintMessage(HUD_PRINTTALK, "Reverser is out")
+		self:SetNW2Float("Blinds",self:GetNW2Float("Blinds") +0.1)
+		self:SetNW2Float("Blinds",math.Clamp(self:GetNW2Float("Blinds"),0.2,1))
+	end
+	
+	if button == "Blinds-" then
+		
+		self:SetNW2Float("Blinds",self:GetNW2Float("Blinds") -0.1)
+		self:SetNW2Float("Blinds",math.Clamp(self:GetNW2Float("Blinds"),0.2,1))
+	end
+	
+	if button == "ReverserUpSet" then
+		if 
+		not self.ParentTrain.Duewag_U2.ThrottleEngaged == true  then
+			if self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
+				self.ParentTrain.Duewag_U2.ReverserLeverState = self.ParentTrain.Duewag_U2.ReverserLeverStateB + 1
+				self.ParentTrain.Duewag_U2.ReverserLeverState = math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
+			end
 		end
 	end
+	if button == "ReverserDownSet" then
+		if 
+		not self.ParentTrain.Duewag_U2.ThrottleEngaged == true and self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
 
+			math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
+			self.ParentTrain.Duewag_U2.ReverserLeverStateB = self.ParentTrain.Duewag_U2.ReverserLeverStateB - 1
+			self.ParentTrain.Duewag_U2.ReverserLeverStateB = math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
 
-	if button == "Battery" then
-		if self.BatteryOn == false then
+		end
+	end
+	
+	
+	
+	if self.ParentTrain.Duewag_U2.ReverserState == 0 then
+		if button == "ReverserInsert" then
+			if self.ParentTrain.Duewag_U2.ReverserInsertedB == false then
+				self.ParentTrain.Duewag_U2.ReverserInsertedB = true
+				self.ParentTrain.Duewag_U2.ReverserInsertedA = false
+				self:SetNW2Bool("ReverserInserted",true)
+	
+				
+			elseif self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
+				self.ParentTrain.Duewag_U2.ReverserInsertedB = false
+				self.ParentTrain.Duewag_U2.ReverserInsertedA = false
+				self:SetNW2Bool("ReverserInserted",false)
+			end
+		end
+	end
+	
+	
+	if button == "BatteryToggle" then
+		
+		self:SetPackedBool("FlickBatterySwitchOn",true)
+		if self.BatteryOn == false and self.ParentTrain.Duewag_U2.ReverserLeverStateB == 1 then
 			self.BatteryOn = true
-			self.Duewag_U2:TriggerInput("BatteryOn",self.BatteryOn)
 			self:SetNW2Bool("BatteryOn",true)
-			PrintMessage(HUD_PRINTTALK, "Battery is ON")
-
-
-			elseif  self.BatteryOn == true then
-				self.BatteryOn = false
-				self.Duewag_U2:TriggerInput("BatteryOn",false)
-				self:SetNW2Bool("BatteryOn",false)
-				PrintMessage(HUD_PRINTTALK, "Battery is OFF")
-			
 		end
+	end
+	
+	if button == "BatteryDisableToggle" then
+		if self.BatteryOn == false and self.ParentTrain.Duewag_U2.ReverserLeverStateB == 1 then
+			self.BatteryOn = false
+			self.Duewag_Battery:TriggerInput("Charge",0)
+			self:SetNW2Bool("BatteryOn",false)
+		end
+		self:SetPackedBool("FlickBatterySwitchOff",true)
+		
+	end
+	
+	
+	if button == "DeadmanSet" then
+		self.ParentTrain.Duewag_Deadman:TriggerInput("IsPressed", 1)
+		if self:ReadTrainWire(6) > 0 then
+			self:WriteTrainWire(12,1)
+		end
+		------print("DeadmanPressedYes")
+	end
+	
+	
+	if button == "BlinkerLeftSet" then
+		
+		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) > 0 then -- If you press the button and the blinkers are already set to right, turn off
+			self:WriteTrainWire(20,0)
+			self:WriteTrainWire(21,0)
+		elseif
+		self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are off, set to left
+			self:WriteTrainWire(20,1)
+			self:WriteTrainWire(21,0)
+			--self:SetNW2String("BlinkerDirection","left")
+		elseif
+		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are already on, turn them off
+			self:WriteTrainWire(20,1)
+			self:WriteTrainWire(21,0)
+			--self:SetNW2String("BlinkerDirection","none")
+		elseif
+		self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) > 0 then
+			--self:WriteTrainWire(20,1)
+			--self:WriteTrainWire(21,1)
+		end
+		if self.Panel.BlinkerLeft == 0 and self.Panel.BlinkerRight == 0 then
+			self.Panel.BlinkerLeft = 1
+		elseif self.Panel.BlinkerLeft == 0 and self.Panel.BlinkerRight == 1 then 
+			self.Panel.BlinkerLeft = 0
+			self.Panel.BlinkerRight = 0
+		end
+	end
+	
+	
+	if button == "BlinkerRightSet" then
+		
+		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) > 0 then -- If you press the button and the blinkers are already set to right, do nothing
+			self:WriteTrainWire(20,0)
+			self:WriteTrainWire(21,1)
 			
-	end]]
-	
-	
-	if button == "Deadman" then
-			self.Duewag_Deadman:TriggerInput("IsPressed", 1)
-			print("DeadmanPressedYes")
+		elseif
+		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are already set to left, set to neutral
+			self:WriteTrainWire(20,0)
+			self:WriteTrainWire(21,0)
+		elseif
+		self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
+			self:WriteTrainWire(20,0)
+			self:WriteTrainWire(21,1)
+			
+		elseif
+		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) > 0 then
+			self:WriteTrainWire(20,1)
+			self:WriteTrainWire(21,1)	
+		end
+
+		if self.Panel.BlinkerRight == 0 and self.Panel.BlinkerLeft == 0 then
+			self.Panel.BlinkerRight = 1
+		elseif self.Panel.BlinkerLeft == 1 and self.Panel.BlinkerRight == 0 then
+			self.Panel.BlinkerRight = 0
+			self.Panel.BlinkerLeft = 0
+		end
 	end
 	
-
-	if button == "KeyTurnOn" then
-			if self.KeyTurnOn == false then
-				if self.KeyInsert == true	then
-					self.KeyTurnOn = true
-					PrintMessage(HUD_PRINTTALK, "Key is turned")
-				end
-			end
-			else
-			if self.KeyTurnOn == true then
-					if self.KeyInsert == true  then
-						self.KeyTurnOn = false
-						PrintMessage(HUD_PRINTTALK, "Key is turned off")
-					end
-			end
-	end
-
-	if button == "BellEngage" then
+	if button == "BellEngageSet" then
 		self:SetNW2Bool("Bell",true)
 	end
-
+	
 	if button == "Horn" then
 		self:SetNW2Bool("Horn",true)
 	end
+	
+	
+	if button == "WarnBlinkToggle" then
+		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 and self:ReadTrainWire(20) ~= 1 or self:ReadTrainWire(21) ~= 1 then
+			self:SetNW2Bool("WarningBlinker",true)
+			self:WriteTrainWire(20,1)
+			self:WriteTrainWire(21,1)
+			self.Panel.WarnBlink = 1
+		elseif
+		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) > 0 then
+			self:SetNW2Bool("WarningBlinker",false)
+			self:WriteTrainWire(20,0)
+			self:WriteTrainWire(21,0)
+			self.Panel.WarnBlink = 0
+		end
+	end
+	
+	
+	
+	if button == "ThrowCouplerSet" then
+		if self:ReadTrainWire(5) > 1 and self.ParentTrain.Duewag_U2.Speed < 1 then
+			self.FrontCouple:Decouple()
+		end
+		self.Panel.ThrowCoupler = 1
+	end
+	
+	if button == "DriverLightToggle" then
+		
+		if self:GetNW2Bool("Cablight",false) == false then
+			self:SetNW2Bool("Cablight",true)
+		elseif self:GetNW2Bool("Cablight",false) == true then
+			self:SetNW2Bool("Cablight",false)
+		end
+	end
+	if button == "HeadlightsToggle" then
+		
+		if self.ParentTrain.Duewag_U2.HeadlightsSwitch == false then
+			self.ParentTrain.Duewag_U2.HeadlightsSwitch = true
+			self:SetPackedBool("HeadlightsSwitch",self.ParentTrain.Duewag_U2.HeadlightsSwitch)
+		else
+			self.ParentTrain.Duewag_U2.HeadlightsSwitch = false
+			self:SetPackedBool("HeadlightsSwitch",self.ParentTrain.Duewag_U2.HeadlightsSwitch)
+		end
+		----print(self.ParentTrain.Duewag_U2.HeadlightsSwitch)
+	end
+	
+	if button == "DoorsSelectLeftToggle" then
+		if self.DoorSideUnlocked == "None" then
+			self.DoorSideUnlocked = "Left"
+		elseif self.DoorSideUnlocked == "Right" then
+			self.DoorSideUnlocked = "None"
+		elseif self.DoorSideUnlocked == "Left" then
+			self.DoorSideUnlocked = self.DoorSideUnlocked
+		end
+	end
+	
+	if button == "DoorsSelectRightToggle" then
+		if self.DoorSideUnlocked == "None" then
+			self.DoorSideUnlocked = "Right"
+		elseif self.DoorSideUnlocked == "Right" then
+			self.DoorSideUnlocked = "Right"
+		elseif self.DoorSideUnlocked == "Left" then
+			self.DoorSideUnlocked = "None"
+		end
+	end
+	
+	
+	
+	
+	if button == "Button1a" then
+		if self.DoorSideUnlocked == "Right" then
+			if self.DoorRandomness[1] == 0 then
+				self.DoorRandomness[1] = 4
+			end
+		end
+	end
+	
+	if button == "Button2a" then
+		if self.DoorSideUnlocked == "Right" then
+			if self.DoorRandomness[1] == 0 then
+				self.DoorRandomness[1] = 4
+			end
+		end
+	end
+	
+	if button == "Button3a" then
+		if self.DoorSideUnlocked == "Right" then
+			if self.DoorRandomness[2] == 0 then
+				self.DoorRandomness[2] = 4
+			end
+		end
+	end
+	
+	if button == "Button4a" then
+		if self.DoorSideUnlocked == "Right" then
+			if self.DoorRandomness[2] == 0 then
+				self.DoorRandomness[2] = 4
+			end
+		end
+	end
+	
+		if button == "Button1b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness[1] == 0 then
+				self.DoorRandomness[1] = 4
+			end
+		end
+	end
+	
+	if button == "Button2b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness[1] == 0 then
+				self.DoorRandomness[1] = 4
+			end
+		end
+	end
+	
+	if button == "Button3b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness[2] == 0 then
+				self.DoorRandomness[2] = 4
+			end
+		end
+	end
+	
+	if button == "Button4b" then
+		if self.DoorSideUnlocked == "Left" then
+			if self.DoorRandomness[2] == 0 then
+				self.DoorRandomness[2] = 4
+			end
+		end
+	end
+	
+	if button == "DoorsUnlockSet"  then
+		
+		self.DoorsUnlocked = true
+		self.DepartureConfirmed = false
+		self.Panel.DoorsUnlockSet = 1
+	end
+	
+	
+	if button == "DoorsLockSet"  then
+		
+		
+		self.DoorRandomness[1] = -1
+		self.DoorRandomness[2] = -1
+		self.DoorRandomness[3] = -1
+		self.DoorRandomness[4] = -1
+		
+		self.DoorsPreviouslyUnlocked = true
+		self.RandomnessCalculated = false
+		self.DoorsUnlocked = false
+		self.Door1 = false
+		self.Panel.DoorsLock = 1
+		
+	end
+	
+	if button == "DoorsCloseConfirmSet" then
+		
+		self.DoorsPreviouslyUnlocked = false
+		self.DepartureConfirmed = true
+	end
+	
+	if button == "SetHoldingBrakeSet" then
+		
+		self.ParentTrain.Duewag_U2.ManualRetainerBrake = true
+		self.Panel.SetHoldingBrake = 1
+	end
 
-
-
-
-
+	if button == "ReleaseHoldingBrakeSet" then
+		
+		self.Panel.ReleaseHoldingBrake = 1
+	end	
+	
+	if button == "ReleaseHoldingBrakeSet" then
+		
+		self.ParentTrain.Duewag_U2.ManualRetainerBrake = false
+	end
+	
+	if button == "PassengerLightsToggle" then
+		if self:GetNW2Bool("PassengerLights",false) == true then
+			self:SetNW2Bool("PassengerLights",false)
+		elseif self:GetNW2Bool("PassengerLights",false) == false then
+			self:SetNW2Bool("PassengerLights",true)
+		end
+	end
+	
+	if button == "DoorsSelectLeftToggle" then
+		if self:GetNWString("DoorSide","none") == "right" then
+			self:SetNWString("DoorSide","none")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
+		elseif self:GetNWString("DoorSide","none") == "none" then
+			self:SetNWString("DoorSide","left")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position left")
+		end
+	end
+	
+	if button == "DoorsSelectRightToggle" then
+		if self:GetNWString("DoorSide","none") == "left" then
+			self:SetNWString("DoorSide","none")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position neutral")
+		elseif self:GetNWString("DoorSide","none") == "none" then
+			self:SetNWString("DoorSide","right")
+			--PrintMessage(HUD_PRINTTALK, "Door switch position right")
+		end
+	end
+	
+	if button == "PassengerDoor" then
+		
+		if self:GetNW2Float("DriversDoorState",0) == 0 then
+			self:SetNW2Float("DriversDoorState",1)
+		else
+			self:SetNW2Float("DriversDoorState",0)
+		end
+	end
+	
+	if button == "Mirror" then
+		if self:GetNW2Float("Mirror",0) == 0 then
+			self:SetNW2Float("Mirror",1)
+		else
+			self:SetNW2Float("Mirror",0)
+		end
+	end
+	
+	if button == "ComplaintSet" then
+		self:SetNW2Bool("Microphone",true)
+	end
+	
+	
+	if button == "ComplaintSet" then
+		
+		self:SetNW2Bool("Microphone",false)
+	end
+	
 	if button == "DestinationSet" then
-		self.IBIS:Trigger("Destination")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self:SetNW2Bool("IBISKeyBeep",true)
+			self.ParentTrain.IBIS:Trigger("Destination",RealTime())
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
-
-
+	
+	
 	if button == "Number0Set" then
-		self.IBIS:Trigger("Number0")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number0",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+		
 	end
-
+	
 	if button == "Number1Set" then
-		self.IBIS:Trigger("Number1")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number1",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "Number2Set" then
-		self.IBIS:Trigger("Number2")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number2",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "Number3Set" then
-		self.IBIS:Trigger("Number3")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number3",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "Number4Set" then
-		self.IBIS:Trigger("Number4")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number4",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "Number5Set" then
-		self.IBIS:Trigger("Number5")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number5",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "Number6Set" then
-		self.IBIS:Trigger("Number6")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number6",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "Number7Set" then
-		self.IBIS:Trigger("Number7")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number7",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "Number8Set" then
-		self.IBIS:Trigger("Number8")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number8",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "Number9Set" then
-		self.IBIS:Trigger("Number9")
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Number9",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
 	end
 	if button == "EnterSet" then
-		self.IBIS:Trigger("Enter")
-	end
-
-	--[[if button == "ThrowCouplerSet" then
-		if self.Duewag_U2.BrakePressure > 1 and self.Duewag_U2.Speed < 1 then
-			self.RearCouple:Decouple()
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("Enter",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
 		end
-	end]]
+	end
+	if button == "SpecialAnnouncementSet" then
+		if self.ParentTrain.IBISKeyRegistered == false then
+			self.ParentTrain.IBISKeyRegistered = true
+			self.ParentTrain.IBIS:Trigger("SpecialAnnouncement",RealTime())
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+	end
 end
 
 
 function ENT:OnButtonRelease(button,ply)
+
+	if button == "PassengerOvergroundSet" then
+		self.Panel.PassengerOverground = 0
+	end
+	if button == "PassengerUndergroundSet" then
+		self.Panel.PassengerUnderground = 0
+	end
+
+
+	if button == "ReleaseHoldingBrakeSet" then
+		
+		self.Panel.ReleaseHoldingBrake = 0
+	end	
+
+
+	if button == "SetHoldingBrakeSet" then
 		
 
-			
-			----THROTTLE CODE --Black Phoenix: Make sure it snaps to zero when next to zero
-			if (button == "ThrottleUp" and self.ThrottleRate > 0) or (button == "ThrottleDown" and self.ThrottleRate < 0) then
-				self.ThrottleRate = 0
-			end
-			if (button == "ThrottleUpFast" and self.ThrottleRate > 0) or (button == "ThrottleDownFast" and self.ThrottleRate < 0) then
-				self.ThrottleRate = 0
-			end
-		
-		
+		self.Panel.SetHoldingBrake = 0
+	end
 
+	if button == "SetPointLeftSet" then
+		self.Panel.SetPointLeft = 0
+	end
+	if button == "SetPointRightSet" then
+		self.Panel.SetPointRight = 0
+	end
+
+	if button == "DoorsLockSet"  then
 		
+		self.Panel.DoorsLock = 0
 		
-		if button == "Deadman" then
-			self.Duewag_Deadman:TriggerInput("IsPressed", 0)
-			print("DeadmanPressedNo")
-		end
+	end
+	if button == "DoorsUnlockSet"  then
+		self.Panel.DoorsUnlockSet = 0
+	end
 	
-		if button == "WarningAnnouncementSet" then
-			self:SetNW2Bool("WarningAnnouncement", false)
+	if button == "Door1Set" then
+		self.Panel.Door1 = 0
+	end
+	if button == "PantographRaiseSet" then
+		self.Panel.PantographRaise = 0
+		
+	end
+	if button == "ThrowCouplerSet" then
+		self.Panel.ThrowCoupler = 0
+	end
+	if button == "EmergencyBrakeSet" then
+		
+	end
+	
+	if (button == "ThrottleUp" and self.ParentTrain.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDown" and self.ParentTrain.Duewag_U2.ThrottleRate < 0) then
+		self.ParentTrain.Duewag_U2.ThrottleRate = 0
+	end
+	if (button == "ThrottleUpFast" and self.ParentTrain.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDownFast" and self.ParentTrain.Duewag_U2.ThrottleRate < 0) then
+		self.ParentTrain.Duewag_U2.ThrottleRate = 0
+	end
+	
+	
+	
+	if button == "Rollsign+" then
+		self:SetNW2Bool("Rollsign+",false)
+		self.ScrollMoment = CurTime()
+	end
+	if button == "Rollsign-" then
+		self:SetNW2Bool("Rollsign-",false)
+		self.ScrollMoment = CurTime()
+	end
+	
+	if button == "BatteryToggle" then
+		self:SetPackedBool("FlickBatterySwitchOn",false)
+	end
+	
+	if button == "BatteryDisableToggle" then
+		self:SetPackedBool("FlickBatterySwitchOff",false)
+	end
+	
+	
+	
+	if button == "DeadmanSet" then
+		self.ParentTrain.Duewag_Deadman:TriggerInput("IsPressed", 0)
+		
+		if self:ReadTrainWire(6) > 0 then
+			self:WriteTrainWire(12,0)
 		end
-
-		if button == "BellEngage" then
-			self:SetNW2Bool("Bell",false)
+		------print("DeadmanPressedNo")
+	end
+	
+	if button == "WarningAnnouncementSet" then
+		self:SetNW2Bool("WarningAnnouncement", false)
+	end
+	
+	if button == "BellEngageSet" then
+		self:SetNW2Bool("Bell",false)
+	end
+	if button == "Horn" then
+		self:SetNW2Bool("Horn",false)
+	end
+	
+	if button == "BatteryToggle" then
+		self:SetNW2Bool("IBIS_impulse",false)
+	end
+	
+	if button == "DestinationSet" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
 		end
-		if button == "Horn" then
-			self:SetNW2Bool("Horn",false)
+	end
+	
+	
+	if button == "Number0Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
 		end
+		
+	end
+	
+	if button == "Number1Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number2Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number3Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number4Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number5Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number6Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number7Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number8Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "Number9Set" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "EnterSet" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	if button == "SpecialAnnouncementSet" then
+		if self.ParentTrain.IBISKeyRegistered == true then
+			self.ParentTrain.IBISKeyRegistered = false
+			self.ParentTrain.IBIS:Trigger(nil)
+		end
+	end
+	
+	
+	if button == "OpenBOStrab" then
+		self:SetPackedBool("BOStrab",true)
+		--self:SetPackedBool("BOStrab",false)
+	end
+	
 end
 
 
@@ -419,7 +1121,9 @@ function ENT:Think()
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*150)
 
-	
+	if self.ParentTrain:GetNW2Bool("RetroMode",false) == true then
+		self:SetModel("models/lilly/uf/u2/u2_vintage_b.mdl")
+	end
 	--PrintMessage(HUD_PRINTTALK, self:GetNW2String("Texture"))
 	
 	--self:SetLightPower(111,true)

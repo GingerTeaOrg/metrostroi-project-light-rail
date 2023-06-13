@@ -899,35 +899,37 @@ function TRAIN_SYSTEM:ReadDataset()
     if self.Menu == 1 and self.State == 1 or self.Menu == 4 and self.State < 3 then
         if self.CourseChar1 ~= " " and self.CourseChar2 ~= " " and self.CourseChar3 ~= " " and self.CourseChar4 ~= " " then --reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
             local line = self.CourseChar1..self.CourseChar2
-            
             if self.LineTable[line] ~=nil then
+                self.IndexValid = true
                 --print("Line Lookup succeeded", self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4)
                 --print(self:RBLPhoneHome())
-                if self:RBLPhoneHome() == true and self.RBLRegistered == false then
-                    self.IndexValid = true
+                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) and self.RBLRegistered == false then
+                    
                     self.RBLRegistered = true
                     self.RBLSignedOff = false
                     print("IBIS logged onto RBL")
                 end
                 if self.RBLRegistered == true then
-                    self.IndexValid = true
+                    
                     self.RBLRegisterFailed = false
                     self.RBLSignedOff = false
                     print("IBIS logged onto RBL", self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4)
                 end
-                if self:RBLPhoneHome() == false then
-                    self.IndexValid = true
+                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == false then
+                    
                     self.RBLRegisterFailed = true
                     self.RBLRegistered = false
                     
                 end
-            elseif UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == "logoff" and self.RBLRegistered == true then
+            elseif UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == "logoff" and self.RBLRegistered == true and self.KeyInput == "Enter" then
                 self.IndexValid = true
                 self.RBLSignedOff = true
                 self.RBLRegistered = false
                 self.RBLRegisterFailed = false
                 self.LineLookupComplete = true
                 print("RegisterTrain logged off")
+                self.RouteChar1 = "0"
+                self.RouteChar2 = "0"
             elseif self.LineTable[line] == nil and self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4 ~= "0000" then
                 if self.KeyInput == "Enter" then
                     self.IndexValid = false

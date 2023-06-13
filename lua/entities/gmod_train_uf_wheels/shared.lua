@@ -12,6 +12,7 @@ ENT.AdminSpawnable  = false
 physenv.AddSurfaceData([[
 "gmod_silent"
 {
+
 	"impacthard"	"DoorSound.Null"
 	"impactsoft"	"DoorSound.Null"
 
@@ -20,5 +21,13 @@ physenv.AddSurfaceData([[
 
 	"scrapeRoughThreshold" "1.0"
 	"impactHardThreshold" "1.0"
+	"gamematerial"	"X"
+}
+"gmod_ice"
+{
+	"friction"	"0.01"
+	"elasticity"	"0.01"
+	"audioroughnessfactor" "0.1"
+	"gamematerial"	"X"
 }
 ]])

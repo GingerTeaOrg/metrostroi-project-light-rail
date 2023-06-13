@@ -47,11 +47,14 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("SetPointRight", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("AnnouncerPlaying", "Relay", {bass = true})
     self.Train:LoadSystem("Parralel", "Relay", "Switch", {bass = true})
-
+    self.Train:LoadSystem("Highbeam", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("Blinker", "Relay", {bass = true})
+    self.Train:LoadSystem("ReduceBrake", "Relay", {bass=true})
+
+    self.ReduceBrake = 0
 
     self.Blinker = 0
-
+    self.Highbeam = 0
     self.BlinkerLeft = 0
     self.BlinkerRight = 0
     self.DoorsLock = 0
