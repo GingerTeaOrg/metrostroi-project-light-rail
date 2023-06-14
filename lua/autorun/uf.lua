@@ -108,7 +108,7 @@ end
 
 
 
-function UF.RegisterTrain(LineCourse, train, logoff) --Registers a train for the RBL simulation
+function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL simulation
     
     local output
     -- Step 1: Check if LineCourse and train are falsy values
@@ -144,38 +144,30 @@ function UF.RegisterTrain(LineCourse, train, logoff) --Registers a train for the
             
             output = true -- Return true to indicate successful registration
             return output
-        elseif LineCourse ~= "0000" and #LineCourse == 4 then
+        elseif LineCourse ~= "0000" and #LineCourse == 4 and UF.IBISRegisteredTrains[train] == LineCourse then
             
-            if UF.IBISRegisteredTrains[train] and UF.IBISRegisteredTrains[train] == LineCourse then
-                print("Train is already registered by this exact Course. Doing Nothing.")
-                output = true
-                return output
-            end
-        elseif LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil and #LineCourse == 4 and UF.IBISRegisteredTrains[train] ~= LineCourse then
+            print("Train is already registered by this exact Course. Doing Nothing.")
+            output = true
+            return output
+            
+        elseif LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil and #LineCourse == 4 and UF.IBISRegisteredTrains[train] ~= LineCourse and UF.checkDuplicateTrain(UF.IBISRegisteredTrains, train, LineCourse) == false then
             -- Print statement for Step 4
             print("UF.IBISRegisteredTrains table is not empty. Checking for existing registrations.")
             --local complete
             --if not complete then
                 
                 -- Step 4: Iterate over UF.IBISRegisteredTrains table
-                if UF.checkDuplicateTrain(UF.IBISRegisteredTrains, train, LineCourse) == false then
+                
                     -- Print statement for Step 4b
-                    print("RBL: Another train is already registered on the same line course. Registration failed.")
+                print("RBL: Another train is already registered on the same line course. Registration failed.")
                     
                     output = false -- Return false if the train is already registered on the same line course
                     return output
-                elseif UF.checkDuplicateTrain(UF.IBISRegisteredTrains, train, LineCourse) == true then
+        elseif LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil and #LineCourse == 4 and UF.IBISRegisteredTrains[train] ~= LineCourse and UF.checkDuplicateTrain(UF.IBISRegisteredTrains, train, LineCourse) == true then
                     UF.IBISRegisteredTrains[train] = LineCourse
                     print("RBL: No conflicting train with LineCourse found. Registering new train.", LineCourse)
                     output = true
                     return output
-                end
-                
-           -- else
-                
-            --end
-            
-            
         end
         --print(output)
         --print(LineCourse)

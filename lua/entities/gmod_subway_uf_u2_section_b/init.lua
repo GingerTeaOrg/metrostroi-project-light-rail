@@ -34,7 +34,7 @@ function ENT:Initialize()
 	-- Create bogeys
 	--table.insert(self.Bogeys,self.FrontBogey)	
 	--self.RearBogey = self:CreateBogeyUF(Vector( -300,0,0),Angle(0,180,0),true,"duewag_motor")
-	
+	self.ParentTrain = self:GetNW2Entity("U2a")
 	self.CabEnabled = false
 	self.BatteryOn = false
 
@@ -130,7 +130,7 @@ function ENT:Initialize()
 				
 			},
 		}
-	self.ParentTrain = self:GetNW2Entity("U2a")
+	
 	self.RearCouple = self.ParentTrain.RearCouple
     --self.FrontCouple = self:CreateCoupleUF(Vector( 0,0,23),Angle(0,180,0),true,"u2")	
 	
@@ -154,10 +154,10 @@ function ENT:Initialize()
 	[61] = { "light",Vector(-426.5,50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight 1
     [62] = { "light",Vector(-426.5,-50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight 2
 	[63] = { "light",Vector(-426.5,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight 3
-	[64] = { "light",Vector(-426.5,31.5,26), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
-	[65] = { "light",Vector(-426.5,-31.5,26), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-	[66] = { "light",Vector(-426.5,31.5,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light left
-	[67] = { "light",Vector(-426.5,-31.5,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light right
+	[64] = { "light",Vector(-425.44,-30.9657,25.6195), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+	[65] = { "light",Vector(-425.44,30.9657,25.6195), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+	[66] = { "light",Vector(-426.5,-30.9657,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light left
+	[67] = { "light",Vector(-426.5,30.9657,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light right
 	[158] = { "light",Vector(-327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 	[159] = { "light",Vector(-327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 	[148] = { "light",Vector(-327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left

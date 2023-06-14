@@ -50,6 +50,26 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("Highbeam", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("Blinker", "Relay", {bass = true})
     self.Train:LoadSystem("ReduceBrake", "Relay", {bass=true})
+    self.Train:LoadSystem("DoorsLeft", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("DoorsRight", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("Button1a", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("Button2a", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("Button3a", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("Button4a", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("Button5a", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("Button6a", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("Button7a", "Relay", "Switch", {bass=true})
+    self.Train:LoadSystem("Button8a", "Relay", "Switch", {bass=true})
+
+    self.Button1a = 0
+    self.Button2a = 0
+    self.Button3a = 0
+    self.Button4a = 0
+    self.Button5a = 0
+    self.Button6a = 0
+    self.Button7a = 0
+    self.Button8a = 0
+
 
     self.ReduceBrake = 0
 
@@ -97,6 +117,8 @@ function TRAIN_SYSTEM:Initialize()
     self.Parralel = 0
     self.Headlights = 0
     
+    self.DoorsLeft = 0
+    self.DoorsRight = 0
 
 end
 

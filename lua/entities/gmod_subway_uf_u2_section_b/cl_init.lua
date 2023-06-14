@@ -73,6 +73,70 @@ ENT.ClientProps["Mirror_vintage"] = {
     ang = Angle(0,180,0),
     nohide = true,
 }
+
+ENT.ClientProps["Door_fr1"] = {
+    model = "models/lilly/uf/u2/door_h_fr1.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,180,0),
+    scale = 1,
+    nohide = true,
+}
+
+ENT.ClientProps["Door_fr2"] = {
+    model = "models/lilly/uf/u2/door_h_fr2.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,180,0),
+    scale = 1,
+    nohide = true,
+}
+
+ENT.ClientProps["Door_rr1"] = {
+    model = "models/lilly/uf/u2/door_h_fr1.mdl",
+    pos = Vector(242.5,0,0),
+    ang = Angle(0,180,0),
+    scale = 1,
+    nohide = true,
+}
+
+ENT.ClientProps["Door_rr2"] = {
+    model = "models/lilly/uf/u2/door_h_fr2.mdl",
+    pos = Vector(242.5,0,0),
+    ang = Angle(0,180,0),
+    scale = 1,
+    nohide = true,
+}
+
+ENT.ClientProps["Door_fl1"] = {
+    model = "models/lilly/uf/u2/door_h_fr1.mdl",
+    pos = Vector(-721.3,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide = true,
+}
+
+ENT.ClientProps["Door_fl2"] = {
+    model = "models/lilly/uf/u2/door_h_fr2.mdl",
+    pos = Vector(-721.3,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide = true,
+}
+
+ENT.ClientProps["Door_rl1"] = {
+    model = "models/lilly/uf/u2/door_h_fr1.mdl",
+    pos = Vector(-479,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide = true,
+}
+
+ENT.ClientProps["Door_rl2"] = {
+    model = "models/lilly/uf/u2/door_h_fr2.mdl",
+    pos = Vector(-479,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide = true,
+}
 ENT.ButtonMap["Rollsign"] = {
     pos = Vector(-424.5,25,109),
     ang = Angle(0,270,90),
@@ -145,62 +209,6 @@ ENT.ClientProps["carnumber3"] = {
     scale = 1,
     nohide=true,
 }
-ENT.ClientProps["Door_fr1"] = {
-	model = "models/lilly/uf/u2/door_h_fr1.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,-180,0),
-	scale = 1,
-}
-
-ENT.ClientProps["Door_fr2"] = {
-	model = "models/lilly/uf/u2/door_h_fr2.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,-180,0),
-	scale = 1,
-}
-
-ENT.ClientProps["Door_fl1"] = {
-	model = "models/lilly/uf/u2/door_h_fl1.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,-180,0),
-	scale = 1,
-}
-
-ENT.ClientProps["Door_fl2"] = {
-	model = "models/lilly/uf/u2/door_h_fl2.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,-180,0),
-	scale = 1,
-}
-
-ENT.ClientProps["Door_rr1"] = {
-	model = "models/lilly/uf/u2/door_h_rr1.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,-180,0),
-	scale = 1,
-}
-
-ENT.ClientProps["Door_rr2"] = {
-	model = "models/lilly/uf/u2/door_h_rr2.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,-180,0),
-	scale = 1,
-}
-
-ENT.ClientProps["Door_rl1"] = {
-	model = "models/lilly/uf/u2/door_h_rl1.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,-180,0),
-	scale = 1,
-}
-
-ENT.ClientProps["Door_rl2"] = {
-	model = "models/lilly/uf/u2/door_h_rl2.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,-180,0),
-	scale = 1,
-}
-
 ENT.ClientProps["Mirror_vintage"] = {
     model = "models/lilly/uf/u2/mirror_vintage.mdl",
     pos = Vector(0,0,0),
@@ -713,14 +721,14 @@ function ENT:Think()
     self:Animate("Door_fr2",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
     self:Animate("Door_fr1",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
 
-    self:Animate("Door_rr2",self.ParentTrain:GetNW2Float("Door56b"),0,100,50,0,0)
-    self:Animate("Door_rr1",self.ParentTrain:GetNW2Float("Door56b"),0,100,50,0,0)
+    self:Animate("Door_rr2",self.ParentTrain:GetNW2Float("Door34a"),0,100,50,0,0)
+    self:Animate("Door_rr1",self.ParentTrain:GetNW2Float("Door34a"),0,100,50,0,0)
 
     self:Animate("Door_fl2",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
     self:Animate("Door_fl1",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
     
-    self:Animate("Door_rl2",self.ParentTrain:GetNW2Float("Door34b"),0,100,50,0,0)
-    self:Animate("Door_rl1",self.ParentTrain:GetNW2Float("Door34b"),0,100,50,0,0)
+    self:Animate("Door_rl2",self.ParentTrain:GetNW2Float("Door56b"),0,100,50,0,0)
+    self:Animate("Door_rl1",self.ParentTrain:GetNW2Float("Door56b"),0,100,50,0,0)
 
 	
 end

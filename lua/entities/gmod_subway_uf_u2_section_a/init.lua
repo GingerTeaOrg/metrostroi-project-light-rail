@@ -310,7 +310,7 @@ function ENT:Initialize()
 	
 	self.DoorsOpen = false
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector( 290,0,-2),Angle(0,180,0),true,"duewag_motor")
+	self.FrontBogey = self:CreateBogeyUF(Vector( 290,0,0),Angle(0,180,0),true,"duewag_motor")
 	self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,0),Angle(0,0,0),false,"u2joint")
 	self:SetNW2Entity("FrontBogey",self.FrontBogey)
 	self.MiddleBogey:SetNW2Entity("MainTrain",self)
@@ -326,7 +326,7 @@ function ENT:Initialize()
 	self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
 	self.RearBogey = self:CreateBogeyUF_b(Vector( -290,0,0),Angle(0,180,0),false,"duewag_motor")
 	
-	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,0),Angle(0,180,0),true,"u2")	
+	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,0),Angle(0,180,0),false,"u2")	
 	--self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
 	self.PantoUp = 0
 	
@@ -466,13 +466,13 @@ function ENT:Initialize()
 	self.Lights = {
 		[50] = { "light",Vector(406,39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
 		[60] = { "light",Vector(406,-39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
-		[51] = { "light",Vector(430,40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
-		[52] = { "light",Vector(430,-40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
-		[53] = { "light",Vector(428,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
-		[54] = { "light",Vector(426.5,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
-		[55] = { "light",Vector(426.5,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-		[56] = { "light",Vector(426,31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-		[57] = { "light",Vector(426,-31.2,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+		[51] = { "light",Vector(425.464,40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
+		[52] = { "light",Vector(425.464,-40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
+		[53] = { "light",Vector(425.464,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
+		[54] = { "light",Vector(425.464,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+		[55] = { "light",Vector(425.464,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+		[56] = { "light",Vector(426,31.2,31), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+		[57] = { "light",Vector(426,-31.2,31), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
 		[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 		[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 		[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
@@ -481,17 +481,18 @@ function ENT:Initialize()
 		[31] = { "light",Vector(326.738,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 2
 		[32] = { "light",Vector(151.5,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 3
 		[33] = { "light",Vector(83.7,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 4
-		[34] = { "light",Vector(397.343,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 1
-		[35] = { "light",Vector(326.738,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
-		[36] = { "light",Vector(151.5,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
-		[37] = { "light",Vector(83.7,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
+		[34] = { "light",Vector(396.884,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 1
+		[35] = { "light",Vector(326.89,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
+		[36] = { "light",Vector(152.116,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
+		[37] = { "light",Vector(84.6012,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
 		[38] = { "light",Vector(416.20,6,54), Angle(0,0,0), Color(0,90,59),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
+		[39] = { "light",Vector(416.20,6,54), Angle(0,0,0), Color(252,247,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --battery discharge lamp in cab
 	}
 
 	self.InteractionZones = {
 		{
 			ID = "Button1a",
-			Pos = Vector(396.3,-51,50.5), Radius = 16,
+			Pos = Vector(396.884,-51,50.5), Radius = 16,
 		},
 		
 	}
@@ -596,7 +597,7 @@ function ENT:Think(dT)
 	self:SetNW2Float("CabWindowL",self.CabWindowL)
 	self:SetNW2Float("CabWindowR",self.CabWindowR)
 	self:SetNW2Bool("PantoUp",self.PantoUp)
-	self:SetNW2Bool("ReverserInserted",self.ReverserInsert)
+
 	self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed)
 	--Check if the A section is coupled
@@ -659,59 +660,49 @@ function ENT:Think(dT)
 			self:SetLightPower(56,false)
 			self:SetLightPower(57,false)
 			self:SetNW2Bool("BrakeLights",false)
-		elseif self:GetPackedBool("Headlights",false) == true and self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
+		elseif self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
 			self:SetLightPower(56,false)
 			self:SetLightPower(57,false)
 			self:SetNW2Bool("BrakeLights",false)
 			
 		end
-		
-		
-		if self:GetNW2Bool("AIsCoupled",false) == false then
-			
-			if self:ReadTrainWire(4) > 0 and self:ReadTrainWire(3) < 1 then
-				self:SetLightPower(51,false)
-				self:SetLightPower(52,false)
-				self:SetLightPower(53,false)
-				self:SetLightPower(54,true)
-				self:SetLightPower(55,true)
-			elseif self:ReadTrainWire(3) > 0 then
-				if self:GetPackedBool("Headlights",false) == true then
-					self:SetLightPower(51,true)
-					self:SetLightPower(52,true)
-					self:SetLightPower(53,true)
-					self:SetLightPower(54,false)
-					self:SetLightPower(55,false)
-					
-				elseif self:GetPackedBool("Headlights",false) == false then
-					self:SetLightPower(51,false)
-					self:SetLightPower(52,false)
-					self:SetLightPower(53,false)
-					self:SetLightPower(54,false)
-					self:SetLightPower(55,false)
-					
-					
+
+		if self.Panel.Headlights > 0 or self.Panel.Headlights < 1 and self:ReadTrainWire(7) > 0 then
+			if self:ReadTrainWire(3) > 0 then
+				self:WriteTrainWire(31,1)
+			elseif self:ReadTrainWire(4) > 0 then
+				self:WriteTrainWire(32,1)
+			end
+		else if self.Panel.Headlights < 1 and self:ReadTrainWire(7) < 1 then
+			self:WriteTrainWire(31,0)
+			self:WriteTrainWire(32,0)
+		end
+		print(self:ReadTrainWire(32), "Wire32", self:ReadTrainWire(31), "Wire31")
+		if self:ReadTrainWire(31) > 0 then
+				self:SetLightPower(51,true)
+				self:SetLightPower(52,true)
+				self:SetLightPower(53,true)
+				self:SetLightPower(54,false)
+				self:SetLightPower(55,false)
+				if not self.RearCouple.CoupledEnt then
+					self.u2sectionb:SetLightPower(64,true)
+					self.u2sectionb:SetLightPower(65,true)
+				else
+					self.u2sectionb:SetLightPower(64,false)
+					self.u2sectionb:SetLightPower(65,false)
 				end
-				
-			end
-		elseif self:GetNW2Bool("AIsCoupled",false) == true then
-			if self:ReadTrainWire(4) > 0 then
+		elseif self:ReadTrainWire(32) > 0 then
 				self:SetLightPower(51,false)
 				self:SetLightPower(52,false)
 				self:SetLightPower(53,false)
-				self:SetLightPower(54,false)
-				self:SetLightPower(55,false)
-				--self:SetNW2Bool("Taillights",false)
-				--self:SetNW2Bool("Headlights",false)
-			elseif self:ReadTrainWire(3) > 0 then
-				self:SetLightPower(51,false)
-				self:SetLightPower(52,false)
-				self:SetLightPower(53,false)
-				self:SetLightPower(54,false)
-				self:SetLightPower(55,false)
-				--self:SetNW2Bool("Taillights",false)
-				--self:SetNW2Bool("Headlights",false)
-			end
+				print("wire32 high")
+				if not self.FrontCouple.CoupledEnt then
+					self:SetLightPower(54,true)
+					self:SetLightPower(55,true)
+				else
+					self:SetLightPower(54,false)
+					self:SetLightPower(55,false)
+				end
 		end
 	end
 	
@@ -725,6 +716,15 @@ function ENT:Think(dT)
 		self:SetLightPower(35,false)
 		self:SetLightPower(36,false)
 		self:SetLightPower(37,false)
+
+			self.u2sectionb:SetLightPower(30,false)
+			self.u2sectionb:SetLightPower(31,false)
+			self.u2sectionb:SetLightPower(32,false)
+			self.u2sectionb:SetLightPower(33,false)
+			self.u2sectionb:SetLightPower(34,false)
+			self.u2sectionb:SetLightPower(35,false)
+			self.u2sectionb:SetLightPower(36,false)
+			self.u2sectionb:SetLightPower(37,false)
 	elseif self.DoorsUnlocked == true then
 		
 		if self.DoorSideUnlocked == "Left" then
@@ -944,14 +944,13 @@ function ENT:Think(dT)
 						self.u2sectionb:SetLightPower(66,true)
 						self.u2sectionb:SetLightPower(67,true)
 					end
-					if self:ReadTrainWire(3) > 0 and self:ReadTrainWire(13) < 1 then 
+					if self:ReadTrainWire(3) > 0 then 
 						self.FrontBogey.Reversed = false
 						self.RearBogey.Reversed = false
-						print(self:ReadTrainWire(13))
-					elseif self:ReadTrainWire(4) > 0 and self:ReadTrainWire(13) > 0 then
+						
+					elseif self:ReadTrainWire(4) > 0 then
 						self.FrontBogey.Reversed = true
 						self.RearBogey.Reversed = true
-						print(self:ReadTrainWire(13))
 					end
 				end
 				
@@ -1061,10 +1060,17 @@ function ENT:Think(dT)
 	
 	--15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
 	
-	
-	--PrintMessage(HUD_PRINTTALK,self:ReadTrainWire(3)..tostring(self))
-	
-	--if self:GetNW2Bool("BatteryOn",false) == true or self:ReadTrainWire(7) == 1 then --blinker only works when electricity is on, duh
+	if self.Panel.WarnBlink < 1 then
+		self:WriteTrainWire(20,self.Panel.BlinkerLeft > 0 and 1 or 0)
+		self:WriteTrainWire(21,self.Panel.BlinkerRight > 0 and 1 or 0)
+	elseif self.Panel.WarnBlink > 0 then
+		self:WriteTrainWire(20,1)
+		self:WriteTrainWire(21,1)
+	elseif self.Panel.BlinkerLeft > 0 or self.Panel.BlinkerRight > 0 then
+		self:WriteTrainWire(20,self.Panel.BlinkerLeft > 0 and 1 or 0)
+		self:WriteTrainWire(21,self.Panel.BlinkerRight > 0 and 1 or 0)
+	end
+
 	if self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) < 1 then
 		self:Blink(true,true,false)
 		
@@ -1099,7 +1105,9 @@ function ENT:Think(dT)
 	self:SetNW2Float("Door12b",self.DoorStatesLeft[1])
 	self:SetNW2Float("Door34b",self.DoorStatesLeft[2])
 	self:SetNW2Float("Door56b",self.DoorStatesLeft[3])
-	self:SetNW2Float("Door78b",self.DoorStatesLeft[3])
+	self:SetNW2Float("Door78b",self.DoorStatesLeft[4])
+
+	self:SetNW2Float("DoorSwitch",self.Panel.DoorsLeft > 0 and 1 or 0.5 or self.Panel.DoorsLeft > 0 and 1)
 	
 	if self.DoorsPreviouslyUnlocked == true and self.DoorsUnlocked == false and self.LeftDoorsOpen == false and self.RightDoorsOpen == false then
 		self:SetNW2Bool("DoorCloseAlarm",true)
@@ -1314,7 +1322,7 @@ function ENT:OnButtonPress(button,ply)
 	if button == "ReverserUpSet" then
 		if 
 		not self.Duewag_U2.ThrottleEngaged == true  then
-			if self.Duewag_U2.ReverserInserted == true then
+			if self.Duewag_U2.ReverserInsertedA == true then
 				self.Duewag_U2.ReverserLeverStateA = self.Duewag_U2.ReverserLeverStateA + 1
 				self.Duewag_U2.ReverserLeverStateA = math.Clamp(self.Duewag_U2.ReverserLeverStateA, -1, 3)
 				--self.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
@@ -1324,7 +1332,7 @@ function ENT:OnButtonPress(button,ply)
 	end
 	if button == "ReverserDownSet" then
 		if 
-		not self.Duewag_U2.ThrottleEngaged == true and self.Duewag_U2.ReverserInserted == true then
+		not self.Duewag_U2.ThrottleEngaged and self.Duewag_U2.ReverserInsertedA == true then
 			--self.ReverserLeverState = self.ReverserLeverState - 1
 			math.Clamp(self.Duewag_U2.ReverserLeverStateA, -1, 3)
 			--self.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
@@ -1338,17 +1346,13 @@ function ENT:OnButtonPress(button,ply)
 	
 	if self.Duewag_U2.ReverserState == 0 then
 		if button == "ReverserInsert" then
-			if self.ReverserInsert == false then
-				self.ReverserInsert = true
-				self.Duewag_U2:TriggerInput("ReverserInserted",self.ReverserInsert)
-				self:SetNW2Bool("ReverserInserted",true)
-				--PrintMessage(HUD_PRINTTALK, "Reverser is in")
-				
-			elseif  self.ReverserInsert == true then
-				self.ReverserInsert = false
-				self.Duewag_U2:TriggerInput("ReverserInserted",false)
-				self:SetNW2Bool("ReverserInserted",false)
-				--PrintMessage(HUD_PRINTTALK, "Reverser is out")
+			if self.Duewag_U2.ReverserInsertedA == false then
+				self.Duewag_U2.ReverserInsertedA = true
+			elseif self.Duewag_U2.ReverserInsertedB and not self.Duewag_U2.ReverserInsertedA then
+				self.Duewag_U2.ReverserInsertedA = true
+				self.Duewag_U2.ReverserInsertedB = false
+			elseif not self.Duewag_U2.ReverserInsertedB and self.Duewag_U2.ReverserInsertedA then
+				self.Duewag_U2.ReverserInsertedA = false
 			end
 		end
 	end
@@ -1391,20 +1395,6 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "BlinkerLeftSet" then
 		
-		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) > 0 then -- If you press the button and the blinkers are already set to right, turn off
-			self:WriteTrainWire(20,0)
-			self:WriteTrainWire(21,0)
-		elseif
-		self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are off, set to left
-			self:WriteTrainWire(20,1)
-			self:WriteTrainWire(21,0)
-			--self:SetNW2String("BlinkerDirection","left")
-		elseif
-		self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are already on, turn them off
-			self:WriteTrainWire(20,1)
-			self:WriteTrainWire(21,0)
-			--self:SetNW2String("BlinkerDirection","none")
-		end
 		if self.Panel.BlinkerLeft == 0 and self.Panel.BlinkerRight == 0 then
 			self.Panel.BlinkerLeft = 1
 		elseif self.Panel.BlinkerLeft == 0 and self.Panel.BlinkerRight == 1 then 
@@ -1414,27 +1404,7 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	
-	if button == "BlinkerRightSet" then
-		
-		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) > 0 then -- If you press the button and the blinkers are already set to right, do nothing
-			self:WriteTrainWire(20,0)
-			self:WriteTrainWire(21,1)
-			
-		elseif
-		self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are already set to left, set to neutral
-			self:WriteTrainWire(20,0)
-			self:WriteTrainWire(21,0)
-		elseif
-		self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
-			self:WriteTrainWire(20,0)
-			self:WriteTrainWire(21,1)
-			
-		elseif
-		self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) > 0 then
-			self:WriteTrainWire(20,1)
-			self:WriteTrainWire(21,1)	
-		end
-		
+	if button == "BlinkerRightSet" then		
 		if self.Panel.BlinkerRight == 0 and self.Panel.BlinkerLeft == 0 then
 			self.Panel.BlinkerRight = 1
 		elseif self.Panel.BlinkerLeft == 1 and self.Panel.BlinkerRight == 0 then
@@ -1453,13 +1423,13 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	if button == "WarnBlinkToggle" then
-		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 and self:ReadTrainWire(20) ~= 1 or self:ReadTrainWire(21) ~= 1 then
+		if self.Panel.WarnBlink == 0 then
 			self:SetNW2Bool("WarningBlinker",true)
 			self:WriteTrainWire(20,1)
 			self:WriteTrainWire(21,1)
 			self.Panel.WarnBlink = 1
 		elseif
-		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) > 0 then
+		self.Panel.WarnBlink == 1 then
 			self:SetNW2Bool("WarningBlinker",false)
 			self:WriteTrainWire(20,0)
 			self:WriteTrainWire(21,0)
@@ -1470,7 +1440,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	if button == "ThrowCouplerSet" then
-		if self:ReadTrainWire(5) > 1 and self.Duewag_U2.Speed < 1 then
+		if self:ReadTrainWire(5) > 1 and self.Duewag_U2.Speed < 2 then
 			self.FrontCouple:Decouple()
 		end
 		self.Panel.ThrowCoupler = 1
@@ -1502,6 +1472,14 @@ function ENT:OnButtonPress(button,ply)
 		elseif self.DoorSideUnlocked == "Left" then
 			self.DoorSideUnlocked = self.DoorSideUnlocked
 		end
+
+		if self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight > 0 then
+			self.Panel.DoorsLeft = 0
+			self.Panel.DoorsRight = 0
+		elseif self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight < 1 then
+			self.Panel.DoorsLeft = 1
+			self.Panel.DoorsRight = 0
+		end
 	end
 	
 	if button == "DoorsSelectRightToggle" then
@@ -1511,6 +1489,13 @@ function ENT:OnButtonPress(button,ply)
 			self.DoorSideUnlocked = "Right"
 		elseif self.DoorSideUnlocked == "Left" then
 			self.DoorSideUnlocked = "None"
+		end
+		if self.Panel.DoorsLeft > 0 and self.Panel.DoorsRight < 1 then
+			self.Panel.DoorsLeft = 0
+			self.Panel.DoorsRight = 0
+		elseif self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight < 1 then
+			self.Panel.DoorsLeft = 0
+			self.Panel.DoorsRight = 1
 		end
 	end
 	
@@ -1523,6 +1508,7 @@ function ENT:OnButtonPress(button,ply)
 				self.DoorRandomness[1] = 4
 			end
 		end
+		self.Panel.Button1a = 1
 	end
 	
 	if button == "Button2a" then
@@ -1531,6 +1517,7 @@ function ENT:OnButtonPress(button,ply)
 				self.DoorRandomness[1] = 4
 			end
 		end
+		self.Panel.Button2a = 1
 	end
 	
 	if button == "Button3a" then
@@ -1539,6 +1526,7 @@ function ENT:OnButtonPress(button,ply)
 				self.DoorRandomness[2] = 4
 			end
 		end
+		self.Panel.Button3a = 1
 	end
 	
 	if button == "Button4a" then
@@ -1547,6 +1535,7 @@ function ENT:OnButtonPress(button,ply)
 				self.DoorRandomness[2] = 4
 			end
 		end
+		self.Panel.Button3a = 1
 	end
 	
 	if button == "Button1b" then

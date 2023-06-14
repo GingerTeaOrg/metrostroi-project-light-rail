@@ -48,6 +48,7 @@ function TRAIN_SYSTEM:Initialize()
 	
 	
 	self.ReverserInserted = false
+
 	self.ReverserInsertedA = false
 	self.ReverserInsertedB = false
 	
@@ -244,9 +245,9 @@ function TRAIN_SYSTEM:Think(Train)
 		self.PantoUp = self.Train:GetNW2Bool("PantoUp")
 	end
 	
+	self.Train:SetNW2Bool("ReverserInserted",self.ReverserInsertedA or self.ReverserInsertedB)
 	
-	self.ReverserInserted = self.Train:GetNW2Bool("ReverserInserted") --get from the train whether the reverser is present
-	if self.ReverserInserted == true then
+	if self.ReverserInsertedA or self.ReverserInsertedB then
 		self.Train:TriggerInput("DriversWrenchPresent",1)
 	else
 		self.Train:TriggerInput("DriversWrenchPresent",0)
@@ -409,25 +410,25 @@ function TRAIN_SYSTEM:Think(Train)
 		
 	end		
 	
-	if self.ThrottleState < 0 and self.Train:GetNW2Float("Speed",0) < 8 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
+	if self.ThrottleState < 0 and self.Speed < 8 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
 		
-		if self.Train:ReadTrainWire(6) == 1 then --in MU mode we write that to the train wire for the train script to handle
+		if self.Train:ReadTrainWire(6) > 0 then --in MU mode we write that to the train wire for the train script to handle
 			self.Train:WriteTrainWire(5,2.7)
 			----print("Brake applied")
 			
-		elseif self.Train:ReadTrainWire(6) == 0 then --in single unit mode we write that directly to the brake pressure
+		elseif self.Train:ReadTrainWire(6) < 1 then --in single unit mode we write that directly to the brake pressure
 			self.BrakePressure = 2.7
-			self.Train:SetNW2Int("BrakePressure",2.7)
+			
 		end
 		
 	elseif self.ThrottleState > 0 then
-		if self.Train:ReadTrainWire(6) > 1 then --in MU mode we write that to the train wire for the train script to handle
+		if self.Train:ReadTrainWire(6) > 0 then --in MU mode we write that to the train wire for the train script to handle
 			self.Train:WriteTrainWire(5,0)
 			----print("brake released")
 			self.BrakePressure = 0
 		elseif self.Train:ReadTrainWire(6) < 1 then --in single unit mode we write that directly to the brake pressure
 			self.BrakePressure = 0
-			self.Train:SetNW2Int("BrakePressure",0)
+			
 		end
 		
 	end
@@ -670,7 +671,14 @@ function TRAIN_SYSTEM:MUHandler()
 			self.ReverserState = 1
 		end
 	end
-	
+	if self.ReverserInsertedA == true then
+		self.Train:WriteTrainWire(3,self.ReverserLeverStateA == 2 and 1 or 0)
+		self.Train:WriteTrainWire(4,(self.ReverserLeverStateA == 0 or self.ReverserLeverStateA == 3) and 1 or 0)
+	elseif self.ReverserInsertedB == true then
+		self.Train:WriteTrainWire(3,(self.ReverserLeverStateB == 0 or self.ReverserLeverStateB == 3) and 1 or 0)
+		self.Train:WriteTrainWire(4,self.ReverserLeverStateB == 2 and 1 or 0)
+	end
+	self.Train:WriteTrainWire(6,self.VZ and 1 or 0)
 	if self.LeadingCabA == 0 and self.Train:ReadTrainWire(6) > 0 then --if we're not the leading train, read this stuff from train wires
 		self.VZ = true
 		if self.Train:ReadTrainWire(3) > 0 and self.Train:ReadTrainWire(4) < 1 then --wire 3 high and wire 4 high that means

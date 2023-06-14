@@ -1248,11 +1248,35 @@ end
 function TRAIN_SYSTEM:DisasterTicker() --Generate a random chance for defect simulation
     
     if CurTime() - self.LastRoll > 10 and self.State ~= 4 then
-        local randomNumber = math.Random(1, 10000)
-        if randomnumber <= 1 then
+        local randomNumber = math.random(1, 10000)
+        if randomnumber == 1 then
             self.State = 4
-            self.Train:SetNW2Int("Defect",math.random(4,1))
+            self.Train:SetNW2Int("Defect",math.random(1,4))
         end
         self.LastRoll = CurTime()
+    end
+end
+
+function TRAIN_SYSTEM:CANReceive(sourceid,target,targetdata)
+    if sourceid == self.Train:GetWagonNumber() then return end
+    if target == "Course" then self.Course = targetdata end
+    if target == "Route" then self.Route = targetdata end
+    if target == "CurrentStation" then self.CurrentStation = targetdata end
+    if target == "Destination" then self.Destination = targetdata end
+    if target == "ServiceAnnouncement" then self.ServiceAnnouncement = targetdata end
+
+end
+
+
+function TRAIN_SYSTEM:CANWrite(sourceid,targetid,target,targetdata)
+    for i=1,#self.WagonList do
+        local train = self.WagonList[i]
+        if not targetid or targetid == train:GetWagonNumber() then
+            local sys = train[target]
+            if sys and sys.CANReceive then
+                sys:CANReceive(sourceid,target,targetdata)
+            end
+            if targetid then return end
+        end
     end
 end

@@ -10,8 +10,8 @@ TRAIN_SYSTEM.DontAccelerateSimulation = true
 
 function TRAIN_SYSTEM:Initialize()
     -- Предохранители цепей (ПА1, ПА2)
-    self.Train:LoadSystem("PA1","Relay","PP-28", { trigger_level = 31.5 }) -- A
-    self.Train:LoadSystem("PA2","Relay","PP-28", { trigger_level = 31.5 }) -- A
+    --self.Train:LoadSystem("PA1","Relay","PP-28", { trigger_level = 31.5 }) -- A
+    --self.Train:LoadSystem("PA2","Relay","PP-28", { trigger_level = 31.5 }) -- A
 
     -- Battery parameters
     self.ElementCapacity    = 50 -- A*hour

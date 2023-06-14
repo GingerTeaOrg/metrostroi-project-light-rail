@@ -667,7 +667,7 @@ var="main",speed=1, vmin=0, vmax=1,
 sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
 }
 },]]
-{ID = "DoorSideSelectToggle", x=396.5, y=17.8, radius=10, tooltip = "Select door set to unlock", model = {
+{ID = "DoorSideSelectToggle", x=396.5, y=17.8, radius=10, tooltip = "Door Unlock Side Switch", model = {
     model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-2.5, ang=45,getfunc = function(ent) return ent:GetPackedRatio("DoorSidePosition") end,
     var="DoorSideSelect",speed=1, vmin=0, vmax=1,
     sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
@@ -1184,14 +1184,6 @@ function ENT:Think()
     
     
     
-    if self:GetNWString("DoorSide","none") == "left" then
-        self:Animate("DoorSwitch",1,0,100,100,10,false)
-    elseif self:GetNWString("DoorSide","none") == "none" then
-        self:Animate("DoorSwitch",0.5,0,100,100,10,false)
-    elseif self:GetNWString("DoorSide","none") == "right" then
-        self:Animate("DoorSwitch",0,0,100,100,10,false)
-    end
-    
     
     if self:GetNW2Bool("ReverserInserted",false) == true then
         self:ShowHide("reverser",true)
@@ -1493,11 +1485,11 @@ local rolling1 = self.Speed / 10
 local rolling2 = self.Speed / 40
 
 --self:SetSoundState("rumb1"    ,rol10*rollings,rol10p+0.9) --15
-self:SetSoundState("Cruise",rol40*rollings,rol40p) --57
-self:SetSoundState("rumb1",0 or rol40*rollings,rol40p) --57
+--self:SetSoundState("Cruise",rol40*rollings,rol40p) --57
+--self:SetSoundState("rumb1",0 or rol40*rollings,rol40p) --57
 --self:SetSoundState("Cruise"  ,rol70*rollings,rol70p) --70
 
---self:U2SoundEngine()
+self:U2SoundEngine()
 self:ScrollTracker()
 
 end
