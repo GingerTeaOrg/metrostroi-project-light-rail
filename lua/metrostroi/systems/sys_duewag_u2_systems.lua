@@ -173,13 +173,6 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	self.Train.u2sectionb:SetNW2Int("ThrottleAnim",self.ThrottleStateAnimB)
 	
-	----print(#self.Train.WagonList)
-	
-	----print(self.Train)
-	
-	self.Orientation = self.Train:ReadTrainWire(14) > 0
-	self.RevOrientation = self.Train:ReadTrainWire(13) > 0
-	
 	--Is the throttle engaged? We need to know that for a few things!
 	if self.ThrottleState > 0 then
 		self.ThrottleEngaged = true
@@ -200,10 +193,14 @@ function TRAIN_SYSTEM:Think(Train)
 		self.Train:WriteTrainWire(7,1)
 		self.Train.Duewag_Battery:TriggerInput("Charge",0.05)
 		self.Train.Duewag_Battery.Charging = 1
-	else
+	elseif self.ReverserLeverStateA == 3 or self.ReverserLeverStateA == 3 then
 		self.Train:WriteTrainWire(7,0)
-		self.Train.Duewag_Battery:TriggerInput("Charge",0)
-		self.Train.Duewag_Battery.Charging = 0
+		self.Train:WriteTrainWire(6,0)
+		self.Train.Duewag_Battery:TriggerInput("Charge",0.7)
+	elseif self.ReverserLeverStateA == -1 or self.ReverserLeverStateB == -1 then
+		self.Train:WriteTrainWire(7,0)
+		self.Train:WriteTrainWire(6,0)
+		self.VE=true
 	end
 	if self.ReverserLeverStateA == 1 then
 		self.Train:SetNW2Float("ReverserAnimate",0.4)
@@ -385,33 +382,32 @@ function TRAIN_SYSTEM:Think(Train)
 				if self.Traction == 0 then
 					self.Train:WriteTrainWire(1,self.Traction)	
 				end
-			elseif self.VE == true then
+			elseif self.VE == true or self.ReverserLeverStateA == -1 or self.ReverserLeverStateB == -1 then
 				if self.Traction > 0 then
 					self.Traction = self.Traction
-					--self.Train:WriteTrainWire(2,0)
 					self.BrakePressure = 0
+					print("ve sys")
 				end
-				if self.Traction < 0 then
-					if self.Speed > 3.5 and self.ThrottleState < 0 then
-						self.Traction = self.Traction * -1
-					elseif self.Speed < 0.2 and self.ThrottleState < 0 and self.BrakePressure == 2.7 then
+				if self.Traction < 0 and self.Speed > 3.5 then
+					self.Traction = self.Traction
+				elseif self.Traction < 0 and self.Speed < 5 then
 						self.Traction = 0
-					elseif self.Speed > 2 and self.ThrottleState > 0 and self.BrakePressure == 0 then
-						self.Traction = self.Traction
-					elseif self.Speed < 0.2 and self.ThrottleState > 0 and self.BrakePressure == 2.7 then
-						self.Traction = self.Traction
-						self.BrakePressure = 0
-					elseif self.Speed > 2 and self.ThrottleState > 0 and self.BrakePressure == 0 then
+						self.BrakePressure = 4
+				elseif self.Speed < 0.2 and self.Traction < 0 then
 						self.Traction = self.Traction
 						self.BrakePressure = 2.7
-					end
-				end
-				if self.Traction == 0 then
-					self.Traction = self.Traction
-					--self.BrakePressure = 0
+				elseif self.Traction == 0 then
+						self.Traction = self.Traction
+					self.BrakePressure = self.BrakePressure
 				end
 			end
-			
+			if self.Train:ReadTrainWire(6) < 1 then
+				if self.ReverserLeverStateA == -1 or self.ReverserLeverStateB == 3 then
+					self.ReverserState = -1
+				elseif self.ReverserLeverStateA == 3 or self.ReverserLeverStateB == -1 then
+					self.ReverserState = 1
+				end
+			end
 			
 			
 			--end
@@ -632,7 +628,7 @@ function TRAIN_SYSTEM:MUHandler()
 		end
 		self.VE = true
 		self.VZ = false
-		--self.Train:WriteTrainWire(6,0)
+		self.Train:WriteTrainWire(6,0)
 	elseif self.ReverserLeverStateA == 1 and self.ReverserLeverStateB == 0 then
 		if self.LeadingCabA == 1 then
 			self.ReverserState = 0

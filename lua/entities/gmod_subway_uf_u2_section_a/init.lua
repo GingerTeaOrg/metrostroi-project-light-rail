@@ -780,7 +780,7 @@ function ENT:Think(dT)
 	
 	
 	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
-		if self.Duewag_U2.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 then
+		if self.Duewag_U2.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.Duewag_U2.ReverserLeverStateA == -1 then
 			
 			if self.DepartureConfirmed == true then
 				
@@ -789,8 +789,8 @@ function ENT:Think(dT)
 				
 				
 				if self.Duewag_U2.ThrottleState < 0 then
-					self.RearBogey.MotorForce  = -5980 
-					self.FrontBogey.MotorForce = -5980
+					self.RearBogey.MotorForce  = 5980 
+					self.FrontBogey.MotorForce = 5980
 					self.BrakesOn = true
 					self.RearBogey.MotorPower = self.Duewag_U2.Traction
 					self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -966,8 +966,8 @@ function ENT:Think(dT)
 			
 		elseif self.Duewag_U2.ReverserLeverStateA == -1 then
 			if self.Duewag_U2.ThrottleState < 0 then
-				self.RearBogey.MotorForce  = -5980 
-				self.FrontBogey.MotorForce = -5980
+				self.RearBogey.MotorForce  = 5980 
+				self.FrontBogey.MotorForce = 5980
 				self.BrakesOn = true
 				if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
 					self.u2sectionb:SetLightPower(66,true)
@@ -1023,6 +1023,13 @@ function ENT:Think(dT)
 						self.u2sectionb:SetLightPower(67,true)
 					end
 				end
+			end
+			if self.Duewag_U2.ReverserState == 1 then 
+				self.FrontBogey.Reversed = false
+				self.RearBogey.Reversed = false 
+			elseif self.Duewag_U2.ReverserState == -1 then
+				self.FrontBogey.Reversed = true
+				self.RearBogey.Reversed = true
 			end
 			
 		end

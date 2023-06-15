@@ -110,6 +110,7 @@ Metrostroi.AddSkin("train","SVB_b",{
     textures = {
         main_b = "models/lilly/uf/u2/u2h/svb-main_b",
         main = "models/lilly/uf/u2/u2h/svb-main",
+        main_left = "models/lilly/uf/u2/u2h/svb-main-left",
         main_b_left = "models/lilly/uf/u2/u2h/svb-main-left",
 		decals = "models/lilly/uf/u2/u2h/decals-modern",
         door_external = "models/lilly/uf/u2/u2h/door_external_svb",

@@ -1121,13 +1121,17 @@ function ENT:Think()
     if self:GetNW2Bool("RetroMode",false) == false and self:GetNW2Bool("OldMirror",false) == false then
         self:ShowHide("Mirror_vintage",false)
         self:ShowHide("Mirror",true)
-        self.u2sectionb:ShowHide("Mirror_vintage",false)
-        self.u2sectionb:ShowHide("Mirror",true)
+        if IsValid(self.u2sectionb) then
+            self.u2sectionb:ShowHide("Mirror_vintage",false)
+            self.u2sectionb:ShowHide("Mirror",true)
+        end
     elseif self:GetNW2Bool("RetroMode",false) == true and self:GetNW2Bool("OldMirror",false) == false or self:GetNW2Bool("OldMirror",false) == true and self:GetNW2Bool("RetroMode",false) == false or self:GetNW2Bool("OldMirror",false) == true and self:GetNW2Bool("RetroMode",false) == true then
         self:ShowHide("Mirror",false)
         self:ShowHide("Mirror_vintage",true)
-        self.u2sectionb:ShowHide("Mirror",false)
-        self.u2sectionb:ShowHide("Mirror_vintage",true)
+        if IsValid(self.u2sectionb) then
+            self.u2sectionb:ShowHide("Mirror",false)
+            self.u2sectionb:ShowHide("Mirror_vintage",true)
+        end
     end
     
     if self:GetPackedBool("FlickBatterySwitchOn",false) == true then
