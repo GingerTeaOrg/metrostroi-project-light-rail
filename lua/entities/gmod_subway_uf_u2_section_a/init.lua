@@ -526,18 +526,6 @@ end
 
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
-
-	--[[if self.RearCouple.CoupledEnt and self.RearCouple.CoupledEnt:GetNW2Entity("TrainEntity",nil) then
-		local coupledEnt = self.RearCouple.CoupledEnt:GetNW2Entity("TrainEntity")
-		if coupledEnt.FrontCouple.CoupledEnt and coupledEnt.FrontCouple.CoupledEnt:GetNW2Entity("TrainEntity") == self then
-			print("rear to front coupled")
-		elseif coupledEnt.RearCouple.CoupledEnt:GetNW2Entity("TrainEntity") and coupledEnt.RearCouple.CoupledEnt:GetNW2Entity("TrainEntity") == self then
-			print("rear to rear coupled")
-		end
-	end]]
-	
-
-
 	if self:GetNW2String("Texture","") == "SVB" then
 		self:SetNW2Bool("RetroMode",false)
 	end
@@ -635,8 +623,6 @@ function ENT:Think(dT)
 		self.ElectricKickStart = true	--remember that we are doing now
 		self.ElectricOnMoment = CurTime() --set the time that the IBIS starts booting now
 		self.ElectricStarted = true
-		------print(self.ElectricOnMoment)
-		--self:SetNW2Float("ElectricOnMoment",self.ElectricOnMoment)
 	end
 	
 	if CurTime() - self.ElectricOnMoment > 5 then
@@ -673,11 +659,10 @@ function ENT:Think(dT)
 			elseif self:ReadTrainWire(4) > 0 then
 				self:WriteTrainWire(32,1)
 			end
-		else if self.Panel.Headlights < 1 and self:ReadTrainWire(7) < 1 then
+		elseif self.Panel.Headlights < 1 and self:ReadTrainWire(7) < 1 then
 			self:WriteTrainWire(31,0)
 			self:WriteTrainWire(32,0)
 		end
-		print(self:ReadTrainWire(32), "Wire32", self:ReadTrainWire(31), "Wire31")
 		if self:ReadTrainWire(31) > 0 then
 				self:SetLightPower(51,true)
 				self:SetLightPower(52,true)
@@ -717,14 +702,14 @@ function ENT:Think(dT)
 		self:SetLightPower(36,false)
 		self:SetLightPower(37,false)
 
-			self.u2sectionb:SetLightPower(30,false)
-			self.u2sectionb:SetLightPower(31,false)
-			self.u2sectionb:SetLightPower(32,false)
-			self.u2sectionb:SetLightPower(33,false)
-			self.u2sectionb:SetLightPower(34,false)
-			self.u2sectionb:SetLightPower(35,false)
-			self.u2sectionb:SetLightPower(36,false)
-			self.u2sectionb:SetLightPower(37,false)
+		self.u2sectionb:SetLightPower(30,false)
+		self.u2sectionb:SetLightPower(31,false)
+		self.u2sectionb:SetLightPower(32,false)
+		self.u2sectionb:SetLightPower(33,false)
+		self.u2sectionb:SetLightPower(34,false)
+		self.u2sectionb:SetLightPower(35,false)
+		self.u2sectionb:SetLightPower(36,false)
+		self.u2sectionb:SetLightPower(37,false)
 	elseif self.DoorsUnlocked == true then
 		
 		if self.DoorSideUnlocked == "Left" then
@@ -909,8 +894,8 @@ function ENT:Think(dT)
 								
 							end
 						elseif self:ReadTrainWire(2) > 0 then 
-							self.RearBogey.MotorForce  = -67791.24  
-							self.FrontBogey.MotorForce = -67791.24 
+							self.RearBogey.MotorForce  = 67791.24  
+							self.FrontBogey.MotorForce = 67791.24 
 							self.BrakesOn = true
 							if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
 								self.u2sectionb:SetLightPower(66,true)
@@ -976,17 +961,10 @@ function ENT:Think(dT)
 						self.u2sectionb:SetLightPower(66,true)
 						self.u2sectionb:SetLightPower(67,true)
 					end
-				end
-				
-				
-				
-				
-				
-				
+				end	
 			end
 			
 		elseif self.Duewag_U2.ReverserLeverStateA == -1 then
-			print(self.Duewag_U2.BrakePressure)
 			if self.Duewag_U2.ThrottleState < 0 then
 				self.RearBogey.MotorForce  = -5980 
 				self.FrontBogey.MotorForce = -5980
@@ -1048,9 +1026,9 @@ function ENT:Think(dT)
 			end
 			
 		end
-		self.FrontBogey.PneumaticBrakeForce = 60
+		self.FrontBogey.PneumaticBrakeForce = 100
 		self.MiddleBogey.PneumaticBrakeForce = 60
-		self.RearBogey.PneumaticBrakeForce = 60
+		self.RearBogey.PneumaticBrakeForce = 100
 		
 		
 		
@@ -1059,18 +1037,18 @@ function ENT:Think(dT)
 	
 	
 	--15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
-	
-	if self.Panel.WarnBlink < 1 then
-		self:WriteTrainWire(20,self.Panel.BlinkerLeft > 0 and 1 or 0)
-		self:WriteTrainWire(21,self.Panel.BlinkerRight > 0 and 1 or 0)
-	elseif self.Panel.WarnBlink > 0 then
-		self:WriteTrainWire(20,1)
-		self:WriteTrainWire(21,1)
-	elseif self.Panel.BlinkerLeft > 0 or self.Panel.BlinkerRight > 0 then
-		self:WriteTrainWire(20,self.Panel.BlinkerLeft > 0 and 1 or 0)
-		self:WriteTrainWire(21,self.Panel.BlinkerRight > 0 and 1 or 0)
+	if self.Duewag_U2:IsLeadingCab() == true then
+		if self.Panel.WarnBlink < 1 then
+			self:WriteTrainWire(20,self.Panel.BlinkerLeft > 0 and 1 or 0)
+			self:WriteTrainWire(21,self.Panel.BlinkerRight > 0 and 1 or 0)
+		elseif self.Panel.WarnBlink > 0 then
+			self:WriteTrainWire(20,1)
+			self:WriteTrainWire(21,1)
+		elseif self.Panel.BlinkerLeft > 0 or self.Panel.BlinkerRight > 0 then
+			self:WriteTrainWire(20,self.Panel.BlinkerLeft > 0 and 1 or 0)
+			self:WriteTrainWire(21,self.Panel.BlinkerRight > 0 and 1 or 0)
+		end
 	end
-
 	if self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) < 1 then
 		self:Blink(true,true,false)
 		
@@ -1167,14 +1145,14 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	if self.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpFast" then self.Duewag_U2.ThrottleRate = 8 end
-		if button == "ThrottleDownFast" then self.Duewag_U2.ThrottleRate = -8 end
+		if button == "ThrottleUpFast" then self.Duewag_U2.ThrottleRate = 10 end
+		if button == "ThrottleDownFast" then self.Duewag_U2.ThrottleRate = -10 end
 		
 	end
 	
 	if self.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpReallyFast" then self.Duewag_U2.ThrottleRate = 10 end
-		if button == "ThrottleDownReallyFast" then self.Duewag_U2.ThrottleRate = -10 end
+		if button == "ThrottleUpReallyFast" then self.Duewag_U2.ThrottleRate = 20 end
+		if button == "ThrottleDownReallyFast" then self.Duewag_U2.ThrottleRate = -20 end
 		
 	end
 	
@@ -1344,7 +1322,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	
-	if self.Duewag_U2.ReverserState == 0 then
+	if self.Duewag_U2.ReverserLeverStateA == 0 then
 		if button == "ReverserInsert" then
 			if self.Duewag_U2.ReverserInsertedA == false then
 				self.Duewag_U2.ReverserInsertedA = true
@@ -1373,7 +1351,7 @@ function ENT:OnButtonPress(button,ply)
 	if button == "BatteryDisableToggle" then
 		if self.BatteryOn == true and self.Duewag_U2.ReverserLeverStateA == 1 then
 			self.BatteryOn = false
-			self.Duewag_Battery:TriggerInput("Charge",1.3)
+			self.Duewag_Battery:TriggerInput("Charge",0)
 			self:SetNW2Bool("BatteryOn",false)
 			--PrintMessage(HUD_PRINTTALK, "Battery switch is off")
 			--self:SetNW2Bool("BatteryToggleIsTouched",true)

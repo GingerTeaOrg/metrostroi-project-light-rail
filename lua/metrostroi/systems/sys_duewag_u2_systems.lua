@@ -167,7 +167,7 @@ function TRAIN_SYSTEM:Think(Train)
 	local dT = self.DeltaTime
 	
 	
-	self.ThrottleState = self.ThrottleState + self.ThrottleRate * dT
+	self.ThrottleState = self.ThrottleState + self.ThrottleRate
 	
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
 	
@@ -219,6 +219,22 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	elseif self.ReverserLeverStateA == -1 then
 		self.Train:SetNW2Float("ReverserAnimate",0)
+	end
+
+	if self.ReverserLeverStateB == 1 then
+		self.Train.u2sectionb:SetNW2Float("ReverserAnimate",0.4)
+	
+	elseif self.ReverserLeverStateB == 0 then
+		self.Train.u2sectionb:SetNW2Float("ReverserAnimate",0.25)
+	
+	elseif self.ReverserLeverStateB == 3 then
+		self.Train.u2sectionb:SetNW2Float("ReverserAnimate",1)
+	
+	elseif self.ReverserLeverStateB == 2 then
+		self.Train.u2sectionb:SetNW2Float("ReverserAnimate",0.7)
+	
+	elseif self.ReverserLeverStateB == -1 then
+		self.Train.u2sectionb:SetNW2Float("ReverserAnimate",0)
 	end
 
 	self.Train.u2sectionb:SetNW2Int("ReverserLever",self.ReverserLeverStateB)
@@ -351,21 +367,23 @@ function TRAIN_SYSTEM:Think(Train)
 					
 					----print("traction applied")
 					
-				elseif self.Traction < 0 then
+				elseif self.Traction <= 0 then
 					----print("braking applied")
 					self.Train:WriteTrainWire(2,1)
 					if self.Speed > 3.5 and self.Train:ReadTrainWire(2) > 0 then
-						self.Train:WriteTrainWire(1,self.Traction * -1)
-					elseif self.Speed < 1.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) == 2.7 then
+						self.Train:WriteTrainWire(1,self.Traction)
+					elseif self.Speed < 5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) == 2.7 then
 						self.Traction = 0
-					elseif self.Speed > 1.5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) < 2.7 then
+						self.Train:WriteTrainWire(1,self.Traction)
+					elseif self.Speed > 5 and self.Train:ReadTrainWire(2) > 0 and self.Train:ReadTrainWire(5) < 2.7 then
 						self.Traction = self.Traction
+						self.Train:WriteTrainWire(1,self.Traction)
 					end
 				end
 				
+				
 				if self.Traction == 0 then
-					self.Train:WriteTrainWire(1,self.Traction)
-					--self.Train:WriteTrainWire(2,0)
+					self.Train:WriteTrainWire(1,self.Traction)	
 				end
 			elseif self.VE == true then
 				if self.Traction > 0 then
@@ -410,7 +428,7 @@ function TRAIN_SYSTEM:Think(Train)
 		
 	end		
 	
-	if self.ThrottleState < 0 and self.Speed < 8 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
+	if self.ThrottleState < 0 and self.Speed < 8 or self.Train:ReadTrainWire(10) > 0 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
 		
 		if self.Train:ReadTrainWire(6) > 0 then --in MU mode we write that to the train wire for the train script to handle
 			self.Train:WriteTrainWire(5,2.7)
@@ -553,13 +571,13 @@ function TRAIN_SYSTEM:U2Engine()
 end
 
 function TRAIN_SYSTEM:IsLeadingCab()
-	
-	if self.ReverserInserted == true and self.VZ == true then
-		self.LeadingCabA = 1
-	elseif self.ReverserInserted == false and self.VZ == true then
-		self.LeadingCabA = 0
+	local output
+	if self.ReverserInsertedA == true and self.VZ == true then
+		output = true
+	elseif self.ReverserInsertedA == false and self.VZ == true then
+		output = false
 	end
-	----print("leadingcab"..self.LeadingCabA)
+	return output
 end
 
 function TRAIN_SYSTEM:IsLeadingUnit()
@@ -728,6 +746,12 @@ function TRAIN_SYSTEM:MUHandler()
 		
 		self.Train:SetNW2Bool("Fans",false)
 		
+	end
+
+	if self.BatteryOn == false or self.Train:ReadTrainWire(7) < 1 then
+		self.Train:WriteTrainWire(3,0)
+		self.Train:WriteTrainWire(4,0)
+		self.Train:WriteTrainWire(6,0)
 	end
 	
 	

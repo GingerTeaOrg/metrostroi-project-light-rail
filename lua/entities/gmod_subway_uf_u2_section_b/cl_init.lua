@@ -718,17 +718,17 @@ function ENT:Think()
         self:PlayOnce("WarningAnnouncement","cabin",1,1)
 
 	end
-    self:Animate("Door_fr2",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
-    self:Animate("Door_fr1",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
+    self:Animate("Door_fr2",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
+    self:Animate("Door_fr1",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
 
-    self:Animate("Door_rr2",self.ParentTrain:GetNW2Float("Door34a"),0,100,50,0,0)
-    self:Animate("Door_rr1",self.ParentTrain:GetNW2Float("Door34a"),0,100,50,0,0)
+    self:Animate("Door_rr2",self.ParentTrain:GetNW2Float("Door34b"),0,100,50,0,0)
+    self:Animate("Door_rr1",self.ParentTrain:GetNW2Float("Door34b"),0,100,50,0,0)
 
-    self:Animate("Door_fl2",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
-    self:Animate("Door_fl1",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
+    self:Animate("Door_fl2",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
+    self:Animate("Door_fl1",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
     
-    self:Animate("Door_rl2",self.ParentTrain:GetNW2Float("Door56b"),0,100,50,0,0)
-    self:Animate("Door_rl1",self.ParentTrain:GetNW2Float("Door56b"),0,100,50,0,0)
+    self:Animate("Door_rl2",self.ParentTrain:GetNW2Float("Door56a"),0,100,50,0,0)
+    self:Animate("Door_rl1",self.ParentTrain:GetNW2Float("Door56a"),0,100,50,0,0)
 
 	
 end
