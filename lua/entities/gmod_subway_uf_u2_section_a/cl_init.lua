@@ -699,6 +699,21 @@ ENT.ButtonMap["BOStrab"] = {
         },
     }
 }
+ENT.ButtonMap["IBISKey"] = {
+    pos = Vector(416,-19.4,57.4),
+    ang = Angle(0,-45,90),
+    width = 10,
+    height = 10,
+    scale = 0.069,
+    
+    buttons = {
+        {ID = "InsertIBISKey", x=0,y=0,w=10,h=10, radius=1,tooltip="Insert and turn IBIS key", model = {
+            var="InsertIBISKey",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),}
+        },
+    }
+}
 --[[ENT.ButtonMap["Lefthand"] = {
 pos = Vector(532.6,-19.2,83.09),
 ang = Angle(0,90,0),
@@ -708,8 +723,8 @@ scale = 0.04,
 }]]
 
 ENT.ButtonMap["IBISScreen"] = {
-    pos = Vector(419.73,-12.75,60.35),
-    ang = Angle(0,-135.4,48.5),--(0,44.5,-47.9),
+    pos = Vector(419.74,-12.76,60.35),
+    ang = Angle(0,-135.45,48.5),--(0,44.5,-47.9),
     width = 117,
     height = 29.9,
     scale = 0.0311,
@@ -995,7 +1010,7 @@ function ENT:Initialize()
     self.BaseClass.Initialize(self)
     
     
-    self.u2sectionb = self:GetNW2Entity("U2b")
+    self.u2sectionb = self:GetNWEntity("U2b")
     
     self.IBIS = self:CreateRT("IBIS",512,128)
     
@@ -1090,7 +1105,7 @@ function ENT:Think()
     elseif self:GetNW2String("Texture","") == "OrEbSW" then
         local decal = self.ClientEnts["cab_decal"]
         local leftNum,middleNum,rightNum = self.ClientEnts["carnumber1"],self.ClientEnts["carnumber2"],self.ClientEnts["carnumber3"]
-        local leftNum1,middleNum2,rightNum3 = self.u2sectionb.ClientEnts["carnumber1"],self.u2sectionb.ClientEnts["carnumber2"],self.u2sectionb.ClientEnts["carnumber3"]
+        --local leftNum1,middleNum2,rightNum3 = self.u2sectionb.ClientEnts["carnumber1"],self.u2sectionb.ClientEnts["carnumber2"],self.u2sectionb.ClientEnts["carnumber3"]
         local decal2 = self.u2sectionb.ClientEnts["cab_decal"]
         if IsValid(leftNum) and IsValid(middleNum) and IsValid(rightNum) then
             leftNum:SetPos(self:LocalToWorld(Vector(0,0,9)))
@@ -1170,10 +1185,11 @@ function ENT:Think()
     end
     
     if self:GetNW2String("ServiceAnnouncement","") ~= "" then
-        
+        print(self:GetNW2String("ServiceAnnouncement",""))
         if self.AnnouncementPlayed == false then 
             self.AnnouncementPlayed = true
-            self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),1,1,1,2,Vector(293,44,102))    
+            self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),5,1,1,2,Vector(293,44,102))
+            self:PlayOnceFromPos("PSA2",self:GetNW2String("ServiceAnnouncement"),5,1,1,2,Vector(293,-44,102))    
         end
     else
         self.AnnouncementPlayed = false

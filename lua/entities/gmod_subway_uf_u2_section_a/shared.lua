@@ -178,6 +178,8 @@ ENT.Cameras = {
 	{Vector(388,-30,80),Angle(0,-90,0),"Train.UF_U2.RouteList"},
 	{Vector(450,0,70),Angle(80,0,0),"Train.Common.CouplerCamera"},
 	{Vector(350,60,5),Angle(10,-80,0),"Train.UF_U2.Bogey"},
+	{Vector(413,-11,62),Angle(35,-46,0),"Train.UF_U2.IBIS"},
+	{Vector(413,-25,58),Angle(10,50,0),"Train.UF_U2.IBISKey"},
 }
 
 ENT.MirrorCams = {
@@ -237,11 +239,61 @@ ENT.Spawner = {
 	
 	{"RetroMode","Spawner.U2.RetroMode","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("RetroMode",val and not rot or not val and rot) end},
 	{"Old Mirror","Spawner.U2.OldMirror","Boolean",true,function(ent,val,rot) ent:SetNW2Bool("OldMirror",val and not rot or not val and rot) end},
-	{"San Diego","Spawner.U2.San Diego","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("SanDiego",val and not rot or not val and rot) end},
-	{"IBISData","Spawner.U2.IBISDataset","List",function(ent)
+	--{"San Diego","Spawner.U2.San Diego","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("SanDiego",val and not rot or not val and rot) end},
+	{"IBISData","IBIS Line Index","List",function(ent)
         local Announcer = {}
-        for k,v in pairs(UF.IBISLines or {}) do Announcer[k] = v.name or k end
+        for k,v in pairs(UF.IBISLines or {}) do Announcer[k] = v.name end
         return Announcer
+    end, nil,function(ent,val,rot,i,wagnum,rclk)
+        if UF.IBISLines and val==1 then
+            ent:SetNW2Int("IBIS:Lines",1)
+        else
+            ent:SetNW2Int("IBIS:Lines",val)
+        end
+    end},
+	{"IBISData2","IBIS Route Index","List",function(ent)
+        local Announcer = {}
+        for k,v in pairs(UF.IBISRoutes or {}) do Announcer[k] = v.name end
+        return Announcer
+    end, nil,function(ent,val,rot,i,wagnum,rclk)
+        if UF.IBISLRoutes and val==1 then
+            ent:SetNW2Int("IBIS:Routes",1)
+        else
+            ent:SetNW2Int("IBIS:Routes",val)
+        end
+    end},
+	{"IBISData3","IBIS Announcer","List",function(ent)
+        local Announcer = {}
+        for k,v in pairs(UF.IBISAnnouncementFiles or {}) do Announcer[k] = v.name end
+        return Announcer
+    end, nil,function(ent,val,rot,i,wagnum,rclk)
+        if UF.IBISAnnouncementFiles and val==1 then
+            ent:SetNW2Int("IBIS:Announcer",1)
+        else
+            ent:SetNW2Int("IBIS:Announcer",val)
+        end
+    end},
+	{"IBISData4","IBIS Destinations","List",function(ent)
+        local Announcer = {}
+        for k,v in pairs(UF.IBISDestinations or {}) do Announcer[k] = v.name end
+        return Announcer
+    end, nil,function(ent,val,rot,i,wagnum,rclk)
+        if UF.IBISDestinations and val==1 then
+            ent:SetNW2Int("IBIS:Destinations",1)
+        else
+            ent:SetNW2Int("IBIS:Destinations",val)
+        end
+    end},
+	{"IBISData5","IBIS Service Announcements","List",function(ent)
+        local Announcer = {}
+        for k,v in pairs(UF.SpecialAnnouncementsIBIS or {}) do Announcer[k] = v.name end
+        return Announcer
+    end, nil,function(ent,val,rot,i,wagnum,rclk)
+        if UF.SpecialAnnouncementsIBIS and val==1 then
+            ent:SetNW2Int("IBIS:ServiceA",1)
+        else
+            ent:SetNW2Int("IBIS:ServiceA",val)
+        end
     end},
 	{"Rollsign","Spawner.U2.Rollsign","List",function()
         local Schemes = {}

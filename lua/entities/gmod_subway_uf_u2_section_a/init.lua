@@ -312,8 +312,8 @@ function ENT:Initialize()
 	-- Create bogeys
 	self.FrontBogey = self:CreateBogeyUF(Vector( 290,0,0),Angle(0,180,0),true,"duewag_motor")
 	self.MiddleBogey  = self:CreateBogeyUF(Vector(0,0,0),Angle(0,0,0),false,"u2joint")
-	self:SetNW2Entity("FrontBogey",self.FrontBogey)
-	self.MiddleBogey:SetNW2Entity("MainTrain",self)
+	self:SetNWEntity("FrontBogey",self.FrontBogey)
+	
 	-- Create couples
 	self.FrontCouple = self:CreateCoupleUF(Vector( 415,0,0),Angle(0,0,0),true,"u2")	
 	
@@ -411,6 +411,7 @@ function ENT:Initialize()
 		[KEY_PERIOD] = "BlinkerRightSet",
 		
 		[KEY_COMMA] = "BlinkerLeftSet",
+		[KEY_MINUS] = "CycleIBISKey",
 		--[KEY_0] = "KeyTurnOn",
 		
 		[KEY_LSHIFT] = {
@@ -435,6 +436,7 @@ function ENT:Initialize()
 			[KEY_8] = "Throttle80-Pct",
 			[KEY_9] = "Throttle90-Pct",
 			[KEY_P] = "PantographLowerSet",
+			[KEY_MINUS] = "RemoveIBISKey",
 		},
 		
 		[KEY_LALT] = {
@@ -503,7 +505,7 @@ function ENT:Initialize()
 		self:SetModel("models/lilly/uf/u2/u2h.mdl")
 	end
 	
-	self:SetNW2Entity("U2a",self)
+	
 end
 
 function ENT:TrainSpawnerUpdate()
@@ -564,7 +566,7 @@ function ENT:Think(dT)
 	
 	
 	self:RollsignSync()
-	self:SetNW2Entity("FrontBogey",self.FrontBogey)
+	self:SetNWEntity("FrontBogey",self.FrontBogey)
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
@@ -1033,9 +1035,9 @@ function ENT:Think(dT)
 			end
 			
 		end
-		self.FrontBogey.PneumaticBrakeForce = 100
-		self.MiddleBogey.PneumaticBrakeForce = 60
-		self.RearBogey.PneumaticBrakeForce = 100
+		--self.FrontBogey.PneumaticBrakeForce = 100
+		--self.MiddleBogey.PneumaticBrakeForce = 60
+		--self.RearBogey.PneumaticBrakeForce = 100
 		
 		
 		
@@ -1798,6 +1800,24 @@ end
 
 function ENT:OnButtonRelease(button,ply)
 
+	if button == "CycleIBISKey" then
+		if self.Duewag_U2.IBISKeyA == false and self.Duewag_U2.IBISKeyATurned == false then
+			self.Duewag_U2.IBISKeyA = true
+		elseif self.Duewag_U2IBISKeyA == true and self.Duewag_U2.IBISKeyATurned == false then
+			self.Duewag_U2.IBISKeyA = true
+			self.Duewag_U2.IBISKeyATurned = true
+		elseif self.Duewag_U2IBISKeyA == true and self.Duewag_U2.IBISKeyATurned == true then
+			self.Duewag_U2.IBISKeyA = true
+			self.Duewag_U2.IBISKeyATurned = false
+		end
+	end
+
+	if button == "RemoveIBISKey" then
+		if self.Duewag_U2.IBISKeyA == true then
+			self.Duewag_U2.IBISKeyA = false
+		end
+	end
+
 	if button == "ReduceBrakeSet" then
 		self.Panel.ReduceBrake = 0
 	end
@@ -2000,8 +2020,8 @@ function ENT:CreateSectionB(pos)
 	local ang = Angle(0,0,0)
 	local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
 	
-	self:SetNW2Entity("U2b",u2sectionb)
-	u2sectionb:SetNW2Entity("U2a",self)
+	self:SetNWEntity("U2b",u2sectionb)
+	u2sectionb:SetNWEntity("U2a",self)
 	-- self.u2sectionb = u2b
 	u2sectionb:SetPos(self:LocalToWorld(Vector(0,0,0)))
 	u2sectionb:SetAngles(self:GetAngles() + ang)
@@ -2020,10 +2040,10 @@ function ENT:CreateSectionB(pos)
 	Vector(0,0,6),		
 	0, --forcelimit
 	0, --torquelimit
-	-5, --xmin
+	-4, --xmin
 	0, --ymin
 	-180, --zmin
-	5, --xmax
+	4, --xmax
 	0, --ymax
 	180, --zmax
 	0, --xfric

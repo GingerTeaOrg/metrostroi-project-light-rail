@@ -107,7 +107,11 @@ function TRAIN_SYSTEM:Initialize()
 	self.Orientation = 0
 	self.ReverseOrientation = 0
 
-	
+	self.IBISKeyA = false
+	self.IBISKeyATurned = false
+
+	self.IBISKeyB = false
+	self.IBISKeyBTurned = false
 	
 	
 	

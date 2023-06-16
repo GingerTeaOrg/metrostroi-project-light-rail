@@ -20,7 +20,7 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
     self.IBIS = self:CreateRT("IBIS",512,128)
     
-    self.ParentTrain = self:GetNW2Entity("U2a")
+    self.ParentTrain = self:GetNWEntity("U2a")
 	self.Bogeys = {}
     
 
@@ -39,8 +39,11 @@ function ENT:Initialize()
 	
 	
 	self.ThrottleLastEngaged = 0
-
-    self:UpdateWagonNumber()
+    
+    self.ParentTrain = self:GetNWEntity("U2a")
+    if self.ParentTrain then
+        self:UpdateWagonNumber()
+    end
 
 	
 end
@@ -599,7 +602,7 @@ function ENT:DrawPost()
     end)
 end
 function ENT:UpdateWagonNumber()
-    
+    if not self.ParentTrain:GetNW2Int("WagonNumber") then return end
     for i=0,3 do
         --self:ShowHide("TrainNumberL"..i,i<count)
         --self:ShowHide("TrainNumberR"..i,i<count)
@@ -648,9 +651,9 @@ function ENT:UpdateWagonNumber()
 end
 function ENT:Think()
 	self.BaseClass.Think(self)
-	self.ParentTrain = self:GetNW2Entity("U2a")
+	self.ParentTrain = self:GetNWEntity("U2a")
 	local speed = self:GetNW2Int("Speed")/100
-
+    
     self:Animate("reverser",self:GetNW2Float("ReverserLever",0.5),0,100,50,9,false)
     if self:GetNW2Float("ThrottleStateAnim",0) >= 0.5 then
         self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,50,8,false)
@@ -679,7 +682,7 @@ function ENT:Think()
 
     self:Animate("Speedo",self.SpeedoAnim,0,200,1,0.1,false)
     --self:Animate("Throttle",0,-45,45,3,0,false)
-	if self.ParentTrain:GetNW2Bool("Headlights",false) == true and self:GetNW2Bool("Headlights",false) == true then
+	if self.ParenTrain and self.ParentTrain:GetNW2Bool("Headlights",false) == true and self:GetNW2Bool("Headlights",false) == true then
         self:ShowHide("headlights_on",true)
     else
         self:ShowHide("headlights_on",false)

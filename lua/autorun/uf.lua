@@ -75,8 +75,6 @@ UF.IBISLines = {}
 UF.TrainPositions = {}
 UF.Stations = {}
 UF.TrainCountOnPlayer = {}
-UF.IBISDevicesRegistered = {}
-
 UF.IBISRegisteredTrains = {}
 
 --[[function UF.checkDuplicateValue(table, target)
@@ -115,8 +113,8 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
     if not LineCourse and not train then
         -- Print statement for Step 1
         print("LineCourse and train are falsy values. Exiting function.")
-        return -- Return without performing any further actions
-    end
+            return -- Return without performing any further actions
+        end
         if LineCourse == "0000" and next(UF.IBISRegisteredTrains) ~= nil then
             -- If the input is all zeros, we delete ourselves from the table
             for i, v in pairs(UF.IBISRegisteredTrains) do
@@ -155,24 +153,24 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             print("UF.IBISRegisteredTrains table is not empty. Checking for existing registrations.")
             --local complete
             --if not complete then
-                
-                -- Step 4: Iterate over UF.IBISRegisteredTrains table
-                
-                    -- Print statement for Step 4b
-                print("RBL: Another train is already registered on the same line course. Registration failed.")
-                    
-                    output = false -- Return false if the train is already registered on the same line course
-                    return output
+            
+            -- Step 4: Iterate over UF.IBISRegisteredTrains table
+            
+            -- Print statement for Step 4b
+            print("RBL: Another train is already registered on the same line course. Registration failed.")
+            
+            output = false -- Return false if the train is already registered on the same line course
+            return output
         elseif LineCourse ~= "0000" and train.IBIS.LineTable[string.sub(LineCourse,1,2)] ~= nil and #LineCourse == 4 and UF.IBISRegisteredTrains[train] ~= LineCourse and UF.checkDuplicateTrain(train, LineCourse) == false then
-                    UF.IBISRegisteredTrains[train] = LineCourse
-                    print("RBL: No conflicting train with LineCourse found. Registering new train.", LineCourse)
-                    output = true
-                    return output
+            UF.IBISRegisteredTrains[train] = LineCourse
+            print("RBL: No conflicting train with LineCourse found. Registering new train.", LineCourse)
+            output = true
+            return output
         end
         --print(output)
         --print(LineCourse)
         return output
-end
+    end
     
     
     
@@ -182,14 +180,14 @@ end
             if v.name == name then
                 UF.IBISCommonFiles[k] = datatable
                 UF.IBISCommonFiles[k].name = name
-                print("Light Rail: Changed \""..name.."\" IBIS announcer.")
+                print("Light Rail: Changed \""..name.."\" IBIS announcer common files.")
                 return
             end
         end
         local id = table.insert(UF.IBISCommonFiles,datatable)
         UF.IBISCommonFiles[id].name = name
         
-        print("Light Rail: Added \""..name.."\" IBIS announcer.")
+        print("Light Rail: Added \""..name.."\" IBIS announcer common files.")
     end
     
     function UF.AddIBISAnnouncementScript(name,datatable)
@@ -198,14 +196,14 @@ end
             if v.name == name then
                 UF.IBISAnnouncementScript[k] = datatable
                 UF.IBISAnnouncementScript[k].name = name
-                print("Light Rail: Changed \""..name.."\" IBIS announcer.")
+                print("Light Rail: Changed \""..name.."\" IBIS announcer script.")
                 return
             end
         end
         local id = table.insert(UF.IBISAnnouncementScript,datatable)
         UF.IBISAnnouncementScript[id].name = name
         
-        print("Light Rail: Added \""..name.."\" IBIS announcer.")
+        print("Light Rail: Added \""..name.."\" IBIS announcer script.")
     end
     
     function UF.AddIBISDestinations(name,index)
@@ -256,23 +254,6 @@ end
         local id = table.insert(UF.IBISLines,lines)
         UF.IBISLines[id].name = name
         print("Light Rail: Loaded \""..name.."\" IBIS line index.")
-    end
-    
-    
-    function UF.AddIBISRoutes(name,routes)
-        if not name or not routes then return end
-        for k,v in pairs(UF.IBISRoutes) do
-            if v.name == name then
-                UF.IBISRoutes[k] = routes
-                UF.IBISRoutes[k].name = name
-                
-                print("Light Rail: Reloaded \""..name.."\" IBIS Route index.")
-                return
-            end
-        end
-        local id = table.insert(UF.IBISRoutes,routes)
-        UF.IBISRoutes[id].name = name
-        print("Light Rail: Loaded \""..name.."\" IBIS Route index.")
     end
     
     function UF.AddIBISAnnouncements(name,datatable)
@@ -367,3 +348,11 @@ end
         end
         
     end
+
+if CLIENT then
+        files = file.Find("uf/IBIS/*.lua","LUA")
+        for _,filename in pairs(files) do
+            AddCSLuaFile("uf/IBIS/"..filename)
+            include("uf/IBIS/"..filename)
+        end
+end

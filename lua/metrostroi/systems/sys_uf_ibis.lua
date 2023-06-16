@@ -21,7 +21,7 @@ function TRAIN_SYSTEM:Initialize()
     self.NextStationString = ""
     self.NextStation = 0
     
-    self.LineTable = UF.IBISLines[1]
+    self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines")]
 
     self.LineLookupComplete = false
     self.DestinationLookupComplete = false
@@ -31,11 +31,11 @@ function TRAIN_SYSTEM:Initialize()
     self.RBLRegistered = false
     self.RBLSignedOff = true
     
-    self.RouteTable = UF.IBISRoutes[1]
+    self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes")]
     
-    self.DestinationTable = UF.IBISDestinations[1]
-    self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[1]
-    
+    self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int("IBIS:Destinations")]
+    self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA")]
+    print("Selected Service Announcements:", self.Train:GetNW2Int("IBIS:ServiceA"))
     self.JustBooted = false
     self.PowerOn = 0
     self.IBISBootupComplete = 0
@@ -90,6 +90,9 @@ function TRAIN_SYSTEM:Initialize()
     self.ErrorMoment = 0
     
     self.ErrorAcknowledged = false
+
+    self.KeyInserted = false
+    self.KeyTurned = false
     
     self.TriggerNames = {
         "Number1", --1
@@ -538,6 +541,10 @@ end
 
 function TRAIN_SYSTEM:Think()
     
+    self.KeyInserted = self.Train.Duewag_U2.IBISKeyA
+    self.KeyInserted = self.Train.Duewag_U2.IBISKeyATurned
+
+
     if self.Menu > 0 then
         self:ReadDataset()
     end
@@ -547,8 +554,11 @@ function TRAIN_SYSTEM:Think()
     end
 
     
+    self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes")]
     
-    
+    self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int("IBIS:Destinations")]
+    self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA")]
+    self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines")]
     --Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
  
 

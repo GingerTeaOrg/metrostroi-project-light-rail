@@ -34,7 +34,7 @@ function ENT:Initialize()
 	-- Create bogeys
 	--table.insert(self.Bogeys,self.FrontBogey)	
 	--self.RearBogey = self:CreateBogeyUF(Vector( -300,0,0),Angle(0,180,0),true,"duewag_motor")
-	self.ParentTrain = self:GetNW2Entity("U2a")
+	self.ParentTrain = self:GetNWEntity("U2a")
 	self.CabEnabled = false
 	self.BatteryOn = false
 
@@ -671,16 +671,6 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "DoorsLockSet"  then
 		
-		
-		self.DoorRandomness[1] = -1
-		self.DoorRandomness[2] = -1
-		self.DoorRandomness[3] = -1
-		self.DoorRandomness[4] = -1
-		
-		self.DoorsPreviouslyUnlocked = true
-		self.RandomnessCalculated = false
-		self.DoorsUnlocked = false
-		self.Door1 = false
 		self.Panel.DoorsLock = 1
 		
 	end
