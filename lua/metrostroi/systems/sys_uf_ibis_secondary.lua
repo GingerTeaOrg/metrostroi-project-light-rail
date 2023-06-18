@@ -363,7 +363,7 @@ function TRAIN_SYSTEM:PrintText(x,y,text,inverse)
 end
 
 function TRAIN_SYSTEM:IBISScreen(Train)
-    
+    if IsValid(self.Train.ParentTrain) then
     local Menu = self.Train.ParentTrain:GetNW2Int("IBIS:Menu")
     local State = self.Train.ParentTrain:GetNW2Int("IBIS:State")
     local Route = self.Train.ParentTrain:GetNW2String("IBIS:RouteChar1")..self.Train.ParentTrain:GetNW2String("IBIS:RouteChar2")
@@ -514,6 +514,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     end
     
     return
+    end
 end
 
 function TRAIN_SYSTEM:Think()   

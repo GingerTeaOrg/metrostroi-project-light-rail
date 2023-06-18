@@ -496,6 +496,18 @@ function ENT:Initialize()
 			ID = "Button1a",
 			Pos = Vector(396.884,-51,50.5), Radius = 16,
 		},
+		{
+			ID = "Button2a",
+			Pos = Vector(326.89,-50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button3a",
+			Pos = Vector(152.116,-50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button4a",
+			Pos = Vector(84.6012,-50,49.5253), Radius = 16,
+		},
 		
 	}
 
@@ -1492,7 +1504,7 @@ function ENT:OnButtonPress(button,ply)
 	if button == "Button1a" then
 		if self.DoorSideUnlocked == "Right" then
 			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 4
+				self.DoorRandomness[1] = 3
 			end
 		end
 		self.Panel.Button1a = 1
@@ -1500,60 +1512,60 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "Button2a" then
 		if self.DoorSideUnlocked == "Right" then
-			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 4
-			end
+			self.DoorRandomness[1] = 3
+			
 		end
 		self.Panel.Button2a = 1
 	end
 	
 	if button == "Button3a" then
 		if self.DoorSideUnlocked == "Right" then
-			if self.DoorRandomness[2] == 0 then
-				self.DoorRandomness[2] = 4
-			end
+			
+			self.DoorRandomness[2] = 3
+			
 		end
 		self.Panel.Button3a = 1
 	end
 	
 	if button == "Button4a" then
 		if self.DoorSideUnlocked == "Right" then
-			if self.DoorRandomness[2] == 0 then
-				self.DoorRandomness[2] = 4
-			end
+			
+			self.DoorRandomness[2] = 3
+			
 		end
-		self.Panel.Button3a = 1
+		self.Panel.Button4a = 1
+		print(self.DoorRandomness[2])
 	end
 	
 	if button == "Button1b" then
 		if self.DoorSideUnlocked == "Left" then
-			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 4
-			end
+			
+			self.DoorRandomness[1] = 3
+			
 		end
 	end
 	
 	if button == "Button2b" then
 		if self.DoorSideUnlocked == "Left" then
-			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 4
-			end
+			
+			self.DoorRandomness[1] = 3
+			
 		end
 	end
 	
 	if button == "Button3b" then
 		if self.DoorSideUnlocked == "Left" then
-			if self.DoorRandomness[2] == 0 then
-				self.DoorRandomness[2] = 4
-			end
+			
+			self.DoorRandomness[2] = 3
+			
 		end
 	end
 	
 	if button == "Button4b" then
 		if self.DoorSideUnlocked == "Left" then
-			if self.DoorRandomness[2] == 0 then
-				self.DoorRandomness[2] = 4
-			end
+			
+			self.DoorRandomness[2] = 3
+			
 		end
 	end
 	
@@ -2037,14 +2049,14 @@ function ENT:CreateSectionB(pos)
 	0, --bone
 	0, --bone		
 	Vector(0,0,0),
-	Vector(0,0,6),		
+	Vector(0,0,0),		
 	0, --forcelimit
 	0, --torquelimit
-	-4, --xmin
-	0, --ymin
+	-0, --xmin
+	4, --ymin
 	-180, --zmin
-	4, --xmax
-	0, --ymax
+	0, --xmax
+	4, --ymax
 	180, --zmax
 	0, --xfric
 	5, --yfric

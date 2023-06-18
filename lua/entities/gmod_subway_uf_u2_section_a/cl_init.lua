@@ -155,6 +155,7 @@ ENT.ClientProps["IBIS"] = {
     pos = Vector(0.1,0,0),
     ang = Angle(0,0,0),
     scale = 1,
+    nohide = true,
 }
 
 ENT.ClientProps["duewag_decal"] = {
@@ -305,13 +306,13 @@ ENT.ButtonMap["Drivers_Door2"] = {
 }
 
 ENT.ButtonMap["Button1a"] = {
-    pos = Vector(396.3,-51,50.5),
+    pos = Vector(395.8,-51,50.5),
     ang = Angle(0,0,90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button1a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+        {ID = "Button1a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
             var="Button1a",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
@@ -329,7 +330,7 @@ ENT.ButtonMap["Button2a"] = {
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button2a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+        {ID = "Button2a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
             var="Button2a",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
@@ -340,13 +341,13 @@ ENT.ButtonMap["Button2a"] = {
 }
 
 ENT.ButtonMap["Button3a"] = {
-    pos = Vector(150.6,-51,50.5),
+    pos = Vector(151,-51,50.5),
     ang = Angle(0,0,90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button3a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+        {ID = "Button3a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
             var="Button3a",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
@@ -358,13 +359,13 @@ ENT.ButtonMap["Button3a"] = {
 
 
 ENT.ButtonMap["Button4a"] = {
-    pos = Vector(82.8,-51,50.5),
+    pos = Vector(83.7,-51,50.5),
     ang = Angle(0,0,90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button4a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+        {ID = "Button4a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
             var="Button4a",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
@@ -375,13 +376,13 @@ ENT.ButtonMap["Button4a"] = {
 }
 
 ENT.ButtonMap["Button1b"] = {
-    pos = Vector(396.3,51,50.5),
-    ang = Angle(0,0,-90),
+    pos = Vector(395.8,51,50.5),
+    ang = Angle(90,0,-90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button1b",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+        {ID = "Button1b",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
             var="Button1b",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
@@ -394,12 +395,12 @@ ENT.ButtonMap["Button1b"] = {
 
 ENT.ButtonMap["Button2b"] = {
     pos = Vector(326,51,50.5),
-    ang = Angle(0,0,-90),
+    ang = Angle(90,0,-90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button2b",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+        {ID = "Button2b",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
             var="Button2b",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
@@ -411,12 +412,12 @@ ENT.ButtonMap["Button2b"] = {
 
 ENT.ButtonMap["Button3b"] = {
     pos = Vector(150.6,51,50.5),
-    ang = Angle(0,0,-90),
+    ang = Angle(90,0,-90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button3a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+        {ID = "Button3a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
             var="Button3b",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
@@ -429,12 +430,12 @@ ENT.ButtonMap["Button3b"] = {
 
 ENT.ButtonMap["Button4b"] = {
     pos = Vector(82.8,51,50.5),
-    ang = Angle(0,0,-90),
+    ang = Angle(90,0,-90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button4a",x=1.8,y=1.8,w=2,h=2,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+        {ID = "Button4a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
             var="Button4b",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
@@ -1575,4 +1576,8 @@ function ENT:ScrollTracker()
         self.ScrollModifier = self:GetNW2Float("ActualScrollState")
         self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     end
+end
+
+function ENT:OnAnnouncer(volume)
+    return self:GetPackedBool("AnnPlay") and volume  or 0
 end

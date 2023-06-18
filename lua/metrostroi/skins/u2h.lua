@@ -77,7 +77,9 @@ Metrostroi.AddSkin("train","Royalty_b",{
         main_b_left = "models/lilly/uf/u2/u2h/main-duesseldorf-left",
         decals = "models/lilly/uf/u2/u2h/decals",
         jointdecal = "models/lilly/uf/u2/u2h/repaints/royaldecal",
-        door_external = "models/lilly/uf/u2/u2h/door_external_duesseldorf"
+        door_external = "models/lilly/uf/u2/u2h/door_external_duesseldorf",
+        main = "models/lilly/uf/u2/u2h/main-duesseldorf",
+        main_left = "models/lilly/uf/u2/u2h/main-duesseldorf-left",
     }
 })
 

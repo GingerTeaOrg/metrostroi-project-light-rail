@@ -708,6 +708,9 @@ function TRAIN_SYSTEM:Think()
             end
         elseif self.KeyInput == "SpecialAnnouncements" then
             self.Menu = 6
+        elseif self.KeyInput == "9" then
+            local Announcement = {UF.IBISCommonFiles[1]}
+            self:AnnQueue(Announcement)
         end
     elseif self.State == 1 and self.Menu == 1 then
         self.RBLSignedOff = false
@@ -1045,19 +1048,14 @@ function TRAIN_SYSTEM:AnnQueue(msg)
     end
 end
 
-function TRAIN_SYSTEM:Play(dep,not_last)
+function TRAIN_SYSTEM:Play(input)
     local message
-    local tbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line]
+    local tbl = UF.IBISAnnouncementFiles[self.Train:GetNW2Int("Announcer",1)][self.Line]
     local stbl = tbl[self.Station]
     local last,lastst
-    local path = self.Path and 2 or 1
-    if tbl.Loop then
-        last = self.LastStation
-        lastst = not dep and self.LastStation > 0 and self.Station == last and tbl[last].arrlast
-    else
-        last = self.Path and self.FirstStation or self.LastStation
-        lastst = not dep and self.Station == last and tbl[last].arrlast
-    end
+    local path = self.Route and 2 or 1
+    last = self.Route and self.FirstStation or self.LastStation
+    lastst = not dep and self.Station == last and tbl[last].arrlast
     if dep then
         message = stbl.dep[path]
     else
@@ -1288,5 +1286,15 @@ function TRAIN_SYSTEM:CANWrite(sourceid,targetid,target,targetdata)
             end
             if targetid then return end
         end
+    end
+end
+
+function TRAIN_SYSTEM:AnnouncementProcessor()
+
+    local AnnouncementScript = UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementRoutine",1)]
+    local workingBuffer = { }
+    local ProcessedInput = { }
+    for i,v in pairs(AnnouncementScript) do
+        table.Add(v,AnnouncementScript)
     end
 end

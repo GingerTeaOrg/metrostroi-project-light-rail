@@ -205,6 +205,22 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         
         print("Light Rail: Added \""..name.."\" IBIS announcer script.")
     end
+
+    function UF.AddIBISAnnouncementMetadata(name,datatable)
+        if not datatable then return end
+        for k,v in pairs(UF.IBISAnnouncementMetadata) do
+            if v.name == name then
+                UF.IBISAnnouncementMetadata[k] = datatable
+                UF.IBISAnnouncementMetadata[k].name = name
+                print("Light Rail: Changed \""..name.."\" IBIS announcer Metadata.")
+                return
+            end
+        end
+        local id = table.insert(UF.IBISAnnouncementMetadata,datatable)
+        UF.IBISAnnouncementMetadata[id].name = name
+        
+        print("Light Rail: Added \""..name.."\" IBIS announcer Metadata.")
+    end
     
     function UF.AddIBISDestinations(name,index)
         if not index or not name then return end

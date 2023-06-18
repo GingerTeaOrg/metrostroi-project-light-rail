@@ -92,10 +92,10 @@ UF.AddIBISRoutes("Hannover",{ --Format: [Line] = {[RouteNumber] = {StationNumber
 
 UF.AddIBISAnnouncementScript("Hannover",{
 
-    ["gong"] = true,
-    ["station"] = true,
-    ["interchange"] = true,
-    ["exitside"] = true,
+    [1] = "gong",
+    [2] = "station",
+    [3] = "interchange",
+    [4] = "exitside",
 })
 
 UF.AddIBISCommonFiles("Hannover",{

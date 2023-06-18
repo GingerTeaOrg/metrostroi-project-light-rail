@@ -166,10 +166,10 @@ function ENT:Initialize()
 	[31] = { "light",Vector(-326.738,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 2
 	[32] = { "light",Vector(-151.5,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 3
 	[33] = { "light",Vector(-83.7,51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front left 4
-	[34] = { "light",Vector(-397.343,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 1
-	[35] = { "light",Vector(-326.738,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
-	[36] = { "light",Vector(-151.5,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
-	[37] = { "light",Vector(-83.7,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
+	[34] = { "light",Vector(-396.884,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 1
+	[35] = { "light",Vector(-326.89,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 2
+	[36] = { "light",Vector(-152.116,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
+	[37] = { "light",Vector(-84.6012,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
 	[38] = { "light",Vector(-416.20,6,54), Angle(0,0,0), Color(0,90,59),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
 	}
 	--[[for k,v in pairs(self.Lights) do
@@ -191,6 +191,26 @@ function ENT:Initialize()
 	self:SetNW2String("Texture",self.ParentTrain:GetNW2String("Texture").."_b")
 	self:TrainSpawnerUpdate()
 	self.U2SectionA = self:GetNW2Entity("U2a")
+
+	self.InteractionZones = {
+		{
+			ID = "Button1b",
+			Pos = Vector(396.884,-51,50.5), Radius = 16,
+		},
+		{
+			ID = "Button2b",
+			Pos = Vector(326.89,-50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button3b",
+			Pos = Vector(152.116,-50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button4b",
+			Pos = Vector(84.6012,-50,49.5253), Radius = 16,
+		},
+		
+	}
 end
 
 

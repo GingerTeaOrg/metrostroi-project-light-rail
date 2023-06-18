@@ -8,44 +8,44 @@ ENT.ClientSounds = {}
 ENT.ButtonMap = {}
 
 local function GetDoorPosition(i,k,j)
-	if j == 0 
-	then return Vector(230.8 - 35.0*k     - 232.2*i,-67.5*(1-2*k),4.3)
-	else return Vector(230.8 - 35.0*(1-k) - 232.2*i,-66*(1-2*k),4.25)
-	end
+    if j == 0 
+    then return Vector(230.8 - 35.0*k     - 232.2*i,-67.5*(1-2*k),4.3)
+    else return Vector(230.8 - 35.0*(1-k) - 232.2*i,-66*(1-2*k),4.25)
+    end
 end
 
 
 
 function ENT:Initialize()
-	self.BaseClass.Initialize(self)
+    self.BaseClass.Initialize(self)
     self.IBIS = self:CreateRT("IBIS",512,128)
     
     self.ParentTrain = self:GetNWEntity("U2a")
-	self.Bogeys = {}
+    self.Bogeys = {}
     
-
+    
     self.ScrollModifier = 0
     self.ScrollMoment = 0
-
-	if not self.FrontBogey or not self.RearBogey or not self.MiddleBogey then
-		self.FrontBogey = self:GetNW2Entity("FrontBogey")
-		self.MiddleBogey = self:GetNW2Entity("MiddleBogey")
-		self.RearBogey = self:GetNW2Entity("RearBogey")	
-		table.insert(self.Bogeys,self.FrontBogey)
-		table.insert(self.Bogeys,self.MiddleBogey)
-		table.insert(self.Bogeys,self.RearBogey)
-	end
-	self.SpeedoAnim = 0
-	
-	
-	self.ThrottleLastEngaged = 0
+    
+    if not self.FrontBogey or not self.RearBogey or not self.MiddleBogey then
+        self.FrontBogey = self:GetNW2Entity("FrontBogey")
+        self.MiddleBogey = self:GetNW2Entity("MiddleBogey")
+        self.RearBogey = self:GetNW2Entity("RearBogey")	
+        table.insert(self.Bogeys,self.FrontBogey)
+        table.insert(self.Bogeys,self.MiddleBogey)
+        table.insert(self.Bogeys,self.RearBogey)
+    end
+    self.SpeedoAnim = 0
+    
+    
+    self.ThrottleLastEngaged = 0
     
     self.ParentTrain = self:GetNWEntity("U2a")
     if self.ParentTrain then
         self:UpdateWagonNumber()
     end
-
-	
+    
+    
 end
 
 
@@ -185,11 +185,11 @@ ENT.ClientProps["cab"] = {
     nohide=true,
 }
 ENT.ClientProps["headlights_on"] = {
-	model = "models/lilly/uf/u2/headlight_on.mdl",
-	pos = Vector(-535,0,43),
-	ang = Angle(0,180,0),
-	scale = 1,
-	hide = 2,
+    model = "models/lilly/uf/u2/headlight_on.mdl",
+    pos = Vector(-535,0,43),
+    ang = Angle(0,180,0),
+    scale = 1,
+    hide = 2,
 }
 ENT.ClientProps["carnumber1"] = {
     model ="models/lilly/uf/u2/carnumber_front_1.mdl",
@@ -227,10 +227,10 @@ ENT.ClientProps["RetroEquipment"] = {
 }
 
 ENT.ClientProps["IBIS"] = {
-	model = "models/lilly/uf/u2/IBIS.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,180,0),
-	scale = 1,
+    model = "models/lilly/uf/u2/IBIS.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,180,0),
+    scale = 1,
 }
 ENT.ButtonMap["IBISScreen"] = {
     pos = Vector(-419.6,12.75,60.35),
@@ -602,57 +602,58 @@ function ENT:DrawPost()
     end)
 end
 function ENT:UpdateWagonNumber()
-    if not self.ParentTrain:GetNW2Int("WagonNumber") then return end
-    for i=0,3 do
-        --self:ShowHide("TrainNumberL"..i,i<count)
-        --self:ShowHide("TrainNumberR"..i,i<count)
-        --if i< count then
-        local leftNum,middleNum,rightNum = self.ClientEnts["carnumber1"],self.ClientEnts["carnumber2"],self.ClientEnts["carnumber3"]
-        local num1 = tonumber(string.sub(self.ParentTrain:GetNW2Int("WagonNumber"),1,1),10)
-        local num2 = tonumber(string.sub(self.ParentTrain:GetNW2Int("WagonNumber"),2,2),10)
-        local num3 = tonumber(string.sub(self.ParentTrain:GetNW2Int("WagonNumber"),3,3),10)
-        if IsValid(leftNum) then
-            if num1 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-                leftNum:SetSkin(10)
-            elseif num1 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-                leftNum:SetSkin(11)
-            elseif num1 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
-                leftNum:SetSkin(num1+10)
-            else
-                leftNum:SetSkin(num1)
+    if IsValid(self.ParentTrain) then
+        for i=0,3 do
+            --self:ShowHide("TrainNumberL"..i,i<count)
+            --self:ShowHide("TrainNumberR"..i,i<count)
+            --if i< count then
+            local leftNum,middleNum,rightNum = self.ClientEnts["carnumber1"],self.ClientEnts["carnumber2"],self.ClientEnts["carnumber3"]
+            local num1 = tonumber(string.sub(self.ParentTrain:GetNW2Int("WagonNumber"),1,1),10)
+            local num2 = tonumber(string.sub(self.ParentTrain:GetNW2Int("WagonNumber"),2,2),10)
+            local num3 = tonumber(string.sub(self.ParentTrain:GetNW2Int("WagonNumber"),3,3),10)
+            if IsValid(leftNum) then
+                if num1 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
+                    leftNum:SetSkin(10)
+                elseif num1 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
+                    leftNum:SetSkin(11)
+                elseif num1 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
+                    leftNum:SetSkin(num1+10)
+                else
+                    leftNum:SetSkin(num1)
+                end
             end
-        end
-        if IsValid(middleNum) then
-            if num2 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-                middleNum:SetSkin(10)
-            elseif num2 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-                middleNum:SetSkin(11)
-            elseif num2 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
-                middleNum:SetSkin(num2+10)
-            else
-                middleNum:SetSkin(num2)
+            if IsValid(middleNum) then
+                if num2 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
+                    middleNum:SetSkin(10)
+                elseif num2 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
+                    middleNum:SetSkin(11)
+                elseif num2 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
+                    middleNum:SetSkin(num2+10)
+                else
+                    middleNum:SetSkin(num2)
+                end
             end
-        end
-        if IsValid(rightNum) then
-            if num3 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-                rightNum:SetSkin(10)
-            elseif num3 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-                rightNum:SetSkin(11)
-            elseif num3 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
-                rightNum:SetSkin(num3+9)
-            else
-                rightNum:SetSkin(num3)
+            if IsValid(rightNum) then
+                if num3 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
+                    rightNum:SetSkin(10)
+                elseif num3 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
+                    rightNum:SetSkin(11)
+                elseif num3 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
+                    rightNum:SetSkin(num3+9)
+                else
+                    rightNum:SetSkin(num3)
+                end
             end
+            --end
+            print(num1,num2,num3)
         end
-        --end
-        print(num1,num2,num3)
     end
-
+    
 end
 function ENT:Think()
-	self.BaseClass.Think(self)
-	self.ParentTrain = self:GetNWEntity("U2a")
-	local speed = self:GetNW2Int("Speed")/100
+    self.BaseClass.Think(self)
+    self.ParentTrain = self:GetNWEntity("U2a")
+    local speed = self:GetNW2Int("Speed")/100
     
     self:Animate("reverser",self:GetNW2Float("ReverserLever",0.5),0,100,50,9,false)
     if self:GetNW2Float("ThrottleStateAnim",0) >= 0.5 then
@@ -660,55 +661,57 @@ function ENT:Think()
     elseif self:GetNW2Float("ThrottleStateAnim",0) <= 0.5 then
         self:Animate("Throttle",math.Clamp(self:GetNWFloat("ThrottleStateAnim", 0.5),0.09,1),-45,45,50,8,false)
     end
-
+    
     if self:GetNW2Bool("ReverserInserted",false) == true then
         self:ShowHide("reverser",true)
     elseif self:GetNW2Bool("ReverserInserted",false) == false then
         self:ShowHide("reverser",false,0)
     end
-
+    
     self.CabWindowL = self:GetNW2Float("CabWindowL",0)
     self.CabWindowR = self:GetNW2Float("CabWindowR",0)
     self:Animate("window_cab_r",self:GetNW2Float("CabWindowR",0),0,100,50,9,false)
     self:Animate("window_cab_l",self:GetNW2Float("CabWindowL",0),0,100,50,9,false)
-	
-	if self:GetNW2Float("ThrottleStateAnim",0) >= 0 then
-	    self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
+    
+    if self:GetNW2Float("ThrottleStateAnim",0) >= 0 then
+        self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
     elseif self:GetNW2Float("ThrottleStateAnim",0) <= 0 then
         self:Animate("Throttle",math.Clamp(self:GetNWFloat("ThrottleStateAnim", 0.5),0.1,1),-45,45,5,0.5,false)
     end
-
+    
     self.SpeedoAnim = math.Clamp(self:GetNW2Float("Speed"),0, 80) * 0.01 * 2
-
+    
     self:Animate("Speedo",self.SpeedoAnim,0,200,1,0.1,false)
     --self:Animate("Throttle",0,-45,45,3,0,false)
-	if self.ParenTrain and self.ParentTrain:GetNW2Bool("Headlights",false) == true and self:GetNW2Bool("Headlights",false) == true then
+    if self.ParenTrain and self.ParentTrain:GetNW2Bool("Headlights",false) == true and self:GetNW2Bool("Headlights",false) == true then
         self:ShowHide("headlights_on",true)
     else
         self:ShowHide("headlights_on",false)
     end
     
-
+    
     if self:GetNW2Bool("BIsCoupled",false) == true then -- Fixme set headlights
     end
-
-	self:ShowHide("RetroEquipment",self.ParentTrain:GetNW2Bool("RetroMode",false))
-
+    if IsValid(self.ParentTrain) then
+        self:ShowHide("RetroEquipment",self.ParentTrain:GetNW2Bool("RetroMode",false))
+    end
+    
     self:Animate("Mirror",self:GetNW2Float("Mirror",0),0,100,17,1,0)
     self:Animate("Mirror_vintage",self:GetNW2Float("Mirror",0),0,100,17,1,0)
-
-    if self.ParentTrain:GetNW2Bool("RetroMode",false) == false then
-        self:ShowHide("Mirror_vintage",false)
-        self:ShowHide("Mirror",true)
-    elseif self.ParentTrain:GetNW2Bool("RetroMode",false) == true then
-        self:ShowHide("Mirror",false)
-        self:ShowHide("Mirror_vintage",true)
+    
+    if IsValid(self.ParentTrain) then
+        if self.ParentTrain:GetNW2Bool("RetroMode",false) == false then
+            self:ShowHide("Mirror_vintage",false)
+            self:ShowHide("Mirror",true)
+        elseif self.ParentTrain:GetNW2Bool("RetroMode",false) == true then
+            self:ShowHide("Mirror",false)
+            self:ShowHide("Mirror_vintage",true)
+        end
     end
-
     self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
-
-
-
+    
+    
+    
     if self:GetNW2Bool("Bell",false) == true then
         self:SetSoundState("bell",1,1)
         self:SetSoundState("bell_in",1,1)
@@ -716,24 +719,25 @@ function ENT:Think()
         self:SetSoundState("bell",0,1)
         self:SetSoundState("bell_in",0,1)
     end
-	
-	if self:GetNW2Bool("WarningAnnouncement") == true then
-        self:PlayOnce("WarningAnnouncement","cabin",1,1)
-
-	end
-    self:Animate("Door_fr2",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
-    self:Animate("Door_fr1",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
-
-    self:Animate("Door_rr2",self.ParentTrain:GetNW2Float("Door34b"),0,100,50,0,0)
-    self:Animate("Door_rr1",self.ParentTrain:GetNW2Float("Door34b"),0,100,50,0,0)
-
-    self:Animate("Door_fl2",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
-    self:Animate("Door_fl1",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
     
-    self:Animate("Door_rl2",self.ParentTrain:GetNW2Float("Door56a"),0,100,50,0,0)
-    self:Animate("Door_rl1",self.ParentTrain:GetNW2Float("Door56a"),0,100,50,0,0)
-
-	
+    if self:GetNW2Bool("WarningAnnouncement") == true then
+        self:PlayOnce("WarningAnnouncement","cabin",1,1)
+        
+    end
+    if IsValid(self.ParentTrain) then
+        self:Animate("Door_fr2",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
+        self:Animate("Door_fr1",self.ParentTrain:GetNW2Float("Door12b"),0,100,50,0,0)
+        
+        self:Animate("Door_rr2",self.ParentTrain:GetNW2Float("Door34b"),0,100,50,0,0)
+        self:Animate("Door_rr1",self.ParentTrain:GetNW2Float("Door34b"),0,100,50,0,0)
+        
+        self:Animate("Door_fl2",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
+        self:Animate("Door_fl1",self.ParentTrain:GetNW2Float("Door78a"),0,100,50,0,0)
+        
+        self:Animate("Door_rl2",self.ParentTrain:GetNW2Float("Door56a"),0,100,50,0,0)
+        self:Animate("Door_rl1",self.ParentTrain:GetNW2Float("Door56a"),0,100,50,0,0)
+    end
+    
 end
 
 --UF.GenerateClientProps()

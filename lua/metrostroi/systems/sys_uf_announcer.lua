@@ -32,13 +32,13 @@ if SERVER then
             self:Reset()
             self.AnnTable = value
         end
+        if name == "Table" then
+            self.AnnTable = value
+        end
     end
 
     function TRAIN_SYSTEM:Queue(tbl)
-        if not UF[self.AnnTable] then return end
-
         for k, v in pairs(tbl) do
-            local tbl = UF[self.AnnTable][self.Train:GetNW2Int("Announcer", 1)] or UF[self.AnnTable][1]
             if v~=-2 then
                 table.insert(self.Schedule, tbl and tbl[v] or v)
             else
@@ -66,27 +66,22 @@ if SERVER then
 
     --end
     function TRAIN_SYSTEM:Think()
-        if #self.Schedule > 0 and not self.Playing then
-            for i = 1, #self.Train.WagonList do
-                self.Train.WagonList[i]:SetNW2Bool("AnnouncerPlaying", true)
+        if #self.Schedule > 0 and not self.Playing then -- if announcements are queued and are not marked as playing yet
+            for i = 1, #self.Train.WagonList do --for every car in the consist
+                self.Train.WagonList[i]:SetNW2Bool("AnnouncerPlaying", true) --mark the announcements as active
             end
-            self.Playing = true
-        elseif #self.Schedule == 0 and self.Playing and not self.AnnounceTimer then
+            self.Playing = true --note down the accounements as playing for us locally
+        elseif #self.Schedule == 0 and self.Playing and not self.AnnounceTimer then --announcements aren't queued
             for i = 1, #self.Train.WagonList do
-                self.Train.WagonList[i]:SetNW2Bool("AnnouncerPlaying", false)
+                self.Train.WagonList[i]:SetNW2Bool("AnnouncerPlaying", false) --we're not playing anything anymore
             end
-            self.Playing = false
+            self.Playing = false --we're not playing anything anymore
         end
 
         while #self.Schedule > 0 and (not self.AnnounceTimer or CurTime() - self.AnnounceTimer > 0) do
             local tbl = table.remove(self.Schedule, 1)
             if type(tbl) == "number" then
                 if tbl == -1 then
-                    for i = 1, #self.Train.WagonList do
-                        local train = self.Train.WagonList[i]
-                        train.AnnouncementToLeaveWagon = true
-                        --train.AnnouncementToLeaveWagonAcknowledged = false
-                    end
                 else
                     self.AnnounceTimer = CurTime() + tbl
                 end
@@ -98,7 +93,7 @@ if SERVER then
             end
         end
         if #self.Schedule == 0 and self.AnnounceTimer and CurTime() - self.AnnounceTimer > 0 then
-            self.AnnounceTimer = nil
+            self.AnnounceTimer = nil --no need to run a timer when self.Schedule is null
             
         end
         if #self.Schedule > ANNOUNCER_CACHE_LIMIT then

@@ -19,7 +19,9 @@ UF.AddSpecialAnnouncements("Frankfurt",{
 })
 
 UF.AddIBISAnnouncements("Frankfurt",{
-    
+
+    [707] = {[1] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/stations/707.mp3"},
+    [709] = {[1] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/stations/709.mp3"},
 })
 
 UF.AddIBISLines("Frankfurt",{
@@ -105,15 +107,21 @@ UF.AddIBISDestinations("Frankfurt",{
 
 UF.AddIBISAnnouncementScript("Frankfurt",{
 
-    ["next_station"] = true,
-    ["station"] = true,
-    ["interchange"] = true,
-    ["exitside"] = true,
+    [1] = "next_station",
+    [2] = "station",
+    [3] = "interchange",
+    [4] = "exitside",
+})
+
+UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: [station] = {[line] = {}}
+
+    [707] = {[07] = {interchange = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/stations/707_interchange_06.mp3",15}, exit_left = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3",1}}
+
 })
 
 UF.AddIBISCommonFiles("Frankfurt",{
-    ["next_station"] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/next_station.mp3",
-    ["exit_left"] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3",
-    ["exit_right"] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3",
-    ["terminus"] = "sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3",
-})
+    next_station = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/next_station.mp3",1},
+    exit_left = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3",1},
+    exit_right = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3",1},
+    terminus = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3",1},
+},{next_station,exit_left})

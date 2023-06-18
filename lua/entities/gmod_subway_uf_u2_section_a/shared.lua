@@ -206,7 +206,10 @@ ENT.SubwayTrain = {
 	Manufacturer = "Düwag",
 }
 
-
+ENT.AnnouncerPositions = {
+	{Vector(293,44,102)},
+	{Vector(293,-44,102)}
+}
 function ENT:DeltaTime()
     ENT.PrevTime = ENT.PrevTime or RealTime()
     ENT.DeltaTime = (RealTime() - ENT.PrevTime)
