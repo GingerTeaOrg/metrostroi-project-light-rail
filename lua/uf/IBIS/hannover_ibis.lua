@@ -75,10 +75,10 @@ UF.AddIBISLines("Hannover",{
     ["09"] = true,
     ["10"] = true,
     ["11"] = true,
-    ["12"] = true,
-    ["13"] = true,
-    ["14"] = true,
-    ["15"] = true,
+    --["12"] = true,
+    --["13"] = true,
+    --["14"] = true,
+    --["15"] = true,
     ["16"] = true,
     ["17"] = true,
     ["18"] = true,
@@ -88,6 +88,8 @@ UF.AddIBISLines("Hannover",{
 UF.AddIBISRoutes("Hannover",{ --Format: [Line] = {[RouteNumber] = {StationNumber1,StationNumber2,StationNumber3,etc},[RouteNumber2] = {etc}}
     ["01"] = {["01"] = {13,07,14,17,71,40,30,32},["02"] = {32,30,40,71,17,14,07,13}},
     ["09"] = {["01"] = {17,07},["02"] = {07,17}},
+    ["10"] = {["01"] = {83,15,27},["02"] = {27,15,83}},
+    ["11"] = {["01"] = {65,71,90},["02"] = {90,71,65}},
 })
 
 UF.AddIBISAnnouncementScript("Hannover",{

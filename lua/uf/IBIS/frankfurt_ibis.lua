@@ -113,11 +113,11 @@ UF.AddIBISAnnouncementScript("Frankfurt",{
     [4] = "exitside",
 })
 
-UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: [station] = {[line] = {}}
+--[[UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: [station] = {[line] = {}}
 
     [707] = {[07] = {interchange = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/stations/707_interchange_06.mp3",15}, exit_left = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3",1}}
 
-})
+})]]
 
 UF.AddIBISCommonFiles("Frankfurt",{
     next_station = {"sound/lilly/uf/IBIS/announcements/ffm/ubahn/common/next_station.mp3",1},

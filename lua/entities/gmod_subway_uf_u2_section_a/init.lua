@@ -376,6 +376,7 @@ function ENT:Initialize()
 		[3] = 4, -- Reverser F<->B
 		[21] = 20, --blinker
 		[13] = 14,
+		[31] = 32,
 	}
 
 
@@ -473,8 +474,8 @@ function ENT:Initialize()
 		[53] = { "light",Vector(425.464,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
 		[54] = { "light",Vector(425.464,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
 		[55] = { "light",Vector(425.464,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-		[56] = { "light",Vector(426,31.2,31), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-		[57] = { "light",Vector(426,-31.2,31), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+		[56] = { "light",Vector(426,31.2,25), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+		[57] = { "light",Vector(426,-31.2,25), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
 		[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 		[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 		[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
@@ -648,8 +649,8 @@ function ENT:Think(dT)
 	if self.IBIS.BootupComplete == true then
 		self:SetNW2Bool("IBISChime",true)
 	end
-	
-	if self:ReadTrainWire(7) > 1 or self.Duewag_U2.BatteryOn == true then -- if the battery is on
+	print("wire31", self:ReadTrainWire(31), "wire32", self:ReadTrainWire(32))
+	if self:ReadTrainWire(7) > 0 or self.Duewag_U2.BatteryOn == true then -- if the battery is on
 		
 		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 and self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
 			self:SetLightPower(56,true)
@@ -667,41 +668,45 @@ function ENT:Think(dT)
 			
 		end
 
-		if self.Panel.Headlights > 0 or self.Panel.Headlights < 1 and self:ReadTrainWire(7) > 0 then
-			if self:ReadTrainWire(3) > 0 then
-				self:WriteTrainWire(31,1)
-			elseif self:ReadTrainWire(4) > 0 then
-				self:WriteTrainWire(32,1)
-			end
-		elseif self.Panel.Headlights < 1 and self:ReadTrainWire(7) < 1 then
+		if self.Panel.Headlights > 0 or self:ReadTrainWire(7) > 0 then
+
+			self:WriteTrainWire(31,self:ReadTrainWire(3))
+			self:WriteTrainWire(32,self:ReadTrainWire(4))
+
+		elseif self.Panel.Headlights < 1 or self:ReadTrainWire(7) < 1 then
 			self:WriteTrainWire(31,0)
 			self:WriteTrainWire(32,0)
 		end
 		if self:ReadTrainWire(31) > 0 then
+			if not self.FrontCouple.CoupledEnt then
 				self:SetLightPower(51,true)
 				self:SetLightPower(52,true)
 				self:SetLightPower(53,true)
 				self:SetLightPower(54,false)
 				self:SetLightPower(55,false)
-				if not self.RearCouple.CoupledEnt then
-					self.u2sectionb:SetLightPower(64,true)
-					self.u2sectionb:SetLightPower(65,true)
-				else
-					self.u2sectionb:SetLightPower(64,false)
-					self.u2sectionb:SetLightPower(65,false)
-				end
+			end
+			if not self.RearCouple.CoupledEnt then
+				self.u2sectionb:SetLightPower(64,true)
+				self.u2sectionb:SetLightPower(65,true)
+			else
+				self.u2sectionb:SetLightPower(64,false)
+				self.u2sectionb:SetLightPower(65,false)
+			end
 		elseif self:ReadTrainWire(32) > 0 then
+			if not self.FrontCouple.CoupledEnt then
 				self:SetLightPower(51,false)
 				self:SetLightPower(52,false)
 				self:SetLightPower(53,false)
 				print("wire32 high")
-				if not self.FrontCouple.CoupledEnt then
-					self:SetLightPower(54,true)
-					self:SetLightPower(55,true)
-				else
-					self:SetLightPower(54,false)
-					self:SetLightPower(55,false)
-				end
+			end
+			if not self.FrontCouple.CoupledEnt then
+				self:SetLightPower(54,true)
+				self:SetLightPower(55,true)
+			else
+				self:SetLightPower(54,false)
+				self:SetLightPower(55,false)
+			end
+			
 		end
 	end
 	

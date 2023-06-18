@@ -1107,7 +1107,9 @@ function ENT:Think()
         local decal = self.ClientEnts["cab_decal"]
         local leftNum,middleNum,rightNum = self.ClientEnts["carnumber1"],self.ClientEnts["carnumber2"],self.ClientEnts["carnumber3"]
         --local leftNum1,middleNum2,rightNum3 = self.u2sectionb.ClientEnts["carnumber1"],self.u2sectionb.ClientEnts["carnumber2"],self.u2sectionb.ClientEnts["carnumber3"]
-        local decal2 = self.u2sectionb.ClientEnts["cab_decal"]
+        if IsValid(self.u2sectionb) then
+            local decal2 = self.u2sectionb.ClientEnts["cab_decal"]
+        end
         if IsValid(leftNum) and IsValid(middleNum) and IsValid(rightNum) then
             leftNum:SetPos(self:LocalToWorld(Vector(0,0,9)))
             middleNum:SetPos(self:LocalToWorld(Vector(0,0,9)))
@@ -1189,8 +1191,8 @@ function ENT:Think()
         print(self:GetNW2String("ServiceAnnouncement",""))
         if self.AnnouncementPlayed == false then 
             self.AnnouncementPlayed = true
-            self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),5,1,1,2,Vector(293,44,102))
-            self:PlayOnceFromPos("PSA2",self:GetNW2String("ServiceAnnouncement"),5,1,1,2,Vector(293,-44,102))    
+            self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),2,1,1,2,Vector(293,44,102))
+            self:PlayOnceFromPos("PSA2",self:GetNW2String("ServiceAnnouncement"),2,1,1,2,Vector(293,-44,102))    
         end
     else
         self.AnnouncementPlayed = false
