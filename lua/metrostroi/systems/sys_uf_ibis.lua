@@ -774,7 +774,11 @@ function TRAIN_SYSTEM:Think()
     elseif self.State == 1 and self.Menu == 6 then
         if self.KeyInput == "Enter" then
             if self.ServiceAnnouncement ~= "00" and self.Menu == 6 and self.IndexValid == true then
-                self.Train:SetNW2String("ServiceAnnouncement",self.ServiceAnnouncements[self.ServiceAnnouncement])
+                
+                
+                self:AnnQueue(self.ServiceAnnouncements[self.ServiceAnnouncement])
+                
+                --print(self.ServiceAnnouncements[self.ServiceAnnouncement])
                 self.Menu = 0
             elseif self.ServiceAnnouncement ~= "00" then
                 self.Menu = 0
@@ -783,6 +787,8 @@ function TRAIN_SYSTEM:Think()
                 self.Train:SetNW2Bool("IBISError",true)
                 self.ErrorMoment = CurTime()
             end
+        elseif self.KeyInput == "Delete" and self.ServiceAnnouncement == "  " then
+            self.Menu = 0
         end
     end
     --print(self.State, self.Menu)
@@ -1063,7 +1069,6 @@ function TRAIN_SYSTEM:Play()
 
 
     end
-      
 
     self:AnnQueue(message)
     if station == false then
@@ -1073,7 +1078,7 @@ function TRAIN_SYSTEM:Play()
                 for ky,vl in pairs(stbl) do
                     message = {}
                     local pairTable = {}
-                    print(key,value)
+                    print(ky,vl)
                     pairTable[ky] = vl
                     table.insert(message,pairTable)
                     self:AnnQueue(message)
