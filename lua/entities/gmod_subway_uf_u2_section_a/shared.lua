@@ -147,6 +147,7 @@ end
 
 ENT.AnnouncerPositions = {
 	{Vector(420,-38.2 ,80)},
+	{Vector(420,38.2 ,80)},
 }
 if CLIENT then
 ENT.DecalPos = Vector(0,0,0)

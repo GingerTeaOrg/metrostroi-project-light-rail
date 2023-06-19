@@ -90,8 +90,9 @@ end
         end
 
         while #self.Schedule > 0 and (not self.AnnounceTimer or CurTime() - self.AnnounceTimer > 0) do
-            self:dumpTable(self.Schedule, 5)
+            --self:dumpTable(self.Schedule, 5)
             local tbl = table.remove(self.Schedule, 1)
+            self:dumpTable(tbl)
             if type(tbl) == "number" then
                 if tbl == -1 then
                 else

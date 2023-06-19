@@ -1047,39 +1047,58 @@ function TRAIN_SYSTEM:AnnQueue(msg)
     end
 end
 
-function TRAIN_SYSTEM:Play(input)
+function TRAIN_SYSTEM:Play()
     local message = {}
     local tbl = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int("IBIS:Announcements",1)][self.CurrentStation][self.CourseChar1..self.CourseChar2][self.Route]
-    local terminus = false
-    if tostring(self.CurrentStation) == self.Destination then
-        terminus = true
-        for k,v in pairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
-            for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
-                if v == ke then
-                    table.insert(message, va)
-                end
-            end
+    local station = false
 
+
+    for k,v in ipairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
+
+        for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
+            if v == ke then
+                table.insert(message,1, va)
+            end
         end
-    else
-        terminus = false
-        for k,v in pairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
-            for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
-                if v == ke then
-                    table.insert(message, va)
+
+
+    end
+      
+
+    self:AnnQueue(message)
+    if station == false then
+        station = true
+        for key, value in ipairs(tbl) do
+                local stbl = tbl[key]
+                for ky,vl in pairs(stbl) do
+                    message = {}
+                    local pairTable = {}
+                    print(key,value)
+                    pairTable[ky] = vl
+                    table.insert(message,pairTable)
+                    self:AnnQueue(message)
                 end
-            end
-
-
+        
         end
     end
-
-    if terminus == true then
-        self:AnnQueue(-1)
-    else
-        self:AnnQueue(message)
+    if station == true then
+        message = {}
+        for k,v in ipairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
+            if k ~= 1 and v ~= "station" then
+                for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
+                    if v == ke then
+                        
+                        table.insert(message,1, va)
+                    end
+                end
+            end
+        if next(message) then
+            self:AnnQueue(message)
+        end
+        end
+        
     end
-    --self:AnnQueue(message)
+
 end
 
 if SERVER then
