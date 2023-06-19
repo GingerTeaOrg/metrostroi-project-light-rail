@@ -510,13 +510,15 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
     ["03"] = {
             ["02"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/786.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/786_interchange_03.mp3"] = 12.5},
-                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"]=2},
+                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/786_interchange_03.mp3"] = 12.5},
+                [4] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
             ["01"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/786.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/786_interchange_03.mp3"] = 12.5},
-                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"]=2},
+                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/786_interchange_03.mp3"] = 12.5},
+                [4] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
         },
 },
@@ -524,15 +526,13 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
     ["03"] = {
             ["02"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/787.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"]=2},
-                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/787_interchange_03.mp3"] = 12.5},
-                [4] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/787_interchange_03.mp3"] = 12.5},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
             ["01"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/787.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"]=2},
-                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/787_interchange_03.mp3"] = 12.5},
-                [4] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/787_interchange_03.mp3"] = 12.5},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
         },
 },
