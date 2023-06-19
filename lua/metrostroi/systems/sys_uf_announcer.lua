@@ -125,11 +125,11 @@ else
             
             for k, v in ipairs(train.AnnouncerPositions) do
                 print("with announcerpos")
-                train:PlayOnceFromPos("announcer" .. k, snd, 1, 1,400, 1e9, v[1])
+                train:PlayOnceFromPos("announcer" .. k, snd, 0.4, 1,400, 1e9, v[1])
             end
         else
             print("without announcerpos")
-            train:PlayOnceFromPos("announcer", snd, train.OnAnnouncer and train:OnAnnouncer(1) or 1, 1, 600, 1e9, Vector(0, 0, 0))
+            train:PlayOnceFromPos("announcer", snd, train.OnAnnouncer and train:OnAnnouncer(1) or 0.4, 1, 600, 1e9, Vector(0, 0, 0))
         end
     end)
 
