@@ -709,8 +709,7 @@ function TRAIN_SYSTEM:Think()
         elseif self.KeyInput == "SpecialAnnouncements" then
             self.Menu = 6
         elseif self.KeyInput == "9" then
-            local Announcement = {UF.IBISCommonFiles[1]}
-            self:AnnQueue(Announcement)
+            self:Play()
         end
     elseif self.State == 1 and self.Menu == 1 then
         self.RBLSignedOff = false
@@ -1049,36 +1048,38 @@ function TRAIN_SYSTEM:AnnQueue(msg)
 end
 
 function TRAIN_SYSTEM:Play(input)
-    local message
-    local tbl = UF.IBISAnnouncementFiles[self.Train:GetNW2Int("Announcer",1)][self.Line]
-    local stbl = tbl[self.Station]
-    local last,lastst
-    local path = self.Route and 2 or 1
-    last = self.Route and self.FirstStation or self.LastStation
-    lastst = not dep and self.Station == last and tbl[last].arrlast
-    if dep then
-        message = stbl.dep[path]
+    local message = {}
+    local tbl = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int("IBIS:Announcements",1)][self.CurrentStation][self.CourseChar1..self.CourseChar2][self.Route]
+    local terminus = false
+    if tostring(self.CurrentStation) == self.Destination then
+        terminus = true
+        for k,v in pairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
+            for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
+                if v == ke then
+                    table.insert(message, va)
+                end
+            end
+
+        end
     else
-        if lastst then
-            message = stbl.arrlast[path]
-        else
-            message = stbl.arr[path]
+        terminus = false
+        for k,v in pairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
+            for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
+                if v == ke then
+                    table.insert(message, va)
+                end
+            end
+
+
         end
     end
-    if lastst and not stbl.ignorelast then self:AnnQueue(-1) end
-    
-    
-    self:AnnQueue(message)
-    local stbl = Metrostroi.IBISSetup[self.Train:GetNW2Int("Announcer",1)][self.Line][self.Station]
-    if self.LastStation > 0 and not dep and self.Station ~= last and tbl[last].not_last and (stbl.have_interchange or math.abs(last-self.Station) <= 3) then
-        local ltbl = tbl[last]
-        if stbl.not_last_c then
-            local patt = stbl.not_last_c[path]
-            self:AnnQueue(ltbl[patt] or ltbl.not_last)
-        else
-            self:AnnQueue(ltbl.not_last)
-        end
+
+    if terminus == true then
+        self:AnnQueue(-1)
+    else
+        self:AnnQueue(message)
     end
+    --self:AnnQueue(message)
 end
 
 if SERVER then

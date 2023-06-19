@@ -375,15 +375,15 @@ ENT.ButtonMap["Button4a"] = {
     }
 }
 
-ENT.ButtonMap["Button1b"] = {
+ENT.ButtonMap["Button8b"] = {
     pos = Vector(395.8,51,50.5),
     ang = Angle(90,0,-90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button1b",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
-            var="Button1b",
+        {ID = "Button8b",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button8b",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
             sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
@@ -393,15 +393,15 @@ ENT.ButtonMap["Button1b"] = {
 }
 
 
-ENT.ButtonMap["Button2b"] = {
+ENT.ButtonMap["Button7b"] = {
     pos = Vector(326,51,50.5),
     ang = Angle(90,0,-90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button2b",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
-            var="Button2b",
+        {ID = "Button7b",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button7b",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
             sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
@@ -410,15 +410,15 @@ ENT.ButtonMap["Button2b"] = {
     }
 }
 
-ENT.ButtonMap["Button3b"] = {
+ENT.ButtonMap["Button6b"] = {
     pos = Vector(150.6,51,50.5),
     ang = Angle(90,0,-90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button3a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
-            var="Button3b",
+        {ID = "Button6a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button6b",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
             sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
@@ -428,15 +428,15 @@ ENT.ButtonMap["Button3b"] = {
 }
 
 
-ENT.ButtonMap["Button4b"] = {
+ENT.ButtonMap["Button5b"] = {
     pos = Vector(82.8,51,50.5),
     ang = Angle(90,0,-90),
     width = 5,
     height = 5,
     scale = 0.4,
     buttons = {
-        {ID = "Button4a",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
-            var="Button4b",
+        {ID = "Button5b",x=0,y=0,w=5,h=5,radius=1, tooltip="It's a door. Does this really need explanation?", model = {
+            var="Button5b",
             sndid="door_cab_m",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
             sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
@@ -1090,7 +1090,7 @@ end
 function ENT:Think()
     self.BaseClass.Think(self)
     
-    
+    self.u2sectionb = self:GetNWEntity("U2b")
     
     if self:GetNW2String("Texture","") == "SVB" then
         self:ShowHide("carnumber1",false)
@@ -1106,9 +1106,12 @@ function ENT:Think()
     elseif self:GetNW2String("Texture","") == "OrEbSW" then
         local decal = self.ClientEnts["cab_decal"]
         local leftNum,middleNum,rightNum = self.ClientEnts["carnumber1"],self.ClientEnts["carnumber2"],self.ClientEnts["carnumber3"]
-        --local leftNum1,middleNum2,rightNum3 = self.u2sectionb.ClientEnts["carnumber1"],self.u2sectionb.ClientEnts["carnumber2"],self.u2sectionb.ClientEnts["carnumber3"]
+        if IsValid(self.u2sectionb) then
+            local leftNum1,middleNum2,rightNum3 = self.u2sectionb.ClientEnts["carnumber1"],self.u2sectionb.ClientEnts["carnumber2"],self.u2sectionb.ClientEnts["carnumber3"]
+        end
         if IsValid(self.u2sectionb) then
             local decal2 = self.u2sectionb.ClientEnts["cab_decal"]
+            decal2:SetPos(self:LocalToWorld(Vector(0,0,-8)))
         end
         if IsValid(leftNum) and IsValid(middleNum) and IsValid(rightNum) then
             leftNum:SetPos(self:LocalToWorld(Vector(0,0,9)))

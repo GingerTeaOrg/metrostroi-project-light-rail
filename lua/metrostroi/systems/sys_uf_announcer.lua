@@ -63,7 +63,18 @@ if SERVER then
             net.Broadcast()
         end
     end
-
+function TRAIN_SYSTEM:dumpTable(table, indent)
+  indent = indent or 0
+  for key, value in pairs(table) do
+    if type(value) == "table" then
+      print(string.rep("  ", indent) .. key .. " = {")
+      self:dumpTable(value, indent + 1)
+      print(string.rep("  ", indent) .. "}")
+    else
+      print(string.rep("  ", indent) .. key .. " = " .. tostring(value))
+    end
+  end
+end
     --end
     function TRAIN_SYSTEM:Think()
         if #self.Schedule > 0 and not self.Playing then -- if announcements are queued and are not marked as playing yet
@@ -79,6 +90,7 @@ if SERVER then
         end
 
         while #self.Schedule > 0 and (not self.AnnounceTimer or CurTime() - self.AnnounceTimer > 0) do
+            self:dumpTable(self.Schedule, 5)
             local tbl = table.remove(self.Schedule, 1)
             if type(tbl) == "number" then
                 if tbl == -1 then
@@ -86,8 +98,10 @@ if SERVER then
                     self.AnnounceTimer = CurTime() + tbl
                 end
             elseif type(tbl) == "table" then
-                self:WriteMessage(tbl[1])
-                self.AnnounceTimer = CurTime() + tbl[2]
+                for k,v in pairs(tbl) do
+                    self:WriteMessage(k)
+                    self.AnnounceTimer = CurTime() + v
+                end
             else
                 ErrorNoHalt("Announcer error in message "..tbl.."\n")
             end
@@ -105,12 +119,15 @@ else
         local train = net.ReadEntity()
         if not IsValid(train) or not train.RenderClientEnts then return end
         local snd = net.ReadString()
-
+        print(snd)
         if train.AnnouncerPositions then
+            
             for k, v in ipairs(train.AnnouncerPositions) do
-                train:PlayOnceFromPos("announcer" .. k, snd, train.OnAnnouncer and train:OnAnnouncer(v[3],k) or v[3] or 1, 1, v[2] or 400, 1e9, v[1])
+                print("with announcerpos")
+                train:PlayOnceFromPos("announcer" .. k, snd, 1, 1,400, 1e9, v[1])
             end
         else
+            print("without announcerpos")
             train:PlayOnceFromPos("announcer", snd, train.OnAnnouncer and train:OnAnnouncer(1) or 1, 1, 600, 1e9, Vector(0, 0, 0))
         end
     end)

@@ -146,9 +146,7 @@ function ENT:InitializeSounds()
 end
 
 ENT.AnnouncerPositions = {
-	{Vector(420,-38.2 ,35),80,0.33},
-	{Vector(-3,-60, 62),300,0.2},
-	{Vector(-3,60 ,62),300,0.2},
+	{Vector(420,-38.2 ,80)},
 }
 if CLIENT then
 ENT.DecalPos = Vector(0,0,0)

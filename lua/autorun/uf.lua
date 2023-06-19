@@ -76,17 +76,7 @@ UF.TrainPositions = {}
 UF.Stations = {}
 UF.TrainCountOnPlayer = {}
 UF.IBISRegisteredTrains = {}
-
---[[function UF.checkDuplicateValue(table, target)
-local key, value = next(table)
-while key do
-    if value == target then
-        return false -- Found a duplicate value
-    end
-    key, value = next(table, key)
-end
-return true -- No duplicate value found
-end]]
+UF.IBISAnnouncementMetadata = {}
 
 function UF.checkDuplicateTrain(train, LC)
     local foundDuplicate = false -- Initialize variable to track duplicate value
@@ -170,7 +160,7 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         --print(output)
         --print(LineCourse)
         return output
-    end
+end
     
     
     
@@ -189,25 +179,9 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         
         print("Light Rail: Added \""..name.."\" IBIS announcer common files.")
     end
-    
-    function UF.AddIBISAnnouncementScript(name,datatable)
-        if not datatable then return end
-        for k,v in pairs(UF.IBISAnnouncementScript) do
-            if v.name == name then
-                UF.IBISAnnouncementScript[k] = datatable
-                UF.IBISAnnouncementScript[k].name = name
-                print("Light Rail: Changed \""..name.."\" IBIS announcer script.")
-                return
-            end
-        end
-        local id = table.insert(UF.IBISAnnouncementScript,datatable)
-        UF.IBISAnnouncementScript[id].name = name
-        
-        print("Light Rail: Added \""..name.."\" IBIS announcer script.")
-    end
 
     function UF.AddIBISAnnouncementMetadata(name,datatable)
-        if not datatable then return end
+        if not name and not datatable then return end
         for k,v in pairs(UF.IBISAnnouncementMetadata) do
             if v.name == name then
                 UF.IBISAnnouncementMetadata[k] = datatable
@@ -221,6 +195,22 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         
         print("Light Rail: Added \""..name.."\" IBIS announcer Metadata.")
     end
+
+    function UF.AddIBISAnnouncementScript(name,datatable)
+        if not name and not datatable then return end
+        for k,v in pairs(UF.IBISAnnouncementScript) do
+            if v.name == name then
+                UF.IBISAnnouncementScript[k] = datatable
+                UF.IBISAnnouncementScript[k].name = name
+                print("Light Rail: Changed \""..name.."\" IBIS announcer script.")
+                return
+            end
+        end
+        local id = table.insert(UF.IBISAnnouncementScript,datatable)
+        UF.IBISAnnouncementScript[id].name = name
+        
+        print("Light Rail: Added \""..name.."\" IBIS announcer script.")
+    end
     
     function UF.AddIBISDestinations(name,index)
         if not index or not name then return end
@@ -228,7 +218,6 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             if v.name == name then
                 UF.IBISDestinations[k] = index
                 UF.IBISDestinations[k].name = name
-                
                 print("Light Rail: Loaded \""..name.."\" IBIS station index.")
                 return
             end

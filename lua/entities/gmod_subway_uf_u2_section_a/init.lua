@@ -474,8 +474,8 @@ function ENT:Initialize()
 		[53] = { "light",Vector(425.464,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
 		[54] = { "light",Vector(425.464,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
 		[55] = { "light",Vector(425.464,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-		[56] = { "light",Vector(426,31.2,25), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-		[57] = { "light",Vector(426,-31.2,25), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+		[56] = { "light",Vector(426,31.2,24.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+		[57] = { "light",Vector(426,-31.2,24.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
 		[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 		[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 		[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
@@ -508,6 +508,22 @@ function ENT:Initialize()
 		{
 			ID = "Button4a",
 			Pos = Vector(84.6012,-50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button8b",
+			Pos = Vector(396.884,51,50.5), Radius = 16,
+		},
+		{
+			ID = "Button7b",
+			Pos = Vector(326.89,50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button6b",
+			Pos = Vector(152.116,50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button7b",
+			Pos = Vector(84.6012,50,49.5253), Radius = 16,
 		},
 		
 	}
@@ -649,7 +665,6 @@ function ENT:Think(dT)
 	if self.IBIS.BootupComplete == true then
 		self:SetNW2Bool("IBISChime",true)
 	end
-	print("wire31", self:ReadTrainWire(31), "wire32", self:ReadTrainWire(32))
 	if self:ReadTrainWire(7) > 0 or self.Duewag_U2.BatteryOn == true then -- if the battery is on
 		
 		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 and self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
@@ -697,7 +712,6 @@ function ENT:Think(dT)
 				self:SetLightPower(51,false)
 				self:SetLightPower(52,false)
 				self:SetLightPower(53,false)
-				print("wire32 high")
 			end
 			if not self.FrontCouple.CoupledEnt then
 				self:SetLightPower(54,true)
@@ -1542,34 +1556,34 @@ function ENT:OnButtonPress(button,ply)
 		print(self.DoorRandomness[2])
 	end
 	
-	if button == "Button1b" then
+	if button == "Button8b" then
 		if self.DoorSideUnlocked == "Left" then
 			
-			self.DoorRandomness[1] = 3
+			self.DoorRandomness[4] = 3
 			
 		end
 	end
 	
-	if button == "Button2b" then
+	if button == "Button7b" then
 		if self.DoorSideUnlocked == "Left" then
 			
-			self.DoorRandomness[1] = 3
+			self.DoorRandomness[4] = 3
 			
 		end
 	end
 	
-	if button == "Button3b" then
+	if button == "Button6b" then
 		if self.DoorSideUnlocked == "Left" then
 			
-			self.DoorRandomness[2] = 3
+			self.DoorRandomness[3] = 3
 			
 		end
 	end
 	
-	if button == "Button4b" then
+	if button == "Button5b" then
 		if self.DoorSideUnlocked == "Left" then
 			
-			self.DoorRandomness[2] = 3
+			self.DoorRandomness[3] = 3
 			
 		end
 	end
