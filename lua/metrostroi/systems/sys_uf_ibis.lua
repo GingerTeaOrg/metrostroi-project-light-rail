@@ -1055,10 +1055,11 @@ end
 
 function TRAIN_SYSTEM:Play()
     local message = {}
+    print("Current Station", self.CurrentStation)
     local tbl = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int("IBIS:Announcements",1)][self.CurrentStation][self.CourseChar1..self.CourseChar2][self.Route]
     local station = false
 
-
+    
     for k,v in ipairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
 
         for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do

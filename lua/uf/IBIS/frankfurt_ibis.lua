@@ -82,7 +82,7 @@ UF.AddIBISDestinations("Frankfurt",{
     [779] = "Riedberg",
     [782] = "Heddernheim",
     [783] = "Römerstadt",
-    [784] = "BAD HOMBURG Gonzenheim",
+    [784] = "BAD HOMBURG",
     [785] = "Nieder-Eschbach",
     [786] = "OBERURSEL Hohemark",
     [787] = "OBERURSEL Bahnhof",
@@ -117,6 +117,18 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
                 [3] =   {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=2},
                     },
                     },
+        ["06"] =    {
+            ["01"] = {  
+                [1] =   {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/707.mp3"]=1.8},
+                [2] =   {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/707_interchange_06.mp3"]=16}, 
+                [3] =   {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=2},
+                    },
+            ["02"] = {  
+                [1] =   {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/707.mp3"]=1.8},
+                [2] =   {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/707_interchange_06.mp3"]=16}, 
+                [3] =   {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=2},
+                    },
+        },
         ["04"] =    { 
             ["01"] =    {
                 [1] =   {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/707.mp3"]=1.8},
@@ -162,6 +174,56 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
                     },
                     },
         },
+[710] = { --Heddernheim
+    ["01"] = {
+            ["01"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
+                --[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [2] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+            ["02"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
+                --[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [2] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+        },
+    ["02"] = {
+            ["01"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=1.5},
+                --[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [2] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+            ["02"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=1.5},
+                --[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [2] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+        },
+    ["03"] = {
+            ["01"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+            ["02"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+        },
+    ["08"] = {
+            ["01"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
+                --[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [2] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+            ["02"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
+                --[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [2] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+        },
+},
 [711] = {
         ["01"] =    {
             ["01"] = { 
@@ -309,6 +371,18 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
                 [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=2},
             },
         },
+        ["076"] = {
+            ["01"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/728.mp3"]=1.4},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/728_interchange_06.mp3"] = 10.5},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=2},
+            },
+            ["02"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/728.mp3"]=1.4},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/728_interchange_06.mp3"] = 10.5},
+                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=2},
+            },
+        },
         ["04"] = {
             ["02"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/728.mp3"]=2},
@@ -330,14 +404,14 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
             },
         },
         ["06"] = {
-            ["01"] = {
-                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/729.mp3"]=2},
+            ["02"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/729.mp3"]=1.4},
                 [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/729_interchange_06.mp3"] = 12.5},
                 [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=2},
             },
-            ["02"] = {
-                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/729.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/729_interchange_06_07.mp3"] = 12.5},
+            ["01"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/729.mp3"]=1.4},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/729_interchange_06_07.mp3"] = 14},
                 [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=2},
             },
         }
@@ -439,54 +513,54 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
         },
 },
 [782] = { --Heddernheim
-        ["08"] = {
+    ["08"] = {
             ["01"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 12.5},
-                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
             ["02"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 12.5},
-                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
-            },
-        ["01"] = {
+        },
+    ["01"] = {
             ["01"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 12.5},
-                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
             ["02"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 12.5},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
                 [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
-            },
-        ["02"] = {
-            ["02"] = {
-                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 12.5},
-                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
-            },
+        },
+    ["02"] = {
             ["01"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 12.5},
-                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
-            },
-        ["03"] = {
             ["02"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 12.5},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
                 [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
+        },
+    ["03"] = {
             ["01"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
-                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 12.5},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
                 [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
+            ["02"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/782_interchange_03.mp3"] = 13.2},
+                [3] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
+        },
 },
 [783] = { --Römerstadt
     ["09"] = {
@@ -513,6 +587,22 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
                 [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
             },
     },
+},
+[784] = { --Bad Homburg Gonzenheim
+    ["02"] = {
+            ["02"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/784.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"]=2.2},
+                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/784_interchange.mp3"] = 4},
+                [4] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+            ["01"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/784.mp3"]=2},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"]=2.2},
+                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/784_interchange.mp3"] = 4},
+                [4] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_right.mp3"]=2},
+            },
+        },
 },
 [785] = { --Nieder-Eschbach
     ["09"] = {

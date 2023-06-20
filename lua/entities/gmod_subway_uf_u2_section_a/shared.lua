@@ -297,6 +297,17 @@ ENT.Spawner = {
             ent:SetNW2Int("IBIS:ServiceA",val)
         end
     end},
+	{"IBISData6","IBIS Announcements Script","List",function(ent)
+        local Announcer = {}
+        for k,v in pairs(UF.IBISAnnouncementScript or {}) do Announcer[k] = v.name end
+        return Announcer
+    end, nil,function(ent,val,rot,i,wagnum,rclk)
+        if UF.IBISAnnouncementScript and val==1 then
+            ent:SetNW2Int("IBIS:AnnouncementScript",1)
+        else
+            ent:SetNW2Int("IBIS:AnnouncementScript",val)
+        end
+    end},
 	{"Rollsign","Spawner.U2.Rollsign","List",function()
         local Schemes = {}
         for k,v in pairs(Metrostroi.Skins["U2Rollsigns"] or {}) do Schemes[k] = v.name or k end
