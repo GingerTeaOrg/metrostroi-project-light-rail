@@ -1712,6 +1712,18 @@ function ENT:OnButtonPress(button,ply)
 		end
 		
 	end
+	if button == "DeleteSet" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Delete",RealTime())
+			--self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+		
+	end
 	
 	if button == "Number1Set" then
 		if self.IBISKeyRegistered == false then
@@ -1977,66 +1989,96 @@ function ENT:OnButtonRelease(button,ply)
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
+	end
+	if button == "DeleteSet" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number2Set" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number3Set" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number4Set" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number5Set" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number6Set" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number7Set" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number8Set" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number9Set" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "EnterSet" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "SpecialAnnouncementSet" then
 		if self.IBISKeyRegistered == true then
 			self.IBISKeyRegistered = false
 			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	
 	

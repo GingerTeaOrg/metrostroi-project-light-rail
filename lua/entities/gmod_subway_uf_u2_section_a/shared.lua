@@ -264,17 +264,6 @@ ENT.Spawner = {
             ent:SetNW2Int("IBIS:Routes",val)
         end
     end},
-	{"IBISData3","IBIS Announcer","List",function(ent)
-        local Announcer = {}
-        for k,v in pairs(UF.IBISAnnouncementFiles or {}) do Announcer[k] = v.name end
-        return Announcer
-    end, nil,function(ent,val,rot,i,wagnum,rclk)
-        if UF.IBISAnnouncementFiles and val==1 then
-            ent:SetNW2Int("IBIS:Announcer",1)
-        else
-            ent:SetNW2Int("IBIS:Announcer",val)
-        end
-    end},
 	{"IBISData4","IBIS Destinations","List",function(ent)
         local Announcer = {}
         for k,v in pairs(UF.IBISDestinations or {}) do Announcer[k] = v.name end
@@ -306,6 +295,17 @@ ENT.Spawner = {
             ent:SetNW2Int("IBIS:AnnouncementScript",1)
         else
             ent:SetNW2Int("IBIS:AnnouncementScript",val)
+        end
+    end},
+	{"IBISData7","IBIS Station Announcements","List",function(ent)
+        local Announcer = {}
+        for k,v in pairs(UF.IBISAnnouncementMetadata or {}) do Announcer[k] = v.name end
+        return Announcer
+    end, nil,function(ent,val,rot,i,wagnum,rclk)
+        if UF.IBISAnnouncementMetadata and val==1 then
+            ent:SetNW2Int("IBIS:Announcements",1)
+        else
+            ent:SetNW2Int("IBIS:Announcements",val)
         end
     end},
 	{"Rollsign","Spawner.U2.Rollsign","List",function()

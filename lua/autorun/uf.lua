@@ -261,22 +261,6 @@ end
         print("Light Rail: Loaded \""..name.."\" IBIS line index.")
     end
     
-    function UF.AddIBISAnnouncements(name,datatable)
-        if not datatable then return end
-        for k,v in pairs(UF.IBISAnnouncementFiles) do
-            if v.name == name then
-                UF.IBISAnnouncementFiles[k] = datatable
-                UF.IBISAnnouncementFiles[k].name = name
-                print("Light Rail: Changed \""..name.."\" IBIS announcer.")
-                return
-            end
-        end
-        local id = table.insert(UF.IBISAnnouncementFiles,datatable)
-        UF.IBISAnnouncementFiles[id].name = name
-        
-        print("Light Rail: Added \""..name.."\" IBIS announcer.")
-    end
-    
     function UF.AddSpecialAnnouncements(name,soundtable)
         if not name or not soundtable then return end
         

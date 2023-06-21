@@ -174,9 +174,9 @@ function TRAIN_SYSTEM:Think(Train)
 	self.ThrottleState = self.ThrottleState + self.ThrottleRate
 	
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
-	
-	self.Train.u2sectionb:SetNW2Int("ThrottleAnim",self.ThrottleStateAnimB)
-	
+	if IsValid(self.Train.u2sectionb) then
+		self.Train.u2sectionb:SetNW2Int("ThrottleAnim",self.ThrottleStateAnimB)
+	end
 	--Is the throttle engaged? We need to know that for a few things!
 	if self.ThrottleState > 0 then
 		self.ThrottleEngaged = true

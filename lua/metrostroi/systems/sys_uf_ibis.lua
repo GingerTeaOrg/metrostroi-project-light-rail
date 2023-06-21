@@ -865,9 +865,9 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2String("IBIS:DestinationChar3",self.DisplayedDestinationChar3)
     Train:SetNW2String("IBIS:SpecialAnnouncement",self.ServiceAnnouncement)
     
-    --if self.KeyInput ~=nil then
+    if self.KeyInput ~=nil then
         self:InputProcessor(self.KeyInput)
-    --end
+    end
 
     self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4
     --print(self.Course)
@@ -1177,8 +1177,6 @@ if SERVER then
                     self.CourseChar3 = self.CourseChar2
                     self.CourseChar3 = " "
                 elseif self.CourseChar4 ~= " " and self.CourseChar3 == " " and self.CourseChar2 == " " and self.CourseChar1 == " " then
-                    self.CourseChar4 = self.CourseChar3
-                    self.CourseChar3 = self.CourseChar2
                     self.CourseChar4 = " "
                 end
                 

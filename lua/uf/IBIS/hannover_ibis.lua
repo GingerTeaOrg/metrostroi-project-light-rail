@@ -105,7 +105,7 @@ UF.AddIBISCommonFiles("Hannover",{
     ["gong"] = {["lilly/uf/IBIS/announcements/hannover/common/gong.mp3"] = 1.3},
 })
 
-UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[route] = {[audiofile] = seconds}}}} | Sets the "station" element announcement routine for each station on a basis of line, route
+UF.AddIBISAnnouncementMetadata("Hannover",{ --format: {[station] = {[line] = {[route] = {[audiofile] = seconds}}}} | Sets the "station" element announcement routine for each station on a basis of line, route
 [01] = {
         ["07"] =    {
             ["01"] = {  
