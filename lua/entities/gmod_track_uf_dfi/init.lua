@@ -48,9 +48,10 @@ function ENT:Think()
     else
         self:SetNW2Bool("NothingRegistered", false)
     end
+    self:TrackETA()
 end
 
 function ENT:TrackETA()
-
+    --print(Metrostroi.NearestNodes(self:GetPos()))
 end
 
