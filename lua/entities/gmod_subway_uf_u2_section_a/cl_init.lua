@@ -1256,15 +1256,14 @@ function ENT:Think()
     
     
     
-    if self:GetPackedBool("HeadlightsSwitch",false) == true then
+    if self:GetPackedBool("Headlights",false) == true then
         self:ShowHide("headlights_on",true,0)
-        self:Animate("HeadlightSwitch",1,0,100,100,10,false)
-    elseif self:GetPackedBool("HeadlightsSwitch",false) == false then
+    elseif self:GetPackedBool("Headlights",false) == false then
         self:ShowHide("headlights_on",false,0)
-        self:Animate("HeadlightSwitch",0,0,100,100,10,false)
     end
     
-    
+    --self:ShowHide("headlights_on",true,0)
+
     if self:GetNW2Bool("BlinkerShineLeft",false) == true then
         self:SetLightPower(11,true)
     else

@@ -84,7 +84,7 @@ UF.AddIBISDestinations("Frankfurt",{
     [783] = "Römerstadt",
     [784] = "BAD HOMBURG",
     [785] = "Nieder-Eschbach",
-    [786] = "OBERURSEL Hohemark",
+    [786] = "Oberursel",
     [787] = "OBERURSEL Bahnhof",
     [788] = "OBERURSEL Bommersheim",
     [789] = "FRANKFURT Südbahnhof",
@@ -305,6 +305,12 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",{ --format: {[station] = {[line] = {[
             },
         },
         ["08"] = {
+            ["01"] = {
+                [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/712.mp3"]=1.4},
+                [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"] = 2.5},
+                [3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/712_interchange_01.mp3"] = 19},
+                [4] =  {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"]=1},
+            },
             ["02"] = {
                 [1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/712.mp3"]=1.4},
                 [2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"] = 2.5},

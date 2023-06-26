@@ -6,14 +6,14 @@ function TRAIN_SYSTEM:Initialize()
 
     
     if self.Train.WagNum then self.SerialNum = self.Train.WagNum..math.random(1000,2000) end
-    self.Route = 0 --Route index number
+    self.Route = "0" --Route index number
+    self.PromptRoute = " "
     self.RouteChar1 = " "
     self.RouteChar2 = " "
     self.DisplayedRouteChar1 = 0
     self.DisplayedRouteChar2 = 0
     
     self.DestinationText = ""
-    self.Destination = ""
     self.FirstStation = 0
     self.FirstStationString = ""
     self.CurrentStatonString = ""
@@ -54,11 +54,14 @@ function TRAIN_SYSTEM:Initialize()
     self.CourseChar3 = " "
     self.CourseChar4 = " "
     self.CourseChar5 = " "
-    self.DisplayedCourseChar1 = 0
-    self.DisplayedCourseChar2 = 0
-    self.DisplayedCourseChar3 = 0
-    self.DisplayedCourseChar4 = 0
-    self.DisplayedCourseChar5 = 0
+    self.PromptCourse = " "
+    self.DisplayedCourseChar1 = " "
+    self.DisplayedCourseChar2 = " "
+    self.DisplayedCourseChar3 = " "
+    self.DisplayedCourseChar4 = " "
+    self.DisplayedCourseChar5 = " "
+    self.PreviousCourse = "0"
+    self.PreviousCourseNoted = false
     
     self.IndexValid = false
 
@@ -561,7 +564,8 @@ function TRAIN_SYSTEM:Think()
     self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines")]
     --Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
  
-
+    self.Destination = tonumber(self.DestinationChar1..self.DestinationChar2..self.DestinationChar3,10)
+    
     self.DisplayedRouteChar1 = self.RouteChar1
     self.DisplayedRouteChar2 = self.RouteChar2
 
@@ -678,8 +682,8 @@ function TRAIN_SYSTEM:Think()
             self.State = 1
         end
     end
-    
     if self.State == 1 and self.Menu == 0 then
+        self.PreviousCourseNoted = false
         self.SpecialAnnouncement = " "
         self.AnnouncementChar1 = " "
         self.AnnouncementChar2 = " "
@@ -755,6 +759,9 @@ function TRAIN_SYSTEM:Think()
             self.CurrentStationInternal = 0
             self.LineLookupComplete = false
             self.RBLSignedOff = false
+        elseif self.KeyInput == "Delete" and self.Course == "    " then
+            self.Course = self.PreviousCourse
+            self.Menu = 0
         end
     elseif self.State == 1 and self.Menu == 2 then
         if self.KeyInput == "Enter" and self.IndexValid == true then
@@ -795,7 +802,7 @@ function TRAIN_SYSTEM:Think()
     if self.State == 0 then
         self.LineLookupComplete = false
         self.BootupComplete = false
-        self.Course = 0 --Course index number, format is LineLineCourseCourse
+        self.Course = "0" --Course index number, format is LineLineCourseCourse
         self.CourseChar1 = " "
         self.CourseChar2 = " "
         self.CourseChar3 = " "
@@ -806,7 +813,7 @@ function TRAIN_SYSTEM:Think()
         self.DisplayedCourseChar3 = 0
         self.DisplayedCourseChar4 = 0
         self.DisplayedCourseChar5 = 0
-        
+        self.PreviousCourse = "0"
         self.Route = 0 --Route index number
         self.RouteChar1 = " "
         self.RouteChar2 = " "
@@ -848,6 +855,7 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:State",self.State)
     Train:SetNW2Int("IBIS:Route",self.Route)
     Train:SetNW2Int("IBIS:Destination",self.Destination)
+    Train:SetNW2String("IBIS:DestinationText",self.DestinationTable[self.Destination])
     Train:SetNW2Int("IBIS:Course",self.Course)
     Train:SetNW2Int("IBIS:MenuState",self.Menu)
     Train:SetNW2Int("IBIS:Menu",self.Menu)
@@ -865,11 +873,12 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2String("IBIS:DestinationChar3",self.DisplayedDestinationChar3)
     Train:SetNW2String("IBIS:SpecialAnnouncement",self.ServiceAnnouncement)
     
-    if self.KeyInput ~=nil then
+    --if self.KeyInput ~=nil then
         self:InputProcessor(self.KeyInput)
-    end
-
-    self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4
+    --end
+    --if self.Menu > 0 then
+    --    self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4
+    --end
     --print(self.Course)
     if self.KeyInput ~= nil then
         --print(self.KeyInput)
@@ -898,8 +907,8 @@ function TRAIN_SYSTEM:Think()
     end
 end
 
-function TRAIN_SYSTEM:RBLPhoneHome()
-    if UF.RegisterTrain(self.Course,self.Train) == true and self.PhonedHome == false then
+function TRAIN_SYSTEM:RBLPhoneHome(Course)
+    if UF.RegisterTrain(Course,self.Train) == true and self.PhonedHome == false then
         self.PhonedHome = true
     end
     if self.PhonedHome == true then
@@ -921,7 +930,7 @@ function TRAIN_SYSTEM:ReadDataset()
                 self.IndexValid = true
                 --print("Line Lookup succeeded", self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4)
                 --print(self:RBLPhoneHome())
-                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) and self.RBLRegistered == false then
+                if self:RBLPhoneHome(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) and self.RBLRegistered == false then
                     
                     self.RBLRegistered = true
                     self.RBLSignedOff = false
@@ -933,7 +942,7 @@ function TRAIN_SYSTEM:ReadDataset()
                     self.RBLSignedOff = false
                     print("IBIS logged onto RBL", self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4)
                 end
-                if UF.RegisterTrain(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == false then
+                if self:RBLPhoneHome(self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4,self.Train) == false then
                     
                     self.RBLRegisterFailed = true
                     self.RBLRegistered = false
@@ -1058,8 +1067,8 @@ function TRAIN_SYSTEM:Play()
     print("Current Station", self.CurrentStation)
     local tbl = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int("IBIS:Announcements",1)][self.CurrentStation][self.CourseChar1..self.CourseChar2][self.Route]
     local station = false
-
-    
+    print("Course",self.CourseChar1..self.CourseChar2)
+    print("Route",self.Route)
     for k,v in ipairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
 
         for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
@@ -1111,7 +1120,13 @@ if SERVER then
     
     function TRAIN_SYSTEM:InputProcessor(Input)
         
-        if self.State == 1 and self.Menu == 4 or self.Menu == 1 and self.State == 1 or self.State == 2 and self.Menu == 4 then
+        if self.State == 1 and self.Menu == 4 or self.Menu == 1 and self.State == 1 or self.State == 2 and self.Menu == 4 then --only during startup in menus or manually triggered menus
+
+            if self.PreviousCourseNoted == false then
+                self.PreviousCourseNoted = true
+                self.PreviousCourse = self.Course --note the course we had before in order to restore it in case the prompt is empty and the user presses Delete again to return to main menu
+                print("course remembered:", self.PreviousCourse)
+            end
             
             if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then
                 if self.CourseChar4 == " " and self.CourseChar3 == " " and self.CourseChar2 == " " and self.CourseChar1 == " " then
@@ -1150,14 +1165,14 @@ if SERVER then
                     end
                 elseif self.CourseChar4 ~= " " and self.CourseChar3 ~= " " and self.CourseChar2 ~= " " and self.CourseChar1 ~= " " then
                     
-                    self.CourseChar1 = self.CourseChar2
+                    --[[self.CourseChar1 = self.CourseChar2
                     self.CourseChar2 = self.CourseChar3						
                     self.CourseChar3 = self.CourseChar4
                     if self.KeyInput ~= nil then
                         self.CourseChar4 = self.KeyInput
                     else
                         self.CourseChar4 = self.CourseChar4
-                    end
+                    end]]
                 end
                 
                 
@@ -1167,6 +1182,7 @@ if SERVER then
                     
                     self.CourseChar4 = self.CourseChar3
                     self.CourseChar3 = self.CourseChar2
+                    self.CourseChar2 = self.CourseChar1
                     self.CourseChar1 = " "
                 elseif self.CourseChar4 ~= " " and self.CourseChar3 ~= " " and self.CourseChar2 ~= " " and self.CourseChar1 == " " then
                     self.CourseChar4 = self.CourseChar3

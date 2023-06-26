@@ -472,10 +472,10 @@ function ENT:Initialize()
 		[51] = { "light",Vector(425.464,40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight left
 		[52] = { "light",Vector(425.464,-40,28), Angle(0,0,0), Color(216,161,92),     brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight right
 		[53] = { "light",Vector(425.464,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight top
-		[54] = { "light",Vector(425.464,31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
-		[55] = { "light",Vector(425.464,-31.5,31), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
-		[56] = { "light",Vector(426,31.2,24.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
-		[57] = { "light",Vector(426,-31.2,24.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
+		[54] = { "light",Vector(425.464,31.5,24.55), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
+		[55] = { "light",Vector(425.464,-31.5,24.55), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
+		[56] = { "light",Vector(426,31.2,31), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake lights
+		[57] = { "light",Vector(426,-31.2,31), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, -- brake lights
 		[58] = { "light",Vector(327,52,74), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top left
 		[59] = { "light",Vector(327,-52,74), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator top right
 		[48] = { "light",Vector(327,52,68), Angle(0,0,0), Color(255,100,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --indicator bottom left
@@ -683,7 +683,7 @@ function ENT:Think(dT)
 			
 		end
 
-		if self.Panel.Headlights > 0 or self:ReadTrainWire(7) > 0 then
+		if self.Panel.Headlights > 0 or self:ReadTrainWire(7) > 0 and self:ReadTrainWire(33) > 0 then
 
 			self:WriteTrainWire(31,self:ReadTrainWire(3))
 			self:WriteTrainWire(32,self:ReadTrainWire(4))

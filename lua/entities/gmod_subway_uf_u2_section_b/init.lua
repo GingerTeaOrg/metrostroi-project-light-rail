@@ -209,6 +209,22 @@ function ENT:Initialize()
 			ID = "Button4b",
 			Pos = Vector(84.6012,-50,49.5253), Radius = 16,
 		},
+		{
+			ID = "Button5a",
+			Pos = Vector(396.884,51,50.5), Radius = 16,
+		},
+		{
+			ID = "Button6a",
+			Pos = Vector(326.89,50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button7a",
+			Pos = Vector(152.116,50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button8a",
+			Pos = Vector(84.6012,50,49.5253), Radius = 16,
+		},
 		
 	}
 end
