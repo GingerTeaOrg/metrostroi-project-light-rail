@@ -260,6 +260,21 @@ end
         UF.IBISLines[id].name = name
         print("Light Rail: Loaded \""..name.."\" IBIS line index.")
     end
+    function UF.AddU2Rollsigns(name,lines)
+        if not name or not lines then return end
+        for k,v in pairs(UF.U2Rollsigns) do
+            if v.name == name then
+                UF.U2Rollsigns[k] = lines
+                UF.U2Rollsigns[k].name = name
+                
+                print("Light Rail: Reloaded \""..name.."\" U2 Rollsigns.")
+                return
+            end
+        end
+        local id = table.insert(UF.U2Rollsigns,lines)
+        UF.U2Rollsigns[id].name = name
+        print("Light Rail: Loaded \""..name.."\" U2 Rollsigns.")
+    end
     
     function UF.AddSpecialAnnouncements(name,soundtable)
         if not name or not soundtable then return end
@@ -403,7 +418,7 @@ function UF.PredictTrainPositions()
     end
 end
 
-if Metrostroi.Stations then
+if Metrostroi.Stations then --inject UF station entities because Metrostroi has its entities hardcoded
     local platforms = ents.FindByClass("gmod_track_uf_platform")
     for _,platform in pairs(platforms) do
         local station = Metrostroi.Stations[platform.StationIndex] or {}
@@ -436,5 +451,13 @@ if Metrostroi.Stations then
         else
             print(Format("Metrostroi: Error, station %03d platform %d, cant find pos! \n\tStart%s \n\tEnd:%s",platform.StationIndex,platform.PlatformIndex,platform.PlatformStart,platform.PlatformEnd))
         end
+    end
+end
+
+if SERVER then
+    files = file.Find("uf/sv*.lua","LUA")
+    for _,filename in pairs(files) do
+        AddCSLuaFile("uf"..filename)
+        include("uf"..filename)
     end
 end

@@ -6,27 +6,24 @@ util.AddNetworkString("uf_contact")
 
 ENT.Types = {
     ["diamond"] = {
-        "models/lilly/uf/common/pantograph.mdl",
-        Vector(0,0.0,-7),Angle(0,90,0),
+        "models/lilly/uf/panto_diamond.mdl",
+        Vector(0,0.0,-7),Angle(0,0,0),
     },
 }
 
 
 function ENT:SetParameters()
-    local type = self.Types[self.PantoType or "Diamond"]
-    self:SetModel(type[1] or "models/lilly/uf/common/pantograph.mdl")
+    local type = self.Types[self.PantoType or "diamond"]
+    self:SetModel(type[1] or "models/lilly/uf/panto_diamond.mdl")
 end
 
 function ENT:Initialize()
     self:SetParameters()
-
-    if Wire_CreateInputs then
-        self.Inputs = Wire_CreateInputs(self,{
-            "Raise",})
-        self.Outputs = Wire_CreateOutputs(self,{
-            "Contact",
-        })
-    end
+    
+    self:PhysicsInit(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_VPHYSICS)
+    self:SetSolid(SOLID_VPHYSICS)
+    
 
     --[[if IsValid(self:GetPhysicsObject()) then
         self:GetPhysicsObject():SetNoCollide(true)
@@ -38,13 +35,14 @@ function ENT:Initialize()
     self.Voltage = 0
     self.ContactStates = { false, false }
     self.NextStates = { false }
-    self.PantoPos = Vector(0,0,255)
+    --self.PantoPos = WorldToLocal(self:GetPos())
     self.VoltageDrop = 0
     self.DropByPeople = 0
     self.VotageDropByTouch = 0
     self.CheckTimeout = 0
     self.NoPhysics = false
     self.PantoType = {}
+    self:SetModelScale(0.85,1)
 end
 
 
@@ -54,6 +52,9 @@ end
 
 function ENT:Think()
     self.BaseClass.Think(self)
+    
+    local endscan = self:GetPos() + Vector(0,0,135)
+    self:CheckContact(self:GetPos(),self:GetUp(),1,Vector(10,10,0))
 end
 
 
@@ -66,9 +67,13 @@ function ENT:CheckContact(pos,dir,id,cpos)
         mins = Vector( -2, -2, -2 ),
         maxs = Vector( 2, 2, 2 )
     })
-
     if not result.Hit then return end
-    if result.HitWorld then return true end
+    if result.HitWorld then
+        local pantoheight = self:GetPos() - result.HitPos
+        local pantoheightfinal = pantoheight.z
+        print(pantoheightfinal,"result")
+        self:SetNW2Float("PantoHeight",pantoheightfinal / 135)
+    end
 
     local traceEnt = result.Entity
     if traceEnt:GetClass() == "player" and self.Voltage > 40 then
@@ -167,59 +172,6 @@ function ENT:CheckVoltage(dT)
         self.DropByPeople = Iperson
     end
 end
-
-
-
-function ENT:SpawnFunction(ply, tr)
-    local verticaloffset = 40 -- Offset for the train model, gmod seems to add z by default, nvm its you adding 170 :V
-    local distancecap = 2000 -- When to ignore hitpos and spawn at set distanace
-    local pos, ang = nil
-    local inhibitrerail = false
-
-    if tr.Hit then
-        -- Setup trace to find out of this is a track
-        local tracesetup = {}
-        tracesetup.start=tr.HitPos
-        tracesetup.endpos=tr.HitPos+tr.HitNormal*80
-        tracesetup.filter=ply
-
-        local tracedata = util.TraceLine(tracesetup)
-
-        if tracedata.Hit then
-            -- Trackspawn
-            pos = (tr.HitPos + tracedata.HitPos)/2 + Vector(0,0,verticaloffset)
-            ang = tracedata.HitNormal
-            ang:Rotate(Angle(0,90,0))
-            ang = ang:Angle()
-
-        else
-            -- Regular spawn
-            if tr.HitPos:Distance(tr.StartPos) > distancecap then
-                -- Spawnpos is far away, put it at distancecap instead
-                pos = tr.StartPos + tr.Normal * distancecap
-                inhibitrerail = true
-            else
-                -- Spawn is near
-                pos = tr.HitPos + tr.HitNormal * verticaloffset
-            end
-            ang = Angle(0,tr.Normal:Angle().y,0)
-        end
-    else
-        -- Trace didn't hit anything, spawn at distancecap
-        pos = tr.StartPos + tr.Normal * distancecap
-        ang = Angle(0,tr.Normal:Angle().y,0)
-    end
-
-    local ent = ents.Create(self.ClassName)
-    ent:SetPos(pos)
-    ent:SetAngles(ang)
-    ent:Spawn()
-    ent:Activate()
-
-    return ent
-end
-
-
 
 
 

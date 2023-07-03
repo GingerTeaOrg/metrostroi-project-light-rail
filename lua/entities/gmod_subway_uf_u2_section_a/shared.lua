@@ -46,14 +46,29 @@ function ENT:InitializeSounds()
 	self.SoundNames["Nag1"] = {"lilly/uf/u2/PAsystem/door_complaints/clear_the_doors.mp3"}
 	self.SoundPositions["Nag1"] = {1100,1e9,Vector(350,-30,113),1}
 	
-	self.SoundNames["Door_open1"] = {"lilly/uf/u2/Door_open.mp3"}
-	self.SoundPositions["Door_open1"] = {400,1e9,Vector(360,40.5,120),1}
+	self.SoundNames["Door_open1r"] = {"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end.mp3"}
+	self.SoundPositions["Door_open1"] = {400,1e9,Vector(409,49.4254,109),1}
 	
-	self.SoundNames["Door_open2"] = {"lilly/uf/u2/Door_open.mp3"}
-	self.SoundPositions["Door_open2"] = {400,1e9,Vector(118,40.5,120),1}
+	self.SoundNames["Door_open2r"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end.mp3"}
+	self.SoundPositions["Door_open2r"] = {400,1e9,Vector(134.36,49.4254,109),1}
+
+	self.SoundNames["Door_close2r"] = {loop=0.5,"lilly/uf/u2/Door_close_start.mp3","lilly/uf/u2/Door_close_loop.mp3","lilly/uf/u2/Door_close_end.mp3"}
+	self.SoundPositions["Door_close2r"] = {400,1e9,Vector(134.36,49.4254,109),1}
 	
-	self.SoundNames["Door_close1"] = {"lilly/uf/u2/Door_close.mp3"}
-	self.SoundPositions["Door_close1"] = {400,1e9,Vector(300,100,120),1}
+	self.SoundNames["Door_close1r"] = {loop=0.5,"lilly/uf/u2/Door_close_start.mp3","lilly/uf/u2/Door_close_loop.mp3","lilly/uf/u2/Door_close_end.mp3"}
+	self.SoundPositions["Door_close1r"] = {400,1e9,Vector(409,49.4254,109),1}
+
+	self.SoundNames["Door_open1l"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end.mp3"}
+	self.SoundPositions["Door_openl"] = {400,1e9,Vector(409,-49.4254,109),1}
+	
+	self.SoundNames["Door_open2l"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end.mp3"}
+	self.SoundPositions["Door_open2l"] = {400,1e9,Vector(134.36,-49.4254,109),1}
+
+	self.SoundNames["Door_close2l"] = {loop=0.5,"lilly/uf/u2/Door_close_start.mp3","lilly/uf/u2/Door_close_loop.mp3","lilly/uf/u2/Door_close_end.mp3"}
+	self.SoundPositions["Door_close2l"] = {400,1e9,Vector(134.36,-49.4254,109),1}
+	
+	self.SoundNames["Door_close1l"] = {loop=0.5,"lilly/uf/u2/Door_close_start.mp3","lilly/uf/u2/Door_close_loop.mp3","lilly/uf/u2/Door_close_end.mp3"}
+	self.SoundPositions["Door_close1l"] = {400,1e9,Vector(409,-49.4254,109),1}
 	
 	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.mp3","lilly/uf/common/deadman_loop.mp3","lilly/uf/common/deadman_end.mp3"}
 	self.SoundPositions["Deadman"] = {800,1e9,Vector(401,14,14),.7}
@@ -308,10 +323,16 @@ ENT.Spawner = {
             ent:SetNW2Int("IBIS:Announcements",val)
         end
     end},
-	{"Rollsign","Spawner.U2.Rollsign","List",function()
-        local Schemes = {}
-        for k,v in pairs(Metrostroi.Skins["U2Rollsigns"] or {}) do Schemes[k] = v.name or k end
-        return Schemes
+	{"U2Signs","Rollsign Texture","List",function(ent)
+        local Announcer = {}
+        for k,v in pairs(UF.U2Rollsigns or {}) do Announcer[k] = v.name end
+        return Announcer
+    end, nil,function(ent,val,rot,i,wagnum,rclk)
+        if UF.U2Rollsigns and val==1 then
+            ent:SetNW2Int("Rollsign",1)
+        else
+            ent:SetNW2Int("Rollsign",val)
+        end
     end},
 }
 if CLIENT then

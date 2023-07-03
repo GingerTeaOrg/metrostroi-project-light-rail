@@ -16,16 +16,16 @@ function ENT:CreatePanto(pos,ang,type)
 	panto.SpawnPos = pos
 	panto.SpawnAng = ang
 	
+	panto:SetNW2Entity("TrainEntity",self)
 	
-	--if self.NoPhysics then
-	--	panto:SetParent(self)
-	--else
-	constraint.Weld(panto,self,0,0,
-	Vector(0,0,0),Vector(0,0,0),
-	0,0,0,1,Vector(0,0,1),true)
-	--end
+	if self.NoPhysics then
+		panto:SetParent(self)
+	else
+		constraint.Weld(panto,self,0,0,0,true)
+	end
 	
 	table.insert(self.TrainEntities,panto)
+	--panto:Activate()
 	return panto
 	
 end
@@ -327,7 +327,7 @@ function ENT:Initialize()
 	self.RearBogey = self:CreateBogeyUF_b(Vector( -290,0,0),Angle(0,180,0),false,"duewag_motor")
 	
 	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,0),Angle(0,180,0),false,"u2")	
-	--self.Panto = self:CreatePanto(Vector(0,0,0),Angle(0,0,0),"diamond")
+	self.Panto = self:CreatePanto(Vector(35,0,115),Angle(0,90,0),"diamond")
 	self.PantoUp = 0
 	
 	self.ReverserInsert = false 
@@ -2114,7 +2114,7 @@ function ENT:CreateSectionB(pos)
 	0, --forcelimit
 	0, --torquelimit
 	-0, --xmin
-	4, --ymin
+	-2, --ymin
 	-180, --zmin
 	0, --xmax
 	4, --ymax
@@ -2250,7 +2250,7 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 		
 			for i,v in ipairs(self.DoorRandomness) do
 				if v==3 and self.DoorStatesLeft[i] < 1 then
-					self.DoorStatesLeft[i] = self.DoorStatesLeft[i] +0.1
+					self.DoorStatesLeft[i] = self.DoorStatesLeft[i] +0.17
 				end
 			end
 		end
@@ -2260,13 +2260,13 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 		
 		
 			for i,v in ipairs(self.DoorStatesRight) do
-				if v > 0 then self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.1 end
+				if v > 0 then self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.145 end
 			end
 		
 		elseif left then
 		
 			for i,v in ipairs(self.DoorStatesLeft) do
-				if v > 0 then self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.1 end
+				if v > 0 then self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.145 end
 			end
 		end
 		

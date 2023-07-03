@@ -13,7 +13,7 @@ function ENT:Initialize()
     self.HasRefreshed = true
 
     self.NearestNodes = Metrostroi.NearestNodes(self:GetPos())
-    
+    self.Position = self:GetPos()
     
 end
 
@@ -51,7 +51,11 @@ function ENT:Think()
     self:TrackETA()
 end
 
-function ENT:TrackETA()
-    --print(Metrostroi.NearestNodes(self:GetPos()))
+function ENT:TrackETA(train)
+    local trackpos = Metrostroi.GetPositionOnTrack(self:GetPos())
+
+    if train then
+    end   
+
 end
 

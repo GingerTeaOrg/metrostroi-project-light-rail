@@ -1,13 +1,27 @@
-UF.TotalkWh = UF.TotalkWh or tonumber(file.Read("metrostroi_data/total_kwh_UF.txt") or "") or 0
+--------------------------------------------------------------------------------
+-- Electric consumption stats
+--------------------------------------------------------------------------------
+-- Load total kWh
+timer.Create("UF_TotalkWhTimer",5.00,0,function()
+    file.Write("UF_data/total_kwh.txt",UF.TotalkWh or 0)
+end)
+UF.TotalkWh = UF.TotalkWh or tonumber(file.Read("UF_data/total_kwh.txt") or "") or 0
 UF.TotalRateWatts = UF.TotalRateWatts or 0
-
-UF.Voltage = 600
+CreateConVar("mplr_voltage", "600", FCVAR_ARCHIVE, "Sets the Voltage applied to the overhead wire. Default is 600VDC, some maps may use 750VDC.")
+UF.Voltage = GetConVar("mplr_voltage")
 UF.Voltages = UF.Voltages or {}
 UF.Currents = UF.Currents or {}
 UF.Current = 0
+UF.PeopleOnRails = 0
+UF.VoltageRestoreTimer = 0
 
-
-
+local function consumeFromFeeder(inCurrent, inFeeder)
+    if inFeeder then
+        UF.Currents[inFeeder] = UF.Currents[inFeeder] + inCurrent*0.4
+    else
+        UF.Current = UF.Current + inCurrent*0.4
+    end
+end
 
 local prevTime
 hook.Add("Think", "UF_ElectricConsumptionThink", function()
@@ -20,40 +34,45 @@ hook.Add("Think", "UF_ElectricConsumptionThink", function()
     UF.TotalRateWatts = 0
     UF.Current = 0
     for k,v in pairs(UF.Currents) do UF.Currents[k] = 0 end
-    local panto = ents.FindByClass("gmod_train_uf_panto")
+    local bogeys = ents.FindByClass("gmod_train_bogey")
     for _,bogey in pairs(bogeys) do
-        if panto.Feeder then
-            UF.Currents[panto.Feeder] = UF.Currents[panto.Feeder] + panto.DropByPeople
+        if bogey.Feeder then
+            UF.Currents[bogey.Feeder] = UF.Currents[bogey.Feeder] + bogey.DropByPeople
         else
-            UF.Current = UF.Current + panto.DropByPeople
+            UF.Current = UF.Current + bogey.DropByPeople
         end
     end
     for _,class in pairs(UF.TrainClasses) do
         local trains = ents.FindByClass(class)
         for _,train in pairs(trains) do
             if train.Electric then
-                UF.TotalRateWatts = UF.TotalRateWatts + math.max(0,(train.Electric.EnergyChange or 0))
-                local current = math.max(0,(train.Electric.Itotal or 0)) -  math.max(0,(train.Electric.Iexit or 0))
-                local feeder = false
-                local fB = train.FrontBogey
-                local rB = train.RearBogey
-                if IsValid(fB) then
-                    if fB.Feeder then
-                        UF.Currents[fB.Feeder] = UF.Currents[fB.Feeder] + fB.DropByPeople+current*0.4
-                        feeder = true
+                if train.Electric.EnergyChange then UF.TotalRateWatts = UF.TotalRateWatts + math.max(0, train.Electric.EnergyChange) end
+                local current = math.max(0, train.Electric.Itotal or 0) -  math.max(0, train.Electric.Iexit or 0)
+
+                local fB = IsValid(train.FrontBogey) and train.FrontBogey
+                local rB = IsValid(train.RearBogey) and train.RearBogey
+                if fB and (not fB.ContactStates or (not fB.ContactStates[1] and not fB.ContactStates[2])) then fB = nil end -- Don't have contact with TR
+                if rB and (not rB.ContactStates or (not rB.ContactStates[1] and not rB.ContactStates[2])) then rB = nil end -- Don't have contact with TR
+
+                local fBfeeder = fB and fB.Feeder
+                local rBfeeder = rB and rB.Feeder
+
+                if fBfeeder then
+                    if not rBfeeder or fBfeeder == rBfeeder then
+                        consumeFromFeeder(current, fBfeeder) -- Feeders are same
                     else
-                        UF.Current = UF.Current + fB.DropByPeople
+                        consumeFromFeeder(current * 0.5, fBfeeder) -- Feeders are different
                     end
                 end
-                if IsValid(rB) then
-                    if rB.Feeder then
-                        UF.Currents[rB.Feeder] = UF.Currents[rB.Feeder] + rB.DropByPeople+current*0.4
-                        feeder = true
-                    else
-                        UF.Current = UF.Current + rB.DropByPeople
+
+                if rBfeeder then
+                    if not fBfeeder then
+                        consumeFromFeeder(current, rBfeeder) -- Feeders are same
+                    elseif fBfeeder ~= rBfeeder  then
+                        consumeFromFeeder(current * 0.5, rBfeeder) -- Feeders are different
                     end
                 end
-                if not feeder then UF.Current = UF.Current + current*0.4 end
+                if not rBfeeder and not fBfeeder then consumeFromFeeder(current) end
             end
         end
     end
@@ -69,12 +88,12 @@ hook.Add("Think", "UF_ElectricConsumptionThink", function()
     --UF.Current = UF.Current + Iperson
 
     -- Check if exceeded global maximum current
-    if UF.Current > GetConVarNumber("uf_current_limit") then
+    if UF.Current > GetConVar("UF_current_limit"):GetInt() then
         UF.VoltageRestoreTimer = CurTime() + 7.0
         print(Format("[!] Power feed protection tripped: current peaked at %.1f A",UF.Current))
     end
 
-    local voltage = math.max(0,GetConVarNumber("uf_voltage"))
+    local voltage = math.max(0,GetConVar("UF_voltage"):GetInt())
 
     -- Calculate new voltage
     local Rfeed = 0.03 --25
@@ -86,8 +105,7 @@ hook.Add("Think", "UF_ElectricConsumptionThink", function()
     --print(Format("%5.1f v %.0f A",UF.Voltage,UF.Current))
 end)
 
-
-concommand.Add("uf_electric", function(ply, _, args) -- (%.2f$) Metrostroi.GetEnergyCost(Metrostroi.TotalkWh),
+concommand.Add("UF_electric", function(ply, _, args) -- (%.2f$) UF.GetEnergyCost(UF.TotalkWh),
     local m = Format("[%25s] %010.3f kWh, %.3f kW (%5.1f v, %4.0f A)","<total>",
         UF.TotalkWh,UF.TotalRateWatts*1e-3,
         UF.Voltage,UF.Current)
@@ -123,7 +141,7 @@ concommand.Add("uf_electric", function(ply, _, args) -- (%.2f$) Metrostroi.GetEn
     end
 end)
 
-timer.Create("uf_ElectricConsumptionTimer",0.5,0,function()
+timer.Create("UF_ElectricConsumptionTimer",0.5,0,function()
     if CPPI then
         local U = {}
         local D = {}
@@ -145,3 +163,31 @@ timer.Create("uf_ElectricConsumptionTimer",0.5,0,function()
         end
     end
 end)
+
+local function murder(v)
+    local positions = Metrostroi.GetPositionOnTrack(v:GetPos())
+    for k2,v2 in pairs(positions) do
+        local y,z = v2.y,v2.z
+        y = math.abs(y)
+
+        local y1 = 0.91-0.10
+        local y2 = 1.78 ---0.50
+        if (y > y1) and (y < y2) and (z < -1.70) and (z > -1.72) and (Metrostroi.Voltage > 40) then
+            local pos = v:GetPos()
+
+            util.BlastDamage(v,v,pos,64,3.0*Metrostroi.Voltage)
+
+            local effectdata = EffectData()
+            effectdata:SetOrigin(pos + Vector(0,0,-16+math.random()*(40+0)))
+            util.Effect("cball_explode",effectdata,true,true)
+
+            sound.Play("ambient/energy/zap"..math.random(1,3)..".wav",pos,75,math.random(100,150),1.0)
+            Metrostroi.PeopleOnRails = Metrostroi.PeopleOnRails + 1
+
+            --if math.random() > 0.85 then
+                --Metrostroi.VoltageRestoreTimer = CurTime() + 7.0
+                --print("[!] Power feed protection tripped: "..(tostring(v) or "").." died on rails")
+            --end
+        end
+    end
+end

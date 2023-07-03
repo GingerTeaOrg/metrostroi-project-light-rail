@@ -165,12 +165,7 @@ ENT.ClientProps["duewag_decal"] = {
     scale = 1,
 }
 
-ENT.ClientProps["Pantograph"] = {
-    model = "models/lilly/uf/common/pantograph.mdl",
-    pos = Vector(0,0,0),
-    ang = Angle(0,0,0),
-    scale = 1,
-}
+
 
 ENT.ClientProps["window_cab_l"] = {
     model = "models/lilly/uf/u2/window_cab_l.mdl",
@@ -1003,7 +998,7 @@ function ENT:UpdateWagonNumber()
             end
         end
         --end
-        print(num1,num2,num3)
+        --print(num1,num2,num3)
     end
 end
 
@@ -1109,7 +1104,7 @@ function ENT:Think()
         if IsValid(self.u2sectionb) then
             local leftNum1,middleNum2,rightNum3 = self.u2sectionb.ClientEnts["carnumber1"],self.u2sectionb.ClientEnts["carnumber2"],self.u2sectionb.ClientEnts["carnumber3"]
         end
-        if IsValid(self.u2sectionb) then
+        if IsValid(self.u2sectionb) and self.u2sectionb.ClientEnts["cab_decal"] then
             local decal2 = self.u2sectionb.ClientEnts["cab_decal"]
             decal2:SetPos(self:LocalToWorld(Vector(0,0,-8)))
         end
@@ -1191,7 +1186,7 @@ function ENT:Think()
     end
     
     if self:GetNW2String("ServiceAnnouncement","") ~= "" then
-        print(self:GetNW2String("ServiceAnnouncement",""))
+        --print(self:GetNW2String("ServiceAnnouncement",""))
         if self.AnnouncementPlayed == false then 
             self.AnnouncementPlayed = true
             self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),2,1,1,2,Vector(293,44,102))
@@ -1217,17 +1212,17 @@ function ENT:Think()
         self:ShowHide("reverser",false,0)
     end
     
-    self:Animate("Door_fr2",self:GetNW2Float("Door12a"),0,100,50,0,0)
-    self:Animate("Door_fr1",self:GetNW2Float("Door12a"),0,100,50,0,0)
+    self:Animate("Door_fr2",self:GetNW2Float("Door12a"),0,100,100,10,0)
+    self:Animate("Door_fr1",self:GetNW2Float("Door12a"),0,100,100,10,0)
     
-    self:Animate("Door_rr2",self:GetNW2Float("Door34a"),0,100,50,0,0)
-    self:Animate("Door_rr1",self:GetNW2Float("Door34a"),0,100,50,0,0)
+    self:Animate("Door_rr2",self:GetNW2Float("Door34a"),0,100,100,10,0)
+    self:Animate("Door_rr1",self:GetNW2Float("Door34a"),0,100,100,10,0)
     
-    self:Animate("Door_fl2",self:GetNW2Float("Door78b"),0,100,50,0,0)
-    self:Animate("Door_fl1",self:GetNW2Float("Door78b"),0,100,50,0,0)
+    self:Animate("Door_fl2",self:GetNW2Float("Door78b"),0,100,100,10,0)
+    self:Animate("Door_fl1",self:GetNW2Float("Door78b"),0,100,100,10,0)
     
-    self:Animate("Door_rl2",self:GetNW2Float("Door56b"),0,100,50,0,0)
-    self:Animate("Door_rl1",self:GetNW2Float("Door56b"),0,100,50,0,0)
+    self:Animate("Door_rl2",self:GetNW2Float("Door56b"),0,100,100,10,0)
+    self:Animate("Door_rl1",self:GetNW2Float("Door56b"),0,100,100,10,0)
     
     if self:GetNW2Bool("Microphone",false) == true then
         if self.Microphone == false then
@@ -1363,20 +1358,21 @@ function ENT:Think()
         
     end
     local DoorsUnlocked = self:GetNW2Bool("DoorsUnlocked",false)
-    if self:GetNW2Float("Door12a",0) > 0 and self.DoorOpenSoundPlayed == false and DoorsUnlocked == true then
-        self.DoorOpenSoundPlayed = true
-        self.DoorCloseSoundPlayed = false
-        self:PlayOnce("Door_open1","cabin",0.4,1)
-        
-    end
     
-    if self:GetNW2Float("Door12a",0) < 1 and self.DoorCloseSoundPlayed == false and self:GetNW2Bool("DoorsClosing",false) == true then
-        self.DoorCloseSoundPlayed = true
-        
-        self:PlayOnce("Door_close1","cabin",0.4,1)
-        self.DoorOpenSoundPlayed = false
-    end
+    local door12aprev = 0
+    local door12curr = 0
+
+    if self:GetNW2Float("Door12a",0) > 0 and self:GetNW2Float("Door12a",0) < 1 then
+        --self:SetSoundState("Door_open1r",1,1)
+    elseif self:GetNW2Float("Door12a",0) == 1 or self:GetNW2Float("Door12a",0) == 0 then
+        --self:SetSoundState("Door_open1r",0,1)
+    end   
     
+    if self:GetNW2Float("Door34a",0) > 0 and self:GetNW2Float("Door34a",0) < 1 then
+        --self:SetSoundState("Door_open2r",1,1)
+    elseif self:GetNW2Float("Door34a",0) == 1 or self:GetNW2Float("Door34a",0) == 0 then
+        --self:SetSoundState("Door_open2r",0,1)
+    end 
     
     if self.IBISStarted == false then
         if self:GetNW2Bool("IBISChime",false) == true then
