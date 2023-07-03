@@ -5,7 +5,7 @@
 
 - Throttle code concept by "Toth Peter"
 
-- Source Engine help by Patrick "V92" Grady
+- Source Engine help by Patrick "V92" Grady & Mr Funreal
 
 - Additional coupler model by "SchienenNahverkehrFFM"
 
