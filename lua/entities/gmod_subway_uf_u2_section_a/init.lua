@@ -813,16 +813,10 @@ function ENT:Think(dT)
 	
 	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 		if self.Duewag_U2.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.Duewag_U2.ReverserLeverStateA == -1 then
-			
 			if self.DepartureConfirmed == true then
-				
-				
-				
-				
-				
 				if self.Duewag_U2.ThrottleState < 0 then
-					self.RearBogey.MotorForce  = 5980 
-					self.FrontBogey.MotorForce = 5980
+					self.RearBogey.MotorForce  = 67791.24
+					self.FrontBogey.MotorForce = 67791.24
 					self.BrakesOn = true
 					self.RearBogey.MotorPower = self.Duewag_U2.Traction
 					self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -834,16 +828,18 @@ function ENT:Think(dT)
 						self.u2sectionb:SetLightPower(67,true)
 					end
 				elseif self.Duewag_U2.ThrottleState > 0 and self.DepartureConfirmed == true then 
-					self.RearBogey.MotorForce  = 4980
-					self.FrontBogey.MotorForce = 4980 
+					self.RearBogey.MotorForce  = 67791.24
+					self.FrontBogey.MotorForce = 67791.24 
 					self.RearBogey.MotorPower = self.Duewag_U2.Traction
 					self.FrontBogey.MotorPower = self.Duewag_U2.Traction
 					self.FrontBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure 
 					self.MiddleBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
 					self.RearBogey.BrakeCylinderPressure = self.Duewag_U2.BrakePressure
+					self.BrakesOn = false
+					
 				elseif self.Duewag_U2.ThrottleState == 0 then 
-					self.RearBogey.MotorForce  = 0
-					self.FrontBogey.MotorForce = 0
+					self.RearBogey.MotorForce  = 67791.24
+					self.FrontBogey.MotorForce = 67791.24
 					self.BrakesOn = false
 					self.RearBogey.MotorPower = self.Duewag_U2.Traction
 					self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -854,7 +850,7 @@ function ENT:Think(dT)
 						self.u2sectionb:SetLightPower(66,false)
 						self.u2sectionb:SetLightPower(67,false)
 					end
-				elseif self.Train:GetNW2Bool("DeadmanTripped") == true then
+				elseif self.Deadman.DeadmanTripped == true then
 					if self.Speed > 5 then
 						self.RearBogey.MotorPower = self.Duewag_U2.Traction
 						self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -1410,7 +1406,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	if button == "DeadmanSet" then
-		self.Duewag_Deadman:TriggerInput("IsPressed", 1)
+		self.Deadman:TriggerInput("IsPressed", 1)
 		if self:ReadTrainWire(6) > 0 then
 			self:WriteTrainWire(12,1)
 		end
@@ -1951,7 +1947,7 @@ function ENT:OnButtonRelease(button,ply)
 	
 	
 	if button == "DeadmanSet" then
-		self.Duewag_Deadman:TriggerInput("IsPressed", 0)
+		self.Deadman:TriggerInput("IsPressed", 0)
 		
 		if self:ReadTrainWire(6) > 0 then
 			self:WriteTrainWire(12,0)

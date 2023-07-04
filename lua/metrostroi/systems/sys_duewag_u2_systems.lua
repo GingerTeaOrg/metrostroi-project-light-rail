@@ -289,33 +289,33 @@ function TRAIN_SYSTEM:Think(Train)
 	
 	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(7) > 0 then --if either the battery is on or the EMU cables signal multiple unit mode
 		
-		if self.Train.Duewag_Deadman.IsPressed > 0 then --set up the deadman state as a wire, for easier adaptation into the consist
+		if self.Train.Deadman.IsPressed > 0 then --set up the deadman state as a wire, for easier adaptation into the consist
 			self.Train:WriteTrainWire(12,1)
-		elseif self.Train.Duewag_Deadman.IsPressed < 1 then
+		elseif self.Train.Deadman.IsPressed < 1 then
 			self.Train:WriteTrainWire(12,0)
 		end
 		
 		
 		if self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(12) > 0 then
 			self.TractionConditionFulfilled = true
-		elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Duewag_Deadman.IsPressed > 0 then
+		elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Deadman.IsPressed > 0 then
 			self.TractionConditionFulfilled = true
-		elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Duewag_Deadman.IsPressed < 1 then
+		elseif self.Train:ReadTrainWire(6) < 1 and self.Train.Deadman.IsPressed < 1 then
 			self.TractionConditionFulfilled = false
 		elseif self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(12) < 1 then
 			self.TractionConditionFulfilled = false
 		end
 		
-		if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 then
+		if self.ReverserState == 1 and self.Train.Deadman.IsPressed == 1 then
 			self.TractionConditionFulfilled = true
 			
-		elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 then
+		elseif self.ReverserState == 1 and self.Train.Deadman.IsPressed == 0 then
 			self.TractionConditionFulfilled = false
 			
-		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 then
+		elseif self.ReverserState == -1 and self.Train.Deadman.IsPressed == 0 then
 			self.TractionConditionFulfilled = false
 			
-		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 1 then
+		elseif self.ReverserState == -1 and self.Train.Deadman.IsPressed == 1 then
 			self.TractionConditionFulfilled = true
 			
 		elseif self.ReverserState == 0 then
@@ -324,17 +324,17 @@ function TRAIN_SYSTEM:Think(Train)
 			self.TractionConditionFulfilled = true
 		end
 		
-		if self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState > 0 then
+		if self.ReverserState == 1 and self.Train.Deadman.IsPressed == 0 and self.ThrottleState > 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
-		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState > 0 then
+		elseif self.ReverserState == -1 and self.Train.Deadman.IsPressed == 0 and self.ThrottleState > 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
-		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
+		elseif self.ReverserState == -1 and self.Train.Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
-		elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
+		elseif self.ReverserState == 1 and self.Train.Deadman.IsPressed == 0 and self.ThrottleState <= 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
-		elseif self.ReverserState == 1 and self.Train.Duewag_Deadman.IsPressed == 1 and self.ThrottleState < 0 then
+		elseif self.ReverserState == 1 and self.Train.Deadman.IsPressed == 1 and self.ThrottleState < 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
-		elseif self.ReverserState == -1 and self.Train.Duewag_Deadman.IsPressed == 1 then
+		elseif self.ReverserState == -1 and self.Train.Deadman.IsPressed == 1 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
 		end
 	end
@@ -391,8 +391,8 @@ function TRAIN_SYSTEM:Think(Train)
 					self.Traction = self.Traction
 					self.BrakePressure = 0
 					print("ve sys")
-				end
-				if self.Traction < 0 and self.Speed > 3.5 then
+				
+				elseif self.Traction < 0 and self.Speed > 3.5 then
 					self.Traction = self.Traction
 				elseif self.Traction < 0 and self.Speed < 5 then
 						self.Traction = 0
@@ -402,16 +402,16 @@ function TRAIN_SYSTEM:Think(Train)
 						self.BrakePressure = 2.7
 				elseif self.Traction == 0 then
 						self.Traction = self.Traction
-					self.BrakePressure = self.BrakePressure
+						self.BrakePressure = self.BrakePressure
 				end
 			end
-			if self.Train:ReadTrainWire(6) < 1 then
-				if self.ReverserLeverStateA == -1 or self.ReverserLeverStateB == 3 then
-					self.ReverserState = -1
-				elseif self.ReverserLeverStateA == 3 or self.ReverserLeverStateB == -1 then
-					self.ReverserState = 1
-				end
+			
+			if self.ReverserLeverStateA == -1 or self.ReverserLeverStateB == 3 then
+				self.ReverserState = -1
+			elseif self.ReverserLeverStateA == 3 or self.ReverserLeverStateB == -1 then
+				self.ReverserState = 1
 			end
+			
 			
 			
 			--end
@@ -435,7 +435,7 @@ function TRAIN_SYSTEM:Think(Train)
 			----print("Brake applied")
 			
 		elseif self.Train:ReadTrainWire(6) < 1 then --in single unit mode we write that directly to the brake pressure
-			self.BrakePressure = 2.7
+			--self.BrakePressure = 2.7 
 			
 		end
 		
@@ -684,10 +684,7 @@ function TRAIN_SYSTEM:MUHandler()
 	elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 3 then --We're at position 3 of the reverser forwards, that means we don't talk to coupled units.
 		self.VZ = false
 		self.VE = true
-		if self.LeadingCabA == 1 then
-			--self.Train:WriteTrainWire(6,0)
-			self.ReverserState = 1
-		end
+		self.ReverserState = -1
 	end
 	if self.ReverserInsertedA == true then
 		self.Train:WriteTrainWire(3,self.ReverserLeverStateA == 2 and 1 or 0)
