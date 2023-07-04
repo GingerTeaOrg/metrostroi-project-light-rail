@@ -683,10 +683,13 @@ function ENT:Think(dT)
 		end
 
 		if self.Panel.Headlights > 0 or self:ReadTrainWire(7) > 0 and self:ReadTrainWire(33) > 0 then
-
-			self:WriteTrainWire(31,self:ReadTrainWire(3))
-			self:WriteTrainWire(32,self:ReadTrainWire(4))
-
+			if self.Duewag_U2.VZ == true then
+				self:WriteTrainWire(31,self:ReadTrainWire(3))
+				self:WriteTrainWire(32,self:ReadTrainWire(4))
+			elseif self.Duewag_U2.VE == true then
+				self:WriteTrainWire(31,self.Duewag_U2.ReverserState > 0 and 1 or 0)
+				self:WriteTrainWire(32,self.Duewag_U2.ReverserState < 0 and 1 or 0)
+			end
 		elseif self.Panel.Headlights < 1 or self:ReadTrainWire(7) < 1 then
 			self:WriteTrainWire(31,0)
 			self:WriteTrainWire(32,0)
