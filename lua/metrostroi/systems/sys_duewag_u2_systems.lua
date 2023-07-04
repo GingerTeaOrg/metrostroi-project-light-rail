@@ -572,9 +572,9 @@ end
 
 function TRAIN_SYSTEM:IsLeadingCab()
 	local output
-	if self.ReverserInsertedA == true and self.VZ == true then
+	if self.ReverserInsertedA == true and self.VZ == true or self.ReverserInsertedA == true and self.VE == true then
 		output = true
-	elseif self.ReverserInsertedA == false and self.VZ == true then
+	elseif self.ReverserInsertedA == false and self.VZ == true or self.ReverserInsertedA == true and self.VE == true then
 		output = false
 	end
 	return output
