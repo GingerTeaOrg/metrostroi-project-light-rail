@@ -29,9 +29,8 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 
 ENT.EngineSNDConfig = {
     {
-        {"u2_1" ,35,0,1,1}, --speed, 
-        {"u2_2" ,60,0,1,1},
-        {"u2_3" ,100,80,80,2},
+        {"u2_1" ,35,0,1,1}, --initial speed, 
+        {"u2_3" ,35,80,80,2},
     },
 }
 

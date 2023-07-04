@@ -8,15 +8,10 @@ end
 
 --------------------------------------------------------------------------------
 function ENT:Think()
-self:Animate()
-end
-
-function ENT:Animate()
-    
-    --if self:GetNWBool("IsCoupledAnim",false) == true then
-    --    self:SetPoseParameter("position",100)
-    --else
-    --    self:SetPoseParameter("position",0)
-    --end
-
+    local coupled = self:GetNW2Bool("IsCoupledAnim",false)
+    if coupled then
+        self:SetPoseParameter("position",100)
+    else
+        self:SetPoseParameter("position",0)
+    end
 end

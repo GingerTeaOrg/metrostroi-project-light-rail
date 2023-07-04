@@ -163,15 +163,6 @@ function ENT:StartTouch(ent)
     end
 end
 
-
-
--- Used to decouple
-function ENT:Use(ply)
-    local train = self:GetNW2Entity("TrainEntity")
-    local isfront = self:GetNW2Bool("IsForwardCoupler")
-    RunConsoleCommand("say", "To uncouple, set the brakes on both units and press the decouple button in cab" )
-end
-
 function ENT:ElectricDisconnected()
     if not IsValid(self.CoupledEnt) then return end
     return self.EKKDisconnected or self.CoupledEnt.EKKDisconnected

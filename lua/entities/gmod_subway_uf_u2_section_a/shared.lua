@@ -194,6 +194,7 @@ ENT.Cameras = {
 	{Vector(350,60,5),Angle(10,-80,0),"Train.UF_U2.Bogey"},
 	{Vector(413,-11,62),Angle(35,-46,0),"Train.UF_U2.IBIS"},
 	{Vector(413,-25,58),Angle(10,50,0),"Train.UF_U2.IBISKey"},
+	{Vector(300,6,200),Angle(0,180,0),"Train.UF_U2.Panto"},
 }
 
 ENT.MirrorCams = {

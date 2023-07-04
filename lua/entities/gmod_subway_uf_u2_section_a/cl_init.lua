@@ -67,6 +67,28 @@ ENT.ClientProps["carnumber3"] = {
     scale = 1,
     nohide=true,
 }
+
+ENT.ClientProps["carnumber1int"] = {
+    model ="models/lilly/uf/u2/intnum1.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide=true,
+}
+ENT.ClientProps["carnumber2int"] = {
+    model ="models/lilly/uf/u2/intnum2.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide=true,
+}
+ENT.ClientProps["carnumber3int"] = {
+    model ="models/lilly/uf/u2/intnum3.mdl",
+    pos = Vector(0,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+    nohide=true,
+}
 ENT.ClientProps["switching_iron"] = {
     model ="models/lilly/uf/u2/switching_iron.mdl",
     pos = Vector(0,0,0),
@@ -960,10 +982,33 @@ function ENT:UpdateWagonNumber()
         --self:ShowHide("TrainNumberR"..i,i<count)
         --if i< count then
         local leftNum,middleNum,rightNum = self.ClientEnts["carnumber1"],self.ClientEnts["carnumber2"],self.ClientEnts["carnumber3"]
+        local intnum1,intnum2,intnum3 = self.ClientEnts["carnumber1int"],self.ClientEnts["carnumber2int"],self.ClientEnts["carnumber3int"]
         local num1 = tonumber(string.sub(self:GetNW2Int("WagonNumber"),1,1),10)
         local num2 = tonumber(string.sub(self:GetNW2Int("WagonNumber"),2,2),10)
         local num3 = tonumber(string.sub(self:GetNW2Int("WagonNumber"),3,3),10)
         
+        if IsValid(intnum1) then
+            if num1 < 1 then
+                intnum1:SetSkin(10)
+            else
+                intnum1:SetSkin(num1)
+            end
+        end
+        if IsValid(intnum2) then
+            if num2 < 1 then
+                intnum2:SetSkin(0)
+            else
+                intnum2:SetSkin(num2)
+            end
+        end
+        if IsValid(intnum3) then
+            if num3 < 1 then
+                intnum3:SetSkin(10)
+            else
+                intnum3:SetSkin(num3)
+            end
+        end
+
         if IsValid(leftNum) then
             if num1 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
                 leftNum:SetSkin(10)
@@ -1010,7 +1055,7 @@ function ENT:Initialize()
     
     self.IBIS = self:CreateRT("IBIS",512,128)
     
-    self:UpdateWagonNumber()
+    
     
     
     self.Locked = 0
@@ -1077,6 +1122,7 @@ function ENT:Initialize()
     self.BatterySwitch = 0.5
     self:ShowHide("reverser",true)
     self:ShowHide("reverser",false)
+    self:UpdateWagonNumber()
 end
 
 

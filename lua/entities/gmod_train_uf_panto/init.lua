@@ -43,6 +43,7 @@ function ENT:Initialize()
     self.NoPhysics = false
     self.PantoType = {}
     self:SetModelScale(0.85,1)
+    
 end
 
 
@@ -52,9 +53,19 @@ end
 
 function ENT:Think()
     self.BaseClass.Think(self)
+    local testvector = Vector(0,0,100)
+
+    -- Update timing
+    self.PrevTime = self.PrevTime or CurTime()
+    self.DeltaTime = (CurTime() - self.PrevTime)
+    self.PrevTime = CurTime()
     
     local endscan = self:GetPos() + Vector(0,0,135)
-    self:CheckContact(self:GetPos(),self:GetUp(),1,Vector(10,10,0))
+    if self.Train.PantoUp == true then
+        self:CheckContact(self:GetPos(),self:GetUp(),1,Vector(10,10,0))
+
+        self:CheckVoltage(self.DeltaTime)
+    end
 end
 
 
@@ -67,13 +78,15 @@ function ENT:CheckContact(pos,dir,id,cpos)
         mins = Vector( -2, -2, -2 ),
         maxs = Vector( 2, 2, 2 )
     })
-    if not result.Hit then return end
-    if result.HitWorld then
-        local pantoheight = self:GetPos() - result.HitPos
-        local pantoheightfinal = pantoheight.z
-        print(pantoheightfinal,"result")
-        self:SetNW2Float("PantoHeight",pantoheightfinal / 135)
-    end
+    --if not result.Hit then return end
+    print(self:GetPos() - result.HitPos)
+    
+    local pos = self:GetPos()
+    local pantoheight = pos - result.HitPos
+    local pantoheightfinal = pantoheight
+    print(pantoheightfinal,"result")
+    self:SetNW2Vector("PantoHeight",pantoheightfinal)
+    
 
     local traceEnt = result.Entity
     if traceEnt:GetClass() == "player" and self.Voltage > 40 then

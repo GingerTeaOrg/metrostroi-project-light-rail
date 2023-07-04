@@ -754,6 +754,11 @@ function TRAIN_SYSTEM:MUHandler()
 		self.Train:WriteTrainWire(6,0)
 	end
 	
-	
+	if self.Train.PantoUp == true then
+		self.Train:SetNW2Bool("PantoUp",true)
+	elseif self.Train.PantoUp == false then
+		self.Train:SetNW2Bool("PantoUp",false)
+	end
+	--print(self.Train:GetNW2Bool("PantoUp"))
 	--print(self.Train:GetNW2Bool("Fans"))
 end

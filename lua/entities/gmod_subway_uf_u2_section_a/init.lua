@@ -17,7 +17,7 @@ function ENT:CreatePanto(pos,ang,type)
 	panto.SpawnAng = ang
 	
 	panto:SetNW2Entity("TrainEntity",self)
-	
+	panto.Train = self
 	if self.NoPhysics then
 		panto:SetParent(self)
 	else
@@ -324,11 +324,11 @@ function ENT:Initialize()
 	
 	-- Create U2 Section B
 	self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
-	self.RearBogey = self:CreateBogeyUF_b(Vector( -290,0,0),Angle(0,180,0),false,"duewag_motor")
+	self.RearBogey = self:CreateBogeyUF_b(Vector( -290,0,-4),Angle(0,180,0),false,"duewag_motor")
 	
 	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,0),Angle(0,180,0),false,"u2")	
 	self.Panto = self:CreatePanto(Vector(35,0,115),Angle(0,90,0),"diamond")
-	self.PantoUp = 0
+	self.PantoUp = false
 	
 	self.ReverserInsert = false 
 	self.BatteryOn = false
@@ -615,7 +615,6 @@ function ENT:Think(dT)
 	self.CabWindowR = math.Clamp(self.CabWindowR,0,1)
 	self:SetNW2Float("CabWindowL",self.CabWindowL)
 	self:SetNW2Float("CabWindowR",self.CabWindowR)
-	self:SetNW2Bool("PantoUp",self.PantoUp)
 
 	self.Speed = math.abs(self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed)
@@ -1272,7 +1271,15 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "PantographRaiseSet" then
 		self.Panel.PantographRaise = 1
+		if self.Duewag_U2.BatteryOn == true then
+			self.PantoUp = true
+		end
 		
+	end
+	if button == "PantographLowerSet" then
+		if self.Duewag_U2.BatteryOn == true then
+			self.PantoUp = false
+		end
 	end
 	
 	

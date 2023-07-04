@@ -4,24 +4,33 @@ function ENT:Initialize()
     self.Anims = {}
     self.DeltaTime = 0
     self.PrevTime = 0
+    self.PantoHeight = 0
+    self.PantoRaised = false
+    self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
 end
 function ENT:Think()
-    
-    local train = self:GetNW2Entity("TrainEntity")
+    if IsValid(self:GetNW2Entity("TrainEntity")) then
+        self.Train = self:GetNW2Entity("TrainEntity")
+    end
+    self.PantoRaised = self.Train:GetNW2Bool("PantoUp",false)
     self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
-    
-    
-    --print(self:GetNW2Float("PantoHeight"))
+    --print(type(self.PantoHeight))
+    if self.PantoRaised == true then
+         self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
+    elseif self.PantoRaised == false then
+         self.PantoHeight = 0
+    end
     self:Draw()
-    --self:SetPoseParameter("position",self:Animate("1",self:GetNW2Float("PantoHeight",0.8),0,100,0,0,1))
-    --self:InvalidateBoneCache()
+
 end
 
 function ENT:Draw()
     self:DrawModel()
-    self:SetPoseParameter("position",self:Animate("1",self:GetNW2Float("PantoHeight",0.8),0,100,0,0,1))
+    
+    self:SetPoseParameter("position",self:Animate("1",self.PantoHeight,0,100,0.1,0,1))
+    
     self:InvalidateBoneCache()
 end
 
