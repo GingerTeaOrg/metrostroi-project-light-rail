@@ -30,7 +30,12 @@ ENT.ClientProps["headlights_on"] = {
     ang = Angle(0,0,0),
     scale = 1,
 }
-
+ENT.ClientProps["IBISkey"] = {
+    model = "models/lilly/uf/u2/cab/key.mdl",
+    pos = Vector(00.3,0,0),
+    ang = Angle(0,0,0),
+    scale = 1,
+}
 ENT.ClientProps["cab"] = {
     model ="models/lilly/uf/u2/u2-cabfront.mdl",
     pos = Vector(0,0,0),
@@ -725,8 +730,8 @@ ENT.ButtonMap["IBISKey"] = {
     scale = 0.069,
     
     buttons = {
-        {ID = "InsertIBISKey", x=0,y=0,w=10,h=10, radius=1,tooltip="Insert and turn IBIS key", model = {
-            var="InsertIBISKey",
+        {ID = "IBISkeyTurnSet", x=0,y=0,w=10,h=10, radius=1,tooltip="Turn IBIS key", model = {
+            var="TurnIBISKey",
             sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
             sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),}
         },
@@ -1248,8 +1253,8 @@ function ENT:Think()
     self:Animate("window_cab_l",self:GetNW2Float("CabWindowL",0),0,100,50,9,false)
     
     --player:PrintMessage(HUD_PRINTTALK,self:GetNW2Float("CabWindowL",0))
-    
-    
+    self:ShowHide("IBISkey",self:GetNW2Bool("InsertIBISKey",false))
+    self:Animate("IBISkey",self:GetNW2Bool("TurnIBISKey",false) == true and 0 or 1,0,100,800,0,0)
     
     
     if self:GetNW2Bool("ReverserInserted",false) == true then
@@ -1420,15 +1425,9 @@ function ENT:Think()
         --self:SetSoundState("Door_open2r",0,1)
     end 
     
-    if self.IBISStarted == false then
-        if self:GetNW2Bool("IBISChime",false) == true then
-            if self:GetNW2Bool("IBISBootupComplete",false) == true then
-                self.IBISStarted = true
-                self:PlayOnce("IBIS_bootup",Vector(412,-12,55),1,1)
-                --print("IBIS bootup complete")
-            end
-            
-        end
+    
+    if self:GetNW2Bool("IBISBootupComplete",false) == true and self:GetNW2Bool("IBISChime",false) == true then
+        self:PlayOnce("IBIS_bootup",Vector(412,-12,55),1,1)
     end
     
     self.BatteryBreakerOffSoundPlayed = false

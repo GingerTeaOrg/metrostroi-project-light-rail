@@ -413,7 +413,7 @@ function ENT:Initialize()
 		
 		[KEY_COMMA] = "BlinkerLeftSet",
 		[KEY_MINUS] = "CycleIBISKey",
-		--[KEY_0] = "KeyTurnOn",
+		[KEY_PAD_MINUS] = "IBISkeyTurn",
 		
 		[KEY_LSHIFT] = {
 			[KEY_0] = "ReverserInsert",
@@ -438,6 +438,7 @@ function ENT:Initialize()
 			[KEY_9] = "Throttle90-Pct",
 			[KEY_P] = "PantographLowerSet",
 			[KEY_MINUS] = "RemoveIBISKey",
+			[KEY_PAD_MINUS] = "IBISkeyInsertSet",
 		},
 		
 		[KEY_LALT] = {
@@ -655,15 +656,6 @@ function ENT:Think(dT)
 		self.ElectricStarted = true
 	end
 	
-	if CurTime() - self.ElectricOnMoment > 5 then
-		self:SetNW2Bool("IBISChime",true)
-		self:SetNW2Bool("IBISBootupComplete",true)
-	end
-	------print(self.ElectricOnMoment)
-	
-	if self.IBIS.BootupComplete == true then
-		self:SetNW2Bool("IBISChime",true)
-	end
 	if self:ReadTrainWire(7) > 0 or self.Duewag_U2.BatteryOn == true then -- if the battery is on
 		
 		if self:GetNW2Bool("Braking",true) == true and self:GetNW2Bool("AIsCoupled",false) == false and self:ReadTrainWire(3) < 1 and self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
@@ -1154,6 +1146,23 @@ end
 
 
 function ENT:OnButtonPress(button,ply)
+
+	if button == "IBISkeyInsertSet" then
+		if self:GetNW2Bool("InsertIBISKey",false) == false then
+			self:SetNW2Bool("InsertIBISKey",true)
+		else
+			self:SetNW2Bool("InsertIBISKey",false)
+		end
+	end
+	if button == "IBISkeyTurnSet" then
+		if self:GetNW2Bool("InsertIBISKey",false) == true then
+			if self:GetNW2Bool("TurnIBISKey",false) == false then
+				self:SetNW2Bool("TurnIBISKey",true)
+			else
+				self:SetNW2Bool("TurnIBISKey",false)
+			end
+		end
+	end
 	
 	if button == "HighbeamToggle" then
 		if self.Panel.Highbeam == 0 then
@@ -2120,7 +2129,7 @@ function ENT:CreateSectionB(pos)
 	0, --forcelimit
 	0, --torquelimit
 	-0, --xmin
-	-2, --ymin
+	-4, --ymin
 	-180, --zmin
 	0, --xmax
 	4, --ymax

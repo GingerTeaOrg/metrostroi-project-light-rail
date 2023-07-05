@@ -96,6 +96,8 @@ function TRAIN_SYSTEM:Initialize()
 
     self.KeyInserted = false
     self.KeyTurned = false
+
+    self.PowerOnRegistered = false
     
     self.TriggerNames = {
         "Number1", --1
@@ -406,9 +408,7 @@ function TRAIN_SYSTEM:IBISScreen(Train)
         surface.DrawRect(0,0,512,128)
         self.Warm = true
         
-        if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
-            --self.State = 2
-        elseif self.Train:GetNW2Bool("IBISBootupComplete",false) == false then
+        if self.Train:GetNW2Bool("IBISBootupComplete",false) == false then
             self:PrintText(0,0,"---------------")
             self:PrintText(0,4,"---------------")
         end
@@ -587,16 +587,47 @@ function TRAIN_SYSTEM:Think()
     local Train = self.Train
     
     ----print("IBIS loaded")
-    if self.Train.BatteryOn == true then
+    if self.Train.BatteryOn == true and self.Train:GetNW2Bool("TurnIBISKey",false) == true then
         self.PowerOn = 1
         self.Train:SetNW2Bool("IBISPowerOn",true)
         ----print("IBIS powered")
-    elseif self.Train.BatteryOn == false then
+    elseif self.Train.BatteryOn == true and self.Train:GetNW2Bool("TurnIBISKey",false) == false then
         self.PowerOn = 0
         self.Train:SetNW2Bool("IBISPowerOn",false)
         self.State = 0
         self.Menu = 0
         self.Train:SetNW2Bool("IBISBootupComplete",false)
+        self.Train:SetNW2Bool("IBISChime",false)
+    elseif self.Train.BatteryOn == false and self.Train:GetNW2Bool("TurnIBISKey",false) == false then
+        self.PowerOn = 0
+        self.Train:SetNW2Bool("IBISPowerOn",false)
+        self.State = 0
+        self.Menu = 0
+        self.Train:SetNW2Bool("IBISBootupComplete",false)
+        self.Train:SetNW2Bool("IBISChime",false)
+    elseif self.Train.BatteryOn == false and self.Train:GetNW2Bool("TurnIBISKey",false) == true then
+        self.PowerOn = 0
+        self.Train:SetNW2Bool("IBISPowerOn",false)
+        self.State = 0
+        self.Menu = 0
+        self.Train:SetNW2Bool("IBISBootupComplete",false)
+        self.Train:SetNW2Bool("IBISChime",false)
+        self.JustBooted = false
+    end
+
+    if self.PowerOn == 1 then
+        if self.PowerOnRegistered == false then
+            self.PowerOnMoment = RealTime()
+            self.PowerOnRegistered = true
+            print("register",RealTime())
+        end
+        if RealTime() - self.PowerOnMoment > 5 then
+            self.Train:SetNW2Bool("IBISBootupComplete",true)
+            print(self.PowerOnMoment)
+        end
+    elseif self.PowerOn == 0 then
+        self.PowerOnRegistered = false
+        self.PowerOnMoment = 0
     end
     
     if self.Train:GetNW2Bool("IBISBootupComplete",false) == true then
@@ -605,6 +636,7 @@ function TRAIN_SYSTEM:Think()
             self.Menu = 4
             self.JustBooted = true
         end
+        self.Train:SetNW2Bool("IBISChime",true)
     end
     
     if self.State == 2 and self.Menu == 4 then
@@ -830,6 +862,7 @@ function TRAIN_SYSTEM:Think()
         self.NextStation = 0
         self.JustBooted = false
         self.PowerOn = 0
+        self.PowerOnMoment = 0
         self.Destination = 0 --Destination index number
         self.DestinationChar1 = " "
         self.DestinationChar2 = " "

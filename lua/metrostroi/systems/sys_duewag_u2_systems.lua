@@ -603,7 +603,7 @@ function TRAIN_SYSTEM:MUHandler()
 		self.Train:WriteTrainWire(7,0)
 	end
 	
-	if self.VZ == true and self.Train.FrontCouple.CoupledEnt == nil then
+	--[[if self.VZ == true and self.Train.FrontCouple.CoupledEnt == nil then
 		local breakawayalarm = math.random(2,15)
 		local alarmyesorno = math.random(0,1)
 		if alarmyesorno > 0 then
@@ -611,7 +611,7 @@ function TRAIN_SYSTEM:MUHandler()
 				self.Train.Deadman.DeadmanTripped = true
 			end
 		end
-	end
+	end]]
 	
 	
 	---------------------------------------------------------------------------------------------------------
