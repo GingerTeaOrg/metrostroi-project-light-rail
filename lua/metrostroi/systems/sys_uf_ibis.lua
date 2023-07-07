@@ -1251,12 +1251,12 @@ if SERVER then
                         self.RouteChar2 = self.KeyInput
                     end
                 end
-                
-            elseif Input ~= nil and Input == "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" and not tonumber(Input,10) then
-                if self.RouteChar2 ~= " " and self.RouteChar1 ~= " " then
-                    self.RouteChar1 = self.RouteChar2
+            elseif Input ~= nil and Input == "Delete" then
+                if self.RouteChar1 ~= " " and self.RouteChar2 ~= " " then
+                    self.RouteChar2 = self.RouteChar1
                     self.RouteChar1 = " "
-                elseif self.RouteChar2 ~= " " and self.RouteChar1 == " " then
+                elseif self.RouteChar1 == " " and self.RouteChar2 ~= " " then
+                    self.RouteChar2 = " "
                     self.RouteChar1 = " "
                 end
             end
@@ -1320,6 +1320,14 @@ if SERVER then
                     self.AnnouncementChar1 = self.AnnouncementChar2					
                     self.AnnouncementChar2 = self.KeyInput
                     
+                end
+            elseif Input ~= nil and Input == "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then
+                if self.AnnouncementChar1 ~= " " and self.AnnouncementChar2 ~= " " then
+                    self.AnnouncementChar2 = self.AnnouncementChar1
+                    self.AnnouncementChar1 = " "
+                elseif self.AnnouncementChar1 == " " and self.AnnouncementChar2 ~= " " then
+                    self.AnnouncementChar2 = " "
+                    self.AnnouncementChar1 = " "
                 end
             end
         end    
