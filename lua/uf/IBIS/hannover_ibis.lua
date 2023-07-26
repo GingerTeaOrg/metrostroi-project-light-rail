@@ -190,16 +190,82 @@ UF.AddIBISAnnouncementMetadata("Hannover",{ --format: {[station] = {[line] = {[r
             },
         },
 },
+[12] = {
+        ["02"] =    {
+            ["01"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/12_alte_heide.mp3"]=1.8},
+                [2] =   {["lilly/uf/IBIS/announcements/hannover/stations/endpunkt.mp3"]=3},
+            },
+            ["02"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/12_alte_heide.mp3"]=1.8},
+                [2] =   {["lilly/uf/IBIS/announcements/hannover/stations/endpunkt.mp3"]=3},
+            },
+        },
+},
 [13] = {
         ["01"] =    {
             ["01"] = {
-                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/13_langenhagen.mp3"]=1.5},
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/13_langenhagen.mp3"]=1.8},
                 [2] =   {["lilly/uf/IBIS/announcements/hannover/stations/endpunkt.mp3"]=3}
             },
             ["02"] = {
-                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/13_langenhagen.mp3"]=1.5},
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/13_langenhagen.mp3"]=1.8},
                 [2] =   {["lilly/uf/IBIS/announcements/hannover/stations/endpunkt.mp3"]=3}
             },
+        },
+},
+[14] = {
+        ["01"] =    {
+            ["01"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/14_dragonerstr.mp3"]=1.1},
+            },
+            ["02"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/14_dragonerstr.mp3"]=1.1},
+            }
+        },
+        ["02"] =    {
+            ["01"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/14_dragonerstr.mp3"]=1.1},
+            },
+            ["02"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/14_dragonerstr.mp3"]=1.1},
+            }
+        },
+},
+[40] = {
+        ["01"] =    {
+            ["01"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/40_laatzen.mp3"]=1.1},
+            },
+            ["02"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/40_laatzen.mp3"]=1.1},
+            }
+        },
+        ["02"] =    {
+            ["01"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/40_laatzen.mp3"]=1.1},
+            },
+            ["02"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/40_laatzen.mp3"]=1.1},
+            }
+        },
+},
+[71] = {
+        ["01"] =    {
+            ["01"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/71_kröpcke.mp3"]=1.1},
+            },
+            ["02"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/71_kröpcke.mp3"]=1.1},
+            }
+        },
+        ["02"] =    {
+            ["01"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/71_kröpcke.mp3"]=1.1},
+            },
+            ["02"] = {
+                [1] =   {["lilly/uf/IBIS/announcements/hannover/stations/71_kröpcke.mp3"]=1.1},
+            }
         },
 },
 })

@@ -1090,10 +1090,7 @@ function ENT:Initialize()
     self.AnnouncementTriggered = false
     self.ThrottleLastEngaged = 0
     
-    self.ElectricOnMoment = 0
-    self.IBISKickStart = false
-    self.IBISStarted = false
-    self.StartupSoundPlayed = false
+    self.IBISBootCompleted = false
     self.IBISBeep = false
     
     self.BatteryBreakerOnSoundPlayed = false
@@ -1426,8 +1423,10 @@ function ENT:Think()
     end 
     
     
-    if self:GetNW2Bool("IBISBootupComplete",false) == true and self:GetNW2Bool("IBISChime",false) == true then
+    if self:GetNW2Bool("IBISBootupComplete",false) == true and self:GetNW2Bool("IBISChime",false) == true and self.IBISBootCompleted == false then
+        self.IBISBootCompleted = true
         self:PlayOnce("IBIS_bootup",Vector(412,-12,55),1,1)
+        
     end
     
     self.BatteryBreakerOffSoundPlayed = false

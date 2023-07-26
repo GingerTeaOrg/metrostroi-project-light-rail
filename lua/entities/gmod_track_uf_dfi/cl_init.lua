@@ -17,6 +17,24 @@ surface.CreateFont("Lumino", {
     extended = true
 })
 
+surface.CreateFont("Lumino Dot", {
+    font = "Dot Matrix Umlaut Dot",
+    size = 100,
+    weight = 500,
+    blursize = 0,
+    scanlines = 0,
+    antialias = false,
+    underline = false,
+    italic = false,
+    strikeout = false,
+    symbol = false,
+    rotary = false,
+    shadow = false,
+    additive = false,
+    outline = false,
+    extended = true
+})
+
 surface.CreateFont("Lumino_Big", {
     font = "Dot Matrix Bold",
     size = 100,
@@ -37,7 +55,7 @@ surface.CreateFont("Lumino_Big", {
 
 surface.CreateFont("Lumino_Cars", {
     font = "DFICustom Cars",
-    size = 100,
+    size = 78,
     weight = 500,
     blursize = 0,
     scanlines = 0,
@@ -123,48 +141,27 @@ function ENT:Draw()
     
     
     
-    local mode = self:GetNW2Int("Mode", 0)
+    local mode = 2 --self:GetNW2Int("Mode", 0)
     if mode == 2 then
         local pos = self:LocalToWorld(Vector(-25, 96, 169))
         local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
         cam.Start3D2D(pos, ang, 0.03)
-        --surface.SetDrawColor(255, 255, 255, 255)
-        --surface.DrawRect(0, 0, 256, 320)
-        self:PrintText(-40,0,self:GetNW2String("Train Destination", "U2 Testbahnhof"),"Lumino_Big")
-        --[[draw.Text({
-            text = self:GetNW2String("Train Destination", "U2 Testbahnhof"),
-            font = "Lumino_Big", --..self:GetNW2Int("Style", 1),
-            pos = {0, 0},
-            xalign = TEXT_ALIGN_CENTER,
-            yalign = TEXT_ALIGN_LEFT,
-            color = Color(255, 136, 0)
-        })]]
-        cam.End3D2D()
-        cam.Start3D2D(self:LocalToWorld(Vector(-22, 96.4, 166)), ang, 0.03)
-        --surface.SetDrawColor(255, 255, 255, 255)
-        --surface.DrawRect(0, 0, 256, 320)
-        
-        draw.Text({
-            text = self:GetNW2String("Train Via", "über Testplatz"),
-            font = "Lumino", --..self:GetNW2Int("Style", 1),
-            pos = {0, 0},
-            xalign = TEXT_ALIGN_CENTER,
-            yalign = TEXT_ALIGN_LEFT,
-            color = Color(255, 136, 0)
-        })
-        cam.End3D2D()
-        cam.Start3D2D(self:LocalToWorld(Vector(-3, 96.4, 163)), ang, 0.03)
-        --surface.SetDrawColor(255, 255, 255, 255)
-        --surface.DrawRect(0, 0, 256, 320)
-        
-        draw.Text({
-            text = self:GetNW2String("Car Count", "ó ó ó"),
-            font = "Lumino_Cars", --..self:GetNW2Int("Style", 1),
-            pos = {0, 0},
-            xalign = TEXT_ALIGN_CENTER,
-            yalign = TEXT_ALIGN_LEFT,
-            color = Color(255, 136, 0)
-        })
+        self:PrintText(-8,0,self:GetNW2String("Train Line", "U4"),"Lumino_Big")
+        self:PrintText(-5.1,0,self:GetNW2String("Train Destination", "Testbahnhof"),"Lumino_Big")
+        self:PrintText(-5,6,self:GetNW2String("Train Via", "über Testplatz"),"Lumino")
+        self:PrintText(10,11.6,self:GetNW2String("Car Count", "ó"),"Lumino_Cars")
+        self:PrintText(11.6,11.6,self:GetNW2String("Car Count", "ó"),"Lumino_Cars")
+        self:PrintText(13.2,11.6,self:GetNW2String("Car Count", "ó"),"Lumino_Cars")
+        self:PrintText(14.8,11.6,self:GetNW2String("Car Count", "ó"),"Lumino_Cars")
+        --self:PrintText(9.7,12.4,"_","Lumino")
+        --self:PrintText(9.33,13,".","Lumino Dot")
+        --self:PrintText(10.5,12.4,"_","Lumino")
+        --self:PrintText(10.94,13,".","Lumino Dot")
+        --[[self:PrintText(9.55,12.4,"_","Lumino")
+        self:PrintText(10.3,12.4,"_","Lumino")
+        self:PrintText(11.05,12.4,"_","Lumino")
+        self:PrintText(11.8,12.4,"_","Lumino")
+        self:PrintText(12.55,12.4,"_","Lumino")]]
         cam.End3D2D()
     elseif mode == 1 then
         if self:GetNW2Bool("NothingRegistered", true) == false then

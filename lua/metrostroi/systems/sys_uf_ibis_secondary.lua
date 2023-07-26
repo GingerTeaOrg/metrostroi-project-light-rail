@@ -5,7 +5,7 @@ function TRAIN_SYSTEM:Initialize()
 
     if self.Train.ParentTrain then
     self.Primary = self.Train.ParentTrain.IBIS
-
+    
     self.Route = self.Primary.Route
     self.RouteChar1 = self.Primary.RouteChar1
     self.RouteChar2 = self.Primary.RouteChar2
@@ -97,6 +97,9 @@ end
 
 if TURBOSTROI then return end
 
+if TRAIN_SYSTEM.Train and TRAIN_SYSTEM.Train.ParentTrain ~= nil then
+    TRAIN_SYSTEM:Initialize()
+end
 
 
 function TRAIN_SYSTEM:Inputs()
@@ -517,5 +520,5 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     end
 end
 
-function TRAIN_SYSTEM:Think()   
+function TRAIN_SYSTEM:Think(Train)   
 end

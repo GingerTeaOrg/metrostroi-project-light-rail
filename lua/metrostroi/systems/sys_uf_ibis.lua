@@ -2,16 +2,12 @@ Metrostroi.DefineSystem("IBIS")
 TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 function TRAIN_SYSTEM:Initialize()
-    
-
-    
-    if self.Train.WagNum then self.SerialNum = self.Train.WagNum..math.random(1000,2000) end
     self.Route = "0" --Route index number
     self.PromptRoute = " "
     self.RouteChar1 = " "
     self.RouteChar2 = " "
-    self.DisplayedRouteChar1 = 0
-    self.DisplayedRouteChar2 = 0
+    self.DisplayedRouteChar1 = "0"
+    self.DisplayedRouteChar2 = "0"
     
     self.DestinationText = ""
     self.FirstStation = 0
@@ -35,7 +31,7 @@ function TRAIN_SYSTEM:Initialize()
     
     self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int("IBIS:Destinations")]
     self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA")]
-    print("Selected Service Announcements:", self.Train:GetNW2Int("IBIS:ServiceA"))
+    --print("Selected Service Announcements:", self.Train:GetNW2Int("IBIS:ServiceA"))
     self.JustBooted = false
     self.PowerOn = 0
     self.IBISBootupComplete = 0
@@ -59,7 +55,6 @@ function TRAIN_SYSTEM:Initialize()
     self.DisplayedCourseChar2 = " "
     self.DisplayedCourseChar3 = " "
     self.DisplayedCourseChar4 = " "
-    self.DisplayedCourseChar5 = " "
     self.PreviousCourse = "0"
     self.PreviousCourseNoted = false
     
@@ -74,9 +69,9 @@ function TRAIN_SYSTEM:Initialize()
     self.DestinationChar1 = " "
     self.DestinationChar2 = " "
     self.DestinationChar3 = " "
-    self.DisplayedDestinationChar1 = 0
-    self.DisplayedDestinationChar2 = 0
-    self.DisplayedDestinationChar3 = 0
+    self.DisplayedDestinationChar1 = " "
+    self.DisplayedDestinationChar2 = " "
+    self.DisplayedDestinationChar3 = " "
     
     self.AnnouncementChar1 = 0
     self.AnnouncementChar2 = 0
@@ -619,11 +614,11 @@ function TRAIN_SYSTEM:Think()
         if self.PowerOnRegistered == false then
             self.PowerOnMoment = RealTime()
             self.PowerOnRegistered = true
-            print("register",RealTime())
+            --print("register",RealTime())
         end
         if RealTime() - self.PowerOnMoment > 5 then
             self.Train:SetNW2Bool("IBISBootupComplete",true)
-            print(self.PowerOnMoment)
+            --print(self.PowerOnMoment)
         end
     elseif self.PowerOn == 0 then
         self.PowerOnRegistered = false
@@ -642,7 +637,7 @@ function TRAIN_SYSTEM:Think()
     if self.State == 2 and self.Menu == 4 then
         if self.KeyInput == "Enter" and self.IndexValid == true and self.RBLRegistered == true then
             self.Menu = 5
-            print("Got past RBL and index lookup")
+            --print("Got past RBL and index lookup")
         elseif self.KeyInput == "Enter" and self.IndexValid == false then
             self.Menu = 4
             self.State = 3
@@ -655,7 +650,7 @@ function TRAIN_SYSTEM:Think()
             self.Train:SetNW2Bool("IBISError",true)
             self.ErrorMoment = CurTime()
         elseif self.KeyInput == "Enter" and self.RBLRegistered == false and self.RBLSignedOff == true then
-            print("IBIS logged off RBL")
+            --print("IBIS logged off RBL")
             self.CourseChar1 = 0
             self.CourseChar2 = 0
             self.CourseChar3 = 0
@@ -840,17 +835,16 @@ function TRAIN_SYSTEM:Think()
         self.CourseChar3 = " "
         self.CourseChar4 = " "
         self.CourseChar5 = " "
-        self.DisplayedCourseChar1 = 0
-        self.DisplayedCourseChar2 = 0
-        self.DisplayedCourseChar3 = 0
-        self.DisplayedCourseChar4 = 0
-        self.DisplayedCourseChar5 = 0
+        self.DisplayedCourseChar1 = " "
+        self.DisplayedCourseChar2 = " "
+        self.DisplayedCourseChar3 = " "
+        self.DisplayedCourseChar4 = " "
         self.PreviousCourse = "0"
-        self.Route = 0 --Route index number
+        self.Route = "0" --Route index number
         self.RouteChar1 = " "
         self.RouteChar2 = " "
-        self.DisplayedRouteChar1 = 0
-        self.DisplayedRouteChar2 = 0
+        self.DisplayedRouteChar1 = " "
+        self.DisplayedRouteChar2 = " "
         
         self.DestinationText = ""
         self.Destination = " "
@@ -867,13 +861,13 @@ function TRAIN_SYSTEM:Think()
         self.DestinationChar1 = " "
         self.DestinationChar2 = " "
         self.DestinationChar3 = " "
-        self.DisplayedDestinationChar1 = 0
-        self.DisplayedDestinationChar2 = 0
-        self.DisplayedDestinationChar3 = 0
+        self.DisplayedDestinationChar1 = " "
+        self.DisplayedDestinationChar2 = " "
+        self.DisplayedDestinationChar3 = " "
         
-        self.AnnouncementChar1 = 0
-        self.AnnouncementChar2 = 0
-        self.SpecialAnnouncement = 0
+        self.AnnouncementChar1 = " "
+        self.AnnouncementChar2 = " "
+        self.SpecialAnnouncement = " "
         
         self.CurrentStationInternal = 0
     end
@@ -895,15 +889,15 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:PowerOn",self.PowerOn)
     Train:SetNW2Int("IBIS:Booted",self.IBISBootupComplete)
     Train:SetNW2String("IBIS:KeyInput",self.KeyInput)
-    Train:SetNW2String("IBIS:CourseChar4",self.DisplayedCourseChar4)
-    Train:SetNW2String("IBIS:CourseChar3",self.DisplayedCourseChar3)
-    Train:SetNW2String("IBIS:CourseChar2",self.DisplayedCourseChar2)
-    Train:SetNW2String("IBIS:CourseChar1",self.DisplayedCourseChar1)
-    Train:SetNW2String("IBIS:RouteChar1",self.DisplayedRouteChar1)
-    Train:SetNW2String("IBIS:RouteChar2",self.DisplayedRouteChar2)
-    Train:SetNW2String("IBIS:DestinationChar1",self.DisplayedDestinationChar1)
-    Train:SetNW2String("IBIS:DestinationChar2",self.DisplayedDestinationChar2)
-    Train:SetNW2String("IBIS:DestinationChar3",self.DisplayedDestinationChar3)
+    Train:SetNW2String("IBIS:CourseChar4",self.CourseChar4)
+    Train:SetNW2String("IBIS:CourseChar3",self.CourseChar3)
+    Train:SetNW2String("IBIS:CourseChar2",self.CourseChar2)
+    Train:SetNW2String("IBIS:CourseChar1",self.CourseChar1)
+    Train:SetNW2String("IBIS:RouteChar1",self.RouteChar1)
+    Train:SetNW2String("IBIS:RouteChar2",self.RouteChar2)
+    Train:SetNW2String("IBIS:DestinationChar1",self.DestinationChar1)
+    Train:SetNW2String("IBIS:DestinationChar2",self.DestinationChar2)
+    Train:SetNW2String("IBIS:DestinationChar3",self.DestinationChar3)
     Train:SetNW2String("IBIS:SpecialAnnouncement",self.ServiceAnnouncement)
     
     --if self.KeyInput ~=nil then
@@ -1004,7 +998,10 @@ function TRAIN_SYSTEM:ReadDataset()
         if self.RouteChar1 ~= " " and self.RouteChar2 ~= " " then
             local line = self.CourseChar1..self.CourseChar2
             if self.RouteTable[line] then
-                if self.RouteTable[line][self.RouteChar1..self.RouteChar2] then
+                if self.RouteChar2 ~= " " and tonumber(self.RouteChar2,10) < 10 and self.RouteChar1 == " " then --treat a simple input of 1 to 9 as 01 to 09
+                    local AbstractedRoute = "0"..self.RouteChar2
+                end
+                if not AbstractedRoute and self.RouteTable[line][self.RouteChar1..self.RouteChar2] then
                     local destchars = self.RouteTable[line][self.RouteChar1..self.RouteChar2][#self.RouteTable[line][self.RouteChar1..self.RouteChar2]]
                     self.DestinationChar1 = string.sub(destchars,1,1)
                     self.DestinationChar2 = string.sub(destchars,2,2)
@@ -1014,15 +1011,26 @@ function TRAIN_SYSTEM:ReadDataset()
                     self.CurrentStationInternal = 1
                     self.NextStation = self.RouteTable
                     --print(self.Destination.."Destination index")
-                    self.IndexValid = true      
+                    self.IndexValid = true   
+                elseif AbstractedRoute and self.RouteTable[line][AbstractedRoute] then
+                    local destchars = self.RouteTable[line][AbstractedRoute][#self.RouteTable[line][AbstractedRoute]]
+                    self.DestinationChar1 = string.sub(destchars,1,1)
+                    self.DestinationChar2 = string.sub(destchars,2,2)
+                    self.DestinationChar3 = string.sub(destchars,3,3)
+                    self.FirstStation = self.RouteTable[line][self.RouteChar1..self.RouteChar2][1]
+                    self.CurrentStation = self.FirstStation
+                    self.CurrentStationInternal = 1
+                    self.NextStation = self.RouteTable
+                    --print(self.Destination.."Destination index")
+                    self.IndexValid = true    
                 else
                     --self.State = 3
-                    self.Route = 0
+                    self.Route = "0"
                     self.IndexValid = false
                 end
             elseif self.RouteChar1..self.RouteChar2 == "00" then
                 self.IndexValid = true
-                self.Route = 0
+                self.Route = "0"
                 self.CurrentStation = 0
                 self.CurrentStationInternal = 0
             end
@@ -1030,7 +1038,7 @@ function TRAIN_SYSTEM:ReadDataset()
     elseif self.Menu == 1 and self.State < 3 or self.Menu == 4 and self.State < 3 then
         if self.RouteChar1..self.RouteChar2 == "00" then
                 self.IndexValid = true
-                self.Route = 0
+                self.Route = "0"
                 self.CurrentStation = 0
                 self.CurrentStationInternal = 0
         end
@@ -1048,7 +1056,6 @@ function TRAIN_SYSTEM:ReadDataset()
             end
         end
     elseif self.Menu == 6 and self.State < 3 then
-        
         if self.ServiceAnnouncements[self.ServiceAnnouncement] then
             self.ServiceAnnouncement = self.ServiceAnnouncement
             self.IndexValid = true
@@ -1097,11 +1104,11 @@ end
 
 function TRAIN_SYSTEM:Play()
     local message = {}
-    print("Current Station", self.CurrentStation)
+    --print("Current Station", self.CurrentStation)
     local tbl = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int("IBIS:Announcements",1)][self.CurrentStation][self.CourseChar1..self.CourseChar2][self.Route]
     local station = false
-    print("Course",self.CourseChar1..self.CourseChar2)
-    print("Route",self.Route)
+    --print("Course",self.CourseChar1..self.CourseChar2)
+    --print("Route",self.Route)
     for k,v in ipairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
 
         for ke,va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript",1)]) do
@@ -1152,13 +1159,19 @@ end
 if SERVER then
     
     function TRAIN_SYSTEM:InputProcessor(Input)
+
+        if self.State == 1 and self.Menu == 0 then
+            self.PreviousCourseNoted = false
+            self.PreviousRouteNoted = false
+            self.PreviousDestinationNoted = false
+        end
         
         if self.State == 1 and self.Menu == 4 or self.Menu == 1 and self.State == 1 or self.State == 2 and self.Menu == 4 then --only during startup in menus or manually triggered menus
 
-            if self.PreviousCourseNoted == false then
+            if self.PreviousCourseNoted == false and self.State ~= 2 then
                 self.PreviousCourseNoted = true
                 self.PreviousCourse = self.Course --note the course we had before in order to restore it in case the prompt is empty and the user presses Delete again to return to main menu
-                print("course remembered:", self.PreviousCourse)
+                --print("course remembered:", self.PreviousCourse)
             end
             
             if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then
@@ -1231,6 +1244,7 @@ if SERVER then
                 
             end
         elseif self.State == 1 and self.Menu == 5 or self.Menu == 2 and self.State == 1 or self.Menu == 5 and self.State == 2 then
+            
             self.Route = self.RouteChar1..self.RouteChar2
             if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" then
                 if self.RouteChar2 == " " and self.RouteChar1 == " " then
@@ -1256,6 +1270,9 @@ if SERVER then
                     self.RouteChar2 = self.RouteChar1
                     self.RouteChar1 = " "
                 elseif self.RouteChar1 == " " and self.RouteChar2 ~= " " then
+                    self.RouteChar2 = " "
+                    self.RouteChar1 = " "
+                elseif self.RouteChar1 == " " and self.RouteChar2 == " " then
                     self.RouteChar2 = " "
                     self.RouteChar1 = " "
                 end

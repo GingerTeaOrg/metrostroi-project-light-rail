@@ -324,7 +324,7 @@ function ENT:Initialize()
 	
 	-- Create U2 Section B
 	self.u2sectionb = self:CreateSectionB(Vector(-780,0,0))
-	self.RearBogey = self:CreateBogeyUF_b(Vector( -290,0,-4),Angle(0,180,0),false,"duewag_motor")
+	self.RearBogey = self:CreateBogeyUF_b(Vector( -290,0,0),Angle(0,180,0),false,"duewag_motor")
 	
 	self.RearCouple = self:CreateCouplerUF_b(Vector( -415,0,0),Angle(0,180,0),false,"u2")	
 	self.Panto = self:CreatePanto(Vector(35,0,115),Angle(0,90,0),"diamond")
@@ -845,7 +845,7 @@ function ENT:Think(dT)
 						self.u2sectionb:SetLightPower(66,false)
 						self.u2sectionb:SetLightPower(67,false)
 					end
-				elseif self.Deadman.DeadmanTripped == true then
+				elseif self.DeadmanUF.DeadmanTripped == true then
 					if self.Speed > 5 then
 						self.RearBogey.MotorPower = self.Duewag_U2.Traction
 						self.FrontBogey.MotorPower = self.Duewag_U2.Traction
@@ -1568,7 +1568,7 @@ function ENT:OnButtonPress(button,ply)
 			
 		end
 		self.Panel.Button4a = 1
-		print(self.DoorRandomness[2])
+		--print(self.DoorRandomness[2])
 	end
 	
 	if button == "Button8b" then
@@ -2234,7 +2234,7 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 						
 						self.DoorRandomness[i] = math.random(0,4)
 						
-						print(self.DoorRandomness[i], "doorrandom", i)
+						--print(self.DoorRandomness[i], "doorrandom", i)
 						self.RandomnessCalculated = true
 						break
 					end
@@ -2255,7 +2255,7 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 					
 						self.DoorRandomness[i] = math.random(0,4)
 					
-						print(self.DoorRandomness[i], "doorrandom", i)
+						--print(self.DoorRandomness[i], "doorrandom", i)
 						self.RandomnessCalculated = true
 						break
 					end

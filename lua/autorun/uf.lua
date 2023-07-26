@@ -352,6 +352,11 @@ end
         AddCSLuaFile("uf/IBIS/"..filename)
         include("uf/IBIS/"..filename)
     end
+    files = file.Find("uf/rollsigns/*/*.lua","LUA")
+    for _,filename in pairs(files) do
+        AddCSLuaFile("uf/rollsigns/"..filename)
+        include("uf/rollsigns/"..filename)
+    end
 function UF.GetTravelTime(src,dest)
 	-- Determine direction of travel
 	--assert(src.path == dest.path)
