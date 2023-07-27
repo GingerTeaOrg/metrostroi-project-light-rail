@@ -37,7 +37,7 @@ function ENT:Draw()
     
     self:InvalidateBoneCache()
 
-    self:Debug()
+    --self:Debug()
 end
 
 --------------------------------------------------------------------------------

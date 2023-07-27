@@ -86,7 +86,7 @@ function ENT:CheckContact(pos,dir,id,cpos)
     
     local pantoheight = result.HitPos - pos
 
-    print(pantoheight,"result",result.Entity)
+    --print(pantoheight,"result",result.Entity)
     self:SetNW2Vector("PantoHeight",pantoheight)
     local traceEnt = result.Entity
     if IsValid(traceEnt) and traceEnt:GetClass() == "player" and self.Voltage > 40 and result.HitPos.z - pos.z < 100 and self.Debug == false then --if the player hits the bounding box, unalive them
