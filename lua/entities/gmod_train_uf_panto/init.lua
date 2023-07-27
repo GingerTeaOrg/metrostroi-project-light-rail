@@ -32,7 +32,7 @@ function ENT:Initialize()
     self.Raised = false
 
     self.Height = 0
-    self.Voltage = 0
+    self.Voltage = 600
     self.ContactStates = { false, false }
     self.NextStates = { false }
     --self.PantoPos = WorldToLocal(self:GetPos())
@@ -62,34 +62,33 @@ function ENT:Think()
     
     local endscan = self:GetPos() + Vector(0,0,135)
     if self.Train.PantoUp == true then
-        self:CheckContact(self:GetPos(),self:GetUp(),1,Vector(10,10,0))
+        self:CheckContact(self:GetPos(),self:GetUp(),1,Vector(0,0,5))
 
         self:CheckVoltage(self.DeltaTime)
     end
+    --print(self:GetUp())
 end
 
 
 function ENT:CheckContact(pos,dir,id,cpos)
     local result = util.TraceHull({
-        start = self:LocalToWorld(pos),
-        endpos = self:LocalToWorld(pos + dir*10),
-        mask = -1,
-        filter = { self:GetNW2Entity("TrainEntity"), self },
-        mins = Vector( -2, -2, -2 ),
-        maxs = Vector( 2, 2, 2 )
+        start = pos,
+        endpos = pos + dir * 121,
+        mask = MASK_ALL,
+        filter = { self:GetNW2Entity("TrainEntity"), self }, --filter out the train entity and the panto itself
+        mins = Vector( -2,-24,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
+        maxs = Vector(2,24,120),
     })
-    --if not result.Hit then return end
-    print(self:GetPos() - result.HitPos)
     
-    local pos = self:GetPos()
-    local pantoheight = pos - result.HitPos
-    local pantoheightfinal = pantoheight
-    print(pantoheightfinal,"result")
-    self:SetNW2Vector("PantoHeight",pantoheightfinal)
+    if not result.Hit then self:SetNW2Vector("PantoHeight",Vector(0,0,120)) return end --if nothing touches the panto, it can spring to maximum freely
     
+    
+    local pantoheight = result.HitPos - pos
 
+    print(pantoheight,"result")
+    self:SetNW2Vector("PantoHeight",pantoheight)
     local traceEnt = result.Entity
-    if traceEnt:GetClass() == "player" and self.Voltage > 40 then
+    if IsValid(traceEnt) and traceEnt:GetClass() == "player" and self.Voltage > 40 then --if the player hits the bounding box, unalive them
         local pPos = traceEnt:GetPos()
         util.BlastDamage(traceEnt,traceEnt,pPos,64,3.0*self.Voltage)
 
@@ -97,9 +96,15 @@ function ENT:CheckContact(pos,dir,id,cpos)
         effectdata:SetOrigin(pPos + Vector(0,0,-16+math.random()*(40+0)))
         util.Effect("cball_explode",effectdata,true,true)
         sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
-        return
+        return --don't return anything because... I mean, a human body is a conductor, just not a very good one
+    elseif IsValid(traceEnt) and result.HitWorld and self.Voltage > 40 and math.random(0,100) > 86 then --randomly create some sparks if we're hitting catenary, with a 12% chance
+        local pPos = traceEnt:GetPos()
+        local effectdata = EffectData()
+        effectdata:SetOrigin(pPos + Vector(0,0,-16+math.random()*(40+0)))
+        util.Effect("cball_explode",effectdata,true,true)
+        sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
+        return true --yes, we are touching catenary
     end
-    return result.Hit
 end
 
 

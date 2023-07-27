@@ -1418,7 +1418,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	if button == "DeadmanSet" then
-		self.Deadman:TriggerInput("IsPressed", 1)
+		self.DeadmanUF:TriggerInput("IsPressed", 1)
 		if self:ReadTrainWire(6) > 0 then
 			self:WriteTrainWire(12,1)
 		end
@@ -1959,7 +1959,7 @@ function ENT:OnButtonRelease(button,ply)
 	
 	
 	if button == "DeadmanSet" then
-		self.Deadman:TriggerInput("IsPressed", 0)
+		self.DeadmanUF:TriggerInput("IsPressed", 0)
 		
 		if self:ReadTrainWire(6) > 0 then
 			self:WriteTrainWire(12,0)
@@ -2128,11 +2128,11 @@ function ENT:CreateSectionB(pos)
 	Vector(0,0,0),		
 	0, --forcelimit
 	0, --torquelimit
-	-0, --xmin
-	-4, --ymin
+	-4, --xmin
+	-0, --ymin
 	-180, --zmin
-	0, --xmax
-	4, --ymax
+	4, --xmax
+	0, --ymax
 	180, --zmax
 	0, --xfric
 	5, --yfric
