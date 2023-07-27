@@ -30,7 +30,7 @@ end
 function ENT:Draw()
     self:DrawModel()
     if self.PantoRaised == true then
-        self:SetPoseParameter("position",self:Animate("1",self.PantoHeight.z / 119,0,100,5,0,1))
+        self:SetPoseParameter("position",self:Animate("1",self.PantoHeight.z / 119,0,100,20,0,0.01))
     else
         self:SetPoseParameter("position",self:Animate("1",0,0,100,0.1,0,1))
     end

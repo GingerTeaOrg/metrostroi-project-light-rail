@@ -98,11 +98,11 @@ function ENT:CheckContact(pos,dir,id,cpos)
         util.Effect("cball_explode",effectdata,true,true)
         sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
         return --don't return anything because... I mean, a human body is a conductor, just not a very good one
-    elseif IsValid(traceEnt) and result.Hit and self.Voltage > 40 --[[and math.random(0,100) > 86]] then --randomly create some sparks if we're hitting catenary, with a 12% chance
-        local pPos = traceEnt:GetPos()
+    elseif IsValid(traceEnt) and result.Hit and self.Voltage > 40 and math.random(0,100) > 97 and self.Train.Speed > 5 then --randomly create some sparks if we're hitting catenary, with a 12% chance
+        local pPos = result.HitPos
         local effectdata = EffectData()
-        effectdata:SetOrigin(pPos + Vector(0,0,-16+math.random()*(40+0)))
-        util.Effect("cball_explode",effectdata,true,true)
+        effectdata:SetOrigin(pPos + Vector(0,math.random(-2,2),0))
+        util.Effect("StunstickImpact",effectdata,true,true)
         sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
         return true --yes, we are touching catenary
     end
