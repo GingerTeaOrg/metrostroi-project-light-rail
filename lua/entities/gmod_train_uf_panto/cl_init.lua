@@ -22,7 +22,7 @@ function ENT:Think()
     elseif self.PantoRaised == false then
          self.PantoHeight = Vector(0,0,0)
     end
-    print(self.PantoHeight.z)
+    --print(self.PantoHeight.z)
     self:Draw()
 
 end
@@ -30,7 +30,7 @@ end
 function ENT:Draw()
     self:DrawModel()
     if self.PantoRaised == true then
-        self:SetPoseParameter("position",self:Animate("1",self.PantoHeight.z / 120,0,100,5,0,1))
+        self:SetPoseParameter("position",self:Animate("1",self.PantoHeight.z / 119,0,100,5,0,1))
     else
         self:SetPoseParameter("position",self:Animate("1",0,0,100,0.1,0,1))
     end
@@ -89,6 +89,8 @@ function ENT:Animate(clientProp, value, min, max, speed, damping, stickyness)
 end
 
 function ENT:Debug()
-    render.DrawWireframeBox( self:GetPos(), Angle( 0, 0, 0 ), Vector( -2,-24,0 ), Vector(2,24,self.PantoHeight.Z), Color( 255, 255, 255 ), true )
+    local mins = self:GetNWVector("mins",Vector(-24,-2,0))
+    local maxs = self:GetNWVector("maxs",Vector(24,2,0))
 
+    render.DrawWireframeBox( self:GetPos(), self:WorldToLocalAngles(Angle(0, 0, 0)), mins, Vector(maxs.x,maxs.y,self.PantoHeight.z), Color( 255, 255, 255 ), true )
 end

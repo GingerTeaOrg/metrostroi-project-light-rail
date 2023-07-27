@@ -9,13 +9,10 @@ Metrostroi.DefineSystem("Duewag_Battery")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 
 function TRAIN_SYSTEM:Initialize()
-    -- Предохранители цепей (ПА1, ПА2)
-    --self.Train:LoadSystem("PA1","Relay","PP-28", { trigger_level = 31.5 }) -- A
-    --self.Train:LoadSystem("PA2","Relay","PP-28", { trigger_level = 31.5 }) -- A
 
     -- Battery parameters
     self.ElementCapacity    = 50 -- A*hour
-    self.ElementCount       = 36 -- 52 on 81-717
+    self.ElementCount       = 36
     self.Capacity = self.ElementCapacity * self.ElementCount * 3600
     self.Charge = 0
     self.Voltage = 0
