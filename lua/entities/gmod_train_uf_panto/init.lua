@@ -67,26 +67,26 @@ function ENT:Think()
         self:CheckVoltage(self.DeltaTime)
     end
     --print(self:GetUp())
-    self.Debug = true
+    self.Debug = false
 end
 
 
 function ENT:CheckContact(pos,dir,id,cpos)
     local result = util.TraceHull({
         start = pos,
-        endpos = pos + dir * 120,
+        endpos = pos + dir * 117,
         mask = -1,
         filter = { self:GetNW2Entity("TrainEntity"), self }, --filter out the train entity and the panto itself
-        mins = Vector( -2,-24,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
-        maxs = Vector(2,24,0.5),
+        mins = Vector( -24,-2,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
+        maxs = Vector(24,2,1),
     })
     
-    if not result.Hit then self:SetNW2Vector("PantoHeight",Vector(0,0,119)) return end --if nothing touches the panto, it can spring to maximum freely
+    if not result.Hit then self:SetNW2Vector("PantoHeight",Vector(0,0,117)) return end --if nothing touches the panto, it can spring to maximum freely
     
-    
-    local pantoheight = result.HitPos - pos
-
-    --print(pantoheight,"result",result.Entity)
+    local PhysObj = self:GetPhysicsObject()
+    local pantoheight = PhysObj:WorldToLocalVector(result.HitPos+Vector(0,0,math.abs(pos.z))) - PhysObj:WorldToLocalVector(pos+Vector(0,0,math.abs(pos.z)))
+    --print(pantoheight.z)
+    --print("traceorigin",PhysObj:WorldToLocalVector(pos),"hitpos",PhysObj:WorldToLocalVector(result.HitPos),"calculated height diff",pantoheight.z)
     self:SetNW2Vector("PantoHeight",pantoheight)
     local traceEnt = result.Entity
     if IsValid(traceEnt) and traceEnt:GetClass() == "player" and self.Voltage > 40 and result.HitPos.z - pos.z < 100 and self.Debug == false then --if the player hits the bounding box, unalive them
@@ -97,8 +97,8 @@ function ENT:CheckContact(pos,dir,id,cpos)
         effectdata:SetOrigin(pPos + Vector(0,0,-16+math.random()*(40+0)))
         util.Effect("cball_explode",effectdata,true,true)
         sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
-        return --don't return anything because... I mean, a human body is a conductor, just not a very good one
-    elseif IsValid(traceEnt) and result.Hit and self.Voltage > 40 and math.random(0,100) > 97 and self.Train.Speed > 5 then --randomly create some sparks if we're hitting catenary, with a 12% chance
+        return false --don't return anything because... I mean, a human body is a conductor, just not a very good one
+    elseif IsValid(traceEnt) and result.Hit and self.Voltage > 40 and math.random(0,100) >= 97 and self.Train.Speed > 5 then --randomly create some sparks if we're hitting catenary, with a 12% chance
         local pPos = result.HitPos
         local effectdata = EffectData()
         effectdata:SetOrigin(pPos + Vector(0,math.random(-2,2),0))
@@ -193,9 +193,9 @@ function ENT:CheckVoltage(dT)
 end
 
 function ENT:Debug()
-    local PhysObj = self:GetPhysicsObject()
-    self:SetNWVector("mins",PhysObj:WorldToLocalVector(Vector( -24,-2,0 )))
-    self:SetNWVector("maxs",PhysObj:WorldToLocalVector(Vector(24,2,120)))
+    
+    self:SetNWVector("mins",PhysObj:WorldToLocalVector(Vector( -2,-24,1 )))
+    self:SetNWVector("maxs",PhysObj:WorldToLocalVector(Vector(2,24,3)))
 end
 
 

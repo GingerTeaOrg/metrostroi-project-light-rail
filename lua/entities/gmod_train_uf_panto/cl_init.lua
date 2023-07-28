@@ -7,6 +7,7 @@ function ENT:Initialize()
     self.PantoHeight = 0
     self.PantoRaised = false
     self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
+    self.PantoHeightTab = {}
 end
 function ENT:Think()
     if IsValid(self:GetNW2Entity("TrainEntity")) then
@@ -16,28 +17,31 @@ function ENT:Think()
     self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
-    --print(type(self.PantoHeight))
+    
     if self.PantoRaised == true then
          self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
     elseif self.PantoRaised == false then
          self.PantoHeight = Vector(0,0,0)
     end
-    --print(self.PantoHeight.z)
+    self.PantoHeight.z = math.Round(self.PantoHeight.z,2)
     self:Draw()
 
 end
 
 function ENT:Draw()
     self:DrawModel()
+    --self:Debug()
     if self.PantoRaised == true then
-        self:SetPoseParameter("position",self:Animate("1",self.PantoHeight.z / 119,0,100,20,0,0.01))
+        
+        self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 8.5),0,100,20,0,0.01))
+       
     else
         self:SetPoseParameter("position",self:Animate("1",0,0,100,0.1,0,1))
     end
     
     self:InvalidateBoneCache()
 
-    --self:Debug()
+    
 end
 
 --------------------------------------------------------------------------------
@@ -89,8 +93,8 @@ function ENT:Animate(clientProp, value, min, max, speed, damping, stickyness)
 end
 
 function ENT:Debug()
-    local mins = self:GetNWVector("mins",Vector(-24,-2,0))
-    local maxs = self:GetNWVector("maxs",Vector(24,2,0))
-
-    render.DrawWireframeBox( self:GetPos(), self:WorldToLocalAngles(Angle(0, 0, 0)), mins, Vector(maxs.x,maxs.y,self.PantoHeight.z), Color( 255, 255, 255 ), true )
+    local mins = self:GetNWVector("mins",Vector(-2,-24,0))
+    local maxs = self:GetNWVector("maxs",Vector(2,24,3))
+    --print(self:GetPos())
+    render.DrawWireframeBox( self:GetPos(), self:WorldToLocalAngles(Angle(0, 0, 0)), Vector( -2,-24,0 ), Vector(maxs.x,maxs.y,self.PantoHeight.z), Color( 255, 255, 255 ), true )
 end

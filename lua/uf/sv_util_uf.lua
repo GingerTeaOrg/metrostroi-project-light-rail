@@ -34,12 +34,12 @@ hook.Add("Think", "UF_ElectricConsumptionThink", function()
     UF.TotalRateWatts = 0
     UF.Current = 0
     for k,v in pairs(UF.Currents) do UF.Currents[k] = 0 end
-    local bogeys = ents.FindByClass("gmod_train_bogey")
-    for _,bogey in pairs(bogeys) do
-        if bogey.Feeder then
-            UF.Currents[bogey.Feeder] = UF.Currents[bogey.Feeder] + bogey.DropByPeople
+    local pantos = ents.FindByClass("gmod_train_uf_panto")
+    for _,panto in pairs(pantos) do
+        if panto.Feeder then
+            UF.Currents[panto.Feeder] = UF.Currents[panto.Feeder] + panto.DropByPeople
         else
-            UF.Current = UF.Current + bogey.DropByPeople
+            UF.Current = UF.Current + panto.DropByPeople
         end
     end
     for _,class in pairs(UF.TrainClasses) do
@@ -93,7 +93,7 @@ hook.Add("Think", "UF_ElectricConsumptionThink", function()
         print(Format("[!] Power feed protection tripped: current peaked at %.1f A",UF.Current))
     end
 
-    local voltage = math.max(0,GetConVar("UF_voltage"):GetInt())
+    local voltage = math.max(0,GetConVar("mplr_voltage"):GetInt())
 
     -- Calculate new voltage
     local Rfeed = 0.03 --25

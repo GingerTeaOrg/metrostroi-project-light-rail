@@ -462,7 +462,15 @@ end
 if SERVER then
     files = file.Find("uf/sv*.lua","LUA")
     for _,filename in pairs(files) do
-        AddCSLuaFile("uf"..filename)
-        include("uf"..filename)
+        AddCSLuaFile("uf/"..filename)
+        include("uf/"..filename)
+    end
+end
+
+if CLIENT then
+    files = file.Find("uf/cl*.lua","LUA")
+    for _,filename in pairs(files) do
+        AddCSLuaFile("uf/"..filename)
+        include("uf/"..filename)
     end
 end
