@@ -43,7 +43,7 @@ function ENT:Initialize()
     self.NoPhysics = false
     self.PantoType = {}
     self:SetModelScale(0.85,1)
-    
+    self.SoundPlayed = false
 end
 
 

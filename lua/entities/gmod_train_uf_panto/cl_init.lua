@@ -8,6 +8,7 @@ function ENT:Initialize()
     self.PantoRaised = false
     self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
     self.PantoHeightTab = {}
+    self.SoundPlayed = false
 end
 function ENT:Think()
     if IsValid(self:GetNW2Entity("TrainEntity")) then
@@ -33,7 +34,7 @@ function ENT:Draw()
     --self:Debug()
     if self.PantoRaised == true then
         
-        self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 8.5),0,100,20,0,0.01))
+        self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,20,0,0.01))
        
     else
         self:SetPoseParameter("position",self:Animate("1",0,0,100,0.1,0,1))
