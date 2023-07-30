@@ -473,5 +473,5 @@ if CLIENT then
         AddCSLuaFile("uf/"..filename)
         include("uf/"..filename)
     end
-    runconsolecommand(metrostroi_drawdistance 99999)
+    RunConsoleCommand(metrostroi_drawdistance 99999)
 end
