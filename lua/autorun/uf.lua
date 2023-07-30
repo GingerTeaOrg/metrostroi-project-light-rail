@@ -454,7 +454,7 @@ if Metrostroi.Stations then --inject UF station entities because Metrostroi has 
                 platform.StationIndex,platform.PlatformIndex,pos1.x*1e-3,pos2.x*1e-3,
                 platform_data.length,platform_data.node_start.path.id))
         else
-            print(Format("Metrostroi: Error, station %03d platform %d, cant find pos! \n\tStart%s \n\tEnd:%s",platform.StationIndex,platform.PlatformIndex,platform.PlatformStart,platform.PlatformEnd))
+            print(Format("PLR: Error, station %03d platform %d, cant find pos! \n\tStart%s \n\tEnd:%s",platform.StationIndex,platform.PlatformIndex,platform.PlatformStart,platform.PlatformEnd))
         end
     end
 end
@@ -473,4 +473,5 @@ if CLIENT then
         AddCSLuaFile("uf/"..filename)
         include("uf/"..filename)
     end
+    runconsolecommand(metrostroi_drawdistance 99999)
 end
