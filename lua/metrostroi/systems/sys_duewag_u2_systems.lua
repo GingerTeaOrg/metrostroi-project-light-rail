@@ -551,11 +551,7 @@ function TRAIN_SYSTEM:U2Engine()
 		if CurTime() - self.CamshaftMoveTimer > 0.4  then
 			self.CamshaftFinishedMoving = true
 			self.Train:SetNW2Bool("CamshaftMoved",true)
-			
-			
-		end
-		
-		
+		end	
 	end
 	
 	
