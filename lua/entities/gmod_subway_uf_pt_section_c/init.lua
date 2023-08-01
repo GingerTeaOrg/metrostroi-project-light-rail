@@ -49,8 +49,8 @@ function ENT:Initialize()
 	self.OptOutRerail = true
 	
 	
-	self.FrontCouple = self.SectionA:CreateCoupleUF_a(Vector( 400,0,10),Angle(0,0,0),true,"pt")	
-	self.RearCouple = self.SectionB:CreateCoupleUF_b(Vector( 400,0,10),Angle(0,0,0),false,"u2")				
+	self.FrontCouple = self.SectionA:CreateCoupleUF_a(Vector( 390,0,10),Angle(0,0,0),true,"pt")	
+	self.RearCouple = self.SectionB:CreateCoupleUF_b(Vector( 390,0,10),Angle(0,0,0),false,"pt")				
 	
 	
 	--self.SectionA.BaseClass:Initialize(self.SectionA)
