@@ -9,6 +9,7 @@ function ENT:Initialize()
     self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
     self.PantoHeightTab = {}
     self.SoundPlayed = false
+    self.Sounds = {}
 end
 function ENT:Think()
     if IsValid(self:GetNW2Entity("TrainEntity")) then
@@ -21,8 +22,15 @@ function ENT:Think()
     
     if self.PantoRaised == true then
          self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
+         if self.SoundPlayed == false then
+            self.SoundPlayed = true
+            if self:GetNW2Bool("HitWire",false) then
+                self:PlayOnceFromPos("plonk","lilly/uf/common/panto_applied.mp3",2,1,0,2,self.PantoHeight)
+            end
+         end
     elseif self.PantoRaised == false then
          self.PantoHeight = Vector(0,0,0)
+         self.SoundPlayed = false
     end
     self.PantoHeight.z = math.Round(self.PantoHeight.z,2)
     self:Draw()

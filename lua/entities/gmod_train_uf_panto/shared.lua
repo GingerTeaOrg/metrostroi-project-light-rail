@@ -7,16 +7,44 @@ ENT.Instructions    = ""
 ENT.Category        = "U-Bahn Frankfurt Metrostroi"
 ENT.Spawnable       = true
 ENT.AdminSpawnable  = false
-
+function ENT:SetBASSPos(snd,tbl)
+	if tbl then
+		snd:SetPos(self:LocalToWorld(Vector(0,0,tbl[3])),self:GetAngles():Forward())
+	else
+		snd:SetPos(self:GetPos())
+	end
+end
+function ENT:SetBassParameters(snd,pitch,volume,tbl,looping,spec)
+	if snd:GetState() ~= GMOD_CHANNEL_STOPPED and snd:GetState() ~= GMOD_CHANNEL_PAUSED then
+		return
+	end
+	self:SetBASSPos(snd,tbl)
+	if tbl then
+		snd:Set3DFadeDistance(tbl[1],tbl[2])
+		if tbl[4] then
+			snd:SetVolume(tbl[4]*volume)
+		else
+			snd:SetVolume(volume)
+		end
+	else
+		snd:Set3DFadeDistance(200,1e9)
+		snd:SetVolume(volume)
+	end
+	snd:EnableLooping(looping or false)
+	snd:SetPlaybackRate(pitch)
+	local siz1,siz2 = snd:Get3DFadeDistance()--[[]
+	debugoverlay.Sphere(snd:GetPos(),4,2,Color(0,255,0),true)
+	debugoverlay.Sphere(snd:GetPos(),siz1,2,Color(255,0,0,100),false)]]
+	--debugoverlay.Sphere(snd:GetPos(),siz2,2,Color(0,0,255,100),false)
+end
 function ENT:PlayOnceFromPos(id,sndname,volume,pitch,min,max,location)
 		if self.StopSounds then return end
 		self:DestroySound(self.Sounds[id],true)
 		self.Sounds[id] = nil
 		if sndname == "_STOP" then return end
-		self.SoundPositions[id] = {min,max,location}
 		self:CreateBASSSound(sndname,function(snd)
 			self.Sounds[id] = snd
-			self:SetBassParameters(self.Sounds[id],pitch,volume,self.SoundPositions[id],false)
+			self:SetBassParameters(self.Sounds[id],pitch,volume,location,false)
 			snd:Play()
 		end)
 end
@@ -45,6 +73,14 @@ function ENT:CreateBASSSound(name,callback,noblock,onerr)
 		end
 	end )
 end
+local function destroySound(snd,nogc)
+	if IsValid(snd) then snd:Stop() end
+	if not nogc and snd and snd.__gc then snd:__gc() end
+end
+function ENT:DestroySound(snd,nogc)
+	destroySound(snd,nogc)
+end
+
 physenv.AddSurfaceData([[
 "gmod_silent"
 {

@@ -82,7 +82,7 @@ function ENT:CheckContact(pos,dir,id,cpos)
     })
     
     if not result.Hit then self:SetNW2Vector("PantoHeight",Vector(0,0,117)) return end --if nothing touches the panto, it can spring to maximum freely
-    
+    self:SetNW2Bool("HitWire",result.Hit)
     local PhysObj = self:GetPhysicsObject()
     local pantoheight = PhysObj:WorldToLocalVector(result.HitPos+Vector(0,0,math.abs(pos.z))) - PhysObj:WorldToLocalVector(pos+Vector(0,0,math.abs(pos.z)))
     --print(pantoheight.z)
