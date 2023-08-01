@@ -490,7 +490,10 @@ function ENT:Initialize()
 		[36] = { "light",Vector(152.116,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 3
 		[37] = { "light",Vector(84.6012,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
 		[38] = { "light",Vector(416.20,6,54), Angle(0,0,0), Color(0,90,59),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
-		[39] = { "light",Vector(416.20,6,54), Angle(0,0,0), Color(252,247,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --battery discharge lamp in cab
+		[39] = { "light",Vector(415.617,18.8834,54.8), Angle(0,0,0), Color(252,247,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --battery discharge lamp in cab
+		[40] = { "light",Vector(415.617,12.4824,54.9), Angle(0,0,0), Color(0,130,99),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --clear for departure lamp
+		[41] = { "light",Vector(415.656,-2.45033,54.55), Angle(0,0,0), Color(255,0,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --doors unlocked lamp
+		[42] = { "light",Vector(415.656,14.6172,54.55), Angle(0,0,0), Color(27,57,141),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --doors unlocked lamp
 	}
 
 	self.InteractionZones = {
@@ -558,6 +561,8 @@ end
 
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
+	--self:SetLightPower(39,true)
+	
 	if self:GetNW2String("Texture","") == "SVB" then
 		self:SetNW2Bool("RetroMode",false)
 	end
@@ -635,6 +640,10 @@ function ENT:Think(dT)
 	self:SetNW2Float("BatteryCharge",self.Duewag_Battery.Voltage)
 	
 	if self.BatteryOn == true or self:ReadTrainWire(7) > 0 then
+
+		self:SetLightPower(40,self.DepartureConfirmed)
+		self:SetLightPower(41,self.DoorsUnlocked)
+
 		--self.Duewag_Battery.Charging = 1
 		--self.Duewag_Battery:TriggerInput("Charge",0.2)
 		

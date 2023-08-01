@@ -533,12 +533,6 @@ sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,s
     sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
 }
 },
-{ID = "HighbeamLamp", x=149, y=57, radius=10, tooltip = "High Beam On", model = {lamp = {var="Highbeam",z=0,anim=false,
-lcolor=Color(13,17,255),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},sprite = {bright=0.5,size=0.25,scale=0.01,color=Color(255,50,45),z=-1.4,},
-model = "models/lilly/uf/u2/cab/button_bulge_blue.mdl", z=-5, ang=45,anim=false,
-var="Highbeam",speed=1, vmin=0, vmax=0,
-sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
 },
 {ID = "AutomatOnSet", x=118.5, y=90.4, radius=10, tooltip = "Automat On", model = {
     model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=45,anim=true,
