@@ -467,6 +467,23 @@ ENT.ButtonMap["Button5b"] = {
     }
 }
 
+ENT.ButtonMap["DeadmanButton"] = {
+    pos = Vector(410.2,-1.3,52),
+    ang = Angle(90,0,-90),
+    width = 3,
+    height = 3,
+    scale = 0.2,
+    buttons = {
+        {ID = "DeadmanButton",x=0,y=0,w=5,h=5,radius=1, tooltip="Deadman", model = {
+            var="DeadmanButton",
+            sndid="door_cab_m",
+            sndvol = 1, snd = function(val) return val and "door_cab_open" or "door_cab_close" end,
+            sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0),
+            noTooltip = true,
+        }},
+    }
+}
+
 
 ENT.ButtonMap["Cab"] = {
     pos = Vector(419.6,24.88,55.2),
@@ -697,7 +714,7 @@ sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end
 }
 },
 }
-}
+
 
 
 
