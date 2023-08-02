@@ -1271,17 +1271,24 @@ function ENT:Think()
         self:ShowHide("reverser",false,0)
     end
     
-    self:Animate("Door_fr2",self:GetNW2Float("Door12a"),0,100,100,10,0)
-    self:Animate("Door_fr1",self:GetNW2Float("Door12a"),0,100,100,10,0)
+    local Door12a = self:GetNW2Float("Door12a")
+    local Door34a = self:GetNW2Float("Door34a")
+
+    local Door56b = self:GetNW2Float("Door56b")
+    local Door78b = self:GetNW2Float("Door78b")
+
+
+    self:Animate("Door_fr2",Door12a,0,100,100,10,0)
+    self:Animate("Door_fr1",Door12a,0,100,100,10,0)
     
-    self:Animate("Door_rr2",self:GetNW2Float("Door34a"),0,100,100,10,0)
-    self:Animate("Door_rr1",self:GetNW2Float("Door34a"),0,100,100,10,0)
+    self:Animate("Door_rr2",Door34a,0,100,100,10,0)
+    self:Animate("Door_rr1",Door34a,0,100,100,10,0)
     
-    self:Animate("Door_fl2",self:GetNW2Float("Door78b"),0,100,100,10,0)
-    self:Animate("Door_fl1",self:GetNW2Float("Door78b"),0,100,100,10,0)
+    self:Animate("Door_fl2",Door78b,0,100,100,10,0)
+    self:Animate("Door_fl1",Door78b,0,100,100,10,0)
     
-    self:Animate("Door_rl2",self:GetNW2Float("Door56b"),0,100,100,10,0)
-    self:Animate("Door_rl1",self:GetNW2Float("Door56b"),0,100,100,10,0)
+    self:Animate("Door_rl2",Door56b,0,100,100,10,0)
+    self:Animate("Door_rl1",Door56b,0,100,100,10,0)
     
     if self:GetNW2Bool("Microphone",false) == true then
         if self.Microphone == false then
