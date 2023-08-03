@@ -46,29 +46,29 @@ function ENT:InitializeSounds()
 	self.SoundNames["Nag1"] = {"lilly/uf/u2/PAsystem/door_complaints/clear_the_doors.mp3"}
 	self.SoundPositions["Nag1"] = {1100,1e9,Vector(350,-30,113),1}
 	
-	self.SoundNames["Door_open1r"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end.mp3"}
-	self.SoundPositions["Door_open1"] = {400,1e9,Vector(409,49.4254,109),1}
+	self.SoundNames["Door_open1r"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end2.mp3"}
+	self.SoundPositions["Door_open1r"] = {400,1e9,Vector(370,-49.4254,110),1}
 	
-	self.SoundNames["Door_open2r"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end.mp3"}
-	self.SoundPositions["Door_open2r"] = {400,1e9,Vector(134.36,49.4254,109),1}
+	self.SoundNames["Door_open2r"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end2.mp3"}
+	self.SoundPositions["Door_open2r"] = {400,1e9,Vector(134.36,-49.4254,110),1}
 
 	self.SoundNames["Door_close2r"] = {loop=0.5,"lilly/uf/u2/Door_close_start.mp3","lilly/uf/u2/Door_close_loop.mp3","lilly/uf/u2/Door_close_end.mp3"}
-	self.SoundPositions["Door_close2r"] = {400,1e9,Vector(134.36,49.4254,109),1}
+	self.SoundPositions["Door_close2r"] = {400,1e9,Vector(134.36,-49.4254,110),1}
 	
 	self.SoundNames["Door_close1r"] = {loop=0.5,"lilly/uf/u2/Door_close_start.mp3","lilly/uf/u2/Door_close_loop.mp3","lilly/uf/u2/Door_close_end.mp3"}
-	self.SoundPositions["Door_close1r"] = {400,1e9,Vector(409,49.4254,109),1}
+	self.SoundPositions["Door_close1r"] = {400,1e9,Vector(370,-49.4254,110),1}
 
-	self.SoundNames["Door_open1l"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end.mp3"}
-	self.SoundPositions["Door_openl"] = {400,1e9,Vector(409,-49.4254,109),1}
+	self.SoundNames["Door_open1l"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end2.mp3"}
+	self.SoundPositions["Door_open1l"] = {400,1e9,Vector(409,49.4254,109),1}
 	
-	self.SoundNames["Door_open2l"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end.mp3"}
-	self.SoundPositions["Door_open2l"] = {400,1e9,Vector(134.36,-49.4254,109),1}
+	self.SoundNames["Door_open2l"] = {loop=0.5,"lilly/uf/u2/Door_open_start.mp3","lilly/uf/u2/Door_open_loop.mp3","lilly/uf/u2/Door_open_end2.mp3"}
+	self.SoundPositions["Door_open2l"] = {400,1e9,Vector(134.36,49.4254,109),1}
 
 	self.SoundNames["Door_close2l"] = {loop=0.5,"lilly/uf/u2/Door_close_start.mp3","lilly/uf/u2/Door_close_loop.mp3","lilly/uf/u2/Door_close_end.mp3"}
-	self.SoundPositions["Door_close2l"] = {400,1e9,Vector(134.36,-49.4254,109),1}
+	self.SoundPositions["Door_close2l"] = {400,1e9,Vector(134.36,49.4254,109),1}
 	
 	self.SoundNames["Door_close1l"] = {loop=0.5,"lilly/uf/u2/Door_close_start.mp3","lilly/uf/u2/Door_close_loop.mp3","lilly/uf/u2/Door_close_end.mp3"}
-	self.SoundPositions["Door_close1l"] = {400,1e9,Vector(409,-49.4254,109),1}
+	self.SoundPositions["Door_close1l"] = {400,1e9,Vector(370,49.4254,110),1}
 	
 	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.mp3","lilly/uf/common/deadman_loop.mp3","lilly/uf/common/deadman_end.mp3"}
 	self.SoundPositions["Deadman"] = {800,1e9,Vector(401,14,14),.7}

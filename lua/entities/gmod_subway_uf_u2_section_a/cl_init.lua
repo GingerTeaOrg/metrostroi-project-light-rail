@@ -498,105 +498,110 @@ ENT.ButtonMap["Cab"] = {
             model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
             var="WarningAnnouncement", speed=15,
             sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-        }
-    },
+            }
+        },
     
-    {ID = "BlinkerLamp", x=271, y=58, radius=10, tooltip = "Blinker Status Lamp", model = {model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",z=-5,
-    name="BlinkerLamp",
-    sprite = {bright=0.3,size=0.15,scale=0.03,vscale=0.02,color=Color(0,109,0),z=7.7}
-}},
+        {ID = "BlinkerLamp", x=271, y=58, radius=10, tooltip = "Blinker Status Lamp", model = {model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",z=-5,
+            name="BlinkerLamp",
+            sprite = {bright=0.3,size=0.15,scale=0.03,vscale=0.02,color=Color(0,109,0),z=7.7}
+            }
+        },
 
-{ID = "DepartureBlockedLamp", x=242, y=58, radius=10, tooltip = "Train not cleared for departure", model = {lamp = {model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",var="DepartureBlocked",z=0,anim=true,
-lcolor=Color(255,0,0),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
-model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=0,
-var="DepartureBlocked", speed=15,
-sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "VentilationSet", x=335, y=58, radius=10, tooltip = "Enable motor fans", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
-    getfunc = function(ent) return ent:GetPackedRatio("Ventilation") end,var="Ventilation", speed=4,min=0,max=1,
-    var="Ventilation",speed=1, vmin=0, vmax=1,
-    sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "ReleaseHoldingBrakeSet", x=21.5, y=90, radius=10, tooltip = "Release mechanical retainer brake manually", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,anim=true,
-    var="ReleaseHoldingBrake",speed=20, min=0, max=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "SetHoldingBrakeSet", x=21.5, y=58, radius=10, tooltip = "set mechanical retainer brake manually", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=180,
-    var="SetHoldingBrake",speed=20, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "PassengerOvergroundSet", x=54, y=58, radius=10, tooltip = "Set passenger lights to overground mode", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_green.mdl", z=-5, ang=0,
-    var="PassengerOverground",speed=20, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "ShedrunSet", x=87, y=90, radius=10, tooltip = "Toggle Indoors Mode", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,
-    var="Shedrun",speed=1, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "HighbeamToggle", x=149, y=90.4, radius=10, tooltip = "Toggle High Beam", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-3, ang=45,anim=true,
-    var="Highbeam",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-},
-{ID = "AutomatOnSet", x=118.5, y=90.4, radius=10, tooltip = "Automat On", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=45,anim=true,
-    var="AutomatOn",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "AutomatOffSet", x=118.5, y=57, radius=10, tooltip = "Automat Off", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=45,anim=true,
-    var="AutomatOff",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "WiperToggle", x=211, y=57, radius=10, tooltip = "Wipers", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-4, ang=45,anim=true,
-    var="Wiper",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "PassengerUndergroundSet", x=54, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
-    var="PassengerUnderground",speed=20, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "HeadlightsToggle", x=22, y=19, radius=10, tooltip = "Enable Headlights", model = {
+        {ID = "DepartureBlockedLamp", x=242, y=58, radius=10, tooltip = "Train not cleared for departure", model = {lamp = {model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",var="DepartureBlocked",z=0,anim=true,
+            lcolor=Color(255,0,0),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
+            model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=0,
+            var="DepartureBlocked", speed=15,
+            sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "VentilationSet", x=335, y=58, radius=10, tooltip = "Enable motor fans", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
+            getfunc = function(ent) return ent:GetPackedRatio("Ventilation") end,var="Ventilation", speed=4,min=0,max=1,
+            var="Ventilation",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "ReleaseHoldingBrakeSet", x=21.5, y=90, radius=10, tooltip = "Release mechanical retainer brake manually", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,anim=true,
+            var="ReleaseHoldingBrake",speed=20, min=0, max=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "SetHoldingBrakeSet", x=21.5, y=58, radius=10, tooltip = "set mechanical retainer brake manually", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=180,
+            var="SetHoldingBrake",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "PassengerOvergroundSet", x=54, y=58, radius=10, tooltip = "Set passenger lights to overground mode", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_green.mdl", z=-5, ang=0,
+            var="PassengerOverground",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "ShedrunSet", x=87, y=90, radius=10, tooltip = "Toggle Indoors Mode", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,
+            var="Shedrun",speed=1, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+            },
+        {ID = "HighbeamToggle", x=149, y=90.4, radius=10, tooltip = "Toggle High Beam", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-3, ang=45,anim=true,
+            var="Highbeam",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "HighbeamLamp", x=149, y=57, radius=10, tooltip = "High Beam On", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_blue.mdl", z=0, ang=45,anim=false,
+            var="HighbeamLamp",
+            }
+        },
+        {ID = "AutomatOnSet", x=118.5, y=90.4, radius=10, tooltip = "Automat On", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=45,anim=true,
+            var="AutomatOn",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "AutomatOffSet", x=118.5, y=57, radius=10, tooltip = "Automat Off", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=45,anim=true,
+            var="AutomatOff",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "WiperToggle", x=211, y=57, radius=10, tooltip = "Wipers", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-4, ang=45,anim=true,
+            var="Wiper",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "PassengerUndergroundSet", x=54, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
+            var="PassengerUnderground",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "HeadlightsToggle", x=22, y=19, radius=10, tooltip = "Enable Headlights", model = {
     
-    model= "models/lilly/uf/u2/cab/battery_switch.mdl",
-    z=0, ang=45,
-    var="Headlights",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 90,sndmax = 1e3,sndang = Angle(-90,0,0),
-}
-},
-{ID = "BatteryToggle", x=463, y=91, radius=10, tooltip = "Toggle Battery", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-2.5, ang=45,
-    getfunc =  function(ent) return ent.BatterySwitch end,
-    var="BatteryToggle",speed=5, min=0, max=1,
-    sndvol = 20, snd = function(val,val2) return val2 == 1 and "button_on" or val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "SpeakerToggle", x=149, y=18.2, radius=10, tooltip = "Toggle Speaker Inside/Outside", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=0, ang=0,
-    --[[getfunc =  function(ent) return ent:GetPackedBool("FlickBatterySwitchOn") and 1 or 0.5 or ent:GetPackedBool("FlickBatterySwitchOff") and 1 or 0.5 end,]]
-    var="Speaker",speed=1, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
+            model= "models/lilly/uf/u2/cab/battery_switch.mdl",
+            z=0, ang=45,
+            var="Headlights",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 90,sndmax = 1e3,sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "BatteryToggle", x=463, y=91, radius=10, tooltip = "Toggle Battery", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-2.5, ang=45,
+            getfunc =  function(ent) return ent.BatterySwitch end,
+            var="BatteryToggle",speed=5, min=0, max=1,
+            sndvol = 20, snd = function(val,val2) return val2 == 1 and "button_on" or val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "SpeakerToggle", x=149, y=18.2, radius=10, tooltip = "Toggle Speaker Inside/Outside", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=0, ang=0,
+            --[[getfunc =  function(ent) return ent:GetPackedBool("FlickBatterySwitchOn") and 1 or 0.5 or ent:GetPackedBool("FlickBatterySwitchOff") and 1 or 0.5 end,]]
+            var="Speaker",speed=1, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
 {ID = "DriverLightToggle", x=463, y=70, radius=10, tooltip = "Toggle Cab Light", model = {
     z=0, ang=0,
     var="DriverLight",speed=1, vmin=0, vmax=1,
@@ -651,12 +656,6 @@ var="PantographRaise",speed=20, vmin=0, vmax=1,
 sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
 }
 },
---[[{ID = "LowerPantographSet", x=449, y=112, radius=10, tooltip = "Lower pantograph", model = {
-model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
-var="main",speed=1, vmin=0, vmax=1,
-sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},]]
 {ID = "ThrowCouplerSet", x=335, y=90.8, radius=10, tooltip = "Throw Coupler", model = {
     model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
     var="ThrowCoupler",speed=10, vmin=0, vmax=1,
@@ -714,7 +713,7 @@ sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end
 }
 },
 }
-
+}
 
 
 
@@ -1271,7 +1270,7 @@ function ENT:Think()
         self:ShowHide("reverser",false,0)
     end
     
-    local Door12a = self:GetNW2Float("Door12a")
+    local Door12a = math.Clamp(self:GetNW2Float("Door12a"),0,1)
     local Door34a = self:GetNW2Float("Door34a")
 
     local Door56b = self:GetNW2Float("Door56b")
@@ -1300,10 +1299,6 @@ function ENT:Think()
     if self:GetNW2Bool("Microphone",false) == false then
         self.Microphone = false
     end
-    
-    
-    
-    
     if self:GetNW2Bool("CamshaftMoved",false) == true and self.CamshaftMadeSound == false then
         self.CamshaftMadeSound = true
         self:PlayOnce("Switchgear"..math.random(1,7),"cabin",0.2,1)
@@ -1322,8 +1317,8 @@ function ENT:Think()
     elseif self:GetPackedBool("Headlights",false) == false then
         self:ShowHide("headlights_on",false,0)
     end
+
     
-    --self:ShowHide("headlights_on",true,0)
 
     if self:GetNW2Bool("BlinkerShineLeft",false) == true then
         self:SetLightPower(11,true)
@@ -1331,13 +1326,9 @@ function ENT:Think()
         self:SetLightPower(11,false)
     end
     
-    
     self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"),0,80) / 100 * 1.5
-    
     self:Animate("Speedo",self.SpeedoAnim,0,100,32,0,0)
-    --self:Animate("Throttle",0,-45,45,3,0,false)
-    
-    
+    self:Animate("Throttle",0,-45,45,3,0,false)
     self:SetSoundState("DoorsCloseAlarm", self:GetNW2Bool("DoorCloseAlarm",false) and 1 or 0,1)
     
     
@@ -1361,36 +1352,119 @@ function ENT:Think()
     end
     
     if self:GetNW2Bool("BatteryOn",false) == true then
+        local DoorsClosing = self:GetNW2Bool("DoorsClosing",false)
+        local Door12aMove
+        local Door12aPrev --= Door12a
+        local LastMove12a
+        if Door12a ~= Door12aPrev and Door12a > 0 and Door12a < 1 then --track the fact that the Doors 1a and 2a are moving
+            Door12aMove = true --yes, they are moving
+            LastMove12a = CurTime() --Moved *NAO*
+            Door12aPrev = Door12a
+        elseif Door12a < 0.1 or Door12a > 0.9 then 
+            Door12aMove = false --we're not moving
+            LastMove12a = 0 --reset the timer
+        end
+        print(Door12aMove)
+        if Door12aMove == true and LastMove12a ~= 0 and not DoorsClosing then --just in case the boolean isn't working reliably, the timer should suss it out
+            self:SetSoundState("Door_open1r",1,1) --sound on
+        elseif not Door12aMove and LastMove12a == 0 and not DoorsClosing then
+            self:SetSoundState("Door_open1r",0,1) --sound off
+        elseif Door12aMove == true and LastMove12a ~= 0 and DoorsClosing then
+            self:SetSoundState("Door_close1r",1,1) --sound off
+        elseif Door12aMove == false and LastMove12a == 0 and DoorsClosing then
+            self:SetSoundState("Door_close1r",0,1) --sound off
+        end
+
+        local Door34aMove
+        local Door34aPrev --= Door12a
+        local LastMove34a
+        if Door34a ~= Door34aPrev and Door34a > 0 and Door34a < 1 then --track the fact that the Doors 1a and 2a are moving
+            Door34aMove = true --yes, they are moving
+            LastMove34a = CurTime() --Moved *NAO*
+            Door34aPrev = Door34a
+        elseif Door34a < 0.1 or Door34a > 0.9 then 
+            Door34aMove = false --we're not moving
+            LastMove34a = 0 --reset the timer
+        end
         
+        if Door34aMove == true and LastMove34a ~= 0 and not DoorsClosing then --just in case the boolean isn't working reliably, the timer should suss it out
+            self:SetSoundState("Door_open2r",1,1) --sound on
+        elseif not Door34aMove and LastMove34a == 0 and not DoorsClosing then
+            self:SetSoundState("Door_open2r",0,1) --sound off
+        elseif Door34aMove == true and LastMove34a ~= 0 and DoorsClosing then
+            self:SetSoundState("Door_close2r",1,1) --sound off
+        elseif Door34aMove == false and LastMove34a == 0 and DoorsClosing then
+            self:SetSoundState("Door_close2r",0,1) --sound off
+        end
+
+        local Door78bMove
+        local Door78bPrev --= Door12a
+        local LastMove78b
+        if Door78b ~= Door78bPrev and Door78b > 0 and Door78b < 1 then --track the fact that the Doors 1a and 2a are moving
+            Door78bMove = true --yes, they are moving
+            LastMove78b = CurTime() --Moved *NAO*
+            Door78bPrev = Door78b
+        elseif Door78b < 0.1 or Door78b > 0.9 then 
+            Door78bMove = false --we're not moving
+            LastMove78b = 0 --reset the timer
+        end
         
+        if Door78bMove == true and LastMove78b ~= 0 and not DoorsClosing then --just in case the boolean isn't working reliably, the timer should suss it out
+            self:SetSoundState("Door_open1l",1,1) --sound on
+        elseif not Door78bMove and LastMove78b == 0 and not DoorsClosing then
+            self:SetSoundState("Door_open1l",0,1) --sound off
+        elseif Door78bMove == true and LastMove78b ~= 0 and DoorsClosing then
+            self:SetSoundState("Door_close1l",1,1) --sound off
+        elseif Door78bMove == false and LastMove78b == 0 and DoorsClosing then
+            self:SetSoundState("Door_close1l",0,1) --sound off
+        end
+
+        local Door56bMove
+        local Door56bPrev --= Door12a
+        local LastMove56b
+        if Door56b ~= Door56bPrev and Door56b > 0 and Door56b < 1 then --track the fact that the Doors 1a and 2a are moving
+            Door56bMove = true --yes, they are moving
+            LastMove56b = CurTime() --Moved *NAO*
+            Door56bPrev = Door56b
+        elseif Door56b < 0.1 or Door56b > 0.9 then 
+            Door56bMove = false --we're not moving
+            LastMove56b = 0 --reset the timer
+        end
         
+        if Door56bMove == true and LastMove56b ~= 0 and not DoorsClosing then --just in case the boolean isn't working reliably, the timer should suss it out
+            self:SetSoundState("Door_open2l",1,1) --sound on
+        elseif not Door56bMove and LastMove56b == 0 and not DoorsClosing then
+            self:SetSoundState("Door_open2l",0,1) --sound off
+        elseif Door56bMove == true and LastMove56b ~= 0 and DoorsClosing then
+            self:SetSoundState("Door_close2l",1,1) --sound off
+        elseif Door56bMove == false and LastMove56b == 0 and DoorsClosing then
+            self:SetSoundState("Door_close2l",0,1) --sound off
+        end
         
         if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
-        self:SetLightPower(6,true)
-        self:SetLightPower(16,true)
-    elseif self:GetNW2Bool("Cablight",false) == false then
-        self:SetLightPower(6,false)
-        self:SetLightPower(16,false)
-    end
+            self:SetLightPower(6,true)
+            self:SetLightPower(16,true)
+        elseif self:GetNW2Bool("Cablight",false) == false then
+            self:SetLightPower(6,false)
+            self:SetLightPower(16,false)
+        end
     
-    if self:GetNW2Bool("Bell",false) == true then
-        self:SetSoundState("bell",1,1)
-        self:SetSoundState("bell_in",1,1)
-    else
-        self:SetSoundState("bell",0,1)
-        self:SetSoundState("bell_in",0,1)
-    end    
+        if self:GetNW2Bool("Bell",false) == true then
+            self:SetSoundState("bell",1,1)
+            self:SetSoundState("bell_in",1,1)
+        else
+            self:SetSoundState("bell",0,1)
+            self:SetSoundState("bell_in",0,1)
+        end    
     
-    if self:GetNW2Bool("EmergencyBrake",false) == true then
-        self:Animate("Throttle",-1,-45,45,50,8,false)
-    end
+        if self:GetNW2Bool("EmergencyBrake",false) == true then
+            self:Animate("Throttle",-1,-45,45,50,8,false)
+        end
     
-    self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
+        self:SetSoundState("horn",self:GetNW2Bool("Horn",false) and 1 or 0,1)
     
     
-    if self:GetNW2Bool("BlinkerTick",false) == true and self.BlinkerTicked == false then
-        
-        
+    if self:GetNW2Bool("BlinkerTick",false) == true and self.BlinkerTicked == false then   
         self:PlayOnce("Blinker","cabin",5,1)   
         --self:SetNW2Bool("BlinkerTicked",true)
         self.BlinkerTicked = true
@@ -1424,21 +1498,7 @@ function ENT:Think()
         
     end
     local DoorsUnlocked = self:GetNW2Bool("DoorsUnlocked",false)
-    
-    local door12aprev = 0
-    local door12curr = 0
 
-    if self:GetNW2Float("Door12a",0) > 0 and self:GetNW2Float("Door12a",0) < 1 then
-        --self:SetSoundState("Door_open1r",1,1)
-    elseif self:GetNW2Float("Door12a",0) == 1 or self:GetNW2Float("Door12a",0) == 0 then
-        --self:SetSoundState("Door_open1r",0,1)
-    end   
-    
-    if self:GetNW2Float("Door34a",0) > 0 and self:GetNW2Float("Door34a",0) < 1 then
-        --self:SetSoundState("Door_open2r",1,1)
-    elseif self:GetNW2Float("Door34a",0) == 1 or self:GetNW2Float("Door34a",0) == 0 then
-        --self:SetSoundState("Door_open2r",0,1)
-    end 
     
     
     if self:GetNW2Bool("IBISBootupComplete",false) == true and self:GetNW2Bool("IBISChime",false) == true and self.IBISBootCompleted == false then

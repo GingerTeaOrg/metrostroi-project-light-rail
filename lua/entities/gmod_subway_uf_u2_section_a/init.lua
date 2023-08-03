@@ -647,8 +647,6 @@ function ENT:Think(dT)
 		--self.Duewag_Battery.Charging = 1
 		--self.Duewag_Battery:TriggerInput("Charge",0.2)
 		
-		self:SetNW2Float("BatteryCharge", self.Duewag_Battery.Voltage)
-		
 		self:SetNW2Bool("BatteryOn",true)
 		--print(self:GetNW2Bool("BatteryOn",false))
 		if self:GetNW2Bool("Cablight",false) == true --[[self:GetNW2Bool("BatteryOn",false) == true]] then
@@ -658,6 +656,14 @@ function ENT:Think(dT)
 			self:SetLightPower(50,false)
 			self:SetLightPower(60,false)
 		end
+	else
+		self:SetLightPower(40,false)
+		self:SetLightPower(41,false)
+		self:SetLightPower(50,false)
+		self:SetLightPower(60,false)
+		
+		
+		self:SetNW2Bool("BatteryOn",false)
 	end
 	if self.ElectricKickStart == false then	--if we haven't kicked off starting the power yet
 		self.ElectricKickStart = true	--remember that we are doing now
@@ -2137,11 +2143,11 @@ function ENT:CreateSectionB(pos)
 	Vector(0,0,0),		
 	0, --forcelimit
 	0, --torquelimit
-	-4, --xmin
-	-0, --ymin
+	-0, --xmin
+	-4, --ymin
 	-180, --zmin
-	4, --xmax
-	0, --ymax
+	0, --xmax
+	4, --ymax
 	180, --zmax
 	0, --xfric
 	5, --yfric
@@ -2223,17 +2229,21 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 	
 	if right and door1 then --door1 control according to side preselection
 		if self.DoorStatesRight[1] < 1 then
-			self.DoorStatesRight[1] = self.DoorStatesRight[1] + 0.1
+			self.DoorStatesRight[1] = self.DoorStatesRight[1] + 0.13
+			math.Clamp(self.DoorStatesRight[1],0,1)
 		end
 	elseif left and door1 then
-		if self.DoorStatesLeft[3] < 1 then
-			self.DoorStatesLeft[3] = self.DoorStatesLeft[3] + 0.1
+		if self.DoorStatesLeft[4] < 1 then
+			self.DoorStatesLeft[4] = self.DoorStatesLeft[4] + 0.13
+			math.Clamp(self.DoorStatesLeft[4],0,1)
 		end
 	end
 	
 	
 	----------------------------------------------------------------------	
-	if unlock then 
+	if unlock then
+		local OpenMoment
+		OpenMoment = CurTime()
 		if right then
 			
 			if self.RandomnessCalulated ~= true then --pick a random door to be unlocked
@@ -2253,7 +2263,8 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 			
 			for i,v in ipairs(self.DoorRandomness) do
 				if v==3 and self.DoorStatesRight[i] < 1 then
-					self.DoorStatesRight[i] = self.DoorStatesRight[i] +0.1
+					self.DoorStatesRight[i] = self.DoorStatesRight[i] +0.13
+					math.Clamp(self.DoorStatesRight[i],0,1)
 				end
 			end
 		elseif left then
@@ -2274,7 +2285,8 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 		
 			for i,v in ipairs(self.DoorRandomness) do
 				if v==3 and self.DoorStatesLeft[i] < 1 then
-					self.DoorStatesLeft[i] = self.DoorStatesLeft[i] +0.17
+					self.DoorStatesLeft[i] = self.DoorStatesLeft[i] +0.13
+					math.Clamp(self.DoorStatesLeft[i],0,1)
 				end
 			end
 		end
@@ -2284,13 +2296,13 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 		
 		
 			for i,v in ipairs(self.DoorStatesRight) do
-				if v > 0 then self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.145 end
+				if v > 0 then self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.13 math.Clamp(self.DoorStatesRight[i],0,1) end
 			end
 		
 		elseif left then
 		
 			for i,v in ipairs(self.DoorStatesLeft) do
-				if v > 0 then self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.145 end
+				if v > 0 then self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.13 math.Clamp(self.DoorStatesLeft[i],0,1) end
 			end
 		end
 		
