@@ -22,7 +22,7 @@ ENT.SubwayTrain = {
 	WagType = 0,
 	Manufacturer = "Duewag",
 }
-
+ENT.SyncTable = {"ReduceBrake","Highbeam","SetHoldingBrake","DoorsLock","DoorsUnlock","PantographRaise","PantographLower","Headlights","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantoUp", "DoorsCloseConfirm","ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements"}
 function ENT:Initialize()
 
 	-- Set model and initialize
@@ -251,6 +251,23 @@ end
 
 function ENT:OnButtonPress(button,ply)
 
+	if button == "IBISkeyInsertSet" then
+		if self:GetNW2Bool("InsertIBISKey",false) == false then
+			self:SetNW2Bool("InsertIBISKey",true)
+		else
+			self:SetNW2Bool("InsertIBISKey",false)
+		end
+	end
+	if button == "IBISkeyTurnSet" then
+		if self:GetNW2Bool("InsertIBISKey",false) == true then
+			if self:GetNW2Bool("TurnIBISKey",false) == false then
+				self:SetNW2Bool("TurnIBISKey",true)
+			else
+				self:SetNW2Bool("TurnIBISKey",false)
+			end
+		end
+	end
+	
 	if button == "HighbeamToggle" then
 		if self.Panel.Highbeam == 0 then
 			self.Panel.Highbeam = 1
@@ -258,7 +275,7 @@ function ENT:OnButtonPress(button,ply)
 			self.Panel.Highbeam = 0
 		end
 	end
-
+	
 	if button == "PassengerOvergroundSet" then
 		self.Panel.PassengerOverground = 1
 	end
@@ -279,14 +296,14 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpFast" then self.ParentTrain.Duewag_U2.ThrottleRate = 8 end
-		if button == "ThrottleDownFast" then self.ParentTrain.Duewag_U2.ThrottleRate = -8 end
+		if button == "ThrottleUpFast" then self.ParentTrain.Duewag_U2.ThrottleRate = 10 end
+		if button == "ThrottleDownFast" then self.ParentTrain.Duewag_U2.ThrottleRate = -10 end
 		
 	end
 	
 	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRate = 10 end
-		if button == "ThrottleDownReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRate = -10 end
+		if button == "ThrottleUpReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRate = 20 end
+		if button == "ThrottleDownReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRate = -20 end
 		
 	end
 	
@@ -366,7 +383,15 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "PantographRaiseSet" then
 		self.Panel.PantographRaise = 1
+		if self.ParentTrain.Duewag_U2.BatteryOn == true then
+			self.PantoUp = true
+		end
 		
+	end
+	if button == "PantographLowerSet" then
+		if self.ParentTrain.Duewag_U2.BatteryOn == true then
+			self.PantoUp = false
+		end
 	end
 	
 	
@@ -433,38 +458,38 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "ReverserUpSet" then
 		if 
-		not self.ParentTrain.Duewag_U2.ThrottleEngaged == true  then
+		not self.ParentTrain.Duewag_U2.ThrottleEngaged then
 			if self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
-				self.ParentTrain.Duewag_U2.ReverserLeverState = self.ParentTrain.Duewag_U2.ReverserLeverStateB + 1
-				self.ParentTrain.Duewag_U2.ReverserLeverState = math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
+				self.ParentTrain.Duewag_U2.ReverserLeverStateB = self.ParentTrain.Duewag_U2.ReverserLeverStateB + 1
+				self.ParentTrain.Duewag_U2.ReverserLeverStateB = math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
+				--self.ParentTrain.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
+				PrintMessage(HUD_PRINTTALK,self.ParentTrain.Duewag_U2.ReverserLeverStateB)
 			end
 		end
 	end
 	if button == "ReverserDownSet" then
 		if 
-		not self.ParentTrain.Duewag_U2.ThrottleEngaged == true and self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
-
+		not self.ParentTrain.Duewag_U2.ThrottleEngaged and self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
+			--self.ReverserLeverState = self.ReverserLeverState - 1
 			math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
+			--self.ParentTrain.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
 			self.ParentTrain.Duewag_U2.ReverserLeverStateB = self.ParentTrain.Duewag_U2.ReverserLeverStateB - 1
 			self.ParentTrain.Duewag_U2.ReverserLeverStateB = math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
-
+			PrintMessage(HUD_PRINTTALK,self.ParentTrain.Duewag_U2.ReverserLeverStateB)
 		end
 	end
 	
 	
 	
-	if self.ParentTrain.Duewag_U2.ReverserState == 0 then
+	if self.ParentTrain.Duewag_U2.ReverserLeverStateB == 0 then
 		if button == "ReverserInsert" then
 			if self.ParentTrain.Duewag_U2.ReverserInsertedB == false then
 				self.ParentTrain.Duewag_U2.ReverserInsertedB = true
+			elseif self.ParentTrain.Duewag_U2.ReverserInsertedB and not self.ParentTrain.Duewag_U2.ReverserInsertedA then
 				self.ParentTrain.Duewag_U2.ReverserInsertedA = false
-				self:SetNW2Bool("ReverserInserted",true)
-	
-				
-			elseif self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
+				self.ParentTrain.Duewag_U2.ReverserInsertedB = true
+			elseif not self.ParentTrain.Duewag_U2.ReverserInsertedB and self.ParentTrain.Duewag_U2.ReverserInsertedA then
 				self.ParentTrain.Duewag_U2.ReverserInsertedB = false
-				self.ParentTrain.Duewag_U2.ReverserInsertedA = false
-				self:SetNW2Bool("ReverserInserted",false)
 			end
 		end
 	end
@@ -475,15 +500,20 @@ function ENT:OnButtonPress(button,ply)
 		self:SetPackedBool("FlickBatterySwitchOn",true)
 		if self.BatteryOn == false and self.ParentTrain.Duewag_U2.ReverserLeverStateB == 1 then
 			self.BatteryOn = true
-			self:SetNW2Bool("BatteryOn",true)
+			self.ParentTrain.Duewag_Battery:TriggerInput("Charge",1.3)
+			self.ParentTrain:SetNW2Bool("BatteryOn",true)
+			--PrintMessage(HUD_PRINTTALK, "Battery switch is ON")
 		end
 	end
 	
 	if button == "BatteryDisableToggle" then
-		if self.BatteryOn == false and self.ParentTrain.Duewag_U2.ReverserLeverStateB == 1 then
+		if self.BatteryOn == true and self.ParentTrain.Duewag_U2.ReverserLeverStateB == 1 then
 			self.BatteryOn = false
-			self.Duewag_Battery:TriggerInput("Charge",0)
-			self:SetNW2Bool("BatteryOn",false)
+			self.ParentTrain.Duewag_Battery:TriggerInput("Charge",0)
+			self.ParentTrain:SetNW2Bool("BatteryOn",false)
+			--PrintMessage(HUD_PRINTTALK, "Battery switch is off")
+			--self:SetNW2Bool("BatteryToggleIsTouched",true)
+			
 		end
 		self:SetPackedBool("FlickBatterySwitchOff",true)
 		
@@ -491,9 +521,9 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	if button == "DeadmanSet" then
-		self.ParentTrain.Duewag_Deadman:TriggerInput("IsPressed", 1)
-		if self:ReadTrainWire(6) > 0 then
-			self:WriteTrainWire(12,1)
+		self.ParentTrain.DeadmanUF.IsPressedB = true
+		if self.ParentTrain:ReadTrainWire(6) > 0 then
+			self.ParentTrain:WriteTrainWire(12,1)
 		end
 		------print("DeadmanPressedYes")
 	end
@@ -501,24 +531,6 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "BlinkerLeftSet" then
 		
-		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) > 0 then -- If you press the button and the blinkers are already set to right, turn off
-			self:WriteTrainWire(20,0)
-			self:WriteTrainWire(21,0)
-		elseif
-		self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are off, set to left
-			self:WriteTrainWire(20,1)
-			self:WriteTrainWire(21,0)
-			--self:SetNW2String("BlinkerDirection","left")
-		elseif
-		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are already on, turn them off
-			self:WriteTrainWire(20,1)
-			self:WriteTrainWire(21,0)
-			--self:SetNW2String("BlinkerDirection","none")
-		elseif
-		self:ReadTrainWire(20) > 0 and self:ReadTrainWire(21) > 0 then
-			--self:WriteTrainWire(20,1)
-			--self:WriteTrainWire(21,1)
-		end
 		if self.Panel.BlinkerLeft == 0 and self.Panel.BlinkerRight == 0 then
 			self.Panel.BlinkerLeft = 1
 		elseif self.Panel.BlinkerLeft == 0 and self.Panel.BlinkerRight == 1 then 
@@ -528,27 +540,7 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	
-	if button == "BlinkerRightSet" then
-		
-		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) > 0 then -- If you press the button and the blinkers are already set to right, do nothing
-			self:WriteTrainWire(20,0)
-			self:WriteTrainWire(21,1)
-			
-		elseif
-		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) < 1 then -- If you press the button and the blinkers are already set to left, set to neutral
-			self:WriteTrainWire(20,0)
-			self:WriteTrainWire(21,0)
-		elseif
-		self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 then
-			self:WriteTrainWire(20,0)
-			self:WriteTrainWire(21,1)
-			
-		elseif
-		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) > 0 then
-			self:WriteTrainWire(20,1)
-			self:WriteTrainWire(21,1)	
-		end
-
+	if button == "BlinkerRightSet" then		
 		if self.Panel.BlinkerRight == 0 and self.Panel.BlinkerLeft == 0 then
 			self.Panel.BlinkerRight = 1
 		elseif self.Panel.BlinkerLeft == 1 and self.Panel.BlinkerRight == 0 then
@@ -567,13 +559,13 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	if button == "WarnBlinkToggle" then
-		if self:ReadTrainWire(20) < 1 and self:ReadTrainWire(21) < 1 and self:ReadTrainWire(20) ~= 1 or self:ReadTrainWire(21) ~= 1 then
+		if self.Panel.WarnBlink == 0 then
 			self:SetNW2Bool("WarningBlinker",true)
 			self:WriteTrainWire(20,1)
 			self:WriteTrainWire(21,1)
 			self.Panel.WarnBlink = 1
 		elseif
-		self:ReadTrainWire(20) == 1 and self:ReadTrainWire(21) > 0 then
+		self.Panel.WarnBlink == 1 then
 			self:SetNW2Bool("WarningBlinker",false)
 			self:WriteTrainWire(20,0)
 			self:WriteTrainWire(21,0)
@@ -584,7 +576,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	if button == "ThrowCouplerSet" then
-		if self:ReadTrainWire(5) > 1 and self.ParentTrain.Duewag_U2.Speed < 1 then
+		if self:ReadTrainWire(5) > 1 and self.ParentTrain.Duewag_U2.Speed < 2 then
 			self.FrontCouple:Decouple()
 		end
 		self.Panel.ThrowCoupler = 1
@@ -600,12 +592,10 @@ function ENT:OnButtonPress(button,ply)
 	end
 	if button == "HeadlightsToggle" then
 		
-		if self.ParentTrain.Duewag_U2.HeadlightsSwitch == false then
-			self.ParentTrain.Duewag_U2.HeadlightsSwitch = true
-			self:SetPackedBool("HeadlightsSwitch",self.ParentTrain.Duewag_U2.HeadlightsSwitch)
+		if self.Panel.Headlights < 1 then
+			self.Panel.Headlights = 1
 		else
-			self.ParentTrain.Duewag_U2.HeadlightsSwitch = false
-			self:SetPackedBool("HeadlightsSwitch",self.ParentTrain.Duewag_U2.HeadlightsSwitch)
+			self.Panel.Headlights = 0
 		end
 		----print(self.ParentTrain.Duewag_U2.HeadlightsSwitch)
 	end
@@ -618,6 +608,14 @@ function ENT:OnButtonPress(button,ply)
 		elseif self.DoorSideUnlocked == "Left" then
 			self.DoorSideUnlocked = self.DoorSideUnlocked
 		end
+
+		if self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight > 0 then
+			self.Panel.DoorsLeft = 0
+			self.Panel.DoorsRight = 0
+		elseif self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight < 1 then
+			self.Panel.DoorsLeft = 1
+			self.Panel.DoorsRight = 0
+		end
 	end
 	
 	if button == "DoorsSelectRightToggle" then
@@ -628,6 +626,13 @@ function ENT:OnButtonPress(button,ply)
 		elseif self.DoorSideUnlocked == "Left" then
 			self.DoorSideUnlocked = "None"
 		end
+		if self.Panel.DoorsLeft > 0 and self.Panel.DoorsRight < 1 then
+			self.Panel.DoorsLeft = 0
+			self.Panel.DoorsRight = 0
+		elseif self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight < 1 then
+			self.Panel.DoorsLeft = 0
+			self.Panel.DoorsRight = 1
+		end
 	end
 	
 	
@@ -636,64 +641,68 @@ function ENT:OnButtonPress(button,ply)
 	if button == "Button1a" then
 		if self.DoorSideUnlocked == "Right" then
 			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 4
+				self.DoorRandomness[1] = 3
 			end
 		end
+		self.Panel.Button1a = 1
 	end
 	
 	if button == "Button2a" then
 		if self.DoorSideUnlocked == "Right" then
-			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 4
-			end
+			self.DoorRandomness[1] = 3
+			
 		end
+		self.Panel.Button2a = 1
 	end
 	
 	if button == "Button3a" then
 		if self.DoorSideUnlocked == "Right" then
-			if self.DoorRandomness[2] == 0 then
-				self.DoorRandomness[2] = 4
-			end
+			
+			self.DoorRandomness[2] = 3
+			
 		end
+		self.Panel.Button3a = 1
 	end
 	
 	if button == "Button4a" then
 		if self.DoorSideUnlocked == "Right" then
-			if self.DoorRandomness[2] == 0 then
-				self.DoorRandomness[2] = 4
-			end
+			
+			self.DoorRandomness[2] = 3
+			
+		end
+		self.Panel.Button4a = 1
+		--print(self.DoorRandomness[2])
+	end
+	
+	if button == "Button8b" then
+		if self.DoorSideUnlocked == "Left" then
+			
+			self.DoorRandomness[4] = 3
+			
 		end
 	end
 	
-		if button == "Button1b" then
+	if button == "Button7b" then
 		if self.DoorSideUnlocked == "Left" then
-			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 4
-			end
+			
+			self.DoorRandomness[4] = 3
+			
 		end
 	end
 	
-	if button == "Button2b" then
+	if button == "Button6b" then
 		if self.DoorSideUnlocked == "Left" then
-			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 4
-			end
+			
+			self.DoorRandomness[3] = 3
+			
 		end
 	end
 	
-	if button == "Button3b" then
+	if button == "Button5b" then
 		if self.DoorSideUnlocked == "Left" then
-			if self.DoorRandomness[2] == 0 then
-				self.DoorRandomness[2] = 4
-			end
-		end
-	end
-	
-	if button == "Button4b" then
-		if self.DoorSideUnlocked == "Left" then
-			if self.DoorRandomness[2] == 0 then
-				self.DoorRandomness[2] = 4
-			end
+			
+			self.DoorRandomness[3] = 3
+			
 		end
 	end
 	
@@ -707,6 +716,16 @@ function ENT:OnButtonPress(button,ply)
 	
 	if button == "DoorsLockSet"  then
 		
+		
+		self.DoorRandomness[1] = -1
+		self.DoorRandomness[2] = -1
+		self.DoorRandomness[3] = -1
+		self.DoorRandomness[4] = -1
+		
+		self.DoorsPreviouslyUnlocked = true
+		self.RandomnessCalculated = false
+		self.DoorsUnlocked = false
+		self.Door1 = false
 		self.Panel.DoorsLock = 1
 		
 	end
@@ -722,7 +741,7 @@ function ENT:OnButtonPress(button,ply)
 		self.ParentTrain.Duewag_U2.ManualRetainerBrake = true
 		self.Panel.SetHoldingBrake = 1
 	end
-
+	
 	if button == "ReleaseHoldingBrakeSet" then
 		
 		self.Panel.ReleaseHoldingBrake = 1
@@ -789,171 +808,208 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	if button == "DestinationSet" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
 			self:SetNW2Bool("IBISKeyBeep",true)
-			self.ParentTrain.IBIS:Trigger("Destination",RealTime())
+			self.IBIS:Trigger("Destination",RealTime())
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	
 	
 	if button == "Number0Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number0",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number0",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",false)
+		end
+		
+	end
+	if button == "DeleteSet" then
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Delete",RealTime())
+			--self.IBIS:Trigger(nil)
+			self:SetNW2Bool("IBISKeyBeep",true)
+		else
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 		
 	end
 	
 	if button == "Number1Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number1",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number1",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "Number2Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number2",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number2",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "Number3Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number3",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number3",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "Number4Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number4",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number4",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "Number5Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number5",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number5",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "Number6Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number6",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number6",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "Number7Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number7",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number7",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "Number8Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number8",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number8",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "Number9Set" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Number9",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Number9",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "EnterSet" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("Enter",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("Enter",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 	end
 	if button == "SpecialAnnouncementSet" then
-		if self.ParentTrain.IBISKeyRegistered == false then
-			self.ParentTrain.IBISKeyRegistered = true
-			self.ParentTrain.IBIS:Trigger("SpecialAnnouncement",RealTime())
+		if self.IBISKeyRegistered == false then
+			self.IBISKeyRegistered = true
+			self.IBIS:Trigger("SpecialAnnouncement",RealTime())
 			self:SetNW2Bool("IBISKeyBeep",true)
 		else
-			self.ParentTrain.IBIS:Trigger(nil)
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
+	end
+	if button == "ReduceBrakeSet" then
+		self.Panel.ReduceBrake = 1
 	end
 end
 
 
 function ENT:OnButtonRelease(button,ply)
 
+	if button == "CycleIBISKey" then
+		if self.ParentTrain.Duewag_U2.IBISKeyA == false and self.ParentTrain.Duewag_U2.IBISKeyATurned == false then
+			self.ParentTrain.Duewag_U2.IBISKeyA = true
+		elseif self.ParentTrain.Duewag_U2IBISKeyA == true and self.ParentTrain.Duewag_U2.IBISKeyATurned == false then
+			self.ParentTrain.Duewag_U2.IBISKeyA = true
+			self.ParentTrain.Duewag_U2.IBISKeyATurned = true
+		elseif self.ParentTrain.Duewag_U2IBISKeyA == true and self.ParentTrain.Duewag_U2.IBISKeyATurned == true then
+			self.ParentTrain.Duewag_U2.IBISKeyA = true
+			self.ParentTrain.Duewag_U2.IBISKeyATurned = false
+		end
+	end
+
+	if button == "RemoveIBISKey" then
+		if self.ParentTrain.Duewag_U2.IBISKeyA == true then
+			self.ParentTrain.Duewag_U2.IBISKeyA = false
+		end
+	end
+
+	if button == "ReduceBrakeSet" then
+		self.Panel.ReduceBrake = 0
+	end
+	
 	if button == "PassengerOvergroundSet" then
 		self.Panel.PassengerOverground = 0
 	end
 	if button == "PassengerUndergroundSet" then
 		self.Panel.PassengerUnderground = 0
 	end
-
-
+	
+	
 	if button == "ReleaseHoldingBrakeSet" then
 		
 		self.Panel.ReleaseHoldingBrake = 0
 	end	
-
-
+	
+	
 	if button == "SetHoldingBrakeSet" then
 		
-
+		
 		self.Panel.SetHoldingBrake = 0
 	end
-
+	
 	if button == "SetPointLeftSet" then
 		self.Panel.SetPointLeft = 0
 	end
 	if button == "SetPointRightSet" then
 		self.Panel.SetPointRight = 0
 	end
-
+	
 	if button == "DoorsLockSet"  then
 		
 		self.Panel.DoorsLock = 0
@@ -1006,10 +1062,9 @@ function ENT:OnButtonRelease(button,ply)
 	
 	
 	if button == "DeadmanSet" then
-		self.ParentTrain.Duewag_Deadman:TriggerInput("IsPressed", 0)
-		
-		if self:ReadTrainWire(6) > 0 then
-			self:WriteTrainWire(12,0)
+		self.ParentTrain.DeadmanUF.IsPressedB = false
+		if self.ParentTrain:ReadTrainWire(6) > 0 then
+			self.ParentTrain:WriteTrainWire(12,0)
 		end
 		------print("DeadmanPressedNo")
 	end
@@ -1030,87 +1085,117 @@ function ENT:OnButtonRelease(button,ply)
 	end
 	
 	if button == "DestinationSet" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
 	end
 	
 	
 	if button == "Number0Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 			self:SetNW2Bool("IBISKeyBeep",false)
 		end
 		
 	end
 	
 	if button == "Number1Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
+	end
+	if button == "DeleteSet" then
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
+		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number2Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number3Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number4Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number5Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number6Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number7Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number8Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "Number9Set" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "EnterSet" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	if button == "SpecialAnnouncementSet" then
-		if self.ParentTrain.IBISKeyRegistered == true then
-			self.ParentTrain.IBISKeyRegistered = false
-			self.ParentTrain.IBIS:Trigger(nil)
+		if self.IBISKeyRegistered == true then
+			self.IBISKeyRegistered = false
+			self.IBIS:Trigger(nil)
 		end
+		self:SetNW2Bool("IBISKeyBeep",true)
+		self:SetNW2Bool("IBISKeyBeep",false)
 	end
 	
 	
@@ -1146,7 +1231,9 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*150)
-
+	if not self.ParentTrain then
+		self.ParentTrain = self:GetNWEntity("U2a")
+	end
 	if self.ParentTrain:GetNW2Bool("RetroMode",false) == true then
 		self:SetModel("models/lilly/uf/u2/u2_vintage_b.mdl")
 	end
