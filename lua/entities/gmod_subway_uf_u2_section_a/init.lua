@@ -2311,7 +2311,7 @@ function ENT:DoorHandler(unlock,left,right,door1,idleunlock)--Are the doors unlo
 		if self.DoorLockSignalMoment == 0 then
 			self.DoorLockSignalMoment = CurTime()
 		end
-		
+		self.DoorCloseMomentsCaptured = false
 
 		if right then
 		
@@ -2352,6 +2352,55 @@ function ENT:DoorHandler(unlock,left,right,door1,idleunlock)--Are the doors unlo
 	end
 end
 
+function ENT:IRIS(enable) --IR sensors for blocking the doors
+	if enable then
+		local result1 = util.TraceHull({
+        	start = Vector(330.889,46.4148,35.3841),
+        	endpos = pos + self:GetForward() * 60,
+        	mask = -1,
+        	filter = { self }, --filter out the train entity
+    		mins = Vector( -24,-2,0 ),
+        	maxs = Vector(24,2,1),
+    	})
+		local result2 = util.TraceHull({
+        	start = Vector(88.604,46.4148,35.3841),
+        	endpos = pos + self:GetForward() * 60,
+        	mask = -1,
+        	filter = { self }, --filter out the train entity
+    		mins = Vector( -24,-2,0 ),
+        	maxs = Vector(24,2,1),
+    	})
+		local result3 = util.TraceHull({
+        	start = Vector(330.889,-46.4148,35.3841),
+        	endpos = pos + self:GetForward() * 60,
+        	mask = -1,
+        	filter = { self }, --filter out the train entity
+    		mins = Vector( -24,-2,0 ),
+        	maxs = Vector(24,2,1),
+    	})
+		local result4 = util.TraceHull({
+        	start = Vector(88.604,-46.4148,35.3841),
+        	endpos = pos + self:GetForward() * 60,
+        	mask = -1,
+        	filter = { self }, --filter out the train entity
+    		mins = Vector( -24,-2,0 ),
+        	maxs = Vector(24,2,1),
+    	})
+		if result1.HitNonWorld and not result2.HitNonWorld then
+			return "Sensor1Blocked"
+		elseif result2.HitNonWorld and not result1.HitNonWorld then
+			return "Sensor2Blocked"
+		elseif result2.HitNonWorld and result1.HitNonWorld then
+			return "Sensor2Blocked","Sensor1Blocked"
+		elseif result3.HitNonWorld and not result4.HitNonWorld then
+			return "Sensor3Blocked"
+		elseif result4.HitNonWorld and not result3.HitNonWorld then
+			return "Sensor4Blocked"
+		elseif result4.HitNonWorld and result3.HitNonWorld then
+			return "Sensor4Blocked","Sensor3Blocked"
+		end
+	end
+end
 
 
 
