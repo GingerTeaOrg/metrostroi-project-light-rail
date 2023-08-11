@@ -174,8 +174,9 @@ function TRAIN_SYSTEM:Think(Train)
 	self.ThrottleState = self.ThrottleState + self.ThrottleRate
 	
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100,100)
+	
 	if IsValid(self.Train.u2sectionb) then
-		self.Train.u2sectionb:SetNW2Int("ThrottleAnim",self.ThrottleStateAnimB)
+		self.Train.u2sectionb:SetNW2Float("ThrottleAnim",self.ThrottleStateAnimB)
 	end
 	--Is the throttle engaged? We need to know that for a few things!
 	if self.ThrottleState > 0 then
@@ -185,12 +186,6 @@ function TRAIN_SYSTEM:Think(Train)
 		self.ThrottleEngaged = false
 		self.Train:SetNW2Bool("ThrottleEngaged",false)
 	end
-	
-	
-
-	
-
-	
 	self.ReverserLeverStateA = math.Clamp(self.ReverserLeverStateA, -1, 3)
 	self.ReverserLeverStateB = math.Clamp(self.ReverserLeverStateB, -1, 3)
 	if self.ReverserLeverStateA == 2 or self.ReverserLeverStateB == 2 then
@@ -285,7 +280,7 @@ function TRAIN_SYSTEM:Think(Train)
 	end
 	
 	
-	
+
 	
 	if self.Train:GetNW2Bool("BatteryOn",false) == true or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(7) > 0 then --if either the battery is on or the EMU cables signal multiple unit mode
 		
@@ -317,7 +312,7 @@ function TRAIN_SYSTEM:Think(Train)
 			
 		elseif self.ReverserState == -1 and self.Train.DeadmanUF.IsPressed == 1 then
 			self.TractionConditionFulfilled = true
-			
+			print("traction on")
 		elseif self.ReverserState == 0 then
 			self.TractionConditionFulfilled = false
 		elseif self.Train:ReadTrainWire(3) > 0 and self.Train:ReadTrainWire(6) > 0 or self.Train:ReadTrainWire(4) > 0 then
@@ -326,9 +321,12 @@ function TRAIN_SYSTEM:Think(Train)
 		
 		if self.ReverserState == 1 and self.Train.DeadmanUF.IsPressed == 0 and self.ThrottleState > 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
+			
 		elseif self.ReverserState == -1 and self.Train.DeadmanUF.IsPressed == 0 and self.ThrottleState > 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",true)
 		elseif self.ReverserState == -1 and self.Train.DeadmanUF.IsPressed == 0 and self.ThrottleState <= 0 then
+			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+		elseif self.ReverserState == -1 and self.Train.DeadmanUF.IsPressed == 1 and self.ThrottleState > 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
 		elseif self.ReverserState == 1 and self.Train.DeadmanUF.IsPressed == 0 and self.ThrottleState <= 0 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
@@ -336,6 +334,7 @@ function TRAIN_SYSTEM:Think(Train)
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
 		elseif self.ReverserState == -1 and self.Train.DeadmanUF.IsPressed == 1 then
 			self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman",false)
+			
 		end
 	end
 	
@@ -351,6 +350,7 @@ function TRAIN_SYSTEM:Think(Train)
 	end
 	
 	if self.TractionConditionFulfilled == true then
+		
 		if self.Train:GetNW2Bool("DeadmanTripped",false) == false then
 			
 			if self.CamshaftFinishedMoving == true then
@@ -358,6 +358,7 @@ function TRAIN_SYSTEM:Think(Train)
 			else
 				self.Traction = self.Traction
 			end 
+			
 			if self.VZ == true then
 				if self.Traction > 0 then
 					self.Train:WriteTrainWire(2,0)
@@ -426,7 +427,14 @@ function TRAIN_SYSTEM:Think(Train)
 	elseif (self.ThrottleState >= 0) then
 		self.ThrottleStateAnim = (self.ThrottleState * -0.1)
 		
-	end		
+	end
+	if self.ThrottleState <= 100 then --Throttle animation handling. Adapt the value to the pose parameter on the model
+		self.ThrottleStateAnimB = self.ThrottleState / 200 + 0.5
+	elseif (self.ThrottleState >= 0) then
+		self.ThrottleStateAnimB = (self.ThrottleState * -0.1)
+		
+	end
+	
 	
 	if self.ThrottleState < 0 and self.Speed < 8 or self.Train:ReadTrainWire(10) > 0 then --Pneumatic Brakes engaged when electric brakes have brought down the speed to very low
 		
@@ -646,6 +654,10 @@ function TRAIN_SYSTEM:MUHandler()
 		self.VE = false
 		self.VZ = false
 		--self.Train:WriteTrainWire(6,0)
+	elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 1 then
+		self.BatteryStartUnlock = true
+		self.VE = false
+		self.VZ = false
 	elseif self.ReverserLeverStateA == 2 and self.ReverserLeverStateB == 0 then
 		self.VZ = true
 		self.VE = false
@@ -663,17 +675,13 @@ function TRAIN_SYSTEM:MUHandler()
 		end
 
 	elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == -1 then
-		if self.LeadingCabA == 1 then
-			self.ReverserState = -1
-		end
+		
 		self.VE = true
 		self.VZ = false
 		--self.Train:WriteTrainWire(6,0)
 	elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 0 then
-		if self.LeadingCabA == 1 then
-			self.ReverserState = 0
-		end
-		self.BatteryStartUnlock = true
+		
+		self.BatteryStartUnlock = false
 		self.VE = false
 		self.VZ = false
 		--self.Train:WriteTrainWire(6,0)
@@ -681,7 +689,7 @@ function TRAIN_SYSTEM:MUHandler()
 		self.VZ = true
 		self.VE = false
 		self.ReverserState = 1
-		
+		self.BatteryStartUnlock = false
 		self.Train:WriteTrainWire(3,0)
 		self.Train:WriteTrainWire(4,1)
 		self.Train:WriteTrainWire(6,1)
@@ -690,13 +698,14 @@ function TRAIN_SYSTEM:MUHandler()
 		self.VZ = false
 		self.VE = true
 		self.ReverserState = -1
+		self.BatteryStartUnlock = false
 	end
 	if self.ReverserInsertedA == true then
 		self.Train:WriteTrainWire(3,self.ReverserLeverStateA == 2 and 1 or 0)
 		self.Train:WriteTrainWire(4,(self.ReverserLeverStateA == 0 or self.ReverserLeverStateA == 3) and 1 or 0)
 	elseif self.ReverserInsertedB == true then
-		self.Train:WriteTrainWire(3,(self.ReverserLeverStateB == 0 or self.ReverserLeverStateB == 3) and 1 or 0)
-		self.Train:WriteTrainWire(4,self.ReverserLeverStateB == 2 and 1 or 0)
+		self.Train:WriteTrainWire(3,self.ReverserLeverStateA == 2 and 0 or 1)
+		self.Train:WriteTrainWire(4,(self.ReverserLeverStateA == 0 or self.ReverserLeverStateA == 3) and 0 or 1)
 	end
 	self.Train:WriteTrainWire(6,self.VZ and 1 or 0)
 	if self.LeadingCabA == 0 and self.Train:ReadTrainWire(6) > 0 then --if we're not the leading train, read this stuff from train wires
@@ -713,7 +722,7 @@ function TRAIN_SYSTEM:MUHandler()
 		self.VZ = false
 	end
 	
-	--print("MUWire"..self.Train:ReadTrainWire(6))
+
 	
 	---------------------------------------------------------------------------------------
 	

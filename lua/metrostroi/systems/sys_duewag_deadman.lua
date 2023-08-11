@@ -18,17 +18,18 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.MUDeadman = false
 
+	self.IsPressedA = false
+	self.IsPressedB = false
+
 end
 
 function TRAIN_SYSTEM:Inputs()
-		return {"IsPressed", "Speed", "BypassKeyInserted"}
+		return {"IsPressed", "IsPressedB", "Speed", "BypassKeyInserted"}
 end
 
 
 function TRAIN_SYSTEM:TriggerInput(name,value)
-    if name == "IsPressed" then
-        self.IsPressed = value
-    end
+    
 	if name == "Speed" then
 		self.Speed = value
 	end
@@ -41,8 +42,14 @@ end
 
 
 function TRAIN_SYSTEM:Think()
-		local train = self.Train
-		self.Speed = math.abs(self.Train.Speed)
+	local train = self.Train
+	if self.IsPressedA == true or self.IsPressedB == true then
+		self.IsPressed = 1
+	else
+		self.IsPressed = 0
+	end
+	
+	self.Speed = math.abs(self.Train.Speed)
 	if self.Train:GetNW2Bool("BatteryOn",false) == true then
 		if self.Train:ReadTrainWire(12) > 0 and self.Train:ReadTrainWire(6) > 0 then
 			self.MUDeadman = true

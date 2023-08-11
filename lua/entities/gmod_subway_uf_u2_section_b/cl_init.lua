@@ -44,7 +44,7 @@ function ENT:Initialize()
     if self.ParentTrain then
         self:UpdateWagonNumber()
     end
-    
+    self.BatterySwitch = 0.5
     
 end
 
@@ -342,7 +342,7 @@ ENT.ButtonMap["IBIS"] = {
 
 ENT.ButtonMap["Cab"] = {
     pos = Vector(-419.6,-24.88,55.2),
-    ang = Angle(0,-270,8),
+    ang = Angle(0,90,8),
     width = 500,
     height = 120,
     scale = 0.069,
@@ -353,228 +353,213 @@ ENT.ButtonMap["Cab"] = {
             model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
             var="WarningAnnouncement", speed=15,
             sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-        }
-    },
+            }
+        },
     
-    {ID = "BlinkerLamp", x=271, y=58, radius=10, tooltip = "Blinker Status Lamp", model = {model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",z=-5,
-    name="BlinkerLamp",
-    sprite = {bright=0.3,size=0.15,scale=0.03,vscale=0.02,color=Color(0,109,0),z=7.7}
-}},
+        {ID = "BlinkerLamp", x=271, y=58, radius=10, tooltip = "Blinker Status Lamp", model = { model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",z=-5,
+            ang=0,
+            var="BlinkerLamp", speed=15,min=0,max=100,
+            sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
 
-{ID = "DepartureBlockedLamp", x=242, y=58, radius=10, tooltip = "Train not cleared for departure", model = {lamp = {model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",var="DepartureBlocked",z=0,anim=true,
-lcolor=Color(255,0,0),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
-model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=0,
-var="DepartureBlocked", speed=15,
-sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "VentilationSet", x=335, y=58, radius=10, tooltip = "Enable motor fans", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
-    getfunc = function(ent) return ent:GetPackedRatio("Ventilation") end,var="Ventilation", speed=4,min=0,max=1,
-    var="Ventilation",speed=1, vmin=0, vmax=1,
-    sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "ReleaseHoldingBrakeSet", x=21.5, y=90, radius=10, tooltip = "Release mechanical retainer brake manually", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,anim=true,
-    var="ReleaseHoldingBrake",speed=20, min=0, max=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "SetHoldingBrakeSet", x=21.5, y=58, radius=10, tooltip = "set mechanical retainer brake manually", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=180,
-    var="SetHoldingBrake",speed=20, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "PassengerOvergroundSet", x=54, y=58, radius=10, tooltip = "Set passenger lights to overground mode", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_green.mdl", z=-5, ang=0,
-    var="PassengerOverground",speed=20, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "ShedrunSet", x=87, y=90, radius=10, tooltip = "Toggle Indoors Mode", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,
-    var="Shedrun",speed=1, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "HighbeamToggle", x=149, y=90.4, radius=10, tooltip = "Toggle High Beam", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-3, ang=45,anim=true,
-    var="Highbeam",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "HighbeamLamp", x=149, y=57, radius=10, tooltip = "High Beam On", model = {lamp = {var="Highbeam",z=0,anim=false,
-lcolor=Color(13,17,255),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},sprite = {bright=0.5,size=0.25,scale=0.01,color=Color(255,50,45),z=-1.4,},
-model = "models/lilly/uf/u2/cab/button_bulge_blue.mdl", z=-5, ang=45,anim=false,
-var="Highbeam",speed=1, vmin=0, vmax=0,
-sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "AutomatOnSet", x=118.5, y=90.4, radius=10, tooltip = "Automat On", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=45,anim=true,
-    var="AutomatOn",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "AutomatOffSet", x=118.5, y=57, radius=10, tooltip = "Automat Off", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=45,anim=true,
-    var="AutomatOff",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "WiperToggle", x=211, y=57, radius=10, tooltip = "Wipers", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-4, ang=45,anim=true,
-    var="Wiper",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "PassengerUndergroundSet", x=54, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
-    var="PassengerUnderground",speed=20, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "HeadlightsToggle", x=22, y=19, radius=10, tooltip = "Enable Headlights", model = {
+        {ID = "DepartureBlockedLamp", x=242, y=58, radius=10, tooltip = "Train not cleared for departure", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=0,
+            var="DepartureBlocked", speed=15,
+            sndvol = 1, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "VentilationSet", x=335, y=58, radius=10, tooltip = "Enable motor fans", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
+            speed=4,min=0,max=1,
+            var="Ventilation",speed=1, vmin=0, vmax=1,
+            sndvol = 0.5, snd = function(val) return val and "button_on" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "ReleaseHoldingBrakeSet", x=21.5, y=90, radius=10, tooltip = "Release mechanical retainer brake manually", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,anim=true,
+            var="ReleaseHoldingBrake",speed=20, min=0, max=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "SetHoldingBrakeSet", x=21.5, y=58, radius=10, tooltip = "set mechanical retainer brake manually", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=180,
+            var="SetHoldingBrake",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "PassengerOvergroundSet", x=54, y=58, radius=10, tooltip = "Set passenger lights to overground mode", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_green.mdl", z=-5, ang=0,
+            var="PassengerOverground",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "ShedrunSet", x=87, y=90, radius=10, tooltip = "Toggle Indoors Mode", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-6, ang=0,
+            var="Shedrun",speed=1, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+            },
+        {ID = "HighbeamToggle", x=149, y=90.4, radius=10, tooltip = "Toggle High Beam", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-3, ang=45,anim=true,
+            var="Highbeam",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "HighbeamLamp", x=149, y=57, radius=10, tooltip = "High Beam On", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_blue.mdl", z=0, ang=45,anim=false,
+            var="HighbeamLamp",
+            }
+        },
+        {ID = "AutomatOnSet", x=118.5, y=90.4, radius=10, tooltip = "Automat On", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=45,anim=true,
+            var="AutomatOn",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "AutomatOffSet", x=118.5, y=57, radius=10, tooltip = "Automat Off", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=45,anim=true,
+            var="AutomatOff",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "WiperToggle", x=211, y=57, radius=10, tooltip = "Wipers", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-4, ang=45,anim=true,
+            var="Wiper",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "PassengerUndergroundSet", x=54, y=91, radius=10, tooltip = "Set passenger lights to underground mode", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
+            var="PassengerUnderground",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "HeadlightsToggle", x=22, y=19, radius=10, tooltip = "Enable Headlights", model = {
     
-    model= "models/lilly/uf/u2/cab/battery_switch.mdl",getfunc = function(ent) return ent:GetPackedBool("HeadlightsSwitch") and 1 or 0 end,
-    z=0, ang=45,
-    var="Headlights",speed=5, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 90,sndmax = 1e3,sndang = Angle(-90,0,0),
-}
-},
-{ID = "BatteryToggle", x=463, y=91, radius=10, tooltip = "Toggle Battery", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-2.5, ang=45,
-    getfunc =  function(ent) return ent.BatterySwitch end,
-    var="BatteryToggle",speed=5, min=0, max=1,
-    sndvol = 20, snd = function(val,val2) return val2 == 1 and "button_on" or val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "SpeakerToggle", x=149, y=18.2, radius=10, tooltip = "Toggle Speaker Inside/Outside", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=0, ang=0,
-    --[[getfunc =  function(ent) return ent:GetPackedBool("FlickBatterySwitchOn") and 1 or 0.5 or ent:GetPackedBool("FlickBatterySwitchOff") and 1 or 0.5 end,]]
-    var="Speaker",speed=1, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "DriverLightToggle", x=463, y=70, radius=10, tooltip = "Toggle Cab Light", model = {
-    z=0, ang=0,
-    var="DriverLight",speed=1, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "SetPointLeftSet", x=179.8, y=90, radius=10, tooltip = "Set track point to left", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_arrow_right.mdl", z=-4, ang=90, anim=true,
-    var="SetPointLeft",speed=15, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "DoorsCloseConfirmSet", x=211, y=91, radius=10, tooltip = "Clear door closed alarm", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_orange.mdl", z=-2, ang=0, anim=true,
-    var="DoorsCloseConfirm",speed=15, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "SetPointRightSet", x=241.4, y=90.5, radius=10, tooltip = "Set track point to right", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_arrow_left.mdl", z=-4, ang=90,anim=true,
-    var="SetPointRight",speed=15, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "BlinkerLeftSet", x=260, y=88, radius=8, tooltip = "Indicators Left", model = {
-    z=0, ang=0,
-    var="BlinkerLeft",speed=15, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "BlinkerRightSet", x=280, y=88, radius=8, tooltip = "Indicators Right", model = {
-    z=0, ang=0,
-    var="BlinkerRight",speed=10, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "BlinkerSwitch", x=271, y=91, radius=0.1, tooltip = "Indicator Switch", model = {model = "models/lilly/uf/u2/cab/battery_switch.mdl",
-z=0, ang=45,getfunc = function(ent) return ent:GetNW2Float("BlinkerStatus") end,
-var="BlinkerStatus",speed=10, vmin=0, vmax=1,
-sndvol = 20,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "PantographLowerSet", x=303.5, y=91, radius=8, tooltip = "Lower Pantograph", model = { model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", anim=true,
-z=-5, ang=0,
-var="PantographLower",speed=20, vmin=0, vmax=1,
-sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "PantographRaiseSet", x=303.5, y=58, radius=8, tooltip = "Raise Pantograph", model = { model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", anim=true,
-z=-5, ang=0,
-var="PantographRaise",speed=20, vmin=0, vmax=1,
-sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
---[[{ID = "LowerPantographSet", x=449, y=112, radius=10, tooltip = "Lower pantograph", model = {
-model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
-var="main",speed=1, vmin=0, vmax=1,
-sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},]]
-{ID = "ThrowCouplerSet", x=335, y=90.8, radius=10, tooltip = "Throw Coupler", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
-    var="ThrowCoupler",speed=10, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "OpenDoor1Set", x=364, y=91, radius=10, tooltip = "Open only door 1", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
-    var="OpenDoor1",speed=10, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "MalfunctionLamp", x=364, y=57.7, radius=10, tooltip = "Malfunction detected", model = { lamp = {var="DepartureBlocked",z=0,anim=true,
-lcolor=Color(129,0,0),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
-model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=0,
-var="Malfunction",speed=10, vmin=0, vmax=1,
-sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "SandLamp", x=431, y=90, radius=10, tooltip = "Sander indicator", model = { lamp = {var="Sand",z=0,anim=true,
-lcolor=Color(129,0,0),lz = 12,lbright=3,lfov=130,lfar=16,lnear=8,lshadows=0,},
-model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-7, ang=0,
-var="Sand",speed=10, vmin=0, vmax=1,
-sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "SanderToggle", x=561, y=112, radius=10, tooltip = "Toggle sanding", model = {
-    model = "models/lilly/uf/common/cab/button_red.mdl", z=-2, ang=0,
-    var="Sander",speed=1, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "DoorsUnlockSet", x=396.4, y=57.7, radius=10, tooltip = "Toggle doors unlocked", model = {
-    model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=180,
-    var="DoorsUnlock",speed=20, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
---[[{ID = "RaisePantographSet", x=449, y=80, radius=10, tooltip = "Raise Pantograph", model = {
-model = "models/lilly/uf/common/cab/button_green.mdl", z=0, ang=0,
-var="main",speed=1, vmin=0, vmax=1,
-sndvol = 0.5, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},]]
-{ID = "DoorSideSelectToggle", x=396.5, y=17.8, radius=10, tooltip = "Select door set to unlock", model = {
-    model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-2.5, ang=45,getfunc = function(ent) return ent:GetPackedRatio("DoorSidePosition") end,
-    var="DoorSideSelect",speed=1, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-{ID = "DoorsLockSet", x=396, y=91, radius=10, tooltip = "Set doors to close", model = {
-    model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
-    var="DoorsLock",speed=20, vmin=0, vmax=1,
-    sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
-}
-},
-}
+            model= "models/lilly/uf/u2/cab/battery_switch.mdl",
+            z=0, ang=45,
+            var="Headlights",speed=5, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 90,sndmax = 1e3,sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "BatteryToggle", x=463, y=91, radius=10, tooltip = "Toggle Battery", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-2.5, ang=45,
+            getfunc =  function(ent) return ent.BatterySwitch end,
+            var="BatteryToggle",speed=5, min=0, max=1,
+            sndvol = 20, snd = function(val,val2) return val2 == 1 and "button_on" or val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "SpeakerToggle", x=149, y=18.2, radius=10, tooltip = "Toggle Speaker Inside/Outside", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=0, ang=0,
+            getfunc =  function(ent) return 0.5 end,
+            var="Speaker",speed=1, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "DriverLightToggle", x=463, y=70, radius=10, tooltip = "Toggle Cab Light", model = {
+            z=0, ang=0,
+            var="DriverLight",speed=1, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "SetPointLeftSet", x=179.8, y=90, radius=10, tooltip = "Set track point to left", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_arrow_right.mdl", z=-4, ang=90, anim=true,
+            var="SetPointLeft",speed=15, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "DoorsCloseConfirmSet", x=211, y=91, radius=10, tooltip = "Clear door closed alarm", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_orange.mdl", z=-2, ang=0, anim=true,
+            var="DoorsCloseConfirm",speed=15, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+        }
+        },
+        {ID = "SetPointRightSet", x=241.4, y=90.5, radius=10, tooltip = "Set track point to right", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_arrow_left.mdl", z=-4, ang=90,anim=true,
+            var="SetPointRight",speed=15, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "BlinkerLeftSet", x=260, y=88, radius=8, tooltip = "Indicators Left", model = {
+            z=0, ang=0,
+            var="BlinkerLeft",speed=15, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "BlinkerRightSet", x=280, y=88, radius=8, tooltip = "Indicators Right", model = {
+            z=0, ang=0,
+            var="BlinkerRight",speed=10, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "BlinkerSwitch", x=271, y=91, radius=0.1, tooltip = "Indicator Switch", model = {model = "models/lilly/uf/u2/cab/battery_switch.mdl",
+            z=0, ang=45,getfunc = function(ent) return ent:GetNW2Float("BlinkerStatus",0.5) end,
+            var="BlinkerStatus",speed=10, vmin=0, vmax=1,
+            sndvol = 20,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "PantographLowerSet", x=303.5, y=91, radius=8, tooltip = "Lower Pantograph", model = { model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", anim=true,
+            z=-5, ang=0,
+            var="PantographLower",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "PantographRaiseSet", x=303.5, y=58, radius=8, tooltip = "Raise Pantograph", model = { model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", anim=true,
+            z=-5, ang=0,
+            var="PantographRaise",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "ThrowCouplerSet", x=335, y=90.8, radius=10, tooltip = "Throw Coupler", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl", z=-5, ang=0,
+            var="ThrowCoupler",speed=10, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "OpenDoor1Set", x=364, y=91, radius=10, tooltip = "Open only door 1", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=0,
+            var="OpenDoor1",speed=10, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "MalfunctionLamp", x=364, y=57.7, radius=10, tooltip = "Malfunction detected", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-5, ang=0,
+            var="Malfunction",speed=10, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "SandLamp", x=431, y=90, radius=10, tooltip = "Sander indicator", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_red.mdl", z=-7, ang=0,
+            var="Sand",speed=10, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "SanderToggle", x=561, y=112, radius=10, tooltip = "Toggle sanding", model = {
+            model = "models/lilly/uf/common/cab/button_red.mdl", z=-2, ang=0,
+            var="Sander",speed=1, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "DoorsUnlockSet", x=396.4, y=57.7, radius=10, tooltip = "Toggle doors unlocked", model = {
+            model = "models/lilly/uf/u2/cab/button_indent_red.mdl", z=-5, ang=180,
+            var="DoorsUnlock",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "DoorSideSelectToggle", x=396.5, y=17.8, radius=10, tooltip = "Door Unlock Side Switch", model = {
+            model = "models/lilly/uf/u2/cab/battery_switch.mdl", z=-2.5, ang=45,getfunc = function(ent) return ent:GetPackedRatio("DoorSidePosition") end,
+            var="DoorSideSelect",speed=1, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+        {ID = "DoorsLockSet", x=396, y=91, radius=10, tooltip = "Set doors to close", model = {
+            model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z=-5, ang=0,
+            var="DoorsLock",speed=20, vmin=0, vmax=1,
+            sndvol = 20, snd = function(val) return val and "button_on" or "button_off" end,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
+            }
+        },
+    }
 }
 
 
@@ -654,18 +639,16 @@ function ENT:Think()
     self.BaseClass.Think(self)
     self.ParentTrain = self:GetNWEntity("U2a")
     local speed = self:GetNW2Int("Speed")/100
-    
-    self:Animate("reverser",self:GetNW2Float("ReverserLever",0.5),0,100,50,9,false)
-    if self:GetNW2Float("ThrottleStateAnim",0) >= 0.5 then
-        self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,50,8,false)
-    elseif self:GetNW2Float("ThrottleStateAnim",0) <= 0.5 then
-        self:Animate("Throttle",math.Clamp(self:GetNWFloat("ThrottleStateAnim", 0.5),0.09,1),-45,45,50,8,false)
+    if self:GetPackedBool("FlickBatterySwitchOn",false) == true then
+        self.BatterySwitch = 1
+    elseif self:GetPackedBool("FlickBatterySwitchOff",false) == true then
+        self.BatterySwitch = 0
+    else
+        self.BatterySwitch = 0.5
     end
-    
-    if self:GetNW2Bool("ReverserInserted",false) == true then
-        self:ShowHide("reverser",true)
-    elseif self:GetNW2Bool("ReverserInserted",false) == false then
-        self:ShowHide("reverser",false,0)
+    self:Animate("reverser",self:GetNW2Float("ReverserAnimate",0.5),0,100,50)
+    if IsValid(self.ParentTrain) then
+        self:ShowHide("reverser",self.ParentTrain:GetNW2Bool("ReverserInserted",false))
     end
     
     self.CabWindowL = self:GetNW2Float("CabWindowL",0)
@@ -673,16 +656,14 @@ function ENT:Think()
     self:Animate("window_cab_r",self:GetNW2Float("CabWindowR",0),0,100,50,9,false)
     self:Animate("window_cab_l",self:GetNW2Float("CabWindowL",0),0,100,50,9,false)
     
-    if self:GetNW2Float("ThrottleStateAnim",0) >= 0 then
-        self:Animate("Throttle",self:GetNWFloat("ThrottleStateAnim", 0.5),-45,45,5,0.5,false)
-    elseif self:GetNW2Float("ThrottleStateAnim",0) <= 0 then
-        self:Animate("Throttle",math.Clamp(self:GetNWFloat("ThrottleStateAnim", 0.5),0.1,1),-45,45,5,0.5,false)
-    end
+    print(self:GetNW2Float("ThrottleAnim",0))
+    
+    self:Animate("Throttle",self:GetNW2Float("ThrottleAnim",0),-45,45,50)
     
     self.SpeedoAnim = math.Clamp(self:GetNW2Float("Speed"),0, 80) * 0.01 * 2
     
     self:Animate("Speedo",self.SpeedoAnim,0,200,1,0.1,false)
-    --self:Animate("Throttle",0,-45,45,3,0,false)
+
     if self.ParenTrain and self.ParentTrain:GetNW2Bool("Headlights",false) == true and self:GetNW2Bool("Headlights",false) == true then
         self:ShowHide("headlights_on",true)
     else
@@ -707,8 +688,9 @@ function ENT:Think()
             self:ShowHide("Mirror",false)
             self:ShowHide("Mirror_vintage",true)
         end
+        self:SetSoundState("Deadman", self.ParentTrain:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
     end
-    self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound",false) and 1 or 0,1)
+    
     
     
     
@@ -740,4 +722,4 @@ function ENT:Think()
     
 end
 
---UF.GenerateClientProps()
+Metrostroi.GenerateClientProps()

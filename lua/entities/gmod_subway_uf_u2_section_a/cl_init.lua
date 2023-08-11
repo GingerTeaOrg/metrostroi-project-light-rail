@@ -955,7 +955,11 @@ ENT.ButtonMap["Left"] = {
     }
 }
 
-
+ENT.RTMaterialUF = CreateMaterial("MetrostroiRT1","VertexLitGeneric",{
+    ["$vertexcolor"] = 0,
+    ["$vertexalpha"] = 1,
+    ["$nolod"] = 1,
+})
 
 function ENT:Draw()
     self.BaseClass.Draw(self)
@@ -963,7 +967,7 @@ end
 
 
 function ENT:DrawPost()
-    self.RTMaterial:SetTexture("$basetexture",self.IBIS)
+    self.RTMaterialUF:SetTexture("$basetexture",self.IBIS)
     self:DrawOnPanel("IBISScreen",function(...)
         surface.SetMaterial(self.RTMaterial)
         surface.SetDrawColor(0,65,11)
@@ -1057,8 +1061,6 @@ function ENT:UpdateWagonNumber()
                 rightNum:SetSkin(num3)
             end
         end
-        --end
-        --print(num1,num2,num3)
     end
 end
 
@@ -1191,7 +1193,7 @@ function ENT:Think()
     end
     
     self.Speed = self:GetNW2Int("Speed")
-    --print(self:GetNW2Int("WagonNumber",0))
+    ----print(self:GetNW2Int("WagonNumber",0))
     if self:GetNW2Bool("RetroMode",false) == false and self:GetNW2Bool("OldMirror",false) == false then
         self:ShowHide("Mirror_vintage",false)
         self:ShowHide("Mirror",true)
@@ -1244,7 +1246,7 @@ function ENT:Think()
     end
     
     if self:GetNW2String("ServiceAnnouncement","") ~= "" then
-        --print(self:GetNW2String("ServiceAnnouncement",""))
+        ----print(self:GetNW2String("ServiceAnnouncement",""))
         if self.AnnouncementPlayed == false then 
             self.AnnouncementPlayed = true
             self:PlayOnceFromPos("PSA",self:GetNW2String("ServiceAnnouncement"),2,1,1,2,Vector(293,44,102))
@@ -1264,11 +1266,9 @@ function ENT:Think()
     self:Animate("IBISkey",self:GetNW2Bool("TurnIBISKey",false) == true and 0 or 1,0,100,800,0,0)
     
     
-    if self:GetNW2Bool("ReverserInserted",false) == true then
-        self:ShowHide("reverser",true)
-    elseif self:GetNW2Bool("ReverserInserted",false) == false then
-        self:ShowHide("reverser",false,0)
-    end
+    
+    self:ShowHide("reverser",self:GetNW2Bool("ReverserInserted",false))
+    
     
     local Door12a = math.Clamp(self:GetNW2Float("Door12a"),0,1)
     local Door34a = self:GetNW2Float("Door34a")
@@ -1308,7 +1308,7 @@ function ENT:Think()
         
     end
     
-    --print(self.CamshaftMadeSound)
+    ----print(self.CamshaftMadeSound)
     
     
     
@@ -1344,7 +1344,7 @@ function ENT:Think()
     self:Animate("Voltage",self.VoltAnim,0,100,1,0,false)
     self.AmpAnim = self:GetNW2Float("Amps",0) / 0.5 * 100
     self:Animate("Amps",self.AmpAnim,0,100,1,0,false)
-    --print(self.AmpAnim)
+    ----print(self.AmpAnim)
     if self:GetNW2Bool("Cablight",false) == true then
         self:Animate("DriverLightSwitch",1,0,100,100,10,false)
     else
@@ -1364,7 +1364,7 @@ function ENT:Think()
             Door12aMove = false --we're not moving
             LastMove12a = 0 --reset the timer
         end
-        print(Door12aMove)
+        --print(Door12aMove)
         if Door12aMove == true and LastMove12a ~= 0 and not DoorsClosing then --just in case the boolean isn't working reliably, the timer should suss it out
             self:SetSoundState("Door_open1r",1,1) --sound on
         elseif not Door12aMove and LastMove12a == 0 and not DoorsClosing then
@@ -1486,7 +1486,7 @@ function ENT:Think()
     end
     
     if self:GetNW2Bool("Fans",false) == false and self:GetNW2Bool("BatteryOn",false) == true then
-        --print("fans low")
+        ----print("fans low")
         self:SetSoundState("Fan1",0.4,1,0 )
         self:SetSoundState("Fan2",0.4,1,0 )
         self:SetSoundState("Fan3",0.4,1,0 )
@@ -1609,7 +1609,7 @@ local nxt = 35
 
 
 
---print(self.Speed)
+----print(self.Speed)
 
 
 
