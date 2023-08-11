@@ -121,7 +121,7 @@ function ENT:CreateCoupleUF(pos,ang,forward,typ)
 	local coupler = ents.Create("gmod_train_uf_couple")
 	coupler:SetPos(self:LocalToWorld(pos))
 	coupler:SetAngles(self:GetAngles() + ang)
-	coupler.CoupleType = typ
+	coupler.CoupleType = "u2"
 	coupler:Spawn()
 	
 	-- Assign ownership
@@ -468,7 +468,7 @@ function ENT:Initialize()
 			
 		},
 	}
-	--self:TrainSpawnerUpdate()
+	self:TrainSpawnerUpdate()
 	--Lights sheen
 	self.Lights = {
 		[50] = { "light",Vector(406,39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light

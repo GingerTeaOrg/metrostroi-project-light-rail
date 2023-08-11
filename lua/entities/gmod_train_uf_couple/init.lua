@@ -5,25 +5,25 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 local DECOUPLE_TIMEOUT      = 2     -- Time after decoupling furing wich a Coupler cannot couple
-local COUPLE_MAX_DISTANCE   = 60    -- Maximum distance between couple offsets
+local COUPLE_MAX_DISTANCE   = 220    -- Maximum distance between couple offsets
 local COUPLE_MAX_ANGLE      = 18    -- Maximum angle between Couplers on couple
 
 --------------------------------------------------------------------------------
 COUPLE_MAX_DISTANCE = COUPLE_MAX_DISTANCE ^ 2
 COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
---Model,Couple pos,Snake pos,Snake ang
+--Model,Couple pos
 ENT.Types = {
     ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(42.5,0,0)},
     ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(0,0,0)},
     ["pt"] = {"models/lilly/uf/coupler_new.mdl",Vector(37.7,0,0)},
     --["dummy"] = {"models/lilly/uf/coupler_dummy.mdl",Vector(42.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
-    def={"models/lilly/uf/coupler_new.mdl",Vector(10,0,0)},
+    def={"models/lilly/uf/coupler_new.mdl",Vector(38,0,0)},
 }
 
 function ENT:SetParameters()
     local typ = self.Types[self.CoupleType or "def"]
     self:SetModel(typ and typ[1] or "models/lilly/uf/coupler_new.mdl")
-    self.CouplingPointOffset = typ and typ[2] or Vector(37-0.4,0,0)
+    self.CouplingPointOffset = typ and typ[2] or Vector(37.65,0,0)
 end
 
 function ENT:Initialize()
@@ -33,7 +33,6 @@ function ENT:Initialize()
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
     end
-    self:SetUseType(SIMPLE_USE)
 
     -- Set proper parameters for the Coupler
     if IsValid(self:GetPhysicsObject()) then
@@ -85,11 +84,11 @@ function ENT:Couple(ent)
     local strain = self:GetNW2Entity("TrainEntity")
     local etrain = ent:GetNW2Entity("TrainEntity")
     if IsValid(strain) then
-        --self:SetPos(strain:LocalToWorld(self.SpawnPos))
+        self:SetPos(strain:LocalToWorld(self.SpawnPos))
         self:SetAngles(strain:LocalToWorldAngles(self.SpawnAng))
     end
     if IsValid(etrain) then
-        --ent:SetPos(etrain:LocalToWorld(ent.SpawnPos))
+        ent:SetPos(etrain:LocalToWorld(ent.SpawnPos))
         ent:SetAngles(etrain:LocalToWorldAngles(ent.SpawnAng))
     end
     ent:SetPos(self:LocalToWorld(self.CouplingPointOffset*Vector(2,-1,-1)))
@@ -125,6 +124,7 @@ function ENT:Couple(ent)
 end
 
 local function AreInCoupleDistance(ent,self)
+    print(self:LocalToWorld(self.CouplingPointOffset):DistToSqr(ent:LocalToWorld(ent.CouplingPointOffset)))
     return self:LocalToWorld(self.CouplingPointOffset):DistToSqr(ent:LocalToWorld(ent.CouplingPointOffset)) < COUPLE_MAX_DISTANCE
 end
 
