@@ -285,6 +285,9 @@ function ENT:Initialize()
 	self.DoorsPreviouslyUnlocked = false
 	self.RandomnessCalulated = false
 	self.DepartureConfirmed = true
+
+	self.DoorCloseMoments = {}
+	self.DoorCloseMomentsCaptured = false
 	
 	
 	self.Speed = 0
@@ -586,6 +589,7 @@ function ENT:Think(dT)
 	elseif self.DoorSideUnlocked == "Left" and self.DoorsUnlocked == false and self.Door1 ~= true then
 		self:DoorHandler(false,true,false,false)
 		self:SetNW2Bool("DoorsClosing",true)
+		self.DoorCloseMomentsCaptured = false
 	elseif self.DoorSideUnlocked == "Right" and self.DoorsUnlocked == false and self.Door1 ~= true then
 		self:DoorHandler(false,false,true,false)
 		self:SetNW2Bool("DoorsClosing",true)
@@ -822,9 +826,13 @@ function ENT:Think(dT)
 	
 	
 	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
-		if self.Duewag_U2.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.Duewag_U2.ReverserLeverStateA == -1 then
+		
+		if self.Duewag_U2.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.Duewag_U2.ReverserLeverStateA == -1 or self.Duewag_U2.ReverserLeverStateB == 3 or self.Duewag_U2.ReverserLeverStateB == -1 then
+			
 			if self.DepartureConfirmed == true then
+				
 				if self.Duewag_U2.ThrottleState < 0 then
+					print("test2")
 					self.RearBogey.MotorForce  = 67791.24
 					self.FrontBogey.MotorForce = 67791.24
 					self.BrakesOn = true
@@ -837,7 +845,9 @@ function ENT:Think(dT)
 						self.u2sectionb:SetLightPower(66,true)
 						self.u2sectionb:SetLightPower(67,true)
 					end
-				elseif self.Duewag_U2.ThrottleState > 0 and self.DepartureConfirmed == true then 
+				elseif self.Duewag_U2.ThrottleState > 0 then 
+					print("test3")
+					print(self.Duewag_U2.Traction)
 					self.RearBogey.MotorForce  = 67791.24
 					self.FrontBogey.MotorForce = 67791.24 
 					self.RearBogey.MotorPower = self.Duewag_U2.Traction
@@ -1433,7 +1443,7 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	if button == "DeadmanSet" then
-		self.DeadmanUF:TriggerInput("IsPressed", 1)
+		self.DeadmanUF.IsPressedA = true
 		if self:ReadTrainWire(6) > 0 then
 			self:WriteTrainWire(12,1)
 		end
@@ -1974,8 +1984,7 @@ function ENT:OnButtonRelease(button,ply)
 	
 	
 	if button == "DeadmanSet" then
-		self.DeadmanUF:TriggerInput("IsPressed", 0)
-		
+		self.DeadmanUF.IsPressedA = false
 		if self:ReadTrainWire(6) > 0 then
 			self:WriteTrainWire(12,0)
 		end
@@ -2144,13 +2153,13 @@ function ENT:CreateSectionB(pos)
 	0, --forcelimit
 	0, --torquelimit
 	-0, --xmin
-	-4, --ymin
+	-0, --ymin
 	-180, --zmin
 	0, --xmax
-	4, --ymax
+	0, --ymax
 	180, --zmax
 	0, --xfric
-	5, --yfric
+	10, --yfric
 	0, --zfric
 	0, --rotonly
 	1--nocollide
@@ -2223,9 +2232,9 @@ function ENT:Blink(enable, left, right)
 		self:SetNW2Bool("BlinkerTick",self.BlinkerOn) --one tick sound for the blinker relay
 	end
 end
-
-function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideLeft,sideRight,door1 open
-	
+ENT.CloseMoments = {}
+ENT.CloseMomentsCalc = false
+function ENT:DoorHandler(unlock,left,right,door1,idleunlock)--Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
 	
 	if right and door1 then --door1 control according to side preselection
 		if self.DoorStatesRight[1] < 1 then
@@ -2238,12 +2247,19 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 			math.Clamp(self.DoorStatesLeft[4],0,1)
 		end
 	end
-	
-	
-	----------------------------------------------------------------------	
+	----------------------------------------------------------------------
 	if unlock then
-		local OpenMoment
-		OpenMoment = CurTime()
+		self.DoorLockSignalMoment = 0
+		if not self.DoorCloseMomentsCaptured then --randomise door closing for more realistic behaviour
+			self.DoorCloseMoments = 
+					{[1] = math.random(1,3),
+					 [2] = math.random(1,3),
+					 [3] = math.random(1,3),
+					 [4] = math.random(1,3)
+					}
+			self.DoorCloseMomentsCaptured = true
+		end
+		
 		if right then
 			
 			if self.RandomnessCalulated ~= true then --pick a random door to be unlocked
@@ -2261,7 +2277,7 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 				
 			end
 			
-			for i,v in ipairs(self.DoorRandomness) do
+			for i,v in ipairs(self.DoorRandomness) do --increment the door states
 				if v==3 and self.DoorStatesRight[i] < 1 then
 					self.DoorStatesRight[i] = self.DoorStatesRight[i] +0.13
 					math.Clamp(self.DoorStatesRight[i],0,1)
@@ -2292,20 +2308,47 @@ function ENT:DoorHandler(unlock,left,right,door1)--Are the doors unlocked, sideL
 		end
 
 	elseif not unlock then
+		if self.DoorLockSignalMoment == 0 then
+			self.DoorLockSignalMoment = CurTime()
+		end
+		
+
 		if right then
 		
 		
 			for i,v in ipairs(self.DoorStatesRight) do
-				if v > 0 then self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.13 math.Clamp(self.DoorStatesRight[i],0,1) end
+				
+				if CurTime() > self.DoorLockSignalMoment + self.DoorCloseMoments[i] then
+					if v > 0 then self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.13 self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i],0,1) end
+				end
 			end
 		
 		elseif left then
 		
 			for i,v in ipairs(self.DoorStatesLeft) do
-				if v > 0 then self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.13 math.Clamp(self.DoorStatesLeft[i],0,1) end
+				if CurTime() > self.DoorLockSignalMoment + self.DoorCloseMoments[i] then
+					if v > 0 then self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.13 self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i],0,1) end
+				end
 			end
 		end
 		
+	
+	elseif idleunlock then
+		if right then
+			for i,v in ipairs(self.DoorRandomness) do
+				if v==3 and self.DoorStatesRight[i] < 1 then
+					self.DoorStatesRight[i] = self.DoorStatesRight[i] +0.13
+					math.Clamp(self.DoorStatesRight[i],0,1)
+				end
+			end
+		elseif left then		
+			for i,v in ipairs(self.DoorRandomness) do
+				if v==3 and self.DoorStatesLeft[i] < 1 then
+					self.DoorStatesLeft[i] = self.DoorStatesLeft[i] +0.13
+					math.Clamp(self.DoorStatesLeft[i],0,1)
+				end
+			end
+		end
 	end
 end
 
