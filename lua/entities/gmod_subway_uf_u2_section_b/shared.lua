@@ -1,7 +1,7 @@
 ENT.Type            = "anim"
 ENT.Base            = "gmod_subway_base"
 
-ENT.PrintNameTranslated       = "81-741test"
+ENT.PrintNameTranslated       = "U2 Section B"
 ENT.Author          = ""
 ENT.Contact         = ""
 ENT.Purpose         = ""
@@ -24,9 +24,9 @@ end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["bell"] = {1100,1e9,Vector(386,-20,8),0.7}
+	self.SoundPositions["bell"] = {1100,1e9,Vector(-386,-20,8),0.7}
 	self.SoundNames["bell_in"] = {loop=0.01,"lilly/uf/u2/insidecab/Bell_start.mp3","lilly/uf/u2/insidecab/Bell_loop.mp3", "lilly/uf/u2/insidecab/Bell_end.mp3"}	
-	self.SoundPositions["bell_in"] = {800,1e9,Vector(386,-20,50),1}
+	self.SoundPositions["bell_in"] = {800,1e9,Vector(-386,-20,50),1}
 	
 	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.mp3"}	
 	self.SoundPositions["Startup"] = {800,1e9,Vector(550,0,55),1}
