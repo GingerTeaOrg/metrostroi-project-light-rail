@@ -286,7 +286,10 @@ function ENT:Initialize()
 	self.RandomnessCalulated = false
 	self.DepartureConfirmed = true
 	
-	self.DoorCloseMoments = {}
+	self.DoorCloseMoments = {[1] = 0,
+							 [2] = 0,
+							 [3] = 0,
+							 [4] = 0}
 	self.DoorCloseMomentsCaptured = false
 	
 	
@@ -310,7 +313,7 @@ function ENT:Initialize()
 	self.CabWindowR = 0
 	self.CabWindowL = 0
 	self.AlarmSound = 0
-	
+	self.DoorLockSignalMoment = 0
 	self.DoorsOpen = false
 	-- Create bogeys
 	self.FrontBogey = self:CreateBogeyUF(Vector( 290,0,0),Angle(0,180,0),true,"duewag_motor")
@@ -468,7 +471,7 @@ function ENT:Initialize()
 			
 		},
 	}
-	self:TrainSpawnerUpdate()
+	--self:TrainSpawnerUpdate()
 	--Lights sheen
 	self.Lights = {
 		[50] = { "light",Vector(406,39,98), Angle(90,0,0), Color(227,197,160),     brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt" }, --cab light
@@ -496,7 +499,7 @@ function ENT:Initialize()
 		[39] = { "light",Vector(415.617,18.8834,54.8), Angle(0,0,0), Color(252,247,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --battery discharge lamp in cab
 		[40] = { "light",Vector(415.617,12.4824,54.9), Angle(0,0,0), Color(0,130,99),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --clear for departure lamp
 		[41] = { "light",Vector(415.656,-2.45033,54.55), Angle(0,0,0), Color(255,0,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --doors unlocked lamp
-		[42] = { "light",Vector(415.656,14.6172,54.55), Angle(0,0,0), Color(27,57,141),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --doors unlocked lamp
+		[42] = { "light",Vector(415.656,14.6172,54.55), Angle(0,0,0), Color(27,57,141),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --departure clear lamp
 	}
 	
 	self.InteractionZones = {
@@ -545,8 +548,7 @@ function ENT:Initialize()
 end
 
 function ENT:TrainSpawnerUpdate()
-	self.FrontCouple:SetParameters()
-	self.RearCouple:SetParameters()
+	
 	local tex = "Def_U2"
 	self.MiddleBogey.Texture = self:GetNW2String("Texture")
 	self:UpdateTextures()
@@ -556,8 +558,10 @@ function ENT:TrainSpawnerUpdate()
 	--self.MiddleBogey:UpdateTextures()
 	--self.MiddleBogey:UpdateTextures()
 	--self:UpdateLampsColors()
-	self.FrontCouple.CoupleType = "U2"
-	self.RearCouple.CoupleType = "U2"
+	self.FrontCouple.CoupleType = "u2"
+	self.RearCouple.CoupleType = "u2"
+	self.FrontCouple:SetParameters()
+	self.RearCouple:SetParameters()
 	--self.u2sectionb:SetNW2String("Texture", self:GetNW2String("Texture"))
 	--self.u2sectionb.Texture = self:GetNW2String("Texture")
 end
@@ -578,6 +582,7 @@ function ENT:Think(dT)
 		if self.Duewag_U2.VZ then
 			self:WriteTrainWire(13,1)
 			self:WriteTrainWire(14,0)
+			self:WriteTrainWire(15,1)
 		end	
 		self:DoorHandler(true,true,false,false)
 		self:SetNW2Bool("DoorsClosing",false)
@@ -585,6 +590,7 @@ function ENT:Think(dT)
 		if self.Duewag_U2.VZ then
 			self:WriteTrainWire(13,0)
 			self:WriteTrainWire(14,1)
+			self:WriteTrainWire(15,1)
 		end
 		self:DoorHandler(true,false,true,false)
 		self:SetNW2Bool("DoorsClosing",false)
@@ -596,33 +602,54 @@ function ENT:Think(dT)
 		self:SetNW2Bool("DoorsClosing",false)
 	elseif self.DoorSideUnlocked == "Left" and self.DoorsUnlocked == false and self.Door1 ~= true then
 		if self.Duewag_U2.VZ then
-			self:WriteTrainWire(13,0)
+			self:WriteTrainWire(13,1)
 			self:WriteTrainWire(14,0)
+			self:WriteTrainWire(15,0)
 		end
 		self:DoorHandler(false,true,false,false)
 		self:SetNW2Bool("DoorsClosing",true)
-		self.DoorCloseMomentsCaptured = false
 	elseif self.DoorSideUnlocked == "Right" and self.DoorsUnlocked == false and self.Door1 ~= true then
 		if self.Duewag_U2.VZ then
 			self:WriteTrainWire(13,0)
-			self:WriteTrainWire(14,0)
+			self:WriteTrainWire(14,1)
+			self:WriteTrainWire(15,0)
 		end
 		self:DoorHandler(false,false,true,false)
 		self:SetNW2Bool("DoorsClosing",true)
 	end
 	
 	if self:ReadTrainWire(6) > 0 then
-		if self:ReadTrainWire(13) > 0 and self:ReadTrainWire(14) < 1 then
+		if self:ReadTrainWire(13) > 0 and self:ReadTrainWire(14) < 1 and self:ReadTrainWire(15) > 0 then
 			self:DoorHandler(true,true,false,false)
 			self:SetNW2Bool("DoorsClosing",false)
-		elseif self:ReadTrainWire(14) > 0 and self:ReadTrainWire(13) < 1 then
+		elseif self:ReadTrainWire(14) > 0 and self:ReadTrainWire(13) < 1 and self:ReadTrainWire(15) > 0 then
 			self:DoorHandler(true,false,true,false)
 			self:SetNW2Bool("DoorsClosing",false)
-		elseif self:ReadTrainWire(13) < 1 and self:ReadTrainWire(14) < 1 then
-			self:DoorHandler(false,false,false,false)
+		elseif self:ReadTrainWire(13) > 0 and self:ReadTrainWire(14) < 1 and self:ReadTrainWire(15) < 1 then
+			self:DoorHandler(false,true,false,false)
 			self:SetNW2Bool("DoorsClosing",true)
+			for k,v in pairs(self.WagonList) do
+				if v.DoorStatesLeft ~= 0 then
+					self:WriteTrainWire(16,0)
+				else
+					self:WriteTrainWire(16,1)
+				end
+			end
+		elseif self:ReadTrainWire(14) > 0 and self:ReadTrainWire(13) < 1 and self:ReadTrainWire(15) < 1 then
+			self:DoorHandler(false,false,true,false)
+			self:SetNW2Bool("DoorsClosing",true)
+			for k,v in pairs(self.WagonList) do
+				if v.DoorStatesRight ~= 0 then
+					self:WriteTrainWire(16,0)
+				else
+					self:WriteTrainWire(16,1)
+				end
+			end
 		end
+
+		
 	end
+	
 	
 	
 	self:SetNW2String("DoorSideUnlocked",self.DoorSideUnlocked)
@@ -765,91 +792,94 @@ if self:ReadTrainWire(7) > 0 or self.Duewag_U2.BatteryOn == true then -- if the 
 		end
 		
 	end
-end
 
 
-if self.DoorsUnlocked == false then
-	self:SetLightPower(30,false)
-	self:SetLightPower(31,false)
-	self:SetLightPower(32,false)
-	self:SetLightPower(33,false)
-	self:SetLightPower(34,false)
-	self:SetLightPower(35,false)
-	self:SetLightPower(36,false)
-	self:SetLightPower(37,false)
+	if self.DoorsUnlocked == false or self:ReadTrainWire(15) < 1 then
+			self:SetLightPower(30,false)
+			self:SetLightPower(31,false)
+			self:SetLightPower(32,false)
+			self:SetLightPower(33,false)
+			self:SetLightPower(34,false)
+			self:SetLightPower(35,false)
+			self:SetLightPower(36,false)
+			self:SetLightPower(37,false)
 	
-	self.u2sectionb:SetLightPower(30,false)
-	self.u2sectionb:SetLightPower(31,false)
-	self.u2sectionb:SetLightPower(32,false)
-	self.u2sectionb:SetLightPower(33,false)
-	self.u2sectionb:SetLightPower(34,false)
-	self.u2sectionb:SetLightPower(35,false)
-	self.u2sectionb:SetLightPower(36,false)
-	self.u2sectionb:SetLightPower(37,false)
-elseif self.DoorsUnlocked == true then
+			self.u2sectionb:SetLightPower(30,false)
+			self.u2sectionb:SetLightPower(31,false)
+			self.u2sectionb:SetLightPower(32,false)
+			self.u2sectionb:SetLightPower(33,false)
+			self.u2sectionb:SetLightPower(34,false)
+			self.u2sectionb:SetLightPower(35,false)
+			self.u2sectionb:SetLightPower(36,false)
+			self.u2sectionb:SetLightPower(37,false)
+	elseif self.DoorsUnlocked == true or self:ReadTrainWire(15) > 0 then
 	
-	if self.DoorSideUnlocked == "Left" then
-		self:SetLightPower(30,true)
-		self:SetLightPower(31,true)
-		self:SetLightPower(32,true)
-		self:SetLightPower(33,true)
+	if self.DoorSideUnlocked == "Left" or self:ReadTrainWire(13) > 0 and self:ReadTrainWire(15) > 0 then
+			self:SetLightPower(30,true)
+			self:SetLightPower(31,true)
+			self:SetLightPower(32,true)
+			self:SetLightPower(33,true)
 		
-		self:SetLightPower(34,false)
-		self:SetLightPower(35,false)
-		self:SetLightPower(36,false)
-		self:SetLightPower(37,false)
-		self.u2sectionb:SetLightPower(30,true)
-		self.u2sectionb:SetLightPower(31,true)
-		self.u2sectionb:SetLightPower(32,true)
-		self.u2sectionb:SetLightPower(33,true)
+			self:SetLightPower(34,false)
+			self:SetLightPower(35,false)
+			self:SetLightPower(36,false)
+			self:SetLightPower(37,false)
+				self.u2sectionb:SetLightPower(30,true)
+			self.u2sectionb:SetLightPower(31,true)
+			self.u2sectionb:SetLightPower(32,true)
+			self.u2sectionb:SetLightPower(33,true)
 		
-		self.u2sectionb:SetLightPower(34,false)
-		self.u2sectionb:SetLightPower(35,false)
-		self.u2sectionb:SetLightPower(36,false)
-		self.u2sectionb:SetLightPower(37,false)
-	elseif self.DoorSideUnlocked == "None" then
-		self:SetLightPower(30,false)
-		self:SetLightPower(31,false)
-		self:SetLightPower(32,false)
-		self:SetLightPower(33,false)
-		self:SetLightPower(34,false)
-		self:SetLightPower(35,false)
-		self:SetLightPower(36,false)
-		self:SetLightPower(37,false)
+			self.u2sectionb:SetLightPower(34,false)
+			self.u2sectionb:SetLightPower(35,false)
+			self.u2sectionb:SetLightPower(36,false)
+			self.u2sectionb:SetLightPower(37,false)
+	elseif self.DoorSideUnlocked == "None" or self:ReadTrainWire(15) < 1 then
+			self:SetLightPower(30,false)
+			self:SetLightPower(31,false)
+			self:SetLightPower(32,false)
+			self:SetLightPower(33,false)
+			self:SetLightPower(34,false)
+			self:SetLightPower(35,false)
+			self:SetLightPower(36,false)
+			self:SetLightPower(37,false)
 		
-		self.u2sectionb:SetLightPower(30,false)
-		self.u2sectionb:SetLightPower(31,false)
-		self.u2sectionb:SetLightPower(32,false)
-		self.u2sectionb:SetLightPower(33,false)
-		self.u2sectionb:SetLightPower(34,false)
-		self.u2sectionb:SetLightPower(35,false)
-		self.u2sectionb:SetLightPower(36,false)
-		self.u2sectionb:SetLightPower(37,false)
-	elseif self.DoorSideUnlocked == "Right" then
-		self:SetLightPower(34,true)
-		self:SetLightPower(35,true)
-		self:SetLightPower(36,true)
-		self:SetLightPower(37,true)
+			self.u2sectionb:SetLightPower(30,false)
+			self.u2sectionb:SetLightPower(31,false)
+			self.u2sectionb:SetLightPower(32,false)
+			self.u2sectionb:SetLightPower(33,false)
+			self.u2sectionb:SetLightPower(34,false)
+			self.u2sectionb:SetLightPower(35,false)
+			self.u2sectionb:SetLightPower(36,false)
+			self.u2sectionb:SetLightPower(37,false)
+	elseif self.DoorSideUnlocked == "Right" or self:ReadTrainWire(14) > 0 and self:ReadTrainWire(15) > 0 then
+			self:SetLightPower(34,true)
+			self:SetLightPower(35,true)
+			self:SetLightPower(36,true)
+			self:SetLightPower(37,true)
 		
-		self:SetLightPower(30,false)
-		self:SetLightPower(31,false)
-		self:SetLightPower(32,false)
-		self:SetLightPower(33,false)
+			self:SetLightPower(30,false)
+			self:SetLightPower(31,false)
+			self:SetLightPower(32,false)
+			self:SetLightPower(33,false)
 		
-		self.u2sectionb:SetLightPower(34,true)
-		self.u2sectionb:SetLightPower(35,true)
-		self.u2sectionb:SetLightPower(36,true)
-		self.u2sectionb:SetLightPower(37,true)
+			self.u2sectionb:SetLightPower(34,true)
+			self.u2sectionb:SetLightPower(35,true)
+			self.u2sectionb:SetLightPower(36,true)
+			self.u2sectionb:SetLightPower(37,true)
 		
-		self.u2sectionb:SetLightPower(30,false)
-		self.u2sectionb:SetLightPower(31,false)
-		self.u2sectionb:SetLightPower(32,false)
-		self.u2sectionb:SetLightPower(33,false)
+			self.u2sectionb:SetLightPower(30,false)
+			self.u2sectionb:SetLightPower(31,false)
+			self.u2sectionb:SetLightPower(32,false)
+			self.u2sectionb:SetLightPower(33,false)
 		
 	end
 	
 	
 end
+end
+
+
+
 
 
 
@@ -1683,9 +1713,10 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	if button == "DoorsCloseConfirmSet" then
-		
-		self.DoorsPreviouslyUnlocked = false
-		self.DepartureConfirmed = true
+		if self:ReadTrainWire(16) > 0 then
+			self.DoorsPreviouslyUnlocked = false
+			self.DepartureConfirmed = true
+		end
 	end
 	
 	if button == "SetHoldingBrakeSet" then
@@ -2278,17 +2309,15 @@ function ENT:DoorHandler(unlock,left,right,door1,idleunlock)--Are the doors unlo
 		end
 	end
 	----------------------------------------------------------------------
-	if unlock then
+if unlock then
 		self.DoorLockSignalMoment = 0
-		if not self.DoorCloseMomentsCaptured then --randomise door closing for more realistic behaviour
-			self.DoorCloseMoments = 
-			{[1] = math.random(1,3),
-			[2] = math.random(1,3),
-			[3] = math.random(1,3),
-			[4] = math.random(1,3)
-		}
-		self.DoorCloseMomentsCaptured = true
-	end
+		if self.DoorCloseMomentsCaptured == false then --randomise door closing for more realistic behaviour
+			self.DoorCloseMoments[1] = math.random(1,4)
+			self.DoorCloseMoments[2] = math.random(1,4)
+			self.DoorCloseMoments[3] = math.random(1,4)
+			self.DoorCloseMoments[4] = math.random(1,4)
+			self.DoorCloseMomentsCaptured = true
+		end
 	
 	if right then
 		
@@ -2309,7 +2338,7 @@ function ENT:DoorHandler(unlock,left,right,door1,idleunlock)--Are the doors unlo
 		
 		for i,v in ipairs(self.DoorRandomness) do --increment the door states
 			if v==3 and self.DoorStatesRight[i] < 1 then
-				self.DoorStatesRight[i] = self.DoorStatesRight[i] +0.13
+				self.DoorStatesRight[i] = self.DoorStatesRight[i] +0.08
 				math.Clamp(self.DoorStatesRight[i],0,1)
 			end
 		end
@@ -2331,7 +2360,7 @@ function ENT:DoorHandler(unlock,left,right,door1,idleunlock)--Are the doors unlo
 		
 		for i,v in ipairs(self.DoorRandomness) do
 			if v==3 and self.DoorStatesLeft[i] < 1 then
-				self.DoorStatesLeft[i] = self.DoorStatesLeft[i] +0.13
+				self.DoorStatesLeft[i] = self.DoorStatesLeft[i] +0.08
 				math.Clamp(self.DoorStatesLeft[i],0,1)
 			end
 		end
@@ -2342,14 +2371,14 @@ elseif not unlock then
 		self.DoorLockSignalMoment = CurTime()
 	end
 	self.DoorCloseMomentsCaptured = false
-	
+	self.DoorsPreviouslyUnlocked = true
 	if right then
 		
 		
 		for i,v in ipairs(self.DoorStatesRight) do
 			
 			if CurTime() > self.DoorLockSignalMoment + self.DoorCloseMoments[i] then
-				if v > 0 then self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.13 self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i],0,1) end
+				if v > 0 then self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.08 self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i],0,1) end
 			end
 		end
 		
@@ -2357,7 +2386,7 @@ elseif not unlock then
 		
 		for i,v in ipairs(self.DoorStatesLeft) do
 			if CurTime() > self.DoorLockSignalMoment + self.DoorCloseMoments[i] then
-				if v > 0 then self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.13 self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i],0,1) end
+				if v > 0 then self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.08 self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i],0,1) end
 			end
 		end
 	end
@@ -2368,14 +2397,14 @@ elseif idleunlock then
 		for i,v in ipairs(self.DoorRandomness) do
 			if v==3 and self.DoorStatesRight[i] < 1 then
 				self.DoorStatesRight[i] = self.DoorStatesRight[i] +0.13
-				math.Clamp(self.DoorStatesRight[i],0,1)
+				self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesRight[i],0,1)
 			end
 		end
 	elseif left then		
 		for i,v in ipairs(self.DoorRandomness) do
 			if v==3 and self.DoorStatesLeft[i] < 1 then
 				self.DoorStatesLeft[i] = self.DoorStatesLeft[i] +0.13
-				math.Clamp(self.DoorStatesLeft[i],0,1)
+				self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i],0,1)
 			end
 		end
 	end
