@@ -12,7 +12,9 @@ Wire 11, Passenger Emergency brake
 Wire 12, Deadman switch for traction unblocking
 Wire 13, Unlock Doors Left
 Wire 14, Unlock Doors Right
-
+Wire 15, Unlock yes or no
+Wire 16, Doors all clear
+Wire 17, Raise Pantograph
 
 
 ***********Lighting***********************
