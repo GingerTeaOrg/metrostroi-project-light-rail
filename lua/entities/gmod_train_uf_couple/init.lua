@@ -14,7 +14,7 @@ COUPLE_MAX_ANGLE = math.cos(math.rad(COUPLE_MAX_ANGLE))
 --Model,Couple pos
 ENT.Types = {
     ["u5"] = {"models/lilly/uf/coupler_new.mdl",Vector(42.5,0,0)},
-    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(0,0,0)},
+    ["u2"] = {"models/lilly/uf/coupler_new.mdl",Vector(38,0,0)},
     ["pt"] = {"models/lilly/uf/coupler_new.mdl",Vector(37.7,0,0)},
     --["dummy"] = {"models/lilly/uf/coupler_dummy.mdl",Vector(42.5,-2,0),Vector(0,0,0),Angle(0,-90,0)},
     def={"models/lilly/uf/coupler_new.mdl",Vector(38,0,0)},
