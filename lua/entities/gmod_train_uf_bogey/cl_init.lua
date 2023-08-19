@@ -2,8 +2,8 @@ include("shared.lua")
 
 -- Bogey-related sounds
 ENT.SoundNames = {}
-ENT.SoundNames["u2_1"]  = "lilly/uf/u2/test/u2/engine_loop_primary.mp3"
-ENT.SoundNames["u2_2"]  = "lilly/uf/u2/test/u2/engine_loop_combined.mp3"
+ENT.SoundNames["u2_1"]  = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_primary.mp3"
+ENT.SoundNames["u2_2"]  = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_combined.mp3"
 --ENT.SoundNames["u2_3"]  = "lilly/uf/u2/overhaul/u2_engine_secondary.mp3"
 
 
@@ -29,8 +29,8 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 
 ENT.EngineSNDConfig = {
     {
-        {"u2_1" ,35,0,1,1}, --initial speed, 
-        {"u2_2" ,35,80,80,2},
+        {"u2_1" ,40,0,1,1}, --initial speed, 
+        {"u2_2" ,40,80,80,2},
     },
 }
 
