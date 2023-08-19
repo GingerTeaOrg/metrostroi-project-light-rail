@@ -656,7 +656,7 @@ function ENT:Think()
     self:Animate("window_cab_r",self:GetNW2Float("CabWindowR",0),0,100,50,9,false)
     self:Animate("window_cab_l",self:GetNW2Float("CabWindowL",0),0,100,50,9,false)
     
-    print(self:GetNW2Float("ThrottleAnim",0))
+    --print(self:GetNW2Float("ThrottleAnim",0))
     
     self:Animate("Throttle",self:GetNW2Float("ThrottleAnim",0),-45,45,50)
     
