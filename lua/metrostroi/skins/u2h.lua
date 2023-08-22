@@ -166,6 +166,30 @@ Metrostroi.AddSkin("train","OrEbSW_b",{
     }
 })
 
+Metrostroi.AddSkin("train","OrEbSW_2",{
+    name = "1981 Stadtwerke Outline",
+    typ = "U2h",
+    textures = {
+        main = "models/lilly/uf/u2/u2h/orange-main",
+        main_left = "models/lilly/uf/u2/u2h/orange-main-left",
+		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke2",
+        door_external = "models/lilly/uf/u2/u2h/door_external_orange",
+		
+    }
+})
+Metrostroi.AddSkin("train","OrEbSW_2_b",{
+    name = "1981 Stadtwerke Outline",
+    typ = "U2hb",
+    textures = {
+        main_b = "models/lilly/uf/u2/u2h/orange_main-b",
+        main = "models/lilly/uf/u2/u2h/orange-main",
+        main_left = "models/lilly/uf/u2/u2h/orange-main-left",
+        main_b_left = "models/lilly/uf/u2/u2h/orange-main-left",
+		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke2",
+        door_external = "models/lilly/uf/u2/u2h/door_external_orange",
+    }
+})
+
 Metrostroi.AddSkin("train","White",{
     name = "White",
     typ = "U2h",
