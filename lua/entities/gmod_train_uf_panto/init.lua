@@ -113,7 +113,7 @@ function ENT:CheckVoltage(dT)
     -- Check contact states
     if (CurTime() - self.CheckTimeout) <= 0.25 then return end
     self.CheckTimeout = CurTime()
-    --local supported = C_Reqiure3rdRail:GetInt() > 0 and UF.MapHasFullSupport()
+    local supported = C_train_requirewire:GetInt() > 0 and UF.MapHasFullSupport()
     local feeder = self.Feeder and UF.Voltages[self.Feeder]
     local volt = feeder or UF.Voltage or 750
 
@@ -131,46 +131,22 @@ function ENT:CheckVoltage(dT)
 
     -- Detect changes in contact states
     local i=1
-        local state = self.NextStates[i]
-        if state ~= self.ContactStates[i] then
-            self.ContactStates[i] = state
-            if not state then return end
+    local state = self.NextStates[i]
+    if state ~= self.ContactStates[i] then
+        self.ContactStates[i] = state
+        if not state then return end
 
-            self.VoltageDrop = -40*(0.5 + 0.5*math.random())
+        self.VoltageDrop = -40*(0.5 + 0.5*math.random())
 
-            local dt = CurTime() - self.PlayTime[i]
-            self.PlayTime[i] = CurTime()
+        local dt = CurTime() - self.PlayTime[i]
+        self.PlayTime[i] = CurTime()
 
-            local volume = 0.53
-            if dt < 1.0 then volume = 0.43 end
-            if i == 1 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".mp3",self:LocalToWorld(self.PantLPos),65,math.random(90,120),volume) end
-            if i == 2 then sound.Play("subway_trains/bogey/tr_"..math.random(1,5)..".mp3",self:LocalToWorld(self.PantRPos),65,math.random(90,120),volume) end
+        local volume = 0.53
+        if dt < 1.0 then volume = 0.43 end
 
-            -- Sparking probability
-            local probability = math.Clamp(1-(self.MotorPower/2),0,1)
-            if math.random() > probability then
-                local effectdata = EffectData()
-                if i == 1 then effectdata:SetOrigin(self:LocalToWorld(self.PantLPos)) end
-                if i == 2 then effectdata:SetOrigin(self:LocalToWorld(self.PantRPos)) end
-                effectdata:SetNormal(Vector(0,0,-1))
-                util.Effect("stunstickimpact", effectdata, true, true)
+            
+    end
 
-                local light = ents.Create("light_dynamic")
-                light:SetPos(effectdata:GetOrigin())
-                light:SetKeyValue("_light","100 220 255")
-                light:SetKeyValue("style", 0)
-                light:SetKeyValue("distance", 256)
-                light:SetKeyValue("brightness", 5)
-                light:Spawn()
-                light:Fire("TurnOn","","0")
-                light.Time = CurTime()
-                timer.Simple(0.1,function()
-                    SafeRemoveEntity(light)
-                end)
-                sound.Play("subway_trains/bogey/spark.mp3",effectdata:GetOrigin(),75,math.random(100,150),volume)
-                --self.Train:PlayOnce("zap",sound_source,0.7*volume,50+math.random(90,120))
-            end
-        end
     
     -- Voltage spikes
     self.VoltageDrop = math.max(-30,math.min(30,self.VoltageDrop + (0 - self.VoltageDrop)*10*dT))
@@ -197,27 +173,6 @@ function ENT:Debug()
     self:SetNWVector("mins",PhysObj:WorldToLocalVector(Vector( -2,-24,1 )))
     self:SetNWVector("maxs",PhysObj:WorldToLocalVector(Vector(2,24,3)))
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function ENT:AcceptInput(inputName, activator, called, data)
     if inputName == "OnFeederIn" then
