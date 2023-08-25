@@ -195,35 +195,35 @@ function ENT:Initialize()
 	self.InteractionZones = {
 		{
 			ID = "Button1b",
-			Pos = Vector(396.884,-51,50.5), Radius = 16,
-		},
-		{
-			ID = "Button2b",
-			Pos = Vector(326.89,-50,49.5253), Radius = 16,
-		},
-		{
-			ID = "Button3b",
-			Pos = Vector(152.116,-50,49.5253), Radius = 16,
-		},
-		{
-			ID = "Button4b",
-			Pos = Vector(84.6012,-50,49.5253), Radius = 16,
-		},
-		{
-			ID = "Button5a",
 			Pos = Vector(396.884,51,50.5), Radius = 16,
 		},
 		{
-			ID = "Button6a",
+			ID = "Button2b",
 			Pos = Vector(326.89,50,49.5253), Radius = 16,
 		},
 		{
-			ID = "Button7a",
+			ID = "Button3b",
 			Pos = Vector(152.116,50,49.5253), Radius = 16,
 		},
 		{
-			ID = "Button8a",
+			ID = "Button4b",
 			Pos = Vector(84.6012,50,49.5253), Radius = 16,
+		},
+		{
+			ID = "Button5a",
+			Pos = Vector(-84.712746,-50.660839,49.731411), Radius = 16,
+		},
+		{
+			ID = "Button6a",
+			Pos = Vector(-152.081543,-50.660969,49.797302), Radius = 16,
+		},
+		{
+			ID = "Button7a",
+			Pos = Vector(-326.835022,-50.661758,49.759453), Radius = 16,
+		},
+		{
+			ID = "Button8a",
+			Pos = Vector(-396.827484,-48.789711,49.787682), Radius = 16,
 		},
 		
 	}
@@ -638,36 +638,42 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	
-	if button == "Button1a" then
-		if self.DoorSideUnlocked == "Right" then
-			if self.DoorRandomness[1] == 0 then
-				self.DoorRandomness[1] = 3
+	if button == "Button5a" then
+		if self.ParentTrain.DoorSideUnlocked == "Right" then
+			if self.ParentTrain.DoorRandomness[3] == 0 then
+				self.ParentTrain.DoorRandomness[3] = 3
 			end
 		end
 		self.Panel.Button1a = 1
 	end
 	
-	if button == "Button2a" then
-		if self.DoorSideUnlocked == "Right" then
-			self.DoorRandomness[1] = 3
+	if button == "Button6a" then
+		if self.ParentTrain.DoorSideUnlocked == "Right" then
+			if self.ParentTrain.DoorRandomness[3] == 0 then
+				self.ParentTrain.DoorRandomness[3] = 3
+			end
 			
 		end
 		self.Panel.Button2a = 1
 	end
 	
-	if button == "Button3a" then
-		if self.DoorSideUnlocked == "Right" then
+	if button == "Button7a" then
+		if self.ParentTrain.DoorSideUnlocked == "Right" then
 			
-			self.DoorRandomness[2] = 3
+			if self.ParentTrain.DoorRandomness[4] == 0 then
+				self.ParentTrain.DoorRandomness[4] = 3
+			end
 			
 		end
 		self.Panel.Button3a = 1
 	end
 	
-	if button == "Button4a" then
-		if self.DoorSideUnlocked == "Right" then
+	if button == "Button8a" then
+		if self.ParentTrain.DoorSideUnlocked == "Right" then
 			
-			self.DoorRandomness[2] = 3
+			if self.ParentTrain.DoorRandomness[4] == 0 then
+				self.ParentTrain.DoorRandomness[4] = 3
+			end
 			
 		end
 		self.Panel.Button4a = 1
@@ -675,7 +681,7 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	if button == "Button8b" then
-		if self.DoorSideUnlocked == "Left" then
+		if self.ParentTrain.DoorSideUnlocked == "Left" then
 			
 			self.DoorRandomness[4] = 3
 			
@@ -683,33 +689,33 @@ function ENT:OnButtonPress(button,ply)
 	end
 	
 	if button == "Button7b" then
-		if self.DoorSideUnlocked == "Left" then
+		if self.ParentTrain.DoorSideUnlocked == "Left" then
 			
-			self.DoorRandomness[4] = 3
+			self.ParentTrain.DoorRandomness[4] = 3
 			
 		end
 	end
 	
 	if button == "Button6b" then
-		if self.DoorSideUnlocked == "Left" then
+		if self.ParentTrain.DoorSideUnlocked == "Left" then
 			
-			self.DoorRandomness[3] = 3
+			self.ParentTrain.DoorRandomness[3] = 3
 			
 		end
 	end
 	
 	if button == "Button5b" then
-		if self.DoorSideUnlocked == "Left" then
+		if self.ParentTrain.DoorSideUnlocked == "Left" then
 			
-			self.DoorRandomness[3] = 3
+			self.ParentTrain.DoorRandomness[3] = 3
 			
 		end
 	end
 	
 	if button == "DoorsUnlockSet"  then
 		
-		self.DoorsUnlocked = true
-		self.DepartureConfirmed = false
+		self.ParentTrain.DoorsUnlocked = true
+		self.ParentTrain.DepartureConfirmed = false
 		self.Panel.DoorsUnlockSet = 1
 	end
 	
@@ -717,23 +723,23 @@ function ENT:OnButtonPress(button,ply)
 	if button == "DoorsLockSet"  then
 		
 		
-		self.DoorRandomness[1] = -1
-		self.DoorRandomness[2] = -1
-		self.DoorRandomness[3] = -1
-		self.DoorRandomness[4] = -1
+		self.ParentTrain.DoorRandomness[1] = -1
+		self.ParentTrain.DoorRandomness[2] = -1
+		self.ParentTrain.DoorRandomness[3] = -1
+		self.ParentTrain.DoorRandomness[4] = -1
 		
-		self.DoorsPreviouslyUnlocked = true
-		self.RandomnessCalculated = false
-		self.DoorsUnlocked = false
-		self.Door1 = false
+		self.ParentTrain.DoorsPreviouslyUnlocked = true
+		self.ParentTrain.RandomnessCalculated = false
+		self.ParentTrain.DoorsUnlocked = false
+		self.ParentTrain.Door1 = false
 		self.Panel.DoorsLock = 1
 		
 	end
 	
 	if button == "DoorsCloseConfirmSet" then
 		
-		self.DoorsPreviouslyUnlocked = false
-		self.DepartureConfirmed = true
+		self.ParentTrain.DoorsPreviouslyUnlocked = false
+		self.ParentTrain.DepartureConfirmed = true
 	end
 	
 	if button == "SetHoldingBrakeSet" then
@@ -1231,9 +1237,7 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed",self.Speed*150)
-	if not self.ParentTrain then
-		self.ParentTrain = self:GetNWEntity("U2a")
-	end
+	
 	if self.ParentTrain:GetNW2Bool("RetroMode",false) == true then
 		self:SetModel("models/lilly/uf/u2/u2_vintage_b.mdl")
 	end
@@ -1266,5 +1270,59 @@ function ENT:Think()
 		self:SetLightPower(67,false)
 	end]]
 	
+
+end
+
+function ENT:IRIS(enable) -- IR sensors for blocking the doors
+		if enable then
+				local result3 = util.TraceHull({ --Door 5a, 6a
+						start = self:LocalToWorld(Vector(-330.889, -46.4148, 35.3841)),
+						endpos = self:LocalToWorld(Vector(-330.889, -46.4148, 35.3841)) + self:GetForward() * -70,
+						mask = MASK_PLAYERSOLID,
+						filter = {self}, -- filter out the train entity
+						mins = Vector(-24, -2, 0),
+						maxs = Vector(24, 2, 1)
+				})
+				local result4 = util.TraceHull({ --Door 7a, 8a
+						start = self:LocalToWorld(Vector(-88.604, -46.4148, 35.3841)),
+						endpos = self:LocalToWorld(Vector(-88.604, -46.4148, 35.3841)) + self:GetForward() * -70,
+						mask = MASK_PLAYERSOLID,
+						filter = {self}, -- filter out the train entity
+						mins = Vector(-24, -2, 0),
+						maxs = Vector(24, 2, 1)
+				})
+				local result5 = util.TraceHull({ --Door 1b,2b
+						start = self:LocalToWorld(Vector(-330.889, 46.4148, 35.3841)),
+						endpos = self:LocalToWorld(Vector(-330.889, 46.4148, 35.3841)) + self:GetForward() * -70,
+						mask = MASK_PLAYERSOLID,
+						filter = {self}, -- filter out the train entity
+						mins = Vector(-24, -2, 0),
+						maxs = Vector(24, 2, 1)
+				})
+				local result6 = util.TraceHull({ --Door 3b,4b
+						start = self:LocalToWorld(Vector(-88.604, 46.4148, 35.3841)),
+						endpos = self:LocalToWorld(Vector(-88.604, 46.4148, 35.3841)) + self:GetForward() * -70,
+						mask = MASK_PLAYERSOLID,
+						filter = {self}, -- filter out the train entity
+						mins = Vector(-24, -2, 0),
+						maxs = Vector(24, 2, 1)
+				})
+				local statuses = {} -- Store the statuses in a table
+				
+
+				if IsValid(result3.Entity) and (result3.Entity:IsPlayer() or result3.Entity:IsNPC()) then table.insert(statuses, "Sensor3Blocked") end
+
+				if IsValid(result4.Entity) and (result4.Entity:IsPlayer() or result4.Entity:IsNPC()) then table.insert(statuses, "Sensor4Blocked") end
+
+				if IsValid(result5.Entity) and (result5.Entity:IsPlayer() or result5.Entity:IsNPC()) then table.insert(statuses, "Sensor5Blocked") end
+
+				if IsValid(result6.Entity) and (result6.Entity:IsPlayer() or result6.Entity:IsNPC()) then table.insert(statuses, "Sensor6Blocked") end
+				if statuses then
+					return unpack(statuses,1,4) -- Return all blocked sensors
+				else
+					return nil
+				end
+		end
+		
 
 end

@@ -1928,6 +1928,7 @@ end
 function ENT:CreateSectionB(pos)
 		local ang = Angle(0, 0, 0)
 		local u2sectionb = ents.Create("gmod_subway_uf_u2_section_b")
+		u2sectionb.ParentTrain = self
 
 		self:SetNWEntity("U2b", u2sectionb)
 		u2sectionb:SetNWEntity("U2a", self)
@@ -2046,7 +2047,6 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 				end
 
 				if right then
-					print("DoorHandler Running!","Right Side")
 						if self.RandomnessCalulated ~= true then -- pick a random door to be unlocked
 								
 								for i, v in ipairs(self.DoorRandomness) do
@@ -2127,7 +2127,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 
 						for i, v in ipairs(self.DoorStatesLeft) do
 								if CurTime() > self.DoorLockSignalMoment + self.DoorCloseMoments[i] then
-										if irStatus ~= "Sensor" .. i .. "Blocked" then
+										if irStatus ~= "Sensor" .. i+4 .. "Blocked" then
 												if v > 0 then
 													if self.DeltaTime > 0 or self.DeltaTime < 0 then
 														self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime)
@@ -2181,7 +2181,7 @@ function ENT:IRIS(enable) -- IR sensors for blocking the doors
 						mins = Vector(-24, -2, 0),
 						maxs = Vector(24, 2, 1)
 				})
-				local result3 = util.TraceHull({
+				local result7 = util.TraceHull({
 						start = self:LocalToWorld(Vector(330.889, 46.4148, 35.3841)),
 						endpos = self:LocalToWorld(Vector(330.889, 46.4148, 35.3841)) + self:GetForward() * 70,
 						mask = MASK_PLAYERSOLID,
@@ -2189,7 +2189,7 @@ function ENT:IRIS(enable) -- IR sensors for blocking the doors
 						mins = Vector(-24, -2, 0),
 						maxs = Vector(24, 2, 1)
 				})
-				local result4 = util.TraceHull({
+				local result8 = util.TraceHull({
 						start = self:LocalToWorld(Vector(88.604, 46.4148, 35.3841)),
 						endpos = self:LocalToWorld(Vector(88.604, 46.4148, 35.3841)) + self:GetForward() * 70,
 						mask = MASK_PLAYERSOLID,
@@ -2198,16 +2198,25 @@ function ENT:IRIS(enable) -- IR sensors for blocking the doors
 						maxs = Vector(24, 2, 1)
 				})
 				local statuses = {} -- Store the statuses in a table
-				print(result2.Entity)
+				
 				if IsValid(result1.Entity) and (result1.Entity:IsPlayer() or result1.Entity:IsNPC()) then table.insert(statuses, "Sensor1Blocked") end
 
 				if IsValid(result2.Entity) and (result2.Entity:IsPlayer() or result2.Entity:IsNPC()) then table.insert(statuses, "Sensor2Blocked") end
 
-				if IsValid(result3.Entity) and (result3.Entity:IsPlayer() or result3.Entity:IsNPC()) then table.insert(statuses, "Sensor3Blocked") end
+				if self.u2sectionb:IRIS(enable) == "Sensor3Blocked" then table.insert(statuses, "Sensor3Blocked") end
 
-				if IsValid(result4.Entity) and (result4.Entity:IsPlayer() or result4.Entity:IsNPC()) then table.insert(statuses, "Sensor4Blocked") end
+				if self.u2sectionb:IRIS(enable) == "Sensor4Blocked" then table.insert(statuses, "Sensor4Blocked") end
+
+				if self.u2sectionb:IRIS(enable) == "Sensor5Blocked" then table.insert(statuses, "Sensor5Blocked") end
+
+				if self.u2sectionb:IRIS(enable) == "Sensor6Blocked" then table.insert(statuses, "Sensor6Blocked") end
+
+				if IsValid(result7.Entity) and (result7.Entity:IsPlayer() or result7.Entity:IsNPC()) then table.insert(statuses, "Sensor7Blocked") end
+
+				if IsValid(result8.Entity) and (result8.Entity:IsPlayer() or result8.Entity:IsNPC()) then table.insert(statuses, "Sensor8Blocked") end
+
 				if statuses then
-					return unpack(statuses,1,4) -- Return all blocked sensors
+					return unpack(statuses,1,8) -- Return all blocked sensors
 				else
 					return nil
 				end
