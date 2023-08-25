@@ -1,199 +1,187 @@
+-- Define the Duewag_Deadman train system
 Metrostroi.DefineSystem("Duewag_Deadman")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 
 function TRAIN_SYSTEM:Initialize()
-
-	self.IsPressed = 0
-	self.Alarm = 0
-	self.AlarmSound = false
-	self.Speed = 0
-	self.AlarmTime = 0
-	self.KeyBypass = false
-
-	self.AlarmTimeRecorded = false
-
-	self.TrainHasReset = false
-	self.EmergencyShutOff = false
-	self.DeadmanTripped = false
-
-	self.MUDeadman = false
-
-	self.IsPressedA = false
-	self.IsPressedB = false
-
-end
-
-function TRAIN_SYSTEM:Inputs()
-		return {"IsPressed", "IsPressedB", "Speed", "BypassKeyInserted"}
-end
-
-
-function TRAIN_SYSTEM:TriggerInput(name,value)
-    
-	if name == "Speed" then
-		self.Speed = value
-	end
-	
-	if name == "BypassKeyInserted" then
-		self.KeyBypass = true
-	end
-end
-
-
-
-function TRAIN_SYSTEM:Think()
-	local train = self.Train
-	if self.IsPressedA == true or self.IsPressedB == true then
-		self.IsPressed = 1
-	else
+		-- Initialize various system variables
 		self.IsPressed = 0
-	end
-	
-	self.Speed = math.abs(self.Train.Speed)
-	if self.Train:GetNW2Bool("BatteryOn",false) == true then
-		if self.Train:ReadTrainWire(12) > 0 and self.Train:ReadTrainWire(6) > 0 then
-			self.MUDeadman = true
+		self.Alarm = 0
+		self.AlarmSound = false
+		self.Speed = 0
+		self.AlarmTime = 0
+		self.KeyBypass = false
+		self.AlarmTimeRecorded = false
+		self.TrainHasReset = false
+		self.EmergencyShutOff = false
+		self.DeadmanTripped = false
+		self.MUDeadman = false
+		self.IsPressedA = false
+		self.IsPressedB = false
+end
+
+-- Define inputs for the system
+function TRAIN_SYSTEM:Inputs() return {"IsPressed", "IsPressedB", "Speed", "BypassKeyInserted"} end
+
+-- Handle inputs to the system
+function TRAIN_SYSTEM:TriggerInput(name, value)
+		if name == "Speed" then self.Speed = value end
+
+		if name == "BypassKeyInserted" then self.KeyBypass = true end
+end
+
+-- Update the system's logic in each frame
+function TRAIN_SYSTEM:Think()
+		local train = self.Train
+
+		-- Determine if pedal A or pedal B is pressed
+		if self.IsPressedA == true or self.IsPressedB == true then
+				self.IsPressed = 1
 		else
-			self.MUDeadman = false
+				self.IsPressed = 0
 		end
-		if self.IsPressed == 1 or self.MUDeadman == true then
-			if self.EmergencyShutOff == false then
-				if self.TrainHasReset == false then
-						self.Train:SetNW2Bool("DeadmanTripped",false)
-						self.DeadmanTripped = false
-						self.AlarmSound = false
-						self.Train:SetNW2Bool("DeadmanAlarmSound",self.AlarmSound)
-						self.AlarmTime = CurTime()
-				elseif self.TrainHasReset == true then
-						self.Train:SetNW2Bool("DeadmanTripped",false)
-						self.DeadmanTripped = false
-						self.AlarmSound = false
-						self.Train:SetNW2Bool("DeadmanAlarmSound",self.AlarmSound)
-						self.TrainHasReset = false
-						self.AlarmTime = CurTime()
-				end
-			elseif self.EmergencyShutOff == true then
-				if self.TrainHasReset == true then
-					
-						self.Train:SetNW2Bool("DeadmanTripped",false)
-						self.DeadmanTripped = false
-						self.AlarmSound = false
-						self.Train:SetNW2Bool("DeadmanAlarmSound",self.AlarmSound)
-						self.EmergencyShutOff = false
-						self.TrainHasReset = false
-					
-				end
-			end
 
-		elseif self.IsPressed == 0 or self.MUDeadman == false then
-			
-			if self.Speed < 5 then
-				if self.EmergencyShutOff == false and self.Speed < 80 then
-					self.Train:SetNW2Bool("DeadmanTripped",false)
-					self.DeadmanTripped = false
-					self.AlarmSound = false
-					self.Train:SetNW2Bool("DeadmanAlarmSound",self.AlarmSound)
-					self.Train:WriteTrainWire(8,0)
-					--print("Deadman is clear")
-					self.AlarmTime = CurTime()
+		self.Speed = math.abs(self.Train.Speed)
+
+		-- Check if battery is on and MUDeadman conditions are met
+		if self.Train:GetNW2Bool("BatteryOn", false) == true then
+				if self.Train:ReadTrainWire(12) > 0 and self.Train:ReadTrainWire(6) > 0 then
+						self.MUDeadman = true
+				else
+						self.MUDeadman = false
 				end
 
-				if self.TrainHasReset == true then
-					self.TrainHasReset = false
-					self.Train:SetNW2Bool("DeadmanTripped",false)
-					self.DeadmanTripped = false
-					self.AlarmSound = false
-					self.Train:SetNW2Bool("DeadmanAlarmSound",self.AlarmSound)
-					self.Train:WriteTrainWire(8,0)
-					--print("Deadman is clear")
-					self.AlarmTime = CurTime()
+				-- Handle various deadman and emergency shut-off scenarios
+				if self.IsPressed == 1 or self.MUDeadman == true then
+						-- Reset deadman trip and alarm if conditions are met
+						if self.EmergencyShutOff == false then
+								if self.TrainHasReset == false then
+										-- Reset deadman conditions
+										self.Train:SetNW2Bool("DeadmanTripped", false)
+										self.DeadmanTripped = false
+										self.AlarmSound = false
+										self.Train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
+										self.AlarmTime = CurTime()
+								elseif self.TrainHasReset == true then
+										-- Reset deadman conditions after reset
+										self.Train:SetNW2Bool("DeadmanTripped", false)
+										self.DeadmanTripped = false
+										self.AlarmSound = false
+										self.Train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
+										self.TrainHasReset = false
+										self.AlarmTime = CurTime()
+								end
+						elseif self.EmergencyShutOff == true then
+								-- Reset conditions after emergency shut-off
+								if self.TrainHasReset == true then
+										self.Train:SetNW2Bool("DeadmanTripped", false)
+										self.DeadmanTripped = false
+										self.AlarmSound = false
+										self.Train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
+										self.EmergencyShutOff = false
+										self.TrainHasReset = false
+								end
+						end
+						-- Handle scenarios when pedal is not pressed
+				elseif self.IsPressed == 0 or self.MUDeadman == false then
+						if self.Speed < 5 then
+								if self.EmergencyShutOff == false and self.Speed < 80 then
+										-- Reset deadman conditions if speed is low
+										self.Train:SetNW2Bool("DeadmanTripped", false)
+										self.DeadmanTripped = false
+										self.AlarmSound = false
+										self.Train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
+										self.Train:WriteTrainWire(8, 0)
+										self.AlarmTime = CurTime()
+								end
+
+								-- Reset deadman conditions if previously reset
+								if self.TrainHasReset == true then
+										self.TrainHasReset = false
+										self.Train:SetNW2Bool("DeadmanTripped", false)
+										self.DeadmanTripped = false
+										self.AlarmSound = false
+										self.Train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
+										self.Train:WriteTrainWire(8, 0)
+										self.AlarmTime = CurTime()
+								end
+						elseif self.Speed > 5 then
+								-- Handle alarm when train is at speed but pedal not pressed
+								if self.AlarmTimeRecorded == false then
+										self.AlarmTimeRecorded = true
+										self.AlarmTime = CurTime()
+										self.AlarmSound = true
+								end
+								self.TrainHasReset = false
+						end
+
+						-- Handle overspeed cut-out and emergency shut-off
+						if self.Train:GetNW2Bool("OverspeedCutOut", false) == true then
+								if self.Train:ReadTrainWire(6) == 1 then
+										self.Train:WriteTrainWire(8, 1)
+										print("Deadman braking")
+								end
+								self.EmergencyShutOff = true
+								self.AlarmSound = true
+						end
 				end
-			elseif self.Speed > 5 then -- Train is at speed, but pedal is not pressed
-				if self.AlarmTimeRecorded == false then
-					self.AlarmTimeRecorded = true
-					self.AlarmTime = CurTime()
-					self.AlarmSound = true
+
+				-- Handle emergency stop when deadman is tripped
+				if self.Train:GetNW2Bool("DeadmanTripped") == true then
+						if self.Train.Duewag_U2.ReverserLeverState == 0 then
+								if self.Train.Duewag_U2.ThrottleState == 0 then
+										self.TrainHasReset = true
+										self.Train:SetNW2Bool("DeadmanTripped", false)
+										self.AlarmSound = false
+										self.Train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
+										self.Train:WriteTrainWire(8, 0)
+								end
+						end
 				end
-				self.TrainHasReset = false
-			end
-			if self.Train:GetNW2Bool("OverspeedCutOut",false) == true then
-				if self.Train:ReadTrainWire(6) == 1 then --if the MU mode is engaged
-					self.Train:WriteTrainWire(8,1) --tell the train wire that braking is active
-					print("Deadman braking")
+
+				-- Check if alarm duration has passed and apply emergency shut-off
+				if CurTime() - self.AlarmTime > 4.5 then
+						if self.KeyBypass == false then
+								if self.TrainHasReset == false then
+										self.Train:SetNW2Bool("DeadmanTripped", true)
+										if self.Train:ReadTrainWire(6) == 1 then
+												self.Train:WriteTrainWire(8, 1)
+												print("Deadman braking")
+										end
+										self.EmergencyShutOff = true
+										self.AlarmSound = true
+								elseif self.TrainHasReset == true then
+										self.EmergencyShutOff = false
+								end
+						end
 				end
-				self.EmergencyShutOff = true
+
+				-- Check if deadman is tripped and reset conditions
+				if self.Train:GetNW2Bool("DeadmanTripped") == true then
+						if self.Train.ReverserLeverState == 0 and self.ThrottleState == 0 and self.Speed < 5 then self.TrainHasReset = true end
+				end
+
+				self.Train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
+		end
+
+		-- Display debug information
+		if self.TrainHasReset == true then
+				-- print("Train Reset True")
+		end
+
+		if self.EmergencyShutOff == true then
+				-- print("Emergency cutoff true")
+		end
+
+		-- Apply emergency shut-off if speed exceeds 81
+		if self.Speed > 81 then
+				self.Train:SetNW2Bool("DeadmanTripped", true)
+				self.Train:SetNW2Bool("OverspeedCutOut", true)
 				self.AlarmSound = true
-			end
-
-
 		end
 
-		
-			
-			if self.Train:GetNW2Bool("DeadmanTripped") == true then --If we've tripped an emergency stop
-				if self.Train.Duewag_U2.ReverserLeverState == 0 then								--And if we're pressing the pedal
-					if self.Train.Duewag_U2.ThrottleState == 0 then --If the moment of braking was 10 secs ago
-							self.TrainHasReset = true
-							self.Train:SetNW2Bool("DeadmanTripped",false) --Reset the trip and the time flags and the brake moment
-							self.AlarmSound = false
-							self.Train:SetNW2Bool("DeadmanAlarmSound",self.AlarmSound) 
-							self.Train:WriteTrainWire(8,0)
-						
-						
-					end
-				end
-			end
-
-		
-
-
-		if CurTime() - self.AlarmTime > 4.5 then --If the alarm has gone off for three seconds
-			if self.KeyBypass == false then
-				if self.TrainHasReset == false then
-					self.Train:SetNW2Bool("DeadmanTripped",true) --trip the deadman switch
-					if self.Train:ReadTrainWire(6) == 1 then --if the MU mode is engaged
-						self.Train:WriteTrainWire(8,1) --tell the train wire that braking is active
-						print("Deadman braking")
-					end
-					self.EmergencyShutOff = true
-					self.AlarmSound = true
-				elseif self.TrainHasReset == true then
-					self.EmergencyShutOff = false
-				end
-				
-			end
-			
+		-- Reset deadman conditions if battery is off
+		if self.Train:GetNW2Bool("BatteryOn", false) == false then
+				self.Train:SetNW2Bool("DeadmanTripped", false)
+				self.TrainHasReset = true
 		end
-		
-		if self.Train:GetNW2Bool("DeadmanTripped") == true then --if the deadman is  tripped
-			if self.Train.ReverserLeverState == 0 then
-				if self.ThrottleState == 0 then
-					if self.Speed < 5 then
-						self.TrainHasReset = true
-					end
-				end
-			end
-		end
-
-		self.Train:SetNW2Bool("DeadmanAlarmSound",self.AlarmSound)
-	end
-		
-	if self.TrainHasReset == true then
-		--print("Train Reset True")
-	end
-
-	if self.EmergencyShutOff == true then
-		--print("Emergency cutoff true")
-	end
-
-	if self.Speed > 81 then
-		self.Train:SetNW2Bool("DeadmanTripped",true)
-		self.Train:SetNW2Bool("OverspeedCutOut",true)
-		self.AlarmSound = true
-	end
-
-	if self.Train:GetNW2Bool("BatteryOn",false) == false then
-		self.Train:SetNW2Bool("DeadmanTripped",false)
-		self.TrainHasReset = true
-	end
 end
