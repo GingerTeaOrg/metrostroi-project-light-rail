@@ -119,6 +119,31 @@ Metrostroi.AddSkin("train","SVB_b",{
     }
 })
 
+Metrostroi.AddSkin("train","SVB_SWF",{
+    name = "1996 Stadtwerke",
+    typ = "U2h",
+    textures = {
+		main_b = "models/lilly/uf/u2/u2h/svb-main_b",
+        main = "models/lilly/uf/u2/u2h/svb-main",
+        main_left = "models/lilly/uf/u2/u2h/svb-main-left",
+		door_external = "models/lilly/uf/u2/u2h/door_external_svb",
+		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke2",
+        jointdecal = "models/lilly/uf/u2/u2h/jointdecal_vgf",
+
+    }
+})
+Metrostroi.AddSkin("train","SVB_SWF_b",{
+    name = "1996 Stadtwerke",
+    typ = "U2hb",
+    textures = {
+        main_b = "models/lilly/uf/u2/u2h/svb-main_b",
+        main = "models/lilly/uf/u2/u2h/svb-main",
+        main_left = "models/lilly/uf/u2/u2h/svb-main-left",
+        main_b_left = "models/lilly/uf/u2/u2h/svb-main-left",
+		decals = "models/lilly/uf/u2/u2h/decals-stadtwerke2",
+        door_external = "models/lilly/uf/u2/u2h/door_external_svb",
+    }
+})
 Metrostroi.AddSkin("train","OrEb",{
     name = "1981 VGF",
     typ = "U2h",
