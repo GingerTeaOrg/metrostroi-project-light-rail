@@ -7,8 +7,9 @@ timer.Create("UF_TotalkWhTimer",5.00,0,function()
 end)
 UF.TotalkWh = UF.TotalkWh or tonumber(file.Read("UF_data/total_kwh.txt") or "") or 0
 UF.TotalRateWatts = UF.TotalRateWatts or 0
-CreateConVar("mplr_voltage", "600", FCVAR_ARCHIVE, "Sets the Voltage applied to the overhead wire. Default is 600VDC, some maps may use 750VDC.")
-UF.Voltage = GetConVar("mplr_voltage")
+CreateConVar("mplr_voltage", "600", FCVAR_NOTIFY, "Sets the Voltage applied to the overhead wire. Default is 600VDC, some maps may use 750VDC.",600,750)
+local V = GetConVar("mplr_voltage")
+UF.Voltage = V:GetInt()
 UF.Voltages = UF.Voltages or {}
 UF.Currents = UF.Currents or {}
 UF.Current = 0
@@ -105,7 +106,7 @@ hook.Add("Think", "UF_ElectricConsumptionThink", function()
     --print(Format("%5.1f v %.0f A",UF.Voltage,UF.Current))
 end)
 
-concommand.Add("UF_electric", function(ply, _, args) -- (%.2f$) UF.GetEnergyCost(UF.TotalkWh),
+concommand.Add("mplr_electric", function(ply, _, args) -- (%.2f$) UF.GetEnergyCost(UF.TotalkWh),
     local m = Format("[%25s] %010.3f kWh, %.3f kW (%5.1f v, %4.0f A)","<total>",
         UF.TotalkWh,UF.TotalRateWatts*1e-3,
         UF.Voltage,UF.Current)
@@ -164,7 +165,7 @@ timer.Create("UF_ElectricConsumptionTimer",0.5,0,function()
     end
 end)
 
-local function murder(v)
+function UF.murder(v)
     local positions = Metrostroi.GetPositionOnTrack(v:GetPos())
     for k2,v2 in pairs(positions) do
         local y,z = v2.y,v2.z
@@ -189,5 +190,19 @@ local function murder(v)
                 --print("[!] Power feed protection tripped: "..(tostring(v) or "").." died on rails")
             --end
         end
+    end
+end
+
+function UF.MapHasFullSupport(typ)
+    if not typ then
+        return (#Metrostroi.Paths > 0)
+    elseif typ=="ars" then
+        return next(Metrostroi.SignalEntitiesByName)
+    elseif typ=="auto" then
+        return Metrostroi.HaveAuto
+    elseif typ=="sbpp" then
+        return Metrostroi.HaveSBPP
+    elseif typ=="pa" then
+        return next(Metrostroi.PAMConfTest)
     end
 end

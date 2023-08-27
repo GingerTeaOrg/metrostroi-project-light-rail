@@ -41,7 +41,7 @@ function ENT:Initialize()
     self.ThrottleLastEngaged = 0
     
     self.ParentTrain = self:GetNWEntity("U2a")
-    if self.ParentTrain then
+    if IsValid(self.ParentTrain) then
         self:UpdateWagonNumber()
     end
     self.BatterySwitch = 0.5
