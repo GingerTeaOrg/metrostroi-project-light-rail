@@ -2025,10 +2025,13 @@ function ENT:Blink(enable, left, right)
 end
 ENT.CloseMoments = {}
 ENT.CloseMomentsCalc = false
-ENT.
-function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
 
-	local irStatus = self:IRIS(true) -- Call IRIS function to get IR gate sensor status
+function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
+	
+	
+	
+	
+	local irStatus = self:IRIS(self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > or self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0 or self.DoorStatesLeft[3] > 0 or self.DoorStatesLeft[4]) -- Call IRIS function to get IR gate sensor status, but only when the doors are open
 	if right and door1 then -- door1 control according to side preselection
 		if self.DoorStatesRight[1] < 1 then
 			self.DoorStatesRight[1] = self.DoorStatesRight[1] + 0.13
