@@ -353,9 +353,9 @@ function ENT:Initialize()
 	self.ReverserInsert = false
 	self.BatteryOn = false
 
-	self.FrontBogey:SetNWInt("MotorSoundType", 0)
-	self.MiddleBogey:SetNWInt("MotorSoundType", 0)
-	self.RearBogey:SetNWInt("MotorSoundType", 0)
+	self.FrontBogey:SetNWInt("MotorSoundType", 1)
+	self.MiddleBogey:SetNWInt("MotorSoundType", 1)
+	self.RearBogey:SetNWInt("MotorSoundType", 1)
 	self.FrontBogey:SetNWBool("Async", false)
 	self.MiddleBogey:SetNWBool("Async", false)
 	self.RearBogey:SetNWBool("Async", false)
@@ -2031,7 +2031,8 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 	
 	
 	
-	local irStatus = self:IRIS(self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > or self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0 or self.DoorStatesLeft[3] > 0 or self.DoorStatesLeft[4]) -- Call IRIS function to get IR gate sensor status, but only when the doors are open
+	--local irStatus = self:IRIS(self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > or self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0 or self.DoorStatesLeft[3] > 0 or self.DoorStatesLeft[4]) -- Call IRIS function to get IR gate sensor status, but only when the doors are open
+	local irStatus = self:IRIS(true)
 	if right and door1 then -- door1 control according to side preselection
 		if self.DoorStatesRight[1] < 1 then
 			self.DoorStatesRight[1] = self.DoorStatesRight[1] + 0.13

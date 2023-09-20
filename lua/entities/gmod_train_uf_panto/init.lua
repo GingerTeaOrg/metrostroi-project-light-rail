@@ -110,10 +110,11 @@ end
 
 
 function ENT:CheckVoltage(dT)
+    local C_mplr_train_requirewire = GetConvar("mplr_train_requirewire")
     -- Check contact states
     if (CurTime() - self.CheckTimeout) <= 0.25 then return end
     self.CheckTimeout = CurTime()
-    local supported = C_train_requirewire:GetInt() > 0 and UF.MapHasFullSupport()
+    local supported = C_mplr_train_requirewire:GetInt() > 0 and UF.MapHasFullSupport()
     local feeder = self.Feeder and UF.Voltages[self.Feeder]
     local volt = feeder or UF.Voltage or 750
 

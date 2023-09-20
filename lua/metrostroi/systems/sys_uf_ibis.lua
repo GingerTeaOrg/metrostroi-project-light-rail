@@ -2,12 +2,12 @@ Metrostroi.DefineSystem("IBIS")
 TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 function TRAIN_SYSTEM:Initialize()
-	self.Route = "0" -- Route index number
+	self.Route = "-1" -- Route index number
 	self.PromptRoute = " "
 	self.RouteChar1 = " "
 	self.RouteChar2 = " "
-	self.DisplayedRouteChar1 = "0"
-	self.DisplayedRouteChar2 = "0"
+	self.DisplayedRouteChar1 = " "
+	self.DisplayedRouteChar2 = " "
 
 	self.DestinationText = ""
 	self.FirstStation = 0
@@ -44,7 +44,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.KeyInputDone = false
 
 	self.BootupComplete = false
-	self.Course = "0" -- Course index number, format is LineLineCourseCourse
+	self.Course = " " -- Course index number, format is LineLineCourseCourse
 	self.CourseChar1 = " "
 	self.CourseChar2 = " "
 	self.CourseChar3 = " "
@@ -65,17 +65,17 @@ function TRAIN_SYSTEM:Initialize()
 	self.DefectChance = math.random(0, 100)
 	self.LastRoll = CurTime()
 
-	self.Destination = 0 -- Destination index number
-	self.DestinationChar1 = " "
-	self.DestinationChar2 = " "
-	self.DestinationChar3 = " "
+	self.Destination = "-1" -- Destination index number
+	self.DestinationChar1 = "-1"
+	self.DestinationChar2 = "-1"
+	self.DestinationChar3 = "-1"
 	self.DisplayedDestinationChar1 = " "
 	self.DisplayedDestinationChar2 = " "
 	self.DisplayedDestinationChar3 = " "
 
-	self.AnnouncementChar1 = 0
-	self.AnnouncementChar2 = 0
-	self.SpecialAnnouncement = 0
+	self.AnnouncementChar1 = "-1"
+	self.AnnouncementChar2 = "-1"
+	self.SpecialAnnouncement = "-1"
 
 	self.CurrentStationInternal = 0
 
@@ -590,13 +590,13 @@ function TRAIN_SYSTEM:Think()
 	end
 
 	if self.Train:GetNW2Bool("IBISBootupComplete", false) == true then
-		if self.JustBooted == false and not tonumber(self.Line,10) and not tonumber(self.Route,10) and not tonumber(self.Destination) then --from a cold boot we start right into the prompt, if no data is already present on the CAN bus
+		if self.JustBooted == false then --from a cold boot we start right into the prompt, if no data is already present on the CAN bus
 			self.State = 2
 			self.Menu = 4
 			self.JustBooted = true
 		else --if we've already got any data on Line, Course, Route we just start into idle mode
-			self.State = 1
-			self.Menu = 0
+			--self.State = 1
+			--self.Menu = 0
 		end
 		self.Train:SetNW2Bool("IBISChime", true)
 	end
@@ -777,8 +777,9 @@ function TRAIN_SYSTEM:Think()
 
 				-- print(self.ServiceAnnouncements[self.ServiceAnnouncement])
 				self.Menu = 0
-			elseif self.ServiceAnnouncement ~= "00" then
+			elseif self.ServiceAnnouncement == "00" then
 				self.Menu = 0
+				self.ServiceAnnouncement = "  "
 			else
 				self.State = 3
 				self.Train:SetNW2Bool("IBISError", true)
@@ -1287,7 +1288,7 @@ function TRAIN_SYSTEM:CANReceive(sourceid, target, targetdata)
 end
 
 function TRAIN_SYSTEM:CANWrite(sourceid, targetid, target, targetdata)
-	for i = 1, #self.WagonList do
+	for i in self.WagonList do
 		local train = self.WagonList[i]
 		if not targetid or targetid == train:GetWagonNumber() then
 			local sys = train[target]

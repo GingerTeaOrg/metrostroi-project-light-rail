@@ -1,6 +1,4 @@
 include("shared.lua")
-
---if LocalPlayer():GetName():find("iNok") then RunConsoleCommand("say","ЛВЗ говно, обажаю МВМ") end
 surface.CreateFont("MetrostroiSubway_LargeText", {
     font = "Arial",
     size = 100,
@@ -251,8 +249,8 @@ surface.CreateFont("Trebuchet24", { --Creating BUILTIN font (idk what happened w
 --------------------------------------------------------------------------------
 -- Console commands and convars
 --------------------------------------------------------------------------------
-concommand.Add("metrostroi_train_manual", function()--ply, _, args)
---[[    local w = ScrW() * 2/3
+concommand.Add("mplr_train_manual", function()--ply, _, args)
+    local w = ScrW() * 2/3
     local h = ScrH() * 2/3
     local browserWindow = vgui.Create("DFrame")
     browserWindow:SetTitle("Train Manual")
@@ -269,7 +267,7 @@ concommand.Add("metrostroi_train_manual", function()--ply, _, args)
     browser:SetSize(w - 20, h - 35)
 
     browser:OpenURL
-    ]]--
+
     gui.OpenURL("http://phoenixblack.github.io/Metrostroi/manual.html")
 end)
 ENT.RTMaterial = CreateMaterial("MetrostroiRT1","UnlitGeneric",{
@@ -322,10 +320,10 @@ end)
 --------------------------------------------------------------------------------
 -- Buttons layout
 --------------------------------------------------------------------------------
---ENT.ButtonMap = {} Leave nil if unused
+ENT.ButtonMap = {} Leave nil if unused
 
 -- General Panel
---[[table.insert(ENT.ButtonMap,{
+    table.insert(ENT.ButtonMap,{
     pos = Vector(7,0,0),
     ang = Angle(0,90,90),
     width = 300,
@@ -336,7 +334,7 @@ end)
         {ID=1, x=-117,  y=   0,  radius=20, tooltip="Test 1"},
         {ID=2, x= -80,  y=   0,  radius=20, tooltip="Test 2"},
     }
-})]]--
+})
 
 
 --------------------------------------------------------------------------------
@@ -383,7 +381,7 @@ function ENT:ShouldDrawClientEnt(k,v)
         return distance <= renderDist
     end
 end
---util.PrecacheModel("models/metrostroi_train/81-720/81-720.mdl")
+
 function ENT:SpawnCSEnt(k,override)
     if override and (self.Hidden[k] or self.Hidden.anim[k]) or not override and not self:ShouldDrawClientEnt(k,self.ClientProps[k]) then return false end
     local v = self.ClientPropsOv and self.ClientPropsOv[k] or self.ClientProps[k]
@@ -2719,9 +2717,4 @@ function ENT:OnStyk(soundid,location,range,pitch)
     end
     --RunConsoleCommand("say",str)
 end
-
-concommand.Add("metrostroi_reload_client",function()
-    Metrostroi.ReloadClientside = true
-    timer.Simple(0.5,function() if Metrostroi.ReloadClientside then Metrostroi.ReloadClientside = false end end)
-end,nil,"Reload all clientside models")
 Metrostroi.OptimisationPatch()

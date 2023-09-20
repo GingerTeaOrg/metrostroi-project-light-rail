@@ -34,35 +34,32 @@ timer.Create("RBLHousekeeping", 30, 0, function()
             
         end
     end
+    for k,v in pairs(UF.IBISRegisteredTrains) do
+        if not IsValid(k) then
+            k = nil
+        end
+    end
 end)
 
 hook.Add("EntityRemoved","UFTrains",function(ent)
-    --[[if UF.SpawnedTrains[ent] then
+    
+    for i, v in pairs(UF.IBISRegisteredTrains) do
+        if i == ent then
+            UF.IBISRegisteredTrains[ent] = nil
+            print("Cleared entity at index: ", i)
+        end
+    end
     UF.SpawnedTrains[ent] = nil
     
-end]]
-for i, v in pairs(UF.IBISRegisteredTrains) do
-    if i == ent then
-        UF.SpawnedTrains[ent] = nil
-        print("Cleared entity at index: ", i)
-    end
-end
-
 end)
-if SERVER then
-    hook.Add("OnEntityCreated","UFTrains",function(ent)
-        local prefix = "gmod_subway_uf_"
-        if string.sub(ent:GetClass(), 1, #prefix) == prefix then
-            UF.SpawnedTrains[ent] = true
-        end
-    end)
-else
-    hook.Add("OnEntityCreated","UFTrains",function(ent)
-        if ent:GetClass() == "gmod_subway_uf" then
-            UF.SpawnedTrains[ent] = true
-        end
-    end)
-end
+
+hook.Add("OnEntityCreated","UFTrains",function(ent)
+    local prefix = "gmod_subway_uf_"
+    if string.sub(ent:GetClass(), 1, #prefix) == prefix then
+        UF.SpawnedTrains[ent] = true
+    end
+end)
+
 
 UF.IBISAnnouncementFiles = {}
 UF.IBISAnnouncementScript = {}
@@ -160,7 +157,7 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         --print(output)
         --print(LineCourse)
         return output
-end
+    end
     
     
     
@@ -179,7 +176,7 @@ end
         
         print("Light Rail: Added \""..name.."\" IBIS announcer common files.")
     end
-
+    
     function UF.AddIBISAnnouncementMetadata(name,datatable)
         if not name and not datatable then return end
         for k,v in pairs(UF.IBISAnnouncementMetadata) do
@@ -195,7 +192,7 @@ end
         
         print("Light Rail: Added \""..name.."\" IBIS announcer Metadata.")
     end
-
+    
     function UF.AddIBISAnnouncementScript(name,datatable)
         if not name and not datatable then return end
         for k,v in pairs(UF.IBISAnnouncementScript) do
@@ -345,8 +342,8 @@ end
         end
         
     end
-
-
+    
+    
     files = file.Find("uf/IBIS/*.lua","LUA")
     for _,filename in pairs(files) do
         AddCSLuaFile("uf/IBIS/"..filename)
@@ -357,56 +354,56 @@ end
         AddCSLuaFile("uf/rollsigns/"..filename)
         include("uf/rollsigns/"..filename)
     end
-function UF.GetTravelTime(src,dest)
-	-- Determine direction of travel
-	--assert(src.path == dest.path)
-	local direction = src.x < dest.x
-
-	-- Accumulate travel time
-	local travel_time = 0
-	local travel_dist = 0
-	local travel_speed = 20
-	local iter = 0
-	function scan(node,path)
-		local oldx
-		local oldars
-		while (node) and (node ~= dest) do
-			local ars_speed
-			local ars_joint = Metrostroi.GetARSJoint(node,node.x+0.01,path or true)
-			if ars_joint then
-				--[[if oldx and oldx ~= ars_joint.TrackPosition.x then
-					print(string.format("\t\t\t%.2f:\t%s->%s",(ars_joint.TrackPosition.x - oldx)/18.8,oldars.Name,ars_joint.Name))
-				end
-				oldx = ars_joint.TrackPosition.x
-				oldars = ars_joint]]
-				--print(ars_joint.Name)
-				local ARSLimit = ars_joint:GetMaxARS()
-				--print(ARSLimit)
-				if ARSLimit >= 4  then
-					ars_speed = ARSLimit*10
-				end
-				--print(ars_speed)
-			end
-			if ars_speed then travel_speed = ars_speed end
-			--print(string.format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
-
-			-- Assume 70% of travel speed
-			local speed = travel_speed * 0.82
-
-			-- Add to travel time
-			travel_dist = travel_dist + node.length
-			travel_time = travel_time + (node.length / (speed/3.6))
-			node = node.next
-			if not node then break end
-			if src.path == dest.path and node.branches and node.branches[1][2].path == src.path then scan(node,src.x > node.branches[1][2].x) end
-			if src.path == dest.path and node.branches and  node.branches[2] and node.branches[2][2].path == src.path then scan(node,src.x > node.branches[1][1].x) end
-			assert(iter < 10000, "OH SHI~")
-			iter = iter + 1
-		end
-	end
-	scan(src)
-
-	return travel_time,travel_dist
+    function UF.GetTravelTime(src,dest)
+        -- Determine direction of travel
+        --assert(src.path == dest.path)
+        local direction = src.x < dest.x
+        
+        -- Accumulate travel time
+        local travel_time = 0
+        local travel_dist = 0
+        local travel_speed = 20
+        local iter = 0
+        function scan(node,path)
+            local oldx
+            local oldars
+            while (node) and (node ~= dest) do
+                local ars_speed
+                local ars_joint = Metrostroi.GetARSJoint(node,node.x+0.01,path or true)
+                if ars_joint then
+                    --[[if oldx and oldx ~= ars_joint.TrackPosition.x then
+                    print(string.format("\t\t\t%.2f:\t%s->%s",(ars_joint.TrackPosition.x - oldx)/18.8,oldars.Name,ars_joint.Name))
+                end
+                oldx = ars_joint.TrackPosition.x
+                oldars = ars_joint]]
+                --print(ars_joint.Name)
+                local ARSLimit = ars_joint:GetMaxARS()
+                --print(ARSLimit)
+                if ARSLimit >= 4  then
+                    ars_speed = ARSLimit*10
+                end
+                --print(ars_speed)
+            end
+            if ars_speed then travel_speed = ars_speed end
+            --print(string.format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
+            
+            -- Assume 70% of travel speed
+            local speed = travel_speed * 0.82
+            
+            -- Add to travel time
+            travel_dist = travel_dist + node.length
+            travel_time = travel_time + (node.length / (speed/3.6))
+            node = node.next
+            if not node then break end
+            if src.path == dest.path and node.branches and node.branches[1][2].path == src.path then scan(node,src.x > node.branches[1][2].x) end
+            if src.path == dest.path and node.branches and  node.branches[2] and node.branches[2][2].path == src.path then scan(node,src.x > node.branches[1][1].x) end
+            assert(iter < 10000, "OH SHI~")
+            iter = iter + 1
+        end
+    end
+    scan(src)
+    
+    return travel_time,travel_dist
 end
 function UF.PredictTrainPositions()
     for train in pairs(Metrostroi.SpawnedTrains) do
@@ -428,7 +425,7 @@ if Metrostroi.Stations then --inject UF station entities because Metrostroi has 
     for _,platform in pairs(platforms) do
         local station = Metrostroi.Stations[platform.StationIndex] or {}
         Metrostroi.Stations[platform.StationIndex] = station
-
+        
         -- Position
         local dir = platform.PlatformEnd - platform.PlatformStart
         local pos1 = Metrostroi.GetPositionOnTrack(platform.PlatformStart,dir:Angle())[1]
@@ -448,11 +445,11 @@ if Metrostroi.Stations then --inject UF station entities because Metrostroi has 
             else
                 station[platform.PlatformIndex] = platform_data
             end
-
+            
             -- Print information
             print(Format("\t[%03d][%d] %.3f-%.3f km (%.1f m) on path %d",
-                platform.StationIndex,platform.PlatformIndex,pos1.x*1e-3,pos2.x*1e-3,
-                platform_data.length,platform_data.node_start.path.id))
+            platform.StationIndex,platform.PlatformIndex,pos1.x*1e-3,pos2.x*1e-3,
+            platform_data.length,platform_data.node_start.path.id))
         else
             print(Format("PLR: Error, station %03d platform %d, cant find pos! \n\tStart%s \n\tEnd:%s",platform.StationIndex,platform.PlatformIndex,platform.PlatformStart,platform.PlatformEnd))
         end
@@ -474,4 +471,113 @@ if CLIENT then
         include("uf/"..filename)
     end
     RunConsoleCommand("metrostroi_drawdistance", "99999")
+end
+
+if SERVER then
+    if Metrostroi and type(Metrostroi.RerailTrain) == "Function" and not UF.RerailOverridden then
+        function Metrostroi.RerailTrain(train)
+            UF.RerailOverridden = true
+            --Safety checks
+            if not IsValid(train) or train.SubwayTrain == nil then return false end
+            if train.NoPhysics or not IsValid(train:GetPhysicsObject()) then return false end
+            if timer.Exists("metrostroi_rerailer_solid_reset_"..train:EntIndex()) then return false end
+            --[[
+            --Trace down to get the track
+            local tr = traceWorldOnly(train:GetPos(),Vector(0,0,-500))
+            if !tr or !tr.Hit then
+                tr = traceWorldOnly(train:GetPos(),train:GetAngles():Up()*-500)
+                if !tr or !tr.Hit then return false end
+            end
+            
+            --Get track data below the train
+            local trackdata = getTrackData(tr.HitPos+tr.HitNormal*3,train:GetAngles():Forward())
+            if !trackdata then return false end
+            --]]
+            
+            local trackdata = getTrackDataBelowEnt(train)
+            if not trackdata then return false end
+            local ang = trackdata.forward:Angle()
+            
+            
+            --Get the positions of the bogeys if we'd rerail the train now
+            local frontoffset=train:WorldToLocal(train.FrontBogey:GetPos())
+            frontoffset:Rotate(ang)
+            local frontpos = frontoffset+train:GetPos()
+            
+            local rearoffset = train:WorldToLocal(train.RearBogey:GetPos())
+            rearoffset:Rotate(ang)
+            local rearpos=rearoffset+train:GetPos()
+            
+            --Get thet track data at these locations
+            local tr = traceWorldOnly(frontpos,-trackdata.up*500)
+            if !tr or !tr.Hit then return false end
+            local frontdata = getTrackData(tr.HitPos+tr.HitNormal*3,trackdata.forward)
+            if !frontdata then return false end
+            
+            local tr = traceWorldOnly(rearpos,-trackdata.up*500)
+            if !tr or !tr.Hit then return false end
+            local reardata = getTrackData(tr.HitPos+tr.HitNormal*3,trackdata.forward)
+            if !reardata then return false end
+            
+            --Find the current difference between the bogeys and the train's model center
+            local TrainOriginToBogeyOffset = (train:WorldToLocal(train.FrontBogey:GetPos())+train:WorldToLocal(train.RearBogey:GetPos()))/2
+            
+            --Final trains pos is the average of the 2 bogey locations
+            local trainpos = (frontdata.centerpos+reardata.centerpos)/2
+            
+            --Apply bogey-origin and bogey-track offsets
+            trainpos = LocalToWorld(TrainOriginToBogeyOffset*-1,ang,trainpos,ang) + Vector(0,0,(train.FrontBogey.BogeyOffset or bogeyOffset))
+            --Not sure if this is neccesary anymore, but I'm not touching this anytime soon
+            
+            --Store and set solids
+            local entlist = {
+                train,
+                train.FrontBogey,
+                train.RearBogey,
+                train.FrontBogey.Wheels,
+                train.RearBogey.Wheels,
+                train.FrontCouple,
+                train.RearCouple
+            }
+            
+            local solids = {}
+            for k,v in pairs(entlist) do
+                solids[v]=v:GetSolid()
+                v:SetSolid(SOLID_NONE)
+            end
+            
+            train:SetPos(trainpos)
+            train:SetAngles(ang)
+            
+            train.FrontBogey:SetPos(train:LocalToWorld(train.FrontBogey.SpawnPos))--frontdata.centerpos+frontdata.up*(train.FrontBogey.BogeyOffset or bogeyOffset))
+            train.RearBogey:SetPos(train:LocalToWorld(train.RearBogey.SpawnPos))--reardata.centerpos+reardata.up*(train.FrontBogey.BogeyOffset or bogeyOffset))
+            
+            train.FrontBogey:SetAngles(train:LocalToWorldAngles(train.FrontBogey.SpawnAng))--(frontdata.forward*-1):Angle())
+            train.RearBogey:SetAngles(train:LocalToWorldAngles(train.RearBogey.SpawnAng))--reardata.forward:Angle())
+            
+            
+            if IsValid(train.FrontCouple) and not train.OptOutRerail then
+                train.FrontCouple:SetPos(train:LocalToWorld(train.FrontCouple.SpawnPos))
+                train.RearCouple:SetPos(train:LocalToWorld(train.RearCouple.SpawnPos))
+                train.FrontCouple:SetAngles(train:LocalToWorldAngles(train.FrontCouple.SpawnAng))
+                train.RearCouple:SetAngles(train:LocalToWorldAngles(train.RearCouple.SpawnAng))
+                
+                train.FrontCouple:GetPhysicsObject():EnableMotion(false)
+                train.RearCouple:GetPhysicsObject():EnableMotion(false)
+            elseif IsValid(train.FrontCouple) and train.OptOutRerail == true then
+                train.FrontCouple:GetPhysicsObject():EnableMotion(false)
+                train.RearCouple:GetPhysicsObject():EnableMotion(false)
+            end
+            
+            train:GetPhysicsObject():EnableMotion(false)
+            
+            train.FrontBogey:GetPhysicsObject():EnableMotion(false)
+            train.RearBogey:GetPhysicsObject():EnableMotion(false)
+            
+            timer.Create("metrostroi_rerailer_solid_reset_"..train:EntIndex(),1,1,function() resetSolids(solids,train) end )
+            
+            return true
+        end
+        
+    end
 end
