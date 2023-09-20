@@ -512,7 +512,6 @@ end
 
 function TRAIN_SYSTEM:Think()
 
-	self.KeyInserted = self.Train.Duewag_U2.IBISKeyA
 	self.KeyInserted = self.Train.Duewag_U2.IBISKeyATurned
 
 	if self.Menu > 0 then self:ReadDataset() end
@@ -575,26 +574,29 @@ function TRAIN_SYSTEM:Think()
 		self.JustBooted = false
 	end
 
-	if self.PowerOn == 1 then
-		if self.PowerOnRegistered == false then
-			self.PowerOnMoment = RealTime()
+	if self.PowerOn == 1 then --cold start
+		if self.PowerOnRegistered == false then --register timer variable for simulated bootup
+			self.PowerOnMoment = CurTime()
 			self.PowerOnRegistered = true
 			-- print("register",RealTime())
 		end
-		if RealTime() - self.PowerOnMoment > 5 then
-			self.Train:SetNW2Bool("IBISBootupComplete", true)
+		if CurTime() - self.PowerOnMoment > 5 then
+			self.Train:SetNW2Bool("IBISBootupComplete", true) --register that simulated bootup wait has passed
 			-- print(self.PowerOnMoment)
 		end
 	elseif self.PowerOn == 0 then
-		self.PowerOnRegistered = false
+		self.PowerOnRegistered = false --reset variables if device is off
 		self.PowerOnMoment = 0
 	end
 
 	if self.Train:GetNW2Bool("IBISBootupComplete", false) == true then
-		if self.JustBooted == false then
+		if self.JustBooted == false and not tonumber(self.Line,10) and not tonumber(self.Route,10) and not tonumber(self.Destination) then --from a cold boot we start right into the prompt, if no data is already present on the CAN bus
 			self.State = 2
 			self.Menu = 4
 			self.JustBooted = true
+		else --if we've already got any data on Line, Course, Route we just start into idle mode
+			self.State = 1
+			self.Menu = 0
 		end
 		self.Train:SetNW2Bool("IBISChime", true)
 	end
