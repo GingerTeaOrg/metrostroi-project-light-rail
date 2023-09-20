@@ -2,8 +2,8 @@ include("shared.lua")
 
 -- Bogey-related sounds
 ENT.SoundNames = {}
-ENT.SoundNames["u2_1"]  = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_primary.mp3"
-ENT.SoundNames["u2_2"]  = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_combined.mp3"
+ENT.SoundNames["u2_1"]  = "lilly/uf/bogeys/u2/motor_primary.wav"
+ENT.SoundNames["u2_2"]  = "lilly/uf/bogeys/u2/motor_secondary.wav"
 --ENT.SoundNames["u2_3"]  = "lilly/uf/u2/overhaul/u2_engine_secondary.mp3"
 
 
@@ -29,8 +29,8 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 
 ENT.EngineSNDConfig = {
     {
-        {"u2_1" ,40,0,1,1}, --initial speed, 
-        {"u2_2" ,40,80,80,2},
+        {"u2_1" ,40,00,16,1}, --initial speed, 
+        {"u2_2" ,80,40,24,1},
     },
 }
 
@@ -113,10 +113,10 @@ function ENT:Think()
     local train = self:GetNW2Entity("TrainEntity")
 
     local soundsmul = 1
-    local streetC,tunnelC = 0,0.9
+    local streetC,tunnelC = 0,1
     if IsValid(train) then
         streetC,tunnelC = train.StreetCoeff or 0,train.TunnelCoeff or 1
-        soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.8,0,2)
+        soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
     end
 
     local speed = self:GetSpeed()
@@ -125,21 +125,21 @@ function ENT:Think()
     local motorPower = self:GetMotorPower()*(1+math.max(0,(speed-55)/35)*0.4)
     if self.MotorSoundType ~= self:GetNWInt("MotorSoundType",1) or self.DisableEngines ~= self:GetNWBool("DisableEngines") then
         if self.MotorSoundType then
-            for _,snd in ipairs(self.EngineSNDConfig[1]) do
+            for _,snd in ipairs(self.EngineSNDConfig[self.MotorSoundType+1]) do
                 self:SetSoundState(snd[1],0,0)
             end
         end
 
         self.MotorSoundType = self:GetNWInt("MotorSoundType",1)
         self.DisableEngines = self:GetNWBool("DisableEngines")
-        self.MotorSoundArr = self.EngineSNDConfig[self.MotorSoundType+1]
+        self.MotorSoundArr = self.EngineSNDConfig [self.MotorSoundType+1]
     end
 
     if not self.DisableEngines and self.MotorSoundArr then
         self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1.5,1.5)
         local t = RealTime()*2.5
         local modulation = math.max(0,(speed-60)/30)*0.7+(0.2 + 1.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp((speed-15)/60,0,1)
-        local mod2 = 0.9-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
+        local mod2 = 1.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
         if (speed > -1.0) and (math.abs(self.MotorPowerSound)+modulation) >= 0.0 then
             --local startVolRamp = 0.2 + 0.8*math.max(0.0,math.min(1.0,(speed - 1.0)*0.5))
             local powerVolRamp
@@ -165,7 +165,6 @@ function ENT:Think()
                 elseif next  and speed > next[3] then
                     volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
                 end
-
                 local pitch = math.max(0,speed/snd[2])+0.06*streetC
                 self:SetSoundState(snd[1],motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2))
             end
@@ -294,7 +293,3 @@ end
 function ENT:Draw()
     self:DrawModel()
 end
-
-
-local c_gui
-if IsValid(c_gui) then c_gui:Close() end
