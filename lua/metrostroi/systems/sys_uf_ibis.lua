@@ -599,11 +599,11 @@ function TRAIN_SYSTEM:Think()
 	end
 
 	if self.Train:GetNW2Bool("IBISBootupComplete", false) == true then
-		if self.JustBooted == false and self.ColdBoot then -- from a cold boot we start right into the prompt, if no data is already present on the CAN bus
+		if self.JustBooted == false and self.ColdBoot and not self.CANBus then -- from a cold boot we start right into the prompt, if no data is already present on the CAN bus
 			self.State = 2
 			self.Menu = 4
 			self.JustBooted = true
-		elseif not self.JustBooted then
+		elseif not self.JustBooted and not self.ColdBoot then
 			self.State = 1
 			self.Menu = 0
 			self.JustBooted = true
