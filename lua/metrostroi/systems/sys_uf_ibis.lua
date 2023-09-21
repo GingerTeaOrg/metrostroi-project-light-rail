@@ -685,6 +685,7 @@ function TRAIN_SYSTEM:Think()
 		end
 	end
 	if self.State == 1 and self.Menu == 0 then
+		self.Train:SetNW2Bool("IBISError", false)
 		self.PreviousCourseNoted = false
 		self.SpecialAnnouncement = " "
 		self.AnnouncementChar1 = "-1"

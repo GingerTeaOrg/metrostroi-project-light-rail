@@ -2227,6 +2227,12 @@ function ENT:Think()
 			self:PlayOnce("IBIS_bootup", Vector(412, -12, 55), 1, 1)
 
 		end
+		if self:GetNW2Bool("IBISError",false) and not self.IBISErrorPlayed then
+			self.IBISErrorPlayed = true
+			self:PlayOnce("IBIS_error", Vector(412, -12, 55), 1, 1)
+		elseif not self:GetNW2Bool("IBISError",false) then
+			self.IBISErrorPlayed = false
+		end
 
 		self.BatteryBreakerOffSoundPlayed = false
 		if self.StartupSoundPlayed == false then
