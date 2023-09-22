@@ -509,29 +509,33 @@ function TRAIN_SYSTEM:Think()
 
 	if self.Menu > 0 then self:ReadDataset() end
 
-	if self.Menu == 0 and self.State > 0 then self.LineLookupComplete = false end
+	if self.Menu == 0 and self.State > 0 then self.LineLookupComplete = false end --reset lookup table state if we're not in a menu
 
 	self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes")]
 
 	self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int("IBIS:Destinations")]
 	self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA")]
 	self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines")]
+
+
 	-- Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
-
+	self.Route = self.RouteChar1 .. self.RouteChar2
 	-- Make sure that displayed characters are never assigned the -1 value, because -1 symbolises an empty character. If something is -1, display empty.
-	self.DisplayedRouteChar1 = tonumber(self.RouteChar1, 10) and tonumber(self.RouteChar1, 10) > -1 and self.RouteChar1 or " "
-	self.DisplayedRouteChar2 = tonumber(self.RouteChar2, 10) and tonumber(self.RouteChar2, 10) > -1 and self.RouteChar2 or " "
+	self.DisplayedRouteChar1 = tonumber(self.RouteChar1, 10) and self.RouteChar1 ~= "-1" and self.RouteChar1 or " "
+	self.DisplayedRouteChar2 = tonumber(self.RouteChar2, 10) and self.RouteChar2 ~= "-1" and self.RouteChar2 or " "
 
-	self.DisplayedDestinationChar1 = tonumber(self.DestinationChar1, 10) and tonumber(self.DestinationChar1, 10) > -1 and self.DestinationChar1 or " "
-	self.DisplayedDestinationChar2 = tonumber(self.DestinationChar2, 10) and tonumber(self.DestinationChar2, 10) > -1 and self.DestinationChar2 or " "
-	self.DisplayedDestinationChar3 = tonumber(self.DestinationChar3, 10) and tonumber(self.DestinationChar3, 10) > -1 and self.DestinationChar3 or " "
+	self.DisplayedDestinationChar1 = tonumber(self.DestinationChar1, 10) and self.DestinationChar1 ~= "-1" and self.DestinationChar1 or " "
+	self.DisplayedDestinationChar2 = tonumber(self.DestinationChar2, 10) and self.DestinationChar2 ~= "-1" and self.DestinationChar2 or " "
+	self.DisplayedDestinationChar3 = tonumber(self.DestinationChar3, 10) and self.DestinationChar3 ~= "-1" and and self.DestinationChar3 or " "
 
 	-- Apply the same principle as before to ensure that the CourseChar variables are valid.
-	self.DisplayedCourseChar1 = tonumber(self.CourseChar1, 10) and tonumber(self.CourseChar1, 10) > -1 and self.CourseChar1 or " "
-	self.DisplayedCourseChar2 = tonumber(self.CourseChar2, 10) and tonumber(self.CourseChar2, 10) > -1 and self.CourseChar2 or " "
-	self.DisplayedCourseChar3 = tonumber(self.CourseChar3, 10) and tonumber(self.CourseChar3, 10) > -1 and self.CourseChar3 or " "
-	self.DisplayedCourseChar4 = tonumber(self.CourseChar4, 10) and tonumber(self.CourseChar4, 10) > -1 and self.CourseChar4 or " "
+	self.DisplayedCourseChar1 = tonumber(self.CourseChar1, 10) and self.CourseChar1 ~= "-1" and self.CourseChar1 or " "
+	self.DisplayedCourseChar2 = tonumber(self.CourseChar2, 10) and self.CourseChar2 ~= "-1" and self.CourseChar2 or " "
+	self.DisplayedCourseChar3 = tonumber(self.CourseChar3, 10) and self.CourseChar3 ~= "-1" and self.CourseChar3 or " "
+	self.DisplayedCourseChar4 = tonumber(self.CourseChar4, 10) and self.CourseChar4 ~= "-1" and self.CourseChar4 or " "
 	self.Destination = tonumber(self.DestinationChar1 .. self.DestinationChar2 .. self.DestinationChar3, 10) or 000
+	self.ServiceAnnouncement = tonumber(self.AnnouncementChar1 .. self.AnnouncementChar2, 10) and tonumber(self.AnnouncementChar1 .. self.AnnouncementChar2, 10) > -1
+	
 
 	----print("Course Number:"..self.Train:GetNW2String("IBIS:CourseChar1",nil)..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")..self.Train:GetNW2String("IBIS:CourseChar5"))
 
@@ -920,7 +924,7 @@ function TRAIN_SYSTEM:ReadDataset()
 	----print(tonumber(string.sub(self.Course, 1, 2)))
 	-- print(self.LineTable["01"])
 	if self.Menu == 1 and self.State == 1 or self.Menu == 4 and self.State < 3 then
-		if self.CourseChar1 ~= " " and self.CourseChar2 ~= " " and self.CourseChar3 ~= " " and self.CourseChar4 ~= " " then -- reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
+		if self.CourseChar1 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar4 ~= "-1" then -- reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
 			local line = self.CourseChar1 .. self.CourseChar2
 			if self.LineTable[line] ~= nil then
 				self.IndexValid = true
@@ -965,10 +969,10 @@ function TRAIN_SYSTEM:ReadDataset()
 		end
 		self.LineLookupComplete = true
 	elseif self.Menu == 2 and self.State < 3 or self.Menu == 5 and self.State < 3 then
-		if self.RouteChar1 ~= " " and self.RouteChar2 ~= " " then
+		if self.RouteChar1 ~= "-1" and self.RouteChar2 ~= "-1" then
 			local line = self.CourseChar1 .. self.CourseChar2
 			if self.RouteTable[line] then
-				if self.RouteChar2 ~= " " and tonumber(self.RouteChar2, 10) < 10 and self.RouteChar1 == " " then -- treat a simple input of 1 to 9 as 01 to 09
+				if self.RouteChar2 ~= "-1" and tonumber(self.RouteChar2, 10) < 10 and self.RouteChar1 == "-1" then -- treat a simple input of 1 to 9 as 01 to 09
 					local AbstractedRoute = "0" .. self.RouteChar2
 				end
 				if not AbstractedRoute and self.RouteTable[line][self.RouteChar1 .. self.RouteChar2] then
@@ -1014,7 +1018,7 @@ function TRAIN_SYSTEM:ReadDataset()
 		end
 	elseif self.Menu == 3 and self.State < 3 then
 
-		if self.Destination ~= "   " then -- reference the destination index number with the dataset
+		if self.Destination ~= "-1-1-1" then -- reference the destination index number with the dataset
 
 			if self.DestinationTable[self.Destination] then
 				self.Destination = self.Destination
@@ -1116,160 +1120,89 @@ if SERVER then
 
 		if self.State == 1 and self.Menu == 4 or self.Menu == 1 and self.State == 1 or self.State == 2 and self.Menu == 4 then -- only during startup in menus or manually triggered menus
 
-			if self.PreviousCourseNoted == false and self.State ~= 2 then
-				self.PreviousCourseNoted = true
-				self.PreviousCourse = self.Course -- note the course we had before in order to restore it in case the prompt is empty and the user presses Delete again to return to main menu
-				-- print("course remembered:", self.PreviousCourse)
-			end
+			self:LinieKurs(Input)
 
-			if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then --filter out everything that isn't numbers
-				if self.CourseChar4 == "-1" and self.CourseChar3 == "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then --if all digits are empty
+		elseif self.State == 1 and self.Menu == 5 or self.Menu == 2 and self.State == 1 or self.Menu == 5 and self.State == 2 then --same procedure as above for routes as well
 
-					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end --insert the input number at the very right of the prompt: xxx1
+			self:Route(Input)
 
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 == "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then --if all but the first digit are empty
-
-					self.CourseChar3 = self.CourseChar4 --shift the saved character one position over: xx1x
-					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end --insert the new input at the end, ie: xx14
-
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then --only two digits are empty now: xx14
-
-					self.CourseChar2 = self.CourseChar3 --shift them over: x14x
-					self.CourseChar3 = self.CourseChar4
-					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end --insert the new input at the end again: x146
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar1 == "-1" then --all but one digits are valid now
-
-					self.CourseChar1 = self.CourseChar2
-					self.CourseChar2 = self.CourseChar3
-					self.CourseChar3 = self.CourseChar4 --shift it over one last time: 146x
-					if self.KeyInput ~= nil then
-						self.CourseChar4 = self.KeyInput
-					else
-						self.CourseChar4 = self.CourseChar4 --add it on to the end: 1468
-					end
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar1 ~= "-1" then --do nothing if we've got everything full. use the delete key for corrections, fool!
-
-					--[[self.CourseChar1 = self.CourseChar2
-					self.CourseChar2 = self.CourseChar3						
-					self.CourseChar3 = self.CourseChar4
-					if self.KeyInput ~= nil then
-						self.CourseChar4 = self.KeyInput
-					else
-						self.CourseChar4 = self.CourseChar4
-					end]]
-				end
-
-			elseif Input ~= nil and Input == "Delete" then
-				if self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar1 ~= "-1" then
-
-					self.CourseChar4 = self.CourseChar3
-					self.CourseChar3 = self.CourseChar2
-					self.CourseChar2 = self.CourseChar1
-					self.CourseChar1 = "-1"
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar1 == "-1" then
-					self.CourseChar4 = self.CourseChar3
-					self.CourseChar3 = self.CourseChar2
-					self.CourseChar2 = "-1"
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then
-					self.CourseChar4 = self.CourseChar3
-					self.CourseChar3 = self.CourseChar2
-					self.CourseChar3 = "-1"
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 == "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then
-					self.CourseChar4 = "-1"
-				end
-
-			end
-		elseif self.State == 1 and self.Menu == 5 or self.Menu == 2 and self.State == 1 or self.Menu == 5 and self.State == 2 then
-
-			self.Route = self.RouteChar1 .. self.RouteChar2
-			if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" then
-				if self.RouteChar2 == "-1" and self.RouteChar1 == "-1" then
-					self.RouteChar2 = self.KeyInput
-
-				elseif self.RouteChar2 ~= "-1" and self.RouteChar1 == "-1" then
-
-					self.RouteChar1 = self.RouteChar2
-
-					if self.KeyInput ~= nil then self.RouteChar2 = self.KeyInput end
-				elseif self.RouteChar2 ~= "-1" and self.RouteChar1 ~= "-1" then
-					self.RouteChar1 = self.RouteChar2
-
-					if self.KeyInput ~= nil then self.RouteChar2 = self.KeyInput end
-				end
-			elseif Input ~= nil and Input == "Delete" then
-				if self.RouteChar1 ~= "-1" and self.RouteChar2 ~= "-1" then
-					self.RouteChar2 = self.RouteChar1
-					self.RouteChar1 = "-1"
-				elseif self.RouteChar1 == "-1" and self.RouteChar2 ~= "-1" then
-					self.RouteChar2 = "-1"
-					self.RouteChar1 = "-1"
-				elseif self.RouteChar1 == "-1" and self.RouteChar2 == "-1" then
-					self.RouteChar2 = "-1"
-					self.RouteChar1 = "-1"
-				end
-			end
 		elseif self.Menu == 3 and self.State == 1 then
-			if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "SpecialAnnouncements" then
-				if self.DestinationChar3 == "-1" and self.DestinationChar2 == "-1" and self.DestinationChar1 == "-1" then
+			
+			self:Destination(Input)
 
-					if self.KeyInput ~= nil then self.DestinationChar3 = self.KeyInput end
-
-				elseif self.DestinationChar3 ~= "-1" and self.DestinationChar2 == "-1" and self.DestinationChar1 == "-1" then
-
-					self.DestinationChar2 = self.DestinationChar3
-
-					if self.KeyInput ~= nil then self.DestinationChar3 = self.KeyInput end
-				elseif self.DestinationChar3 ~= "-1" and self.DestinationChar2 ~= "-1" and self.DestinationChar1 == "-1" then
-
-					self.DestinationChar1 = self.DestinationChar2
-
-					if self.KeyInput ~= nil then self.DestinationChar3 = self.KeyInput end
-				elseif self.DestinationChar3 ~= "-1" and self.DestinationChar2 ~= "-1" and self.DestinationChar1 ~= "-1" then
-					self.DestinationChar1 = self.DestinationChar2
-					self.DestinationChar2 = self.DestinationChar3
-					if self.KeyInput ~= nil then self.DestinationChar3 = self.KeyInput end
-				end
-				self.Destination = self.DestinationChar1 .. self.DestinationChar2 .. self.DestinationChar3
-			elseif Input ~= nil and Input == "Delete" and Input ~= "TimeAndDate" and Input ~= "SpecialAnnouncements" then
-				if self.DestinationChar3 ~= "-1" and self.DestinationChar2 ~= "-1" and self.DestinationChar1 ~= "-1" then
-
-					self.DestinationChar1 = self.DestinationChar2
-					self.DestinationChar1 = "-1"
-					self.DestinationChar3 = self.DestinationChar2
-				elseif self.DestinationChar3 ~= "-1" and self.DestinationChar2 ~= "-1" and self.DestinationChar1 == "-1" then
-					self.DestinationChar2 = self.DestinationChar3
-					self.DestinationChar2 = "-1"
-				elseif self.DestinationChar3 ~= "-1" and self.DestinationChar2 == "-1" and self.DestinationChar1 == "-1" then
-					self.DestinationChar3 = "-1"
-				end
-			end
 		elseif self.Menu == 6 and self.State == 1 then
-			self.ServiceAnnouncement = tonumber(self.AnnouncementChar1 .. self.AnnouncementChar2, 10) and tonumber(self.AnnouncementChar1 .. self.AnnouncementChar2, 10) > -1
-						                           and self.AnnouncementChar1 .. self.AnnouncementChar2 or "  "
-			if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then
-				if self.AnnouncementChar2 == "-1" and self.AnnouncementChar1 == "-1" then
-					self.AnnouncementChar2 = self.KeyInput
+			
+			self:Announcement(Input)
+		end
+	end
+	function TRAIN_SYSTEM:LinieKurs(Input) --split Line/Course into a separate function
 
-				elseif self.AnnouncementChar2 ~= "-1" and self.AnnouncementChar1 == "-1" then
+		if Input == nil or Input ~= "TimeAndDate" or Input ~= "Enter" or Input ~= "SpecialAnnouncements" then
+			return
+		end
 
-					self.AnnouncementChar1 = self.AnnouncementChar2
+		if Input ~= "Delete" and Input ~= nil and self.CourseChar1 ~= "-1" then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+			self.CourseChar1 = self.CourseChar2
+			self.CourseChar2 = self.CourseChar3
+			self.CourseChar3 = self.CourseChar4 
+			self.CourseChar4 = Input
+		end
 
-					self.AnnouncementChar2 = self.KeyInput
+		if Input == "Delete" and Input ~= nil then
+			self.CourseChar4 = self.CourseChar3
+			self.CourseChar3 = self.CourseChar2
+			self.CourseChar2 = self.CourseChar1
+			self.CourseChar1 = "-1"
+		end
 
-				elseif self.AnnouncementChar2 ~= "-1" and self.AnnouncementChar1 ~= "-1" then
-					self.AnnouncementChar1 = self.AnnouncementChar2
-					self.AnnouncementChar2 = self.KeyInput
+	end
+	function TRAIN_SYSTEM:Route(Input) --split Route into a separate function
 
-				end
-			elseif Input ~= nil and Input == "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then
-				if self.AnnouncementChar1 ~= "-1" and self.AnnouncementChar2 ~= "-1" then
-					self.AnnouncementChar2 = self.AnnouncementChar1
-					self.AnnouncementChar1 = "-1"
-				elseif self.AnnouncementChar1 == "-1" and self.AnnouncementChar2 ~= "-1" then
-					self.AnnouncementChar2 = "-1"
-					self.AnnouncementChar1 = "-1"
-				end
-			end
+		if Input == nil or Input ~= "TimeAndDate" or Input ~= "Enter" or Input ~= "SpecialAnnouncements" then
+			return
+		end
+
+		if Input ~= "Delete" and Input ~= nil and self.RouteChar1 ~= "-1" then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+			self.RouteChar1 = self.RouteChar2
+			self.RouteChar2 = Input
+		end
+
+		if Input == "Delete" and Input ~= nil then
+			self.RouteChar1 = self.RouteChar2
+			self.RouteChar2 = "-1"
+		end
+
+	end
+	function TRAIN_SYSTEM:Destination(Input)
+		if Input == nil or Input ~= "TimeAndDate" or Input ~= "Enter" or Input ~= "SpecialAnnouncements" then
+			return
+		end
+
+		if Input ~= "Delete" and Input ~= nil and self.DestinationChar1 ~= "-1" then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+			self.DestinationChar1 = self.DestinationChar2
+			self.DestinationChar2 = self.DestinationChar3
+			self.DestinationChar3 = Input
+		end
+
+		if Input == "Delete" and Input ~= nil then
+			self.DestinationChar3 = self.DestinationChar2
+			self.DestinationChar2 = self.DestinationChar1
+			self.DestinationChar1 = "-1"
+		end
+	end
+	function TRAIN_SYSTEM:Announcement(Input)
+		if Input == nil or Input ~= "TimeAndDate" or Input ~= "Enter" or Input ~= "SpecialAnnouncements" then
+			return
+		end
+
+		if Input ~= "Delete" and Input ~= nil and self.AnnouncementChar1 ~= "-1" then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+			self.AnnouncementChar1 = self.AnnouncementChar2
+			self.AnnouncementChar2 = Input
+		end
+
+		if Input == "Delete" and Input ~= nil then
+			self.AnnouncementChar1 = self.AnnouncementChar2
+			self.AnnouncementChar2 = "-1"
 		end
 	end
 end
