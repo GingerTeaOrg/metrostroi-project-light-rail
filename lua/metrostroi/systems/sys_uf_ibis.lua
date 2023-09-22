@@ -1065,11 +1065,10 @@ end
 
 function TRAIN_SYSTEM:Play()
 	local message = {}
-	-- print("Current Station", self.CurrentStation)
+
 	local tbl = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int("IBIS:Announcements", 1)][self.CurrentStation][self.CourseChar1 .. self.CourseChar2][self.Route]
 	local station = false
-	-- print("Course",self.CourseChar1..self.CourseChar2)
-	-- print("Route",self.Route)
+
 	for k, v in ipairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript", 1)]) do
 
 		for ke, va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:AnnouncementScript", 1)]) do if v == ke then table.insert(message, 1, va) end end
@@ -1123,32 +1122,32 @@ if SERVER then
 				-- print("course remembered:", self.PreviousCourse)
 			end
 
-			if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then
-				if self.CourseChar4 == "-1" and self.CourseChar3 == "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then
+			if Input ~= nil and Input ~= "Delete" and Input ~= "TimeAndDate" and Input ~= "Enter" and Input ~= "SpecialAnnouncements" then --filter out everything that isn't numbers
+				if self.CourseChar4 == "-1" and self.CourseChar3 == "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then --if all digits are empty
 
-					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end
+					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end --insert the input number at the very right of the prompt: xxx1
 
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 == "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then
+				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 == "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then --if all but the first digit are empty
 
+					self.CourseChar3 = self.CourseChar4 --shift the saved character one position over: xx1x
+					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end --insert the new input at the end, ie: xx14
+
+				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then --only two digits are empty now: xx14
+
+					self.CourseChar2 = self.CourseChar3 --shift them over: x14x
 					self.CourseChar3 = self.CourseChar4
-					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end
-
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 == "-1" and self.CourseChar1 == "-1" then
-
-					self.CourseChar2 = self.CourseChar3
-					self.CourseChar3 = self.CourseChar4
-					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar1 == "-1" then
+					if self.KeyInput ~= nil then self.CourseChar4 = self.KeyInput end --insert the new input at the end again: x146
+				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar1 == "-1" then --all but one digits are valid now
 
 					self.CourseChar1 = self.CourseChar2
 					self.CourseChar2 = self.CourseChar3
-					self.CourseChar3 = self.CourseChar4
+					self.CourseChar3 = self.CourseChar4 --shift it over one last time: 146x
 					if self.KeyInput ~= nil then
 						self.CourseChar4 = self.KeyInput
 					else
-						self.CourseChar4 = self.CourseChar4
+						self.CourseChar4 = self.CourseChar4 --add it on to the end: 1468
 					end
-				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar1 ~= "-1" then
+				elseif self.CourseChar4 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar1 ~= "-1" then --do nothing if we've got everything full. use the delete key for corrections, fool!
 
 					--[[self.CourseChar1 = self.CourseChar2
 					self.CourseChar2 = self.CourseChar3						
