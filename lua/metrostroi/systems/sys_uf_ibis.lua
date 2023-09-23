@@ -526,7 +526,7 @@ function TRAIN_SYSTEM:Think()
 
 	self.DisplayedDestinationChar1 = tonumber(self.DestinationChar1, 10) and self.DestinationChar1 ~= "-1" and self.DestinationChar1 or " "
 	self.DisplayedDestinationChar2 = tonumber(self.DestinationChar2, 10) and self.DestinationChar2 ~= "-1" and self.DestinationChar2 or " "
-	self.DisplayedDestinationChar3 = tonumber(self.DestinationChar3, 10) and self.DestinationChar3 ~= "-1" and and self.DestinationChar3 or " "
+	self.DisplayedDestinationChar3 = tonumber(self.DestinationChar3, 10) and self.DestinationChar3 ~= "-1" and self.DestinationChar3 or " "
 
 	-- Apply the same principle as before to ensure that the CourseChar variables are valid.
 	self.DisplayedCourseChar1 = tonumber(self.CourseChar1, 10) and self.CourseChar1 ~= "-1" and self.CourseChar1 or " "
