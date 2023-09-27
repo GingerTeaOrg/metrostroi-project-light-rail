@@ -100,7 +100,11 @@ function ENT:DrawRTOnPanel(rt)
 	cam.End3D2D()
 end
 
-function ENT:Initialize() self.DFI = self:CreateRT("DFI", 10000, 10000) end
+function ENT:Initialize() 
+	self.DFI = self:CreateRT("DFI", 10000, 10000)
+	
+
+end
 
 function ENT:PrintText(x, y, text, font)
 	local str = {utf8.codepoint(text, 1, -1)}
