@@ -275,8 +275,6 @@ function ENT:Think()
             CurrentTrain = v
         end
 
-        -- Check horizontal lift station logic
-        local passengers_can_board = false
         
         passengers_can_board = doors_open
         
@@ -391,52 +389,6 @@ function ENT:Think()
         self.CurrentTrain = nil
     end
 
-    --PUI Timer
-    if boarding and not self.Timer then self.Timer = math.max(CurTime()+20,CurTime()+self.BoardTime) end
-    if not self.CurrentTrain and self.Timer then self.Timer = nil end
-    if self.Timer then
-        self.BoardTimer = -(CurTime()-self.Timer)
-        self.AnnouncerPlay = self.BoardTimer < 8+7+0.2
-        --print(self.PlatformIndex,self.BoardTimer,self.AnnouncerPlay)
-    else
-        self.BoardTimer = 20
-        self.AnnouncerPlay = false
-    end
-    if IsValid(self.PUI) then
-        local train = self.CurrentTrain
-        if IsValid(train) and Metrostroi.EndStations and Metrostroi.EndStations[1] and type(train.SignsIndex) == "number" then
-            local id = Metrostroi.EndStations[1][1]
-            for k,v in pairs(train.SignsList or {}) do
-                if v == train.SignsIndex then id = k; break end
-            end
-            local ends = false
-            for k,v in pairs(Metrostroi.EndStations) do
-                if id == v[1] or id == v[#v] then
-                    ends = true
-                    break
-                end
-            end
-            if ends then
-                self.PUI.Last = 0
-            else
-                self.PUI.Last = id
-            end
-        else
-            self.PUI.Last = 0
-        end
-        if IsValid(self.CurrentTrain) and IsValid(self.PUI) and self.Timer then
-            if not self.PUI.Work then self.PUI.Work = true end
-
-
-            self.PUI.BoardTime = self.BoardTimer
-            local time = 8+7
-            self.PUI.Lamp = time-0.2 < self.BoardTimer and self.BoardTimer < time+0.3
-        else
-            self.PUIStartGoing = false
-            self.PUI.Work = false
-            self.PUI.Lamp = false
-        end
-    end
     -- Add passengers
     if (not self.PlatformLast) and (#boardingDoorList == 0) then
         local target = GetConVarNumber("metrostroi_passengers_scale",50)*self.PopularityIndex --300
