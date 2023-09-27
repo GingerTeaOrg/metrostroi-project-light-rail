@@ -354,107 +354,20 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         AddCSLuaFile("uf/rollsigns/"..filename)
         include("uf/rollsigns/"..filename)
     end
-    function UF.GetTravelTime(src,dest)
-        -- Determine direction of travel
-        --assert(src.path == dest.path)
-        local direction = src.x < dest.x
-        
-        -- Accumulate travel time
-        local travel_time = 0
-        local travel_dist = 0
-        local travel_speed = 20
-        local iter = 0
-        function scan(node,path)
-            local oldx
-            local oldars
-            while (node) and (node ~= dest) do
-                local ars_speed
-                local ars_joint = Metrostroi.GetARSJoint(node,node.x+0.01,path or true)
-                if ars_joint then
-                    --[[if oldx and oldx ~= ars_joint.TrackPosition.x then
-                    print(string.format("\t\t\t%.2f:\t%s->%s",(ars_joint.TrackPosition.x - oldx)/18.8,oldars.Name,ars_joint.Name))
-                end
-                oldx = ars_joint.TrackPosition.x
-                oldars = ars_joint]]
-                --print(ars_joint.Name)
-                local ARSLimit = ars_joint:GetMaxARS()
-                --print(ARSLimit)
-                if ARSLimit >= 4  then
-                    ars_speed = ARSLimit*10
-                end
-                --print(ars_speed)
-            end
-            if ars_speed then travel_speed = ars_speed end
-            --print(string.format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
-            
-            -- Assume 70% of travel speed
-            local speed = travel_speed * 0.82
-            
-            -- Add to travel time
-            travel_dist = travel_dist + node.length
-            travel_time = travel_time + (node.length / (speed/3.6))
-            node = node.next
-            if not node then break end
-            if src.path == dest.path and node.branches and node.branches[1][2].path == src.path then scan(node,src.x > node.branches[1][2].x) end
-            if src.path == dest.path and node.branches and  node.branches[2] and node.branches[2][2].path == src.path then scan(node,src.x > node.branches[1][1].x) end
-            assert(iter < 10000, "OH SHI~")
-            iter = iter + 1
-        end
-    end
-    scan(src)
-    
-    return travel_time,travel_dist
-end
-function UF.PredictTrainPositions()
-    for train in pairs(Metrostroi.SpawnedTrains) do
-        if not IsValid(train) then Metrostroi.SpawnedTrains[train] = nil return end
-        local localSpeed = train:GetVelocity():Dot(train:GetAngles():Forward()) * 0.01905
-        local pos = Metrostroi.TrainPositions[train];pos = pos and pos[1]
-        if not pos then continue end
-        if Metrostroi.TrainDirections[train] then
-            train.PosX = train.PosX + localSpeed*FrameTime()
-        else
-            train.PosX = train.PosX - localSpeed*FrameTime()
-        end
-        train.OldPos = pos.x+train.PosX
-    end
-end
 
-if Metrostroi.Stations then --inject UF station entities because Metrostroi has its entities hardcoded
-    local platforms = ents.FindByClass("gmod_track_uf_platform")
-    for _,platform in pairs(platforms) do
-        local station = Metrostroi.Stations[platform.StationIndex] or {}
-        Metrostroi.Stations[platform.StationIndex] = station
-        
-        -- Position
-        local dir = platform.PlatformEnd - platform.PlatformStart
-        local pos1 = Metrostroi.GetPositionOnTrack(platform.PlatformStart,dir:Angle())[1]
-        local pos2 = Metrostroi.GetPositionOnTrack(platform.PlatformEnd,dir:Angle())[1]
-        if pos1 and pos2 then
-            -- Add platform to station
-            local platform_data = {
-                x_start = pos1.x,
-                x_end = pos2.x,
-                length = math.abs(pos2.x - pos1.x),
-                node_start = pos1.node1,
-                node_end = pos2.node1,
-                ent = platform,
-            }
-            if station[platform.PlatformIndex] then
-                print(Format("Metrostroi: Error, station %03d has two platforms %d with same index!",platform.StationIndex,platform.PlatformIndex))
-            else
-                station[platform.PlatformIndex] = platform_data
-            end
-            
-            -- Print information
-            print(Format("\t[%03d][%d] %.3f-%.3f km (%.1f m) on path %d",
-            platform.StationIndex,platform.PlatformIndex,pos1.x*1e-3,pos2.x*1e-3,
-            platform_data.length,platform_data.node_start.path.id))
-        else
-            print(Format("PLR: Error, station %03d platform %d, cant find pos! \n\tStart%s \n\tEnd:%s",platform.StationIndex,platform.PlatformIndex,platform.PlatformStart,platform.PlatformEnd))
-        end
+    if not UF.RoutingTable then
+        UF.SwitchTable = {}
+        UF.RoutingTable = {} --manually set routing table, for determining what IBIS Line/Route consists of what switch, where the switch needs to point, and what constitutes left or right 
     end
-end
+
+    files = file.Find("uf/routing/*/*.lua","LUA")
+    for _,filename in pairs(files) do
+        AddCSLuaFile("uf/routing/"..filename)
+        include("uf/routing/"..filename)
+    end
+
+    
+
 
 if SERVER then
     files = file.Find("uf/sv*.lua","LUA")
