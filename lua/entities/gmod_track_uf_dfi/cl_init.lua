@@ -131,15 +131,17 @@ function ENT:Think()
 	self.Theme = self:GetNW2String("Theme","Frankfurt")
 	
 	self.Destination = self:GetNW2String("Train1Destination", "Testbahnhof")
-	if self.Theme == "Frankfurt" or "Essen" or "Duesseldorf" then
+	if self.Theme == "Frankfurt" or self.Theme == "Essen" or self.Theme == "Duesseldorf" then
 		self.LineString = self:GetNW2String("Train1Line", "U4")
 		if string.sub(self.LineString,1,1) == 0 then
 			self.LineString = string.sub(self.LineString,2,2)
 			self.LineString = "U"..self.LineString
+			print(self.LineString)
 		end
-	elseif Theme == "Koeln" or "Hannover" then
+	elseif self.Theme == "Koeln" or self."Hannover" then
 		if string.sub(self.LineString,1,1) == 0 then
 			self.LineString = string.sub(self.LineString,2,2)
+			
 		end
 	end
 	if mode == 2 and self.AnnouncementPlayed == false then
