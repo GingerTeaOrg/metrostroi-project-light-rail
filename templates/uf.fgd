@@ -17,4 +17,21 @@
 	PlatformIndex(integer) : "Platform index" : 1 : "Index of platform (1: left, 2: right, 3: ...)"
 	PlatformStart(target_destination) : "Start of the platform (arrival side)"
 	PlatformEnd(target_destination) : "End of the platform (departure side)"
+	ThemeName(string) : "Set the display's city theme which alters its behaviour. Essen,Frankfurt,Duesseldorf,Hannover"
+]
+
+@PointClass base(Parentname, Targetname, Angles) studio("models/mus/ussr_clock_model/base.mdl") = gmod_track_uf_signal_controller :
+	"Hammer-to-lua signs"
+[
+	 // Outputs
+	output LenseEnabled(string) : "Fires when lense enabled"
+	output LenseDisabled(string) : "Fires when lense disabled"
+
+	// Inputs
+	input Open(void) : "Set state to open"
+	input Close(void) : "Set state to close"
+	input SetKGU(integer) : "Set KGU state"
+	input SetEmergencySignals(integer) : "Set emergency signal mode"
+	input SetIS(integer) : "Set Invation signal state"
+	input SetState(integer) : "Set state of signal"
 ]
