@@ -88,6 +88,13 @@ function ENT:DrawOnPanel(func)
 		height = 29.9,
 		scale = 0.0311
 	}
+	local panel2 = {
+		pos = Vector(-22, 96.4, 166),
+		ang = Angle(0, 180, 96), -- (0,44.5,-47.9),
+		width = 117,
+		height = 29.9,
+		scale = 0.0311
+	}
 	cam.Start3D2D(self:LocalToWorld(Vector(-22, 96.4, 166)), Angle(0, 0, 96), 0.03)
 	func(panel)
 	cam.End3D2D()
@@ -103,7 +110,11 @@ end
 function ENT:Initialize() 
 	self.DFI = self:CreateRT("DFI", 10000, 10000)
 	
+	self.LineString = " "
 
+	self.AnnouncementPlayed = false
+	
+	
 end
 
 function ENT:PrintText(x, y, text, font)
@@ -111,104 +122,119 @@ function ENT:PrintText(x, y, text, font)
 	for i = 1, #str do
 		local char = utf8.char(str[i])
 		draw.SimpleText(char, font, (x + i) * 55, y * 15 + 50, Color(255, 136, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
+		
 	end
 end
 
---[[function ENT:DrawPost()
-    self.RTMaterial:SetTexture("$basetexture",self.DFI)
-    self:DrawOnPanel(function(...)
-        surface.SetMaterial(self.RTMaterial)
-        surface.SetDrawColor(255,166,0)
-        surface.DrawTexturedRectRotated(59,16,10000,10000,0)
-    end)
-end]]
+function ENT:Think()
+	local mode = self:GetNW2Int("Mode", 0)
+	self.Theme = self:GetNW2String("Theme","Frankfurt")
+	
+	self.Destination = self:GetNW2String("Train1Destination", "Testbahnhof")
+	if self.Theme == "Frankfurt" or "Essen" or "Duesseldorf" then
+		self.LineString = self:GetNW2String("Train1Line", "U4")
+		if string.sub(self.LineString,1,1) == 0 then
+			self.LineString = string.sub(self.LineString,2,2)
+			self.LineString = "U"..self.LineString
+		end
+	elseif Theme == "Koeln" or "Hannover" then
+		if string.sub(self.LineString,1,1) == 0 then
+			self.LineString = string.sub(self.LineString,2,2)
+		end
+	end
+	if mode == 2 and self.AnnouncementPlayed == false then
+		self.AnnouncementPlayed = true
+		self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString.." ".."Richtung"..self.Destination, 1, 1, 1, 1, self:GetPos()-Vector(0,0,-10))
+	elseif mode == 1 or mode == 0 then
+		self.AnnouncementPlayed = false
+	end
+	print(self.LineString)
+end
 
 function ENT:Draw()
 	self:DrawModel()
+	
+	local mode = self:GetNW2Int("Mode", 0)
 
-	-- self:DrawRTOnPanel(self.DFI)
-
-	-- self:CreateRT("DFI",10000,10000)
-
-	local mode = 2 -- self:GetNW2Int("Mode", 0)
 	if mode == 2 then
+		
 		local pos = self:LocalToWorld(Vector(-25, 96, 169))
 		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
 		cam.Start3D2D(pos, ang, 0.03)
-		self:PrintText(-8, 0, self:GetNW2String("Train Line", "U4"), "Lumino_Big")
-		self:PrintText(-5.1, 0, self:GetNW2String("Train Destination", "Testbahnhof"), "Lumino_Big")
-		self:PrintText(-5, 6, self:GetNW2String("Train Via", "über Testplatz"), "Lumino")
-		self:PrintText(10, 11.6, self:GetNW2String("Car Count", "ó"), "Lumino_Cars")
-		self:PrintText(11.6, 11.6, self:GetNW2String("Car Count", "ó"), "Lumino_Cars")
-		self:PrintText(13.2, 11.6, self:GetNW2String("Car Count", "ó"), "Lumino_Cars")
-		self:PrintText(14.8, 11.6, self:GetNW2String("Car Count", "ó"), "Lumino_Cars")
+		self:PrintText(-8, 0, self.LineString, "Lumino_Big")
+		self:PrintText(-5.1, 0, self:GetNW2String("Train1Destination", "Testbahnhof"), "Lumino_Big")
+		--self:PrintText(-5, 6, self:GetNW2String("TrainVia", "über Testplatz"), "Lumino")
+		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
+		self:PrintText(10.3, 12.5, "____", "Lumino")
+		self:PrintText(9.1, 13.1, ":", "Lumino")
+		
 		-- self:PrintText(9.7,12.4,"_","Lumino")
 		-- self:PrintText(9.33,13,".","Lumino Dot")
 		-- self:PrintText(10.5,12.4,"_","Lumino")
 		-- self:PrintText(10.94,13,".","Lumino Dot")
 		--[[self:PrintText(9.55,12.4,"_","Lumino")
-        self:PrintText(10.3,12.4,"_","Lumino")
-        self:PrintText(11.05,12.4,"_","Lumino")
-        self:PrintText(11.8,12.4,"_","Lumino")
-        self:PrintText(12.55,12.4,"_","Lumino")]]
+		self:PrintText(10.3,12.4,"_","Lumino")
+		self:PrintText(11.05,12.4,"_","Lumino")
+		self:PrintText(11.8,12.4,"_","Lumino")
+		self:PrintText(12.55,12.4,"_","Lumino")]]
 		cam.End3D2D()
 	elseif mode == 1 then
-		if self:GetNW2Bool("NothingRegistered", true) == false then
-			local pos = self:LocalToWorld(Vector(-38.5, 96, 169.2))
-			local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
-			cam.Start3D2D(pos, ang, 0.03)
-			-- surface.SetDrawColor(255, 255, 255, 255)
-			-- surface.DrawRect(0, 0, 256, 320)
-			self:PrintText(-1.5, 0, self:GetNW2String("Train1Line", "U2"), "Lumino_Big")
-			self:PrintText(1, 0, self:GetNW2String("Train1Destination", "Testbahnhof"), "Lumino")
-			if #self:GetNW2String("Train1Time", "5") == 2 then
-				self:PrintText(25, 0, self:GetNW2String("Train1Time", "10"), "Lumino")
-			elseif #self:GetNW2String("Train1Time", "5") == 1 then
-				self:PrintText(26, 0, self:GetNW2String("Train1Time", "5"), "Lumino")
-			end
-			self:PrintText(-1.5, 6, self:GetNW2String("Train2Line", "U2"), "Lumino_Big")
-			self:PrintText(1, 6, self:GetNW2String("Train2Destination", "Testbahnhof"), "Lumino")
-			if #self:GetNW2String("Train2Time", "5") == 2 then
-				self:PrintText(25, 6, self:GetNW2String("Train2Time", "10"), "Lumino")
-			elseif #self:GetNW2String("Train2Time", "5") == 1 then
-				self:PrintText(26, 6, self:GetNW2String("Train2Time", "5"), "Lumino")
-			end
-
-			self:PrintText(-1.5, 12, self:GetNW2String("Train3Line", "U2"), "Lumino_Big")
-			self:PrintText(1, 12, self:GetNW2String("Train3Destination", "Testbahnhof"), "Lumino")
-			if #self:GetNW2String("Train3Time", "5") == 2 then
-				self:PrintText(25, 12, self:GetNW2String("Train3Time", "10"), "Lumino")
-			elseif #self:GetNW2String("Train3Time", "5") == 1 then
-				self:PrintText(26, 12, self:GetNW2String("Train3Time", "5"), "Lumino")
-			end
-
-			self:PrintText(-1.5, 18, self:GetNW2String("Train4Line", "U2"), "Lumino_Big")
-			self:PrintText(1, 18, self:GetNW2String("Train4Destination", "Testbahnhof"), "Lumino")
-			if #self:GetNW2String("Train4Time", "5") == 2 then
-				self:PrintText(25, 18, self:GetNW2String("Train4Time", "10"), "Lumino")
-			elseif #self:GetNW2String("Train4Time", "5") == 1 then
-				self:PrintText(26, 18, self:GetNW2String("Train4Time", "5"), "Lumino")
-			end
-			cam.End3D2D()
-		else
-			local pos = self:LocalToWorld(Vector(-25, 96, 169))
-			local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
-			cam.Start3D2D(pos, ang, 0.03)
-			-- surface.SetDrawColor(255, 255, 255, 255)
-			-- surface.DrawRect(0, 0, 256, 320)
-
-			draw.Text({
-				text = "Auf Zugschild achten!",
-				font = "Lumino", -- ..self:GetNW2Int("Style", 1),
-				pos = {200, 110},
-				xalign = TEXT_ALIGN_CENTER,
-				yalign = TEXT_ALIGN_LEFT,
-				color = Color(255, 136, 0)
-			})
-			cam.End3D2D()
+		
+		local pos = self:LocalToWorld(Vector(-38.5, 96, 169.2))
+		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
+		cam.Start3D2D(pos, ang, 0.03)
+		-- surface.SetDrawColor(255, 255, 255, 255)
+		-- surface.DrawRect(0, 0, 256, 320)
+		
+		self:PrintText(-1.5, 0, self:GetNW2String("Train1Line", "E0"), "Lumino_Big")
+		self:PrintText(1, 0, self:GetNW2String("Train1Destination", "ERROR"), "Lumino")
+		if #self:GetNW2String("Train1Time", "5") == 2 then
+			self:PrintText(25, 0, self:GetNW2String("Train1Time", "10"), "Lumino")
+		elseif #self:GetNW2String("Train1Time", "5") == 1 then
+			self:PrintText(26, 0, self:GetNW2String("Train1Time", "5"), "Lumino")
 		end
-
+		self:PrintText(-1.5, 6, self:GetNW2String("Train2Line", "E0"), "Lumino_Big")
+		self:PrintText(1, 6, self:GetNW2String("Train2Destination", "ERROR"), "Lumino")
+		if #self:GetNW2String("Train2Time", "5") == 2 then
+			self:PrintText(25, 6, self:GetNW2String("Train2Time", " "), "Lumino")
+		elseif #self:GetNW2String("Train2Time", " ") == 1 then
+			self:PrintText(26, 6, self:GetNW2String("Train2Time", " "), "Lumino")
+		end
+		
+		self:PrintText(-1.5, 12, self:GetNW2String("Train3Line", "E0"), "Lumino_Big")
+		self:PrintText(1, 12, self:GetNW2String("Train3Destination", "ERROR"), "Lumino")
+		if #self:GetNW2String("Train3Time", "5") == 2 then
+			self:PrintText(25, 12, self:GetNW2String("Train3Time", "10"), "Lumino")
+		elseif #self:GetNW2String("Train3Time", "5") == 1 then
+			self:PrintText(26, 12, self:GetNW2String("Train3Time", "5"), "Lumino")
+		end
+		
+		self:PrintText(-1.5, 18, self:GetNW2String("Train4Line", "E0"), "Lumino_Big")
+		self:PrintText(1, 18, self:GetNW2String("Train4Destination", "ERROR"), "Lumino")
+		if #self:GetNW2String("Train4Time", "5") == 2 then
+			self:PrintText(25, 18, self:GetNW2String("Train4Time", "10"), "Lumino")
+		elseif #self:GetNW2String("Train4Time", "5") == 1 then
+			self:PrintText(26, 18, self:GetNW2String("Train4Time", "5"), "Lumino")
+		end
+		cam.End3D2D()
+		
+		
+	elseif mode == 0 then
+		local pos = self:LocalToWorld(Vector(-25, 96, 169))
+		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
+		cam.Start3D2D(pos, ang, 0.03)
+		-- surface.SetDrawColor(255, 255, 255, 255)
+		-- surface.DrawRect(0, 0, 256, 320)
+		
+		draw.Text({
+			text = "Auf Zugschild achten!",
+			font = "Lumino", -- ..self:GetNW2Int("Style", 1),
+			pos = {200, 110},
+			xalign = TEXT_ALIGN_CENTER,
+			yalign = TEXT_ALIGN_LEFT,
+			color = Color(255, 136, 0)
+		})
+		cam.End3D2D()
 	end
 end
 
