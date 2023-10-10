@@ -1280,3 +1280,58 @@ function TRAIN_SYSTEM:AnnouncementProcessor()
 	local ProcessedInput = {}
 	for i, v in pairs(AnnouncementScript) do table.Add(v, AnnouncementScript) end
 end
+
+function TRAIN_SYSTEM:Switching(Left,Right)
+	-- Require 54 volts
+	if self.Train.Battery and (self.Train.Battery.Voltage < 24) then return end
+
+	self.Timer = self.Timer or CurTime()
+	if CurTime() - self.Timer > 2.00 or self.TimerToggle then
+		self.TimerToggle = nil
+		self.Timer = CurTime()
+
+		-- Get train position
+		local pos = Metrostroi.TrainPositions[self.Train]
+		if pos then pos = pos[1] end
+
+		-- Get all switches in current isolated section
+		local no_switches = true
+		local signal = 0
+		local Alt1, Alt2
+		if pos then
+			-- Get traffic light in front
+			local light = Metrostroi.GetNextTrafficLight(pos.node1,pos.x,pos.forward)
+			local function getSignal(base,chan)
+				if (chan == 1) and (base == "alt")  and light and light:GetInvertChannel1() then return "main" end
+				if (chan == 2) and (base == "alt")  and light and light:GetInvertChannel2() then return "main" end
+				return base
+			end
+
+			-- Get switches and trigger them all
+			local switches = Metrostroi.GetTrackSwitches(pos.node1,pos.x,pos.forward)
+			for _,switch in pairs(switches) do
+				Alt1 = Alt1 or (switch:GetChannel() == 1 and switch:GetSignal() > 0)
+				Alt2 = Alt2 or (switch:GetChannel() == 2 and switch:GetSignal() > 0)
+				no_switches = false
+				if self.SelectAlternate == true then
+					if self.Channel == 1 then switch:SendSignal(getSignal("alt",1),1) end
+					if self.Channel == 2 then switch:SendSignal(getSignal("alt",2),2) end
+				elseif self.SelectAlternate == false then
+					if self.Channel == 1 then switch:SendSignal(getSignal("main",1),1) end
+					if self.Channel == 2 then switch:SendSignal(getSignal("main",2),2) end
+				end
+				signal = math.max(signal,switch:GetSignal())
+			end
+			
+			-- Reset state selection
+		end
+		self.Signal = signal
+		self.Channel1Alternate = Alt1
+		self.Channel2Alternate = Alt2
+		-- If no switches, reset
+		if (no_switches or not pos) and (self.SelectAlternate ~= nil) then
+			self.Train:PlayOnce("dura2","cabin",0.30,220)
+		end
+		self.SelectAlternate = nil
+	end
+end
