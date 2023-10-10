@@ -17,10 +17,10 @@ function ENT:Initialize()
 	self.Left = GetInternalVariable("MetrostroiValueForLeft") or UF.SwitchTable[self.ID["left"]]
 	self.Right = self.Left == "main" and "alt" or self.Left == "alt" and "main"
 
-	self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos())
+	self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos())[1]
 
 	-- Find rotating parts which belong to this switch
-	local list = ents.FindInSphere(self:GetPos(),256)
+	local list = ents.FindInSphere(self:GetPos(),500)
 	self.TrackSwitches = {}
 	for k,v in pairs(list) do
 		if (v:GetClass() == "prop_door_rotating") and (string.find(v:GetName(),"switch")) then
@@ -67,7 +67,7 @@ function ENT:IsTrainInRange(train)
 	local pos = self.TrackPosition --the switch coordinates on the node system
 
 	local SwitchVector = Vector(pos.x,pos.y,pos.z) --Get the x y z coordinates and express them as a vector
-	local Train = Metrostroi.GetPositionOnTrack(self.SignalCaller[1]:GetPos()) --same for the train
+	local Train = Metrostroi.GetPositionOnTrack(self.SignalCaller[1]:GetPos())[1] --same for the train
 	local TrainVector = Vector(Train.x,Train.y,Train.z)
 
 	if SwitchVector:Distance(TrainVector) <= 10 then
@@ -87,7 +87,7 @@ end
 function ENT:Think()
 	-- Reset
 	self.InhibitSwitching = false
-	
+	self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos())[1]
 	-- Check if local section of track is occupied or no
 	local pos = self.TrackPosition
 	if pos then

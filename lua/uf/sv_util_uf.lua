@@ -89,7 +89,7 @@ hook.Add("Think", "UF_ElectricConsumptionThink", function()
     --UF.Current = UF.Current + Iperson
 
     -- Check if exceeded global maximum current
-    if UF.Current > GetConVar("UF_current_limit"):GetInt() then
+    if UF.Current > GetConVar("mplr_current_limit"):GetInt() then
         UF.VoltageRestoreTimer = CurTime() + 7.0
         print(Format("[!] Power feed protection tripped: current peaked at %.1f A",UF.Current))
     end

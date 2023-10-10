@@ -281,6 +281,7 @@ function ENT:Initialize()
 	end
 	self.BaseClass.Initialize(self)
 	self:SetPos(self:GetPos() + Vector(0, 0, 10)) -- set to 200 if one unit spawns in ground
+
 	-- Create seat entities
 	self.DriverSeat = self:CreateSeat("driver", Vector(395, 15, 34))
 	self.InstructorsSeat = self:CreateSeat("instructor", Vector(395, -20, 10), Angle(0, 90, 0), "models/vehicles/prisoner_pod_inner.mdl")
@@ -2029,7 +2030,7 @@ ENT.CloseMomentsCalc = false
 function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
 	
 	
-	
+	print(self.DeltaTime)
 	
 	--local irStatus = self:IRIS(self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > or self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0 or self.DoorStatesLeft[3] > 0 or self.DoorStatesLeft[4]) -- Call IRIS function to get IR gate sensor status, but only when the doors are open
 	local irStatus = self:IRIS(true)
@@ -2080,7 +2081,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						self.DoorStatesRight[i] = self.DoorStatesRight[i] + (0.8 * self.DeltaTime)
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					else
-						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.18
+						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.8
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					end
 				end
@@ -2106,7 +2107,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + (0.8 * self.DeltaTime)
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					else
-						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.18
+						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.8
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					end
 				end
@@ -2126,7 +2127,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 								self.DoorStatesRight[i] = self.DoorStatesRight[i] - (0.8 * self.DeltaTime)
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							else
-								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.18
+								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.8
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							end
 						end
@@ -2144,7 +2145,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime)
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							else
-								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.18
+								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.8
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							end
 						end
@@ -2169,7 +2170,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 					else -- If dT is not usable
 						if self.DoorOpenMoments[i] == 0 then
 							-- Increase door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.18
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.8
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
@@ -2181,7 +2182,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						else
 							-- Decrease door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.18
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.8
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
@@ -2209,7 +2210,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						end
 					else
 						if self.DoorOpenMoments[i] == 0 then
-							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.18
+							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.8
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						end
 					end
@@ -2219,7 +2220,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime)
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						else
-							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.18
+							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.8
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						end
 					end

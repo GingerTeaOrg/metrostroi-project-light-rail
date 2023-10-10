@@ -2,19 +2,19 @@ Metrostroi.DefineSystem("IBIS")
 TRAIN_SYSTEM.DontAccelerateSimulation = false
 
 function TRAIN_SYSTEM:Initialize()
-	self.Route = "-1" -- Route index number
+	self.Route = " " -- Route index number
 	self.PromptRoute = " "
-	self.RouteChar1 = "-1"
-	self.RouteChar2 = "-1"
+	self.RouteChar1 = " "
+	self.RouteChar2 = " "
 	self.DisplayedRouteChar1 = " "
 	self.DisplayedRouteChar2 = " "
 
 	self.Course = " " -- Course index number, format is LineLineCourseCourse
-	self.CourseChar1 = "-1"
-	self.CourseChar2 = "-1"
-	self.CourseChar3 = "-1"
-	self.CourseChar4 = "-1"
-	self.CourseChar5 = "-1"
+	self.CourseChar1 = " "
+	self.CourseChar2 = " "
+	self.CourseChar3 = " "
+	self.CourseChar4 = " "
+	self.CourseChar5 = " "
 	self.PromptCourse = " "
 	self.DisplayedCourseChar1 = " "
 	self.DisplayedCourseChar2 = " "
@@ -32,17 +32,17 @@ function TRAIN_SYSTEM:Initialize()
 	self.NextStationString = ""
 	self.NextStation = 0
 
-	self.Destination = "-1" -- Destination index number
-	self.DestinationChar1 = "-1"
-	self.DestinationChar2 = "-1"
-	self.DestinationChar3 = "-1"
+	self.Destination = " " -- Destination index number
+	self.DestinationChar1 = " "
+	self.DestinationChar2 = " "
+	self.DestinationChar3 = " "
 	self.DisplayedDestinationChar1 = " "
 	self.DisplayedDestinationChar2 = " "
 	self.DisplayedDestinationChar3 = " "
 
-	self.AnnouncementChar1 = "-1"
-	self.AnnouncementChar2 = "-1"
-	self.SpecialAnnouncement = "-1"
+	self.AnnouncementChar1 = " "
+	self.AnnouncementChar2 = " "
+	self.SpecialAnnouncement = " "
 
 	self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines")]
 
@@ -390,10 +390,10 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 	if State == 2 then
 
 		if Menu == 4 then
-			if self.CourseChar4 == "-1" then
+			if self.CourseChar4 == " " then
 				self:BlinkText(true, "Linie-Kurs:")
 				self:PrintText(11.5, 1.5, Course)
-			elseif self.CourseChar4 ~= "-1" then
+			elseif self.CourseChar4 ~= " " then
 				self:PrintText(0, 1.5, "Linie-Kurs:")
 				self:PrintText(11.5, 1.5, Course)
 
@@ -403,11 +403,11 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 		end
 
 		if Menu == 5 then
-			if self.RouteChar1 == "-1" then
+			if self.RouteChar1 == " " then
 				self:BlinkText(true, "Route :")
 				self:PrintText(13.5, 1.5, Route)
 
-			elseif self.RouteChar1 ~= "-1" then
+			elseif self.RouteChar1 ~= " " then
 				self:PrintText(13.5, 1.5, Route)
 				self:PrintText(0, 1.5, "Route :")
 
@@ -505,7 +505,7 @@ function TRAIN_SYSTEM:Think()
 	local Train = self.Train
 	self.KeyInserted = self.Train.Duewag_U2.IBISKeyATurned
 
-	if Train.BatteryOn then self:CANBus() end
+	if Train.BatteryOn then self:CANBusRunner() end
 
 	if self.Menu > 0 then self:ReadDataset() end
 
@@ -521,18 +521,18 @@ function TRAIN_SYSTEM:Think()
 	-- Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
 	self.Route = self.RouteChar1 .. self.RouteChar2
 	-- Make sure that displayed characters are never assigned the -1 value, because -1 symbolises an empty character. If something is -1, display empty.
-	self.DisplayedRouteChar1 = tonumber(self.RouteChar1, 10) and self.RouteChar1 ~= "-1" and self.RouteChar1 or " "
-	self.DisplayedRouteChar2 = tonumber(self.RouteChar2, 10) and self.RouteChar2 ~= "-1" and self.RouteChar2 or " "
+	self.DisplayedRouteChar1 = tonumber(self.RouteChar1, 10) and self.RouteChar1 ~= " " and self.RouteChar1 or " "
+	self.DisplayedRouteChar2 = tonumber(self.RouteChar2, 10) and self.RouteChar2 ~= " " and self.RouteChar2 or " "
 
-	self.DisplayedDestinationChar1 = tonumber(self.DestinationChar1, 10) and self.DestinationChar1 ~= "-1" and self.DestinationChar1 or " "
-	self.DisplayedDestinationChar2 = tonumber(self.DestinationChar2, 10) and self.DestinationChar2 ~= "-1" and self.DestinationChar2 or " "
-	self.DisplayedDestinationChar3 = tonumber(self.DestinationChar3, 10) and self.DestinationChar3 ~= "-1" and self.DestinationChar3 or " "
+	self.DisplayedDestinationChar1 = tonumber(self.DestinationChar1, 10) and self.DestinationChar1 ~= " " and self.DestinationChar1 or " "
+	self.DisplayedDestinationChar2 = tonumber(self.DestinationChar2, 10) and self.DestinationChar2 ~= " " and self.DestinationChar2 or " "
+	self.DisplayedDestinationChar3 = tonumber(self.DestinationChar3, 10) and self.DestinationChar3 ~= " " and self.DestinationChar3 or " "
 
 	-- Apply the same principle as before to ensure that the CourseChar variables are valid.
-	self.DisplayedCourseChar1 = tonumber(self.CourseChar1, 10) and self.CourseChar1 ~= "-1" and self.CourseChar1 or " "
-	self.DisplayedCourseChar2 = tonumber(self.CourseChar2, 10) and self.CourseChar2 ~= "-1" and self.CourseChar2 or " "
-	self.DisplayedCourseChar3 = tonumber(self.CourseChar3, 10) and self.CourseChar3 ~= "-1" and self.CourseChar3 or " "
-	self.DisplayedCourseChar4 = tonumber(self.CourseChar4, 10) and self.CourseChar4 ~= "-1" and self.CourseChar4 or " "
+	self.DisplayedCourseChar1 = tonumber(self.CourseChar1, 10) and self.CourseChar1 ~= " " and self.CourseChar1 or " "
+	self.DisplayedCourseChar2 = tonumber(self.CourseChar2, 10) and self.CourseChar2 ~= " " and self.CourseChar2 or " "
+	self.DisplayedCourseChar3 = tonumber(self.CourseChar3, 10) and self.CourseChar3 ~= " " and self.CourseChar3 or " "
+	self.DisplayedCourseChar4 = tonumber(self.CourseChar4, 10) and self.CourseChar4 ~= " " and self.CourseChar4 or " "
 	self.Destination = tonumber(self.DestinationChar1 .. self.DestinationChar2 .. self.DestinationChar3, 10) or 000
 	self.ServiceAnnouncement = tonumber(self.AnnouncementChar1 .. self.AnnouncementChar2, 10) and tonumber(self.AnnouncementChar1 .. self.AnnouncementChar2, 10) > -1
 	
@@ -543,6 +543,13 @@ function TRAIN_SYSTEM:Think()
 	if self.Train.BatteryOn == true and self.Train:GetNW2Bool("TurnIBISKey", false) == true then
 		self.PowerOn = 1
 		self.Train:SetNW2Bool("IBISPowerOn", true)
+		if self.ColdBoot and self.State < 1 then
+			self.State = self.State +2
+			self.Menu = 4
+		elseif not self.ColdBoot and self.State < 1 then
+			self.State = self.State +1
+			self.Menu = 0
+		end
 		----print("IBIS powered")
 	elseif self.Train.BatteryOn == true and self.Train:GetNW2Bool("TurnIBISKey", false) == false then
 		self.PowerOn = 0
@@ -567,8 +574,8 @@ function TRAIN_SYSTEM:Think()
 		self.Train:SetNW2Bool("IBISChime", false)
 		self.JustBooted = false
 	end
-
-	if self.PowerOn == 1 and self.ColdBoot then -- cold start
+	
+	if self.PowerOn == 1 then -- cold start
 		self.PowerOffMoment = 0
 		if self.PowerOnRegistered == false then -- register timer variable for simulated bootup
 			self.PowerOnMoment = CurTime()
@@ -578,9 +585,9 @@ function TRAIN_SYSTEM:Think()
 		if CurTime() - self.PowerOnMoment > 5 then
 			self.Train:SetNW2Bool("IBISBootupComplete", true) -- register that simulated bootup wait has passed
 			self.Train:SetNW2Bool("IBISChime", true)
-			self.ColdBoot = false
+			--self.ColdBoot = false
 		end
-	elseif self.PowerOn == 1 and not self.ColdBoot then -- warm start
+	elseif self.PowerOn == 1 then -- warm start
 		self.PowerOffMoment = 0
 		if self.PowerOnRegistered == false then -- register timer variable for simulated bootup
 			self.PowerOnMoment = CurTime()
@@ -590,7 +597,7 @@ function TRAIN_SYSTEM:Think()
 		if CurTime() - self.PowerOnMoment > 5 then
 			self.Train:SetNW2Bool("IBISBootupComplete", true) -- register that simulated bootup wait has passed
 			self.Train:SetNW2Bool("IBISChime", true)
-			self.ColdBoot = false
+			--self.ColdBoot = false
 		end
 	elseif self.PowerOn == 0 then
 		self.PowerOnRegistered = false -- reset variables if device is off
@@ -602,12 +609,18 @@ function TRAIN_SYSTEM:Think()
 
 	end
 
+	if CurTime() - self.PowerOffMoment > 240 then
+		self.ColdBoot = true
+	else
+		self.ColdBoot = false
+	end
+
 	if self.Train:GetNW2Bool("IBISBootupComplete", false) == true then
 		if self.JustBooted == false and self.ColdBoot and not self.CANBus then -- from a cold boot we start right into the prompt, if no data is already present on the CAN bus
 			self.State = 2
 			self.Menu = 4
 			self.JustBooted = true
-		elseif not self.JustBooted and not self.ColdBoot then
+		elseif not self.JustBooted and not self.ColdBoot and not self.CANBus then
 			self.State = 1
 			self.Menu = 0
 			self.JustBooted = true
@@ -692,8 +705,8 @@ function TRAIN_SYSTEM:Think()
 		self.Train:SetNW2Bool("IBISError", false)
 		self.PreviousCourseNoted = false
 		self.SpecialAnnouncement = " "
-		self.AnnouncementChar1 = "-1"
-		self.AnnouncementChar2 = "-1"
+		self.AnnouncementChar1 = " "
+		self.AnnouncementChar2 = " "
 		self.Train:SetNW2String("ServiceAnnouncement", "")
 		self.LineLookupComplete = false
 		-- self.PhonedHome = false
@@ -729,11 +742,11 @@ function TRAIN_SYSTEM:Think()
 			self.Menu = 0
 			self.RBLSignedOff = false
 			self.LineLookupComplete = false
-			self.DestinationChar1 = "-1"
-			self.DestinationChar2 = "-1"
-			self.DestinationChar3 = "-1"
-			self.RouteChar1 = "-1"
-			self.RouteChar2 = "-1"
+			self.DestinationChar1 = " "
+			self.DestinationChar2 = " "
+			self.DestinationChar3 = " "
+			self.RouteChar1 = " "
+			self.RouteChar2 = " "
 			self.CurrentStation = 0
 			self.CurrentStationInternal = 0
 			self.PhonedHome = false
@@ -766,7 +779,7 @@ function TRAIN_SYSTEM:Think()
 			self.CurrentStationInternal = 0
 			self.LineLookupComplete = false
 			self.RBLSignedOff = false
-		elseif self.KeyInput == "Delete" and self.Course == "-1-1-1-1" then
+		elseif self.KeyInput == "Delete" and self.Course == "    " then
 			self.Course = self.PreviousCourse
 			self.Menu = 0
 		end
@@ -799,7 +812,7 @@ function TRAIN_SYSTEM:Think()
 				self.Train:SetNW2Bool("IBISError", true)
 				self.ErrorMoment = CurTime()
 			end
-		elseif self.KeyInput == "Delete" and self.ServiceAnnouncement == "-1-1" then
+		elseif self.KeyInput == "Delete" and self.ServiceAnnouncement == "  " then
 			self.Menu = 0
 		end
 	end
@@ -807,20 +820,20 @@ function TRAIN_SYSTEM:Think()
 	if self.State == 0 and not self.CANBus and self.PowerOffMomentRegistered and CurTime() - self.PowerOffMoment > 240 then
 		self.LineLookupComplete = false
 		self.BootupComplete = false
-		self.Course = "0" -- Course index number, format is LineLineCourseCourse
-		self.CourseChar1 = "-1"
-		self.CourseChar2 = "-1"
-		self.CourseChar3 = "-1"
-		self.CourseChar4 = "-1"
-		self.CourseChar5 = "-1"
+		self.Course = " " -- Course index number, format is LineLineCourseCourse
+		self.CourseChar1 = " "
+		self.CourseChar2 = " "
+		self.CourseChar3 = " "
+		self.CourseChar4 = " "
+		self.CourseChar5 = " "
 		self.DisplayedCourseChar1 = " "
 		self.DisplayedCourseChar2 = " "
 		self.DisplayedCourseChar3 = " "
 		self.DisplayedCourseChar4 = " "
 		self.PreviousCourse = "0"
 		self.Route = "0" -- Route index number
-		self.RouteChar1 = "-1"
-		self.RouteChar2 = "-1"
+		self.RouteChar1 = " "
+		self.RouteChar2 = " "
 		self.DisplayedRouteChar1 = " "
 		self.DisplayedRouteChar2 = " "
 
@@ -835,15 +848,15 @@ function TRAIN_SYSTEM:Think()
 		self.PowerOn = 0
 		self.PowerOnMoment = 0
 		self.Destination = 0 -- Destination index number
-		self.DestinationChar1 = "-1"
-		self.DestinationChar2 = "-1"
-		self.DestinationChar3 = "-1"
+		self.DestinationChar1 = " "
+		self.DestinationChar2 = " "
+		self.DestinationChar3 = " "
 		self.DisplayedDestinationChar1 = " "
 		self.DisplayedDestinationChar2 = " "
 		self.DisplayedDestinationChar3 = " "
 
-		self.AnnouncementChar1 = "-1"
-		self.AnnouncementChar2 = "-1"
+		self.AnnouncementChar1 = " "
+		self.AnnouncementChar2 = " "
 		self.SpecialAnnouncement = " "
 
 		self.CurrentStationInternal = 0
@@ -878,9 +891,9 @@ function TRAIN_SYSTEM:Think()
 	-- if self.KeyInput ~=nil then
 	self:InputProcessor(self.KeyInput)
 	-- end
-	-- if self.Menu > 0 then
-	--    self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4
-	-- end
+	
+	self.Course = self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4
+	
 	-- print(self.Course)
 	if self.KeyInput ~= nil then
 		-- print(self.KeyInput)
@@ -924,13 +937,13 @@ function TRAIN_SYSTEM:ReadDataset()
 	----print(tonumber(string.sub(self.Course, 1, 2)))
 	-- print(self.LineTable["01"])
 	if self.Menu == 1 and self.State == 1 or self.Menu == 4 and self.State < 3 then
-		if self.CourseChar1 ~= "-1" and self.CourseChar2 ~= "-1" and self.CourseChar3 ~= "-1" and self.CourseChar4 ~= "-1" then -- reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
+		if self.CourseChar1 ~= " " and self.CourseChar2 ~= " " and self.CourseChar3 ~= " " and self.CourseChar4 ~= " " then -- reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
 			local line = self.CourseChar1 .. self.CourseChar2
 			if self.LineTable[line] ~= nil then
 				self.IndexValid = true
 				-- print("Line Lookup succeeded", self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4)
 				-- print(self:RBLPhoneHome())
-				if self:RBLPhoneHome(self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4, self.Train) and self.RBLRegistered == false then
+				if self:RBLPhoneHome(self.Course, self.Train) and self.RBLRegistered == false then
 
 					self.RBLRegistered = true
 					self.RBLSignedOff = false
@@ -965,14 +978,20 @@ function TRAIN_SYSTEM:ReadDataset()
 					print(self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4)
 				end
 			end
+			if self.IndexValid == true and self.State == 2 then
+				self.Menu = self.Menu + 1
+				self.IndexValid = false
+			end
+
 
 		end
 		self.LineLookupComplete = true
+		
 	elseif self.Menu == 2 and self.State < 3 or self.Menu == 5 and self.State < 3 then
-		if self.RouteChar1 ~= "-1" and self.RouteChar2 ~= "-1" then
+		if self.RouteChar1 ~= " " and self.RouteChar2 ~= " " then
 			local line = self.CourseChar1 .. self.CourseChar2
 			if self.RouteTable[line] then
-				if self.RouteChar2 ~= "-1" and tonumber(self.RouteChar2, 10) < 10 and self.RouteChar1 == "-1" then -- treat a simple input of 1 to 9 as 01 to 09
+				if self.RouteChar2 ~= " " and tonumber(self.RouteChar2, 10) < 10 and self.RouteChar1 == " " then -- treat a simple input of 1 to 9 as 01 to 09
 					local AbstractedRoute = "0" .. self.RouteChar2
 				end
 				if not AbstractedRoute and self.RouteTable[line][self.RouteChar1 .. self.RouteChar2] then
@@ -1018,7 +1037,7 @@ function TRAIN_SYSTEM:ReadDataset()
 		end
 	elseif self.Menu == 3 and self.State < 3 then
 
-		if self.Destination ~= "-1-1-1" then -- reference the destination index number with the dataset
+		if self.Destination ~= "   " then -- reference the destination index number with the dataset
 
 			if self.DestinationTable[self.Destination] then
 				self.Destination = self.Destination
@@ -1111,7 +1130,7 @@ end
 if SERVER then
 
 	function TRAIN_SYSTEM:InputProcessor(Input)
-
+		
 		if self.State == 1 and self.Menu == 0 then
 			self.PreviousCourseNoted = false
 			self.PreviousRouteNoted = false
@@ -1119,66 +1138,65 @@ if SERVER then
 		end
 
 		if self.State == 1 and self.Menu == 4 or self.Menu == 1 and self.State == 1 or self.State == 2 and self.Menu == 4 then -- only during startup in menus or manually triggered menus
-
-			self:LinieKurs(Input)
-
+		
+			self:LinieKurs(self.KeyInput)
+			
 		elseif self.State == 1 and self.Menu == 5 or self.Menu == 2 and self.State == 1 or self.Menu == 5 and self.State == 2 then --same procedure as above for routes as well
 
-			self:Route(Input)
+			self:RouteInput(self.KeyInput)
 
 		elseif self.Menu == 3 and self.State == 1 then
 			
-			self:Destination(Input)
+			self:DestinationInput(self.KeyInput)
 
 		elseif self.Menu == 6 and self.State == 1 then
 			
-			self:Announcement(Input)
+			self:Announcement(self.KeyInput)
 		end
 	end
-	function TRAIN_SYSTEM:LinieKurs(Input) --split Line/Course into a separate function
+	function TRAIN_SYSTEM:LinieKurs(KeyInput) --split Line/Course into a separate function
 
-		if Input == nil or Input ~= "TimeAndDate" or Input ~= "Enter" or Input ~= "SpecialAnnouncements" then
+		if KeyInput == nil or KeyInput == "TimeAndDate" or KeyInput == "Enter" or KeyInput == "SpecialAnnouncements" then
 			return
 		end
 
-		if Input ~= "Delete" and Input ~= nil and self.CourseChar1 ~= "-1" then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+
+		if KeyInput ~= "Delete" and KeyInput ~= nil and tonumber(KeyInput,10) and not tonumber(self.CourseChar1,10) then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
 			self.CourseChar1 = self.CourseChar2
 			self.CourseChar2 = self.CourseChar3
 			self.CourseChar3 = self.CourseChar4 
-			self.CourseChar4 = Input
+			self.CourseChar4 = KeyInput
 		end
 
-		if Input == "Delete" and Input ~= nil then
+		if KeyInput == "Delete" and KeyInput ~= nil then
 			self.CourseChar4 = self.CourseChar3
 			self.CourseChar3 = self.CourseChar2
 			self.CourseChar2 = self.CourseChar1
-			self.CourseChar1 = "-1"
+			self.CourseChar1 = " "
 		end
 
 	end
-	function TRAIN_SYSTEM:Route(Input) --split Route into a separate function
-
-		if Input == nil or Input ~= "TimeAndDate" or Input ~= "Enter" or Input ~= "SpecialAnnouncements" then
+	function TRAIN_SYSTEM:RouteInput(Input) --split Route into a separate function
+		
+		if Input == nil or Input == "TimeAndDate" or Input == "Enter" or Input == "SpecialAnnouncements" then
 			return
 		end
-
-		if Input ~= "Delete" and Input ~= nil and self.RouteChar1 ~= "-1" then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+		if Input ~= nil and tonumber(Input,10) and not tonumber(self.RouteChar1,10) then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
 			self.RouteChar1 = self.RouteChar2
 			self.RouteChar2 = Input
 		end
 
 		if Input == "Delete" and Input ~= nil then
-			self.RouteChar1 = self.RouteChar2
-			self.RouteChar2 = "-1"
+			self.RouteChar2 = self.RouteChar1
+			self.RouteChar1 = " "
 		end
 
 	end
-	function TRAIN_SYSTEM:Destination(Input)
-		if Input == nil or Input ~= "TimeAndDate" or Input ~= "Enter" or Input ~= "SpecialAnnouncements" then
+	function TRAIN_SYSTEM:DestinationInput(Input)
+		if Input == nil or Input == "TimeAndDate" or Input == "Enter" or Input == "SpecialAnnouncements" then
 			return
 		end
-
-		if Input ~= "Delete" and Input ~= nil and self.DestinationChar1 ~= "-1" then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+		if Input ~= nil and tonumber(Input,10) and not tonumber(self.DestinationChar1,10) then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
 			self.DestinationChar1 = self.DestinationChar2
 			self.DestinationChar2 = self.DestinationChar3
 			self.DestinationChar3 = Input
@@ -1187,22 +1205,22 @@ if SERVER then
 		if Input == "Delete" and Input ~= nil then
 			self.DestinationChar3 = self.DestinationChar2
 			self.DestinationChar2 = self.DestinationChar1
-			self.DestinationChar1 = "-1"
+			self.DestinationChar1 = " "
 		end
 	end
 	function TRAIN_SYSTEM:Announcement(Input)
-		if Input == nil or Input ~= "TimeAndDate" or Input ~= "Enter" or Input ~= "SpecialAnnouncements" then
+		if Input == nil or Input == "TimeAndDate" or Input == "Enter" or Input == "SpecialAnnouncements" then
 			return
 		end
 
-		if Input ~= "Delete" and Input ~= nil and self.AnnouncementChar1 ~= "-1" then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+		if Input ~= nil and tonumber(Input,10) and not tonumber(self.AnnouncementChar1,10) then --Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
 			self.AnnouncementChar1 = self.AnnouncementChar2
 			self.AnnouncementChar2 = Input
 		end
 
 		if Input == "Delete" and Input ~= nil then
-			self.AnnouncementChar1 = self.AnnouncementChar2
-			self.AnnouncementChar2 = "-1"
+			self.AnnouncementChar2 = self.AnnouncementChar1
+			self.AnnouncementChar1 = " "
 		end
 	end
 end
@@ -1238,12 +1256,12 @@ function TRAIN_SYSTEM:CANWrite(target, targetdata)
 	end
 end
 
-function TRAIN_SYSTEM:CANBus()
+function TRAIN_SYSTEM:CANBusRunner()
 
 	local primary = self.KeyInserted
 	local powered = self.Train.BatteryOn
 
-	if primary and powered then
+	if primary and powered and #self.Train.WagonList > 1 then
 		self:CANWrite(self.Train, "Line", self.Line)
 		self:CANWrite(self.Train, "Route", self.Route)
 		self:CANWrite(self.Train, "Course", self.Course)

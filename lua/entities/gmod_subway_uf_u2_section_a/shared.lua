@@ -177,7 +177,7 @@ end
 local function GetDoorPosition(i, k)
 
 	-- math.random
-	return Vector(450, 0)
+	return Vector(450, 0,5)
 end
 
 ENT.LeftDoorPositions = {}

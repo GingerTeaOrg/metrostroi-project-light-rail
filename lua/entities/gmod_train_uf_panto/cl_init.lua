@@ -6,6 +6,7 @@ function ENT:Initialize()
     self.PrevTime = 0
     self.PantoHeight = 0
     self.PantoRaised = false
+    self.FirstRaise = true
     self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
     self.PantoHeightTab = {}
     self.SoundPlayed = false
@@ -25,7 +26,7 @@ function ENT:Think()
          if self.SoundPlayed == false then
             self.SoundPlayed = true
             if self:GetNW2Bool("HitWire",false) then
-                self:PlayOnceFromPos("plonk","lilly/uf/common/panto_applied.mp3",2,1,0,2,self.PantoHeight)
+                self:PlayOnceFromPos("plonk","lilly/uf/common/panto_applied.mp3",2,1,0,2,self:GetPos() + Vector(0,0,self.PantoHeight.z))
             end
          end
     elseif self.PantoRaised == false then
@@ -41,11 +42,16 @@ function ENT:Draw()
     self:DrawModel()
     --self:Debug()
     if self.PantoRaised == true then
-        
-        self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,20,0,0.01))
+        if self.FirstRaise then
+            self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,20,0,0.01))
+        else
+            self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,0.1,1,1))
+            self.FirstRaise = false
+        end
        
     else
         self:SetPoseParameter("position",self:Animate("1",0,0,100,0.1,0,1))
+        self.FirstRaise = true
     end
     
     self:InvalidateBoneCache()
