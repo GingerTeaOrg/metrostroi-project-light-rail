@@ -1,6 +1,6 @@
 function UF.AddARSSubSection(node,source)
     if true then return end
-    local ent = ents.Create("gmod_track_signal")
+    local ent = ents.Create("gmod_track_uf_signal")
     if not IsValid(ent) then return end
 
     local tr = Metrostroi.RerailGetTrackData(node.pos - node.dir*32,node.dir)
