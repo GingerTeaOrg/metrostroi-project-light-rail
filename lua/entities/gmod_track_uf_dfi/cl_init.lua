@@ -138,15 +138,17 @@ function ENT:Think()
 			self.LineString = "U" .. self:GetNW2String("Train1Line", "U4")
 		end
 	elseif self.Theme == "Koeln" or self.Theme == "Hannover" then
-		if string.sub(self:GetNW2String("Train1Line", "U4"),1,1) == "0" then
-			self.LineString = string.sub(self:GetNW2String("Train1Line", "U4"), 2,2)
-		elseif string.sub(self:GetNW2String("Train1Line", "U4"),1,1) ~= "0" then
-			self.LineString = self:GetNW2String("Train1Line", "U4")
+		if string.sub(self:GetNW2String("Train1Line", "E0"),1,1) == "0" then
+			self.LineString = string.sub(self:GetNW2String("Train1Line", "E0"), 2,2)
+		elseif string.sub(self:GetNW2String("Train1Line", "E0"),1,1) ~= "0" then
+			self.LineString = self:GetNW2String("Train1Line", "E0")
 		end
 	end
 	if mode == 2 and self.AnnouncementPlayed == false then
 		self.AnnouncementPlayed = true
-		self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString.." ".."Richtung".." "..self.Destination..".mp3", 2, 1, 1, 1, self:GetPos())
+		if self.Theme == "Frankfurt" then
+			self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString.." ".."Richtung".." "..self.Destination..".mp3", 2, 1, 1, 1, self:GetPos())
+		end
 	elseif mode == 1 or mode == 0 then
 		self.AnnouncementPlayed = false
 	end
