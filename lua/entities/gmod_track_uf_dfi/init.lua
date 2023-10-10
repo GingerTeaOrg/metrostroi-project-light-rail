@@ -63,7 +63,7 @@ function ENT:Think()
 	
 	if self.Mode > 0 then
 		
-		if CurTime() - self.LastRefresh > 20 then
+		if CurTime() - self.LastRefresh > 10 then
 			self.LastRefresh = CurTime()
 			print("Refreshing DFI")
 			self.ScannedTrains = self:ScanForTrains()
@@ -84,11 +84,12 @@ function ENT:Think()
 	if self.Train1 then
 		for k,v in pairs(self.Train1) do
 			local Train = k
+			if not Train.IBIS then self:Initialize() return end
 			self.Train1Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train1Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train1ETA = tostring(math.Round(math.Round(self.Train1[k] / 60)))
 			self.Train1ConsistLength = #Train.WagonList
-			self.Train1Vector = Train:GetPos()
+			self.Train1Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
 		end
 	end
 	if self.Train2 then
@@ -151,9 +152,9 @@ function ENT:Think()
 	if not next(UF.IBISRegisteredTrains) then --either fall back to idle, train list, or current train display
 		self.Mode = 0
 		
-	elseif tonumber(self.Train1ETA) > 0 then
+	elseif tonumber(self.Train1ETA) > 0 and Vector(self.Train1Vector.x,self.Train1Vector.y,self.Train1Vector.z):DistToSqr(self.TrackPosition.x,self.TrackPosition.y,self.TrackPosition.z) < 10 then
 		self.Mode = 1
-	elseif tonumber(self.Train1ETA) == 0 or self.Train1Vector and self.Position:Distance(self.Train1Vector) < 2 then
+	elseif tonumber(self.Train1ETA) == 0 then
 		self.Mode = 2
 	end
 	
@@ -165,10 +166,21 @@ function ENT:ScanForTrains() --scrape all trains that have been logged into RBL,
 	if not next(UF.IBISRegisteredTrains) then return end --No point in doing anything if there isn't a single train registered / table is empty
 	self.SortedTable = {}
 	-- Copy a simple list of registered trains
-	if not next(self.WorkTable) then
-		for k,_ in pairs(UF.IBISRegisteredTrains) do
+	if not next(self.WorkTable) then --if it's empty we can simply insert it with no checks
+		for k,_ in pairs(UF.IBISRegisteredTrains) do --query the RBL dispatching table for logged in trains
+			if not k.IBIS or not tonumber(k.IBIS.Course) and not tonumber(k.IBIS.Route) then return end --guard against invalid values on the IBIS
 			table.insert(self.WorkTable,k)
 			--print("insert to worktable",k)
+		end
+	elseif next(self.WorkTable) then --if the table isn't empty then we need to do some trickery
+		for k,_ in pairs(UF.IBISRegisteredTrains) do
+			for ke,v in pairs(self.WorkTable) do
+				if self.WorkTable[ke] == k then
+					break
+				else
+					table.insert(self.WorkTable,k)
+				end
+			end
 		end
 	end
 	
@@ -200,6 +212,7 @@ function ENT:ScanForTrains() --scrape all trains that have been logged into RBL,
 	for k,v in pairs(self.WorkTable) do
 		--print("filtered train",v)
 		local FilteredTrain = v
+		if not FilteredTrain.IBIS then return end
 		if self.ValidLines[FilteredTrain.IBIS.CourseChar1..FilteredTrain.IBIS.CourseChar2] then
 			table.insert(self.FilteredTable,FilteredTrain)
 		end
@@ -235,6 +248,7 @@ function ENT:TrackETA(train) --universal function for having Metrostroi calculat
 	
 	if train then
 		local TrainPosOnTrack = Metrostroi.GetPositionOnTrack(train:GetPos(),train:GetAngles())[1] --input the train's world vector and get its position on the node system
+		if not TrainPosOnTrack then return end
 		return Metrostroi.GetTravelTime(TrainPosOnTrack.node1,self.TrackPosition.node1) --return the travel time between the train and the display
 	else
 		return nil
