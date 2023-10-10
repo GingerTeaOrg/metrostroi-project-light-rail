@@ -4,55 +4,8 @@ include("shared.lua")
 util.AddNetworkString "uf-signal"
 util.AddNetworkString "uf-signal-state"
 
-function ENT:SetSprite(index,active,model,scale,brightness,pos,color)
-	if active and self.Sprites[index] then return end
-	if not active and not self.Sprites[index] then return end
-	if not active and self.Sprites[index] then
-		SafeRemoveEntity(self.Sprites[index])
-		self.Sprites[index] = nil
-	end
-
-	if active then
-		local sprite = ents.Create("env_sprite")
-		sprite:SetParent(self)
-		sprite:SetLocalPos(pos)
-		sprite:SetLocalAngles(self:GetAngles())
-
-		-- Set parameters
-		sprite:SetKeyValue("rendercolor",
-			Format("%i %i %i",
-				color.r*brightness,
-				color.g*brightness,
-				color.b*brightness
-			)
-		)
-		sprite:SetKeyValue("rendermode", 9) -- 9: WGlow, 3: Glow
-		sprite:SetKeyValue("renderfx", 14)
-		sprite:SetKeyValue("model", model)
-		sprite:SetKeyValue("scale", scale)
-		sprite:SetKeyValue("spawnflags", 1)
-
-		-- Turn sprite on
-		sprite:Spawn()
-		self.Sprites[index] = sprite
-	end
-end
-
 function ENT:Initialize()
 	self:SetModel("models/lilly/uf/signals/trafficlight_standard3lens.mdl")
-	self.Sprites = {}
-	self.Sig = ""
-	self.FreeBS = 1
-	self.OldBSState = 1
-	self.OutputPZB = 1
-	self.EnableDelay = {}
-	self.PostInitalized = true
-
-	self.Controllers = nil
-	self.OccupiedOld = false
-	self.ControllerLogicCheckOccupied = false
-	self.ControllerLogicOverride325Hz = false
-	self.Override325Hz = false
 end
 
 function ENT:PreInitalize()
@@ -178,5 +131,4 @@ end
 
 function ENT:OnRemove()
 	UF.UpdateSignalEntities()
-	Metrostroi.PostSignalInitialize()
 end
