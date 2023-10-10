@@ -121,7 +121,7 @@ function ENT:PrintText(x, y, text, font)
 	local str = {utf8.codepoint(text, 1, -1)}
 	for i = 1, #str do
 		local char = utf8.char(str[i])
-		draw.SimpleText(char, font, (x + i) * 55, y * 15 + 50, Color(255, 136, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(char, font, (x + i) * 55, y * 15 + 50, Color(255, 166, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		
 	end
 end
@@ -129,28 +129,28 @@ end
 function ENT:Think()
 	local mode = self:GetNW2Int("Mode", 0)
 	self.Theme = self:GetNW2String("Theme","Frankfurt")
-	
+
 	self.Destination = self:GetNW2String("Train1Destination", "Testbahnhof")
 	if self.Theme == "Frankfurt" or self.Theme == "Essen" or self.Theme == "Duesseldorf" then
-		self.LineString = self:GetNW2String("Train1Line", "U4")
-		if string.sub(self.LineString,1,1) == 0 then
-			self.LineString = string.sub(self.LineString,2,2)
-			self.LineString = "U"..self.LineString
-			print(self.LineString)
+		if string.sub(self:GetNW2String("Train1Line", "U4"),1,1) == "0" then
+			self.LineString = "U" .. string.sub(self:GetNW2String("Train1Line", "U4"), 2,2)
+		elseif string.sub(self:GetNW2String("Train1Line", "U4"),1,1) ~= "0" then
+			self.LineString = "U" .. self:GetNW2String("Train1Line", "U4")
 		end
-	elseif self.Theme == "Koeln" or self."Hannover" then
-		if string.sub(self.LineString,1,1) == 0 then
-			self.LineString = string.sub(self.LineString,2,2)
-			
+	elseif self.Theme == "Koeln" or self.Theme == "Hannover" then
+		if string.sub(self:GetNW2String("Train1Line", "U4"),1,1) == "0" then
+			self.LineString = string.sub(self:GetNW2String("Train1Line", "U4"), 2,2)
+		elseif string.sub(self:GetNW2String("Train1Line", "U4"),1,1) ~= "0" then
+			self.LineString = self:GetNW2String("Train1Line", "U4")
 		end
 	end
 	if mode == 2 and self.AnnouncementPlayed == false then
 		self.AnnouncementPlayed = true
-		self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString.." ".."Richtung"..self.Destination, 1, 1, 1, 1, self:GetPos()-Vector(0,0,-10))
+		self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString.." ".."Richtung".." "..self.Destination..".mp3", 2, 1, 1, 1, self:GetPos())
 	elseif mode == 1 or mode == 0 then
 		self.AnnouncementPlayed = false
 	end
-	print(self.LineString)
+
 end
 
 function ENT:Draw()
@@ -188,7 +188,7 @@ function ENT:Draw()
 		-- surface.SetDrawColor(255, 255, 255, 255)
 		-- surface.DrawRect(0, 0, 256, 320)
 		
-		self:PrintText(-1.5, 0, self:GetNW2String("Train1Line", "E0"), "Lumino_Big")
+		self:PrintText(-1.5, 0, self.LineString, "Lumino_Big")
 		self:PrintText(1, 0, self:GetNW2String("Train1Destination", "ERROR"), "Lumino")
 		if #self:GetNW2String("Train1Time", "5") == 2 then
 			self:PrintText(25, 0, self:GetNW2String("Train1Time", "10"), "Lumino")
