@@ -2,8 +2,8 @@
 [
 	StationIndex(integer) : "Station index" : 100 : "Index of station (three-digit number: line number, station index)"
 	PlatformIndex(integer) : "Platform index" : 1 : "Index of platform (1: left, 2: right, 3: ...)"
-	PlatformStart(target_destination) : "Start of the platform (arrival side)"
-	PlatformEnd(target_destination) : "End of the platform (departure side)"
+	PlatformStart(target_destination) : "Start of the platform"
+	PlatformEnd(target_destination) : "End of the platform"
 	PopularityIndex(float) : "Station popularity index" : "1.0" : "Total number of people who use station per day, normalized to average number of people using stations per day"
 	PlatformLast(Choices) : "Is this platform last on line?" : "no" : "" =
 	[
