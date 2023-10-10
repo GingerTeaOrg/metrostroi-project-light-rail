@@ -7,6 +7,11 @@ function ENT:Initialize()
     self.Anims = {}
 end
 
+function ENT:Draw()
+    self:DrawModel()
+    self:SetPoseParameter("position",self:Animate("1",0,0,100,0.1,0,1))
+    self:InvalidateBoneCache()
+end
 
 function ENT:Animate(clientProp, value, min, max, speed, damping, stickyness)
     local id = clientProp
@@ -49,5 +54,6 @@ function ENT:Animate(clientProp, value, min, max, speed, damping, stickyness)
             self.Anims[id].stuck = true
         end
     end
+    
     return min + (max-min)*self.Anims[id].val
 end
