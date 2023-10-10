@@ -1,6 +1,6 @@
 @PointClass base(Targetname, Origin) = gmod_track_uf_platform : "Train Platform"
 [
-	StationIndex(integer) : "Station index" : 100 : "Index of station (three-digit number: line number, station index)"
+	StationIndex(integer) : "Station index" : 100 : "Index of station (three-digit number: IBIS table index number)"
 	PlatformIndex(integer) : "Platform index" : 1 : "Index of platform (1: left, 2: right, 3: ...)"
 	PlatformStart(target_destination) : "Start of the platform"
 	PlatformEnd(target_destination) : "End of the platform"
