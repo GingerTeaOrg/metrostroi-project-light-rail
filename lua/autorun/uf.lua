@@ -29,8 +29,9 @@ end
 timer.Create("RBLHousekeeping", 30, 0, function()
     for name in pairs(ents.GetAll()) do
         local prefix = "gmod_subway_uf_"
-        if string.sub(name,1,#prefix) == prefix and name ~= "gmod_subway_uf_u2_section_b" then --fixme: don't hardcode entity names!
-            print("Did housekeeping on entity", name)
+        local prefix2 = "gmod_subway_mplr_"
+        if string.sub(name,1,#prefix) == prefix and name ~= "gmod_subway_uf_u2_section_b" or string.sub(name,1,#prefix2) == prefix2 then --fixme: don't hardcode entity names!
+            print("MPLR RBL: Did housekeeping on entity", name)
             UF.IBISRegisteredTrains[name] = name.IBIS.Course
             
         end
@@ -56,7 +57,8 @@ end)
 
 hook.Add("OnEntityCreated","UFTrains",function(ent)
     local prefix = "gmod_subway_uf_"
-    if string.sub(ent:GetClass(), 1, #prefix) == prefix then
+    local prefix2 = "gmod_subway_mplr_"
+    if string.sub(ent:GetClass(), 1, #prefix) == prefix or string.sub(ent:GetClass(), 1, #prefix2) == prefix2 then
         UF.SpawnedTrains[ent] = true
     end
 end)
