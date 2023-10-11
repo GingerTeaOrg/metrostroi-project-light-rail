@@ -107,7 +107,7 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             for i, v in pairs(UF.IBISRegisteredTrains) do
                 if i == train then
                     UF.IBISRegisteredTrains[i] = nil
-                    print("RBL: Logging IBIS off")
+                    print("RBL: Logging IBIS off", train)
                 end
             end
             output = "logoff"
