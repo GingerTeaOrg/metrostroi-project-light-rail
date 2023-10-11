@@ -12,7 +12,8 @@ if not UF and Metrostroi then
     timer.Simple(0.05, function()
         for name in pairs(scripted_ents.GetList()) do
             local prefix = "gmod_subway_uf_"
-            if string.sub(name,1,#prefix) == prefix and scripted_ents.Get(name).Base == "gmod_subway_base" and not scripted_ents.Get(name).NoTrain then
+            local prefix2 = "gmod_subway_mplr_"
+            if string.sub(name,1,#prefix) == prefix and scripted_ents.Get(name).Base == "gmod_subway_base" and not scripted_ents.Get(name).NoTrain or string.sub(name,1,#prefix2) == prefix2 and scripted_ents.Get(name).Base == "gmod_subway_base" and not scripted_ents.Get(name).NoTrain then
                 table.insert(UF.TrainClasses,name)
                 UF.IsTrainClass[name] = true
             end
