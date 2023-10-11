@@ -46,7 +46,7 @@ hook.Add("EntityRemoved","UFTrains",function(ent)
     for i, v in pairs(UF.IBISRegisteredTrains) do
         if i == ent then
             UF.IBISRegisteredTrains[ent] = nil
-            print("Cleared entity at index: ", i)
+            print("MPLR RBL: Cleared entity at index: ", i)
         end
     end
     UF.SpawnedTrains[ent] = nil
