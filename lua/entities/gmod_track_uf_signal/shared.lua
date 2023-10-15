@@ -1,9 +1,9 @@
 ENT.Type			= "anim"
 ENT.PrintName		= "Signalling Element"
-ENT.Category		= "Metrostroi (utility)"
+ENT.Category		= "Metrostroi: Project Light Rail"
 
 ENT.Spawnable		= false
-ENT.AdminSpawnable	= false
+ENT.AdminSpawnable	= true
 
 ENT.TrafficLightModels = {}
 ENT.RenderOffset = {}
@@ -18,132 +18,8 @@ Metrostroi.LiterWarper = {
 	W = "o",Q = "z",
 }
 
--- Lamp indexes
--- 0 Red
--- 1 Yellow
--- 2 Green
--- 3 Blue
--- 4 Second yellow (flashing yellow)
--- 5 White
---[[
-Metrostroi.RoutePointer = {
-	[""] = {
-	false,false,false,false,false,
-	false,false,false,false,false,
-	false,false,false,false,false,
-	false,false,false,false,false,
-	false,false,false,false,false,
-	false,false,false,false,false,
-	false,false,false,false,false,
-	},
-	["1"] = {
-	false,false,true ,false,false,
-	false,true ,true ,false,false,
-	true ,false,true ,false,false,
-	false,false,true ,false,false,
-	false,false,true ,false,false,
-	false,false,true ,false,false,
-	true ,true ,true ,true ,true ,
-	},
-	["2"] = {
-	false,true ,true ,true ,false,
-	true ,false,false,false,true ,
-	false,false,false,false,true ,
-	false,false,false,true,false,
-	false,false,true ,false,false,
-	false,true ,false,false,false,
-	true ,true ,true ,true ,true ,
-	},
-	["3"] = {
-	false,true ,true ,true ,false,
-	true ,false,false,false,true ,
-	false,false,false,false,true ,
-	false,false,true ,true ,false,
-	false,false,false,false,true ,
-	true ,false,false,false,true ,
-	false,true ,true ,true ,false,
-	},
-	["4"] = {
-	false,false,false,true ,false,
-	false,false,true ,true ,false,
-	false,true ,false,true ,false,
-	true ,false,false,true ,false,
-	true ,true ,true ,true ,true ,
-	false,false,false,true ,false,
-	false,false,false,true ,false,
-	},
-	["5"] = {
-	true ,true ,true ,true ,true ,
-	true ,false,false,false,false,
-	true ,true ,true ,true ,false,
-	false,false,false,false,true ,
-	false,false,false,false,true ,
-	true ,false,false,false,true ,
-	false,true ,true ,true ,false,
-	},
-	["6"] = {
-	false,true ,true ,true ,false,
-	true ,false,false,false,true ,
-	true ,false,false,false,false,
-	true ,true ,true ,true ,false,
-	true ,false,false,false,true ,
-	true ,false,false,false,true ,
-	false,true ,true ,true ,false,
-	},
-	["7"] = {
-	true ,true ,true ,true ,true ,
-	false,false,false,false,true ,
-	false,false,false,true ,false,
-	false,false,true ,false,false,
-	false,true ,false,false,false,
-	false,true ,false,false,false,
-	false,true ,false,false,false,
-	},
-	["8"] = {
-	false,true ,true ,true ,false,
-	true ,false,false,false,true ,
-	true ,false,false,false,true ,
-	false,true ,true ,true ,false,
-	true ,false,false,false,true ,
-	true ,false,false,false,true ,
-	false,true ,true ,true ,false,
-	},
-	["9"] = {
-	false,true ,true ,true ,false,
-	true ,false,false,false,true ,
-	true ,false,false,false,true ,
-	false,true ,true ,true ,true ,
-	false,false,false,false,true ,
-	true ,false,false,false,true ,
-	false,true ,true ,true ,false,
-	},
-	["0"] = {
-	false,true ,true ,true ,false,
-	true ,false,false,false,true ,
-	true ,false,false,true ,true ,
-	true ,false,true ,false,true ,
-	true ,true ,false,false,true ,
-	true ,false,false,false,true ,
-	false,true ,true ,true ,false,
-	},
-	["D"] = {
-	false,true ,true ,true ,false,
-	false,true ,false,true ,false,
-	false,true ,false,true ,false,
-	false,true ,false,true ,false,
-	false,true ,false,true ,false,
-	true ,true ,true ,true ,true ,
-	true ,false,false,false,true ,
-	},
-}]]
-Metrostroi.RoutePointer = {
-	[""] = 0,
-	["0"] = 10,
-	["D"] = 11,
-}
-for i = 1,9 do
-	Metrostroi.RoutePointer[tostring(i)] = i
-end
+
+
 Metrostroi.Lenses = {
 	["R"] = Color(255,0,0),
 	["Y"] = Color(255,127,0),
