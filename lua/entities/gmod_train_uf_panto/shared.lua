@@ -4,7 +4,7 @@ ENT.Author          = "LillyWho"
 ENT.Contact         = ""
 ENT.Purpose         = ""
 ENT.Instructions    = ""
-ENT.Category        = "U-Bahn Frankfurt Metrostroi"
+ENT.Category        = "Metrostroi: Project Light Rail"
 ENT.Spawnable       = true
 ENT.AdminSpawnable  = false
 function ENT:SetBASSPos(snd,tbl)
