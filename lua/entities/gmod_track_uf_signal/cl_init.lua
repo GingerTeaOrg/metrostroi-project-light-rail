@@ -8,32 +8,7 @@ function ENT:Initialize()
     self.Signals = {}
     self.Anims = {}
 end
---------------------------
--- MAIN SPAWN FUNCTIONS --
---------------------------
-function ENT:SetLight(ID,ID2,pos,ang,skin,State,Change)
-    local IsStateAboveZero = State > 0
-    local IDID2 = ID..ID2
-    local IsModelValid = IsValid(self.Models[3][IDID2])
-    if IsModelValid then
-        if IsStateAboveZero then 
-            if Change then 
-                self.Models[3][IDID2]:SetColor(Color(255,255,255,State*255))
-            end
-        else
-            self.Models[3][IDID2]:Remove()
-        end
-    elseif IsStateAboveZero then
-        self.Models[3][IDID2] = ClientsideModel(self.TrafficLightModels[self.LightType].LampBase.model,RENDERGROUP_OPAQUE)
-        self.Models[3][IDID2]:SetPos(self:LocalToWorld(pos))
-        self.Models[3][IDID2]:SetAngles(self:LocalToWorldAngles(ang))
-        self.Models[3][IDID2]:SetSkin(skin)
-        self.Models[3][IDID2]:SetParent(self)
-        self.Models[3][IDID2]:SetRenderMode(RENDERMODE_TRANSCOLOR)
-        -- self.Models[3][IDID2]:SetColor(Color(255, 255, 255, 0))
-        self.Models[3][IDID2]:SetColor(Color(255,255,255,State*255))
-    end
-end
+
 
 function ENT:SpawnLetter(i,model,pos,letter,double)
     local LetMaterials = self.TrafficLightModels[self.LightType].LetMaterials.str
