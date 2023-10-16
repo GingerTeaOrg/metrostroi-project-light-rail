@@ -3,7 +3,7 @@ ENT.PrintName		= "Signalling Element"
 ENT.Category		= "Metrostroi: Project Light Rail"
 
 ENT.Spawnable		= false
-ENT.AdminSpawnable	= false
+ENT.AdminSpawnable	= true
 ENT.PhysgunDisabled = true
 ENT.TrafficLightModels = {}
 ENT.RenderOffset = {}
