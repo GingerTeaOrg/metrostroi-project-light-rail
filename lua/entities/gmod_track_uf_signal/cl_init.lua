@@ -11,65 +11,6 @@ end
 --------------------------
 -- MAIN SPAWN FUNCTIONS --
 --------------------------
-function ENT:SpawnMainModels(pos,ang,LenseNum,add)
-    local TLM = self.TrafficLightModels[self.LightType]
-    for k,v in pairs(TLM) do
-        if type(v) == "string" and not k:find("long") then
-            local idx = add and v..add or v
-            if IsValid(self.Models[1][idx]) then break else
-                local k_long = k.."_long"
-                if TLM[k_long] and LenseNum >= 7 then
-                    self.Models[1][idx] = ClientsideModel(TLM[k_long],RENDERGROUP_OPAQUE)
-                    self.LongOffset = Vector(0,0,TLM[k.."_long_pos"])
-                else
-                    self.Models[1][idx] = ClientsideModel(v,RENDERGROUP_OPAQUE)
-                end
-                self.Models[1][idx]:SetPos(self:LocalToWorld(pos))
-                self.Models[1][idx]:SetAngles(self:LocalToWorldAngles(ang))
-                self.Models[1][idx]:SetParent(self)
-            end
-        end
-    end
-end
-
-function ENT:SpawnHeads(ID,model,pos,ang,glass,notM,add)
-    if not IsValid(self.Models[1][ID]) then
-        self.Models[1][ID] = ClientsideModel(model,RENDERGROUP_OPAQUE)
-        self.Models[1][ID]:SetPos(self:LocalToWorld(pos))
-        self.Models[1][ID]:SetAngles(self:LocalToWorldAngles(ang))
-        self.Models[1][ID]:SetParent(self)
-    end
-    if self.RN and self.RN == self.RouteNumbers.sep then
-        self.RN = self.RN + 1
-    end
-    local id = self.RN
-    local rouid = id and "rou"..id
-    if rouid and not IsValid(self.Models[1][rouid]) then
-        local rnadd = ((self.RouteNumbers[id] and self.RouteNumbers[id][1] ~= "X") and (self.RouteNumbers[id][3] and not self.RouteNumbers[id][2] and "2" or "") or "5")
-        local LampIndicator = self.TrafficLightModels[self.LightType].LampIndicator
-        self.Models[1][rouid] = ClientsideModel(LampIndicator.model..rnadd..".mdl",RENDERGROUP_OPAQUE)
-        self.Models[1][rouid]:SetPos(self:LocalToWorld(pos-self.RouteNumberOffset*(self.Left and LampIndicator[1] or LampIndicator[2])))
-        self.Models[1][rouid]:SetAngles(self:GetAngles())
-        self.Models[1][rouid]:SetParent(self)
-        if self.RouteNumbers[id] then self.RouteNumbers[id].pos = pos-self.RouteNumberOffset*(self.Left and LampIndicator[1] or LampIndicator[2]) end
-        self.RN = self.RN + 1
-    end
-    if notM then
-        if glass then
-            local ID_glass = tostring(ID).."_glass"
-            for i,tbl in pairs(glass) do
-                local ID_glassi = ID_glass..i
-                if not IsValid(self.Models[1][ID_glassi]) then  --NEWLENSES
-                    self.Models[1][ID_glassi] = ClientsideModel(tbl[1],RENDERGROUP_OPAQUE)
-                    self.Models[1][ID_glassi]:SetPos(self:LocalToWorld(pos+tbl[2]*(add and Vector(-1,1,1) or 1)))
-                    self.Models[1][ID_glassi]:SetAngles(self:LocalToWorldAngles(ang))
-                    self.Models[1][ID_glassi]:SetParent(self)
-                end
-            end
-        end
-    end
-end
-
 function ENT:SetLight(ID,ID2,pos,ang,skin,State,Change)
     local IsStateAboveZero = State > 0
     local IDID2 = ID..ID2
@@ -173,14 +114,14 @@ function ENT:Think()
     end
 
     if not self.Name then
-        if self.sended and (CurTime - self.sended) > 0 then
-            self.sended = nil
+        if self.Sent and (CurTime - self.Sent) > 0 then
+            self.Sent = nil
         end
-        if not self.sended then
+        if not self.Sent then
             net.Start("metrostroi-signal")
                 net.WriteEntity(self)
             net.SendToServer()
-            self.sended = CurTime + 1.5
+            self.Sent = CurTime + 1.5
         end
         return true
     end
@@ -536,10 +477,9 @@ local ars = {
 
 local cols = {
     R = Color(200,0,0),
-    Y = Color(200,200,0),
-    G = Color(0,200,0),
+    O = Color(204,116,0),
+    G = Color(27,133,0),
     W = Color(200,200,200),
-    B = Color(0,0,200),
 }
 local function enableDebug()
     if debug:GetBool() then
@@ -663,5 +603,3 @@ end
 hook.Remove("PreDrawEffects","MetrostroiSignalDebug")
 cvars.AddChangeCallback( "metrostroi_drawsignaldebug", enableDebug)
 enableDebug()
-
-Metrostroi.OptimisationPatch()
