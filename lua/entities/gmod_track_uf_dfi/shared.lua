@@ -29,9 +29,9 @@ function ENT:PlayOnceFromPos(sndname, volume, pitch, min, max, location)
 	if self.StopSounds then return end
 	self:DestroySound(sndname, true)
 	if sndname == "_STOP" then return end
-	self:CreateBASSSound(sndname, function(snd)
+	self:CreateBASSSound(sndname, function(sndname)
 		self:SetBassParameters(sndname, pitch, volume, location, false)
-		snd:Play()
+		sndname:Play()
 	end)
 end
 function ENT:CreateBASSSound(name, callback, noblock, onerr)
@@ -54,9 +54,6 @@ function ENT:CreateBASSSound(name, callback, noblock, onerr)
 				self:CreateBASSSound(name, callback)
 			end
 			return
-		elseif not self.Sounds then
-			self:DestroySound(snd)
-			if onerr then callback(false) end
 		else
 			callback(snd)
 		end
@@ -64,7 +61,7 @@ function ENT:CreateBASSSound(name, callback, noblock, onerr)
 end
 function ENT:SetBASSPos(snd,tbl)
 	if tbl then
-		snd:SetPos(self:LocalToWorld(tbl[3]),self:GetAngles():Forward())
+		snd:SetPos(tbl,self:GetAngles():Forward())
 	else
 		snd:SetPos(self:GetPos())
 	end
@@ -88,9 +85,9 @@ function ENT:SetBassParameters(snd,pitch,volume,tbl,looping,spec)
 	end
 	snd:EnableLooping(looping or false)
 	snd:SetPlaybackRate(pitch)
-	local siz1,siz2 = snd:Get3DFadeDistance()--[[]
+	local siz1,siz2 = snd:Get3DFadeDistance()
 	debugoverlay.Sphere(snd:GetPos(),4,2,Color(0,255,0),true)
-	debugoverlay.Sphere(snd:GetPos(),siz1,2,Color(255,0,0,100),false)]]
+	debugoverlay.Sphere(snd:GetPos(),siz1,2,Color(255,0,0,100),false)
 	--debugoverlay.Sphere(snd:GetPos(),siz2,2,Color(0,0,255,100),false)
 end
 
