@@ -27,7 +27,7 @@ physenv.AddSurfaceData([[
 {
 	"friction"	"0.01"
 	"elasticity"	"0.01"
-	"audioroughnessfactor" "0.1"
+	"audioroughnessfactor" "0.01"
 	"gamematerial"	"X"
 }
 ]])

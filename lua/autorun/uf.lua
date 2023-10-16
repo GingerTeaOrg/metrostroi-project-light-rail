@@ -12,7 +12,8 @@ if not UF and Metrostroi then
     timer.Simple(0.05, function()
         for name in pairs(scripted_ents.GetList()) do
             local prefix = "gmod_subway_uf_"
-            if string.sub(name,1,#prefix) == prefix and scripted_ents.Get(name).Base == "gmod_subway_base" and not scripted_ents.Get(name).NoTrain then
+            local prefix2 = "gmod_subway_mplr_"
+            if string.sub(name,1,#prefix) == prefix and scripted_ents.Get(name).Base == "gmod_subway_base" and not scripted_ents.Get(name).NoTrain or string.sub(name,1,#prefix2) == prefix2 and scripted_ents.Get(name).Base == "gmod_subway_base" and not scripted_ents.Get(name).NoTrain then
                 table.insert(UF.TrainClasses,name)
                 UF.IsTrainClass[name] = true
             end
@@ -28,8 +29,9 @@ end
 timer.Create("RBLHousekeeping", 30, 0, function()
     for name in pairs(ents.GetAll()) do
         local prefix = "gmod_subway_uf_"
-        if string.sub(name,1,#prefix) == prefix and name ~= "gmod_subway_uf_u2_section_b" then --fixme: don't hardcode entity names!
-            print("Did housekeeping on entity", name)
+        local prefix2 = "gmod_subway_mplr_"
+        if string.sub(name,1,#prefix) == prefix and name ~= "gmod_subway_uf_u2_section_b" or string.sub(name,1,#prefix2) == prefix2 then --fixme: don't hardcode entity names!
+            print("MPLR RBL: Did housekeeping on entity", name)
             UF.IBISRegisteredTrains[name] = name.IBIS.Course
             
         end
@@ -46,7 +48,7 @@ hook.Add("EntityRemoved","UFTrains",function(ent)
     for i, v in pairs(UF.IBISRegisteredTrains) do
         if i == ent then
             UF.IBISRegisteredTrains[ent] = nil
-            print("Cleared entity at index: ", i)
+            print("MPLR RBL: Cleared entity at index: ", i)
         end
     end
     UF.SpawnedTrains[ent] = nil
@@ -55,7 +57,8 @@ end)
 
 hook.Add("OnEntityCreated","UFTrains",function(ent)
     local prefix = "gmod_subway_uf_"
-    if string.sub(ent:GetClass(), 1, #prefix) == prefix then
+    local prefix2 = "gmod_subway_mplr_"
+    if string.sub(ent:GetClass(), 1, #prefix) == prefix or string.sub(ent:GetClass(), 1, #prefix2) == prefix2 then
         UF.SpawnedTrains[ent] = true
     end
 end)
@@ -107,7 +110,7 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
             for i, v in pairs(UF.IBISRegisteredTrains) do
                 if i == train then
                     UF.IBISRegisteredTrains[i] = nil
-                    print("RBL: Logging IBIS off")
+                    print("RBL: Logging IBIS off", train)
                 end
             end
             output = "logoff"

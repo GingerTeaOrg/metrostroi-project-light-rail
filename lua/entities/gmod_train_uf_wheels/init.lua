@@ -15,7 +15,7 @@ function ENT:Initialize()
 	self.Meters = 0
 	self.Angle = 0
 end
---[[
+
 function ENT:Think(dT)
 	-- Update timing
 	self.PrevTime = self.PrevTime or CurTime()
@@ -23,12 +23,12 @@ function ENT:Think(dT)
 	self.PrevTime = CurTime()
 	local Bogey = self:GetNW2Entity("TrainBogey")
 	
-	--if not IsValid(Bogey) then return end
-	--self.Meters = self.Meters + self.dT * Bogey.Speed * Bogey.SpeedSign
+	if not IsValid(Bogey) then return end
+	self.Meters = self.Meters + self.dT * Bogey.Speed * Bogey.SpeedSign
 	
 	
 end
---]]
+
 function ENT:PhysicsCollide(data,physobj)
 	-- Generate junction sounds
 	if data.HitEntity and data.HitEntity:IsValid() and data.HitEntity:GetClass() == "prop_door_rotating" then

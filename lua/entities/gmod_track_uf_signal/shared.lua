@@ -1,6 +1,6 @@
 ENT.Type			= "anim"
 ENT.PrintName		= "Signalling Element"
-ENT.Category		= "Metrostroi (utility)"
+ENT.Category		= "Metrostroi: Project Light Rail"
 
 ENT.Spawnable		= false
 ENT.AdminSpawnable	= false

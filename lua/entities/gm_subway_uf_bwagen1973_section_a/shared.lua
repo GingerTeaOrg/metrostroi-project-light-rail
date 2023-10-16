@@ -80,40 +80,24 @@ function ENT:InitializeSystems()
 	self:LoadSystem("IBIS")
 	self:LoadSystem("Announcer", "uf_announcer")
 	self:LoadSystem("Duewag_Battery")
-	self:LoadSystem("Panel", "U2_panel")
+	self:LoadSystem("Panel", "1973_panel")
 
 	-- self:LoadSystem("duewag_electric")
 end
 
-ENT.SubwayTrain = {Type = "B", Name = "B-Wagen Series 1970", WagType = 0, Manufacturer = "Duewag"}
+ENT.SubwayTrain = {Type = "B", Name = "B-Wagen Series 1973", WagType = 0, Manufacturer = "Duewag"}
 
 ENT.AnnouncerPositions = {{Vector(293, 44, 102)}, {Vector(293, -44, 102)}}
-function ENT:DeltaTime()
-	ENT.PrevTime = ENT.PrevTime or RealTime()
-	ENT.DeltaTime = (RealTime() - ENT.PrevTime)
-	ENT.PrevTime = RealTime()
-	return ENT.DeltaTime
-end
+
 
 ENT.NumberRanges = {{5001, 5011}{5012, 5016},{5031, 5032},{5012, 5016},{5141, 5145}}
 
 ENT.Spawner = {
 	model = {"models/lilly/mplr/ruhrbahn/b_1970/section-a.mdl"},
-	head = "gm_subway_uf_bwagen1970_section_a",
-	interim = "gm_subway_uf_bwagen1970_section_a",
+	head = "gm_subway_uf_bwagen1973_section_a",
+	interim = "gm_subway_uf_bwagen1973_section_a",
 	Metrostroi.Skins.GetTable("Texture", "Spawner.Texture", false, "train"),
 	Metrostroi.Skins.GetTable("Texture", "Spawner.Texture", false, "cab"),
-
-	--[[spawnfunc = function(i,tbls,tblt)
-        local WagNum = tbls.WagNum
-        if WagNum > 1 then
-			WagNum = 1
-			return WagNum
-			return "gmod_subway_uf_u2_section_a"
-		else
-			return "gmod_subway_uf_u2_section_a"
-		end
-    end,]]
 
 	{
 		"IBISData",
