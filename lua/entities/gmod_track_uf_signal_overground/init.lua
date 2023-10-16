@@ -5,7 +5,8 @@ util.AddNetworkString "uf-signal"
 util.AddNetworkString "uf-signal-state"
 
 function ENT:Initialize()
-	self:SetModel("models/lilly/uf/signals/trafficlight_standard3lens.mdl")
+	self.Types = { ["Overground"] = "lilly/uf/signals/signal-bostrab-overground.mdl", ["Underground_Pole"] = "lilly/uf/signals/signal-bostrab-underground-pole.mdl", ["Underground_Wallmount"] = "lilly/uf/signals/signal-bostrab-underground-wallmount.mdl" }
+	self:SetModel("lilly/uf/signals/signal-bostrab-overground.mdl")
 end
 
 function ENT:PreInitalize()
@@ -27,12 +28,12 @@ function ENT:PreInitalize()
 		elseif v.NextSignal == "*" then
 		else
 			if not v.NextSignal then
-				ErrorNoHalt(Format("UF: No next signal name in signal %s! Check it now!\n", self.Name))
+				ErrorNoHalt(Format("MPLR: No next signal name in signal %s! Check it now!\n", self.Name))
 				self.AutostopOverride = true
 			else
 				self.NextSignals[v.NextSignal] = Metrostroi.GetSignalByName(v.NextSignal)
 				if not self.NextSignals[v.NextSignal] then
-					print(Format("UF: Signal %s, signal not found(%s)", self.Name, v.NextSignal))
+					print(Format("MPLR: Signal %s, signal not found(%s)", self.Name, v.NextSignal))
 					self.AutostopOverride = true
 				end
 			end
@@ -50,7 +51,7 @@ function ENT:PostInitalize()
 			local sig
 			local cursig = self
 			while true do
-				cursig = Metrostroi.GetPZBJoint(cursig.TrackPosition.node1,cursig.TrackPosition.x,cursig.TrackDir,false)
+				cursig = Metrostroi.GetARSJoint(cursig.TrackPosition.node1,cursig.TrackPosition.x,cursig.TrackDir,false)
 				if not IsValid(cursig) then break end
 				sig = cursig
 				if not cursig.PassOcc then break end
@@ -59,7 +60,7 @@ function ENT:PostInitalize()
 				self.NextSignals["*"] = sig
 			else
 				self.AutostopOverride = true
-				print(Format("UF: Signal %s, cant automaticly find signal", self.Name))
+				print(Format("MPLR: Signal %s, cant automaticly find signal", self.Name))
 			end
 		end
 	end
@@ -119,11 +120,6 @@ function ENT:PostInitalize()
 		end
 	else
 		self.GoodInvationSignal = -1
-	end
-	if self.Left then
-		self:SetModel(self.TrafficLightModels[self.SignalType or 0].PZBBoxMittor.model)
-	else
-		self:SetModel(self.TrafficLightModels[self.SignalType or 0].PZBBox.model)
 	end
 	self.PostInitalized = false
 
