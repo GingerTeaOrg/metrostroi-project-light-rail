@@ -85,6 +85,8 @@ function ENT:GetSignal()
 end
 
 function ENT:Think()
+
+	if not self.TrackSwitches then return end
 	-- Reset
 	self.InhibitSwitching = false
 	self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos())[1]
