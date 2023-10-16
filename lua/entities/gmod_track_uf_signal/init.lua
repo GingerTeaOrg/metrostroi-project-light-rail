@@ -280,6 +280,7 @@ function ENT:CheckOccupation()
 	end]]
 	if self.Node and  self.TrackPosition then
 		self.Occupied,self.OccupiedBy,self.OccupiedByNow = Metrostroi.IsTrackOccupied(self.Node, self.TrackPosition.x,self.TrackPosition.forward,self.ARSOnly and "ars" or "light", self)
+	end
 
 end
 function ENT:ARSLogic(tim)
