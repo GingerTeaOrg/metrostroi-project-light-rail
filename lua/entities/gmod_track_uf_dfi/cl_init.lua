@@ -137,17 +137,50 @@ function ENT:Think()
 		elseif string.sub(self:GetNW2String("Train1Line", "U4"),1,1) ~= "0" then
 			self.LineString1 = "U" .. self:GetNW2String("Train1Line", "U4")
 		end
+
+		if string.sub(self:GetNW2String("Train2Line", "U4"),1,1) == "0" then
+			self.LineString2 = "U" .. string.sub(self:GetNW2String("Train2Line", "U4"), 2,2)
+		elseif string.sub(self:GetNW2String("Train2Line", "U4"),1,1) ~= "0" then
+			self.LineString2 = "U" .. self:GetNW2String("Train2Line", "U4")
+		end
+
+		if string.sub(self:GetNW2String("Train3Line", "U4"),1,1) == "0" then
+			self.LineString3 = "U" .. string.sub(self:GetNW2String("Train3Line", "U4"), 2,2)
+		elseif string.sub(self:GetNW2String("Train3Line", "U4"),1,1) ~= "0" then
+			self.LineString3 = "U" .. self:GetNW2String("Train3Line", "U4")
+		end
+
+		if string.sub(self:GetNW2String("Train4Line", "U4"),1,1) == "0" then
+			self.LineString4 = "U" .. string.sub(self:GetNW2String("Train4Line", "U4"), 2,2)
+		elseif string.sub(self:GetNW2String("Train4Line", "U4"),1,1) ~= "0" then
+			self.LineString4 = "U" .. self:GetNW2String("Train4Line", "U4")
+		end
 	elseif self.Theme == "Koeln" or self.Theme == "Hannover" then
 		if string.sub(self:GetNW2String("Train1Line", "E0"),1,1) == "0" then
 			self.LineString1 = string.sub(self:GetNW2String("Train1Line", "E0"), 2,2)
 		elseif string.sub(self:GetNW2String("Train1Line", "E0"),1,1) ~= "0" then
 			self.LineString1 = self:GetNW2String("Train1Line", "E0")
 		end
+		if string.sub(self:GetNW2String("Train2Line", "E0"),1,1) == "0" then
+			self.LineString2 = string.sub(self:GetNW2String("Train2Line", "E0"), 2,2)
+		elseif string.sub(self:GetNW2String("Train2Line", "E0"),1,1) ~= "0" then
+			self.LineString2 = self:GetNW2String("Train2Line", "E0")
+		end
+		if string.sub(self:GetNW2String("Train3Line", "E0"),1,1) == "0" then
+			self.LineString3 = string.sub(self:GetNW2String("Train3Line", "E0"), 2,2)
+		elseif string.sub(self:GetNW2String("Train3Line", "E0"),1,1) ~= "0" then
+			self.LineString3 = self:GetNW2String("Train3Line", "E0")
+		end
+		if string.sub(self:GetNW2String("Train4Line", "E0"),1,1) == "0" then
+			self.LineString4 = string.sub(self:GetNW2String("Train4Line", "E0"), 2,2)
+		elseif string.sub(self:GetNW2String("Train4Line", "E0"),1,1) ~= "0" then
+			self.LineString4 = self:GetNW2String("Train4Line", "E0")
+		end
 	end
 	if mode == 2 and self.AnnouncementPlayed == false then
 		self.AnnouncementPlayed = true
 		if self.Theme == "Frankfurt" then
-			if self.Destination1 ~= "Leerfahrt" and self.Destination1 ~= "PROBEWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= "FAHRSCHULE NICHT EINSTEIGEN" and self.Destination1 ~= "SONDERWAGEN NICHT EINSTEIGEN" then
+			if self.Destination1 ~= "Leerfahrt" and self.Destination1 ~= "PROBEWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= "FAHRSCHULE NICHT EINSTEIGEN" and self.Destination1 ~= "SONDERWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= " " then
 				self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString1.." ".."Richtung".." "..self.Destination..".mp3", 2, 1, 1, 1, self:GetPos())
 			else
 				self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/Bitte Nicht Einsteigen.mp3", 2, 1, 1, 1, self:GetPos())
