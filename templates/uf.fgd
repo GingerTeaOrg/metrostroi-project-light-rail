@@ -37,7 +37,7 @@
 ]
 @PointClass base(Targetname, Origin ) studioprop("models/lilly/uf/signage/point_contact.mdl") = gmod_track_uf_switch : "Trackside Switch"
 [
-	DefaultPosition(Choices) : "Default Position" : "Set switch to main/alt by default" : "main" : "" =
+	DefaultPosition(Choices) : "Default Position" : "Set switch to main/alt by default" : "main" =
 	[
 		"main" : "Main"
 		"alt" : "Alt"
