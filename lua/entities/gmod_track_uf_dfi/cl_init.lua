@@ -110,7 +110,7 @@ end
 function ENT:Initialize() 
 	self.DFI = self:CreateRT("DFI", 10000, 10000)
 	
-	self.LineString = " "
+
 
 	self.AnnouncementPlayed = false
 	
@@ -190,6 +190,16 @@ function ENT:Think()
 		self.AnnouncementPlayed = false
 	end
 
+
+	self.Train1Time = self:GetNW2String("Train1Time", "E")
+	self.Train2Time = self:GetNW2String("Train2Time", "E")
+	self.Train3Time = self:GetNW2String("Train3Time", "E")
+	self.Train4Time = self:GetNW2String("Train4Time", "E")
+
+	self.Train1Destination = self:GetNW2String("Train1Destination", "ERROR")
+	self.Train2Destination = self:GetNW2String("Train2Destination", "ERROR")
+	self.Train3Destination = self:GetNW2String("Train3Destination", "ERROR")
+	self.Train4Destination = self:GetNW2String("Train4Destination", "ERROR")
 end
 
 function ENT:Draw()
@@ -225,36 +235,37 @@ function ENT:Draw()
 		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
 		cam.Start3D2D(pos, ang, 0.03)
 
-		
+		---------------------------------------------------------------------------------
 		self:PrintText(-1.5, 0, self.LineString1, "Lumino_Big")
-		self:PrintText(1, 0, self:GetNW2String("Train1Destination", "ERROR"), "Lumino")
-		if #self:GetNW2String("Train1Time", "5") == 2 then
+		self:PrintText(1, 0, self.Train1Destination, "Lumino")
+		if #self.Train1Time == 2 then
 			self:PrintText(25, 0, self:GetNW2String("Train1Time", "10"), "Lumino")
-		elseif #self:GetNW2String("Train1Time", "5") == 1 then
+		elseif #self.Train1Time == 1 then
 			self:PrintText(26, 0, self:GetNW2String("Train1Time", "5"), "Lumino")
 		end
-		self:PrintText(-1.5, 6, self:GetNW2String("Train2Line", "E0"), "Lumino_Big")
-		self:PrintText(1, 6, self:GetNW2String("Train2Destination", "ERROR"), "Lumino")
-		if #self:GetNW2String("Train2Time", "5") == 2 then
-			self:PrintText(25, 6, self:GetNW2String("Train2Time", " "), "Lumino")
-		elseif #self:GetNW2String("Train2Time", " ") == 1 then
-			self:PrintText(26, 6, self:GetNW2String("Train2Time", " "), "Lumino")
+		---------------------------------------------------------------------
+		self:PrintText(-1.5, 6, self.LineString2, "Lumino_Big")
+		self:PrintText(1, 6, self.Train2Destination, "Lumino")
+		if #self.Train2Time == 2 then
+			self:PrintText(25, 6, self.Train2Time, "Lumino")
+		elseif #self.Train2Time == 1 then
+			self:PrintText(26, 6, self.Train2Time, "Lumino")
 		end
-		
-		self:PrintText(-1.5, 12, self:GetNW2String("Train3Line", "E0"), "Lumino_Big")
-		self:PrintText(1, 12, self:GetNW2String("Train3Destination", "ERROR"), "Lumino")
-		if #self:GetNW2String("Train3Time", "5") == 2 then
-			self:PrintText(25, 12, self:GetNW2String("Train3Time", "10"), "Lumino")
-		elseif #self:GetNW2String("Train3Time", "5") == 1 then
-			self:PrintText(26, 12, self:GetNW2String("Train3Time", "5"), "Lumino")
+		----------------------------------------------------------------------
+		self:PrintText(-1.5, 12, self.Train3Line, "Lumino_Big")
+		self:PrintText(1, 12, self.Train3Destination, "Lumino")
+		if #self.Train3Time == 2 then
+			self:PrintText(25, 12, self.Train3Time, "Lumino")
+		elseif #self.Train3Time == 1 then
+			self:PrintText(26, 12, self.Train3Time, "Lumino")
 		end
-		
-		self:PrintText(-1.5, 18, self:GetNW2String("Train4Line", "E0"), "Lumino_Big")
-		self:PrintText(1, 18, self:GetNW2String("Train4Destination", "ERROR"), "Lumino")
-		if #self:GetNW2String("Train4Time", "5") == 2 then
-			self:PrintText(25, 18, self:GetNW2String("Train4Time", "10"), "Lumino")
-		elseif #self:GetNW2String("Train4Time", "5") == 1 then
-			self:PrintText(26, 18, self:GetNW2String("Train4Time", "5"), "Lumino")
+		-------------------------------------------------------------------------------
+		self:PrintText(-1.5, 18, self.Train4Line, "Lumino_Big")
+		self:PrintText(1, 18, self.Train4Destination, "Lumino")
+		if #self.Train4Time == 2 then
+			self:PrintText(25, 18, self.Train4Time, "Lumino")
+		elseif #self.Train4Time == 1 then
+			self:PrintText(26, 18, self.Train4Time, "Lumino")
 		end
 		cam.End3D2D()
 		
