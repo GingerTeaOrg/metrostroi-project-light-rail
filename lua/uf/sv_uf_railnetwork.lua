@@ -138,3 +138,110 @@ function UF.UpdateSignalNames()
     end
 end
 hook.Add("Metrostroi.UpdateSignalNames","UFInjectSignalNames",UF.UpdateSignalNames)
+
+function UF.Save(name)
+    if not file.Exists("metrostroi_data","DATA") then
+        file.CreateDir("metrostroi_data")
+    end
+    name = name or game.GetMap()
+
+    -- Format signs, signal, switch data
+    local signs = {}
+    local signals_ents = ents.FindByClass("gmod_track_uf_signal*")
+    if not signals_ents then print("MPLR: Signs file is corrupted!") end
+    for k,v in pairs(signals_ents) do
+        if not Metrostroi.ARSSubSections[v] then
+            local Routes = table.Copy(v.Routes)
+            for k,v in pairs(Routes) do
+                v.LightsExploded = nil
+                v.IsOpened = nil
+            end
+            table.insert(signs,{
+                Class = "gmod_track_uf_signal",
+                Pos = v:GetPos(),
+                Angles = v:GetAngles(),
+                SignalType = v.SignalType,
+                Name = v.Name,
+                RouteNumberSetup = v.RouteNumberSetup,
+                LensesStr = v.LensesStr,
+                RouteNumber =   v.RouteNumber,
+                IsolateSwitches = v.IsolateSwitches,
+                ARSOnly = v.ARSOnly,
+                Routes = Routes,
+                Approve0 = v.Approve0,
+                TwoToSix = v.TwoToSix,
+                NonAutoStop = v.NonAutoStop,
+                Left = v.Left,
+                Double = v.Double,
+                DoubleL = v.DoubleL,
+                AutoStop = v.AutoStop,
+                PassOcc = v.PassOcc,
+            })
+        end
+    end
+    local switch_ents = ents.FindByClass("gmod_track_uf_switch")
+    for k,v in pairs(switch_ents) do
+        table.insert(signs,{
+            Class = "gmod_track_switch",
+            Pos = v:GetPos(),
+            Angles = v:GetAngles(),
+            Name = v.Name,
+            Channel = v:GetChannel(),
+            NotChangePos = v.NotChangePos,
+            LockedSignal = v.LockedSignal,
+            Invertred = v.Invertred,
+        })
+    end
+    --[[local signs_ents = ents.FindByClass("gmod_track_signs")
+    for k,v in pairs(signs_ents) do
+        table.insert(signs,{
+            Class = "gmod_track_signs",
+            Pos = v:GetPos(),
+            Angles = v:GetAngles(),
+            SignType = v.SignType,
+            YOffset = v.YOffset,
+            ZOffset = v.ZOffset,
+            Left = v.Left,
+        })
+    end]]
+    signs.Version = Metrostroi.SignalVersion
+    -- Save data
+    print("MPLR: Saving signs and track definition...")
+    local data = util.TableToJSON(signs,true)
+    file.Write(string.format("metrostroi_data/signs_%s.txt",name),data)
+    print(Format("Saved to metrostroi_data/signs_%s.txt",name))
+
+    --[[local auto = {}
+    local auto_ents = ents.FindByClass("gmod_track_autodrive_plate")
+    for k,v in pairs(auto_ents) do
+        if not v.Linked then
+            table.insert(auto,{
+                Pos = v:GetPos(),
+                Angles = v:GetAngles(),
+                Type = v.PlateType,
+                Right = v.Right,
+                Mode = v.Mode,
+                Model = v.Model,
+                StationID = v.StationID,
+                StationPath = v.StationPath,
+
+                --UPPS
+                UPPS = v.UPPS,
+                DistanceToOPV = v.DistanceToOPV,
+
+                SBPPType = v.SBPPType,
+                IsDeadlock = v.IsDeadlock,
+                DriveMode = v.DriveMode,
+                RightDoors = v.RightDoors,
+                WTime = v.WTime,
+                RKPos = v.RKPos,
+            })
+        end
+    end
+    print("MPLR: Saving auto definition...")
+    local adata = util.TableToJSON(auto,true)
+    file.Write(string.format("metrostroi_data/auto_%s.txt",name),adata)
+    print(Format("MPLR: Saved to metrostroi_data/auto_%s.txt",name))]]
+end
+
+hook.Add("Metrostroi.Save","UFInjectSignals",UF.Save)
