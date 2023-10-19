@@ -1,58 +1,27 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-util.AddNetworkString "metrostroi-signal"
-util.AddNetworkString "metrostroi-signal-state"
+util.AddNetworkString "mplr-signal"
+util.AddNetworkString "mplr-signal-state"
 
 function ENT:Initialize()
-	self:SetModel(self.TrafficLightModels[self.SignalType or 0].ArsBox.model)
+	self.SignalTypes = {["Overground_Large"] = "lilly/uf/signals/signal-bostrab-overground.mdl", ["Underground_Small_Pole"] = "models/lilly/uf/signals/Underground_Small_Pole.mdl", }
+	self.SignalType = self.SignalTypes[self:GetInternalVariable("Type") or "Underground_Small_Pole"]
+	
 	self.Sprites = {}
-	self.Sig = ""
-	self.FreeBS = 1
-	self.OldBSState = 1
-	self.OutputARS = 1
-	self.EnableDelay = {}
-	self.PostInitalized = true
+	self:SetModel("models/lilly/uf/signals/Underground_Small_Pole.mdl" or self.SignalType)
+	self.Name1 = "Tbf"
+	self.Name2 = "B2"
+	self.Name = self.Name1.."/"..self.Name2
+	self:SetPos(self:GetPos() - Vector(0,0,15))
+	self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos(),self:GetAngles())[1]
 
-	self.Controllers = nil
-	self.OccupiedOld = false
-	self.ControllerLogicCheckOccupied = false
-	self.ControllerLogicOverride325Hz = false
-	self.Override325Hz = false
+	self.Aspect = "H0"
+	self.SpeedLimit = 0
+
+	self.Left = false
 end
-function ENT:SetSprite(index,active,model,scale,brightness,pos,color)
-	if active and self.Sprites[index] then return end
-	if not active and not self.Sprites[index] then return end
-	if not active and self.Sprites[index] then
-		SafeRemoveEntity(self.Sprites[index])
-		self.Sprites[index] = nil
-	end
 
-	if active then
-		local sprite = ents.Create("env_sprite")
-		sprite:SetParent(self)
-		sprite:SetLocalPos(pos)
-		sprite:SetLocalAngles(self:GetAngles())
-
-		-- Set parameters
-		sprite:SetKeyValue("rendercolor",
-			Format("%i %i %i",
-				color.r*brightness,
-				color.g*brightness,
-				color.b*brightness
-			)
-		)
-		sprite:SetKeyValue("rendermode", 9) -- 9: WGlow, 3: Glow
-		sprite:SetKeyValue("renderfx", 14)
-		sprite:SetKeyValue("model", model)
-		sprite:SetKeyValue("scale", scale)
-		sprite:SetKeyValue("spawnflags", 1)
-
-		-- Turn sprite on
-		sprite:Spawn()
-		self.Sprites[index] = sprite
-	end
-end
 function ENT:OpenRoute(route)
 	self.LastOpenedRoute = route
 	if self.Routes[route].Manual then self.Routes[route].IsOpened = true end
@@ -98,16 +67,8 @@ end
 
 
 function ENT:PreInitalize()
-	self.AutostopOverride = nil
-	if not self.Routes or self.Routes[1].NextSignal == "" then
-		self.AutostopOverride = true
-	end
-	if self.Sprites then
-		for k,v in pairs(self.Sprites) do
-			SafeRemoveEntity(v)
-			self.Sprites[k] = nil
-		end
-	end
+
+
 	self.NextSignals = {}
 	--self.Switches = {}
 	for k,v in ipairs(self.Routes) do
@@ -117,19 +78,13 @@ function ENT:PreInitalize()
 		else
 			if not v.NextSignal then
 				ErrorNoHalt(Format("MPLR: No next signal name in signal %s! Check it now!\n", self.Name))
-				self.AutostopOverride = true
 			else
 				self.NextSignals[v.NextSignal] = Metrostroi.GetSignalByName(v.NextSignal)
 				if not self.NextSignals[v.NextSignal] then
 					print(Format("MPLR: Signal %s, signal not found(%s)", self.Name, v.NextSignal))
-					self.AutostopOverride = true
 				end
 			end
 		end
-	end
-	self.MU = false
-	for k,v in ipairs(self.Lenses) do
-		if v:find("M") then self.MU = true break end
 	end
 end
 function ENT:PostInitalize()
@@ -148,7 +103,7 @@ function ENT:PostInitalize()
 				self.NextSignals["*"] = sig
 			else
 				self.AutostopOverride = true
-				print(Format("Metrostroi: Signal %s, cant automaticly find signal", self.Name))
+				print(Format("MPLR: Signal %s, cant automaticly find signal", self.Name))
 			end
 		end
 	end
@@ -171,7 +126,7 @@ function ENT:PostInitalize()
 			local SwitchState = Switches[i1]:sub(-1,-1) == "-"
 			local SwitchName = Switches[i1]:sub(1,-2)
 			if not Metrostroi.GetSwitchByName(SwitchName) then
-				print(Format("Metrostroi: %s, switch not found(%s)", self.Name, SwitchName))
+				print(Format("MPLR: %s, switch not found(%s)", self.Name, SwitchName))
 				continue
 			end
 			--If route go right from this switch - add it
@@ -195,25 +150,8 @@ function ENT:PostInitalize()
 		if not v.Lights then continue end
 		v.LightsExploded = string.Explode("-",v.Lights)
 	end
-	if not self.RouteNumberSetup or not self.RouteNumberSetup:find("W") then
-		self.GoodInvationSignal = 0
-		local index = 1
-		for k,v in ipairs(self.Lenses) do
-			if v ~= "M" then
-				for i = 1,#v do
-					if v[i] == "W" then self.GoodInvationSignal = index end
-					index = index + 1
-				end
-			end
-		end
-	else
-		self.GoodInvationSignal = -1
-	end
-	if self.Left then
-		self:SetModel(self.TrafficLightModels[self.SignalType or 0].ArsBoxMittor.model)
-	else
-		self:SetModel(self.TrafficLightModels[self.SignalType or 0].ArsBox.model)
-	end
+
+
 	self.PostInitalized = false
 
 end
@@ -262,23 +200,7 @@ end
 
 function ENT:CheckOccupation()
 
-	--[[if not self.Close and not self.KGU then 
-		if self.Node and  self.TrackPosition then
-			self.Occupied,self.OccupiedBy,self.OccupiedByNow = Metrostroi.IsTrackOccupied(self.Node, self.TrackPosition.x,self.TrackPosition.forward,self.ARSOnly and "ars" or "light", self)
-		end
-		if self.Routes[self.Route] and self.Routes[self.Route].Manual then
-			self.Occupied = self.Occupied or not self.Routes[self.Route].IsOpened
-		end
-		if self.OccupiedByNowOld ~= self.OccupiedByNow then
-			self.InvationSignal = false
-			self.AODisabled = false
-			self.OccupiedByNowOld = self.OccupiedByNow
-		end
-	else
-		self.NextSignalLink = nil
-		self.Occupied = self.Close or self.KGU --self.OverrideTrackOccupied or
-	end]]
-	if self.Node and  self.TrackPosition then
+	if self.Node and self.TrackPosition then
 		self.Occupied,self.OccupiedBy,self.OccupiedByNow = Metrostroi.IsTrackOccupied(self.Node, self.TrackPosition.x,self.TrackPosition.forward,self.ARSOnly and "ars" or "light", self)
 	end
 
@@ -387,260 +309,30 @@ function ENT:ARSLogic(tim)
 end
 
 function ENT:Think()
-	if self.PostInitalized then return end
-	--DEBUG
-	if Metrostroi.SignalDebugCV:GetBool() then
-		self:SetNW2Bool("Debug",true)
-		local next = self.NextSignalLink
-		local pos = self.TrackPosition
-		local prev = self.PrevSig
-		if next then
-			next.PrevSig = self
-			local nextpos = self.NextSignalLink.TrackPosition
-			self:SetNW2String("NextSignalName",next.Name)
-			if pos and nextpos then
-				self:SetNW2Float("DistanceToNext",nextpos.x - pos.x)
-			else
-				self:SetNW2Float("DistanceToNext",0)
-			end
-			self:SetNW2Int("NextPosID",nextpos and nextpos.path and nextpos.path.id or 0)
-			self:SetNW2Float("NextPos",nextpos and nextpos.x or 0)
-		else
-			self:SetNW2String("NextSignalName","N/A")
-			self:SetNW2Float("DistanceToNext",0)
-			self:SetNW2Float("NextPos",0)
-			self:SetNW2Float("NextPosID",0)
-		end
-		if prev then
-			local prevpos = prev.TrackPosition
-			if pos and prevpos then
-				self:SetNW2Float("DistanceToPrev",-prevpos.x + pos.x)
-			else
-				self:SetNW2Float("DistanceToPrev",0)
-			end
-			self:SetNW2String("PrevSignalName",self.PrevSig.Name)
-			self:SetNW2Int("PrevPosID",prevpos and prevpos.path and prevpos.path.id or 0)
-			self:SetNW2Float("PrevPos",prevpos and prevpos.x or 0)
-		else
-			self:SetNW2String("PrevSignalName","N/A")
-			self:SetNW2Int("PrevPosID",0)
-			self:SetNW2Float("PrevPos",0)
-		end
-		self:SetNW2Float("Pos",pos and pos.x or 0)
-		self:SetNW2Int("PosID",pos and pos.path and pos.path.id or 0)
 
-		self:SetNW2Bool("CurrentRoute",self.Route or -1)
-		self:SetNW2Bool("Occupied",self.Occupied)
-		self:SetNW2Bool("2/6",self.TwoToSix)
-		self:SetNW2Int("FreeBS",self.FreeBS)
-		self:SetNW2Bool("LinkedToController",self.Controllers ~= nil)
-		self:SetNW2Int("ControllersNumber",self.Controllers ~= nil and #self.Controllers or -1)
-		self:SetNW2Bool("BlockedByController",self.ControllerLogic)
-		for i=0,8 do
-			if i==3 or i==5 then continue end
-			self:SetNW2Bool("CurrentARS"..i,self:GetARS(i))
-		end
-		self:SetNW2Bool("CurrentARS325",self:GetRS())
-		self:SetNW2Bool("CurrentARS325_2",self:Get325HzAproove0())
-	end
-	if not self.ControllerLogic then
-		if not self.Routes or #self.Routes == 0 then
-			ErrorNoHalt(Format("Metrostroi:Signal %s don't have a routes!\n",self.Name))
-			return
-		end
-		if not self.Routes[self.Route or 1] then
-			ErrorNoHalt(Format("Metrostroi:Signal %s have a null %s route!!\n",self.Name,self.Route))
-			return
-		end
 
-		self.PrevTime = self.PrevTime or 0
-		if (CurTime() - self.PrevTime) > 1.0 then
-			self.PrevTime = CurTime()+math.random(0.5,1.5)
-			self:ARSLogic(self.PrevTime - CurTime())
-		end
-		self.RouteNumberOverrite = nil
-		local number = ""
-		if self.MU or self.ARSOnly or self.RouteNumberSetup and self.RouteNumberSetup ~= "" or self.RouteNumber and self.RouteNumber ~= "" then
-			if self.NextSignalLink then
-				if not self.NextSignalLink.Red and not self.Red then
-					self.RouteNumberOverrite = self.NextSignalLink.RouteNumberOverrite ~= "" and self.NextSignalLink.RouteNumberOverrite or self.NextSignalLink.RouteNumber
-				else
-					self.RouteNumberOverrite = self.RouteNumber
-				end
-				if (not self.Red or self.InvationSignal) and self.Routes[self.Route or 1].EnRou then
-					if self.NextSignalLink.RouteNumberOverrite then
-						number = number..self.NextSignalLink.RouteNumberOverrite
-					end
-					if self.NextSignalLink.RouteNumber and not self.AutoEnabled then
-						number = number..self.NextSignalLink.RouteNumber
-					end
-				end
-				--print(self.Name,self.NextSignalLink.RouteNumberOverrite)
-				self.RouteNumberOverrite = (self.RouteNumberOverrite or "")..number
-			else
-				self.RouteNumberOverrite = self.RouteNumber
-			end
-		end
-		if self.InvationSignal and self.GoodInvationSignal == -1 then
-			number = number.."W"
-		end
-		if self.KGU then number = number.."K" end
-		if number then self:SetNW2String("Number",number) end
+	self:SetNW2String("Type",self.SignalType)
 
-		if self.Occupied ~= self.OccupiedOld then
-			hook.Run("Metrostroi.Signaling.ChangeRCState", self.Name, self.Occupied, self)
-			self.OccupiedOld = self.Occupied
-		end	
 
-		if self.ARSOnly then
-			if self.Sprites then
-				for k,v in pairs(self.Sprites) do
-					SafeRemoveEntity(v)
-					self.Sprites[k] = nil
-				end
-				if self.ARSOnly and self.Sprites then
-					self.Sprites = nil
-				end
-			end
-			self:SetNW2String("Signal","")
-			self.AutoEnabled = not self.ARSOnly
-			return
-		end
-
-		self.AutoEnabled = false
-		self.Red = nil
-		if not self.Routes[self.Route or 1].Lights then return end
-		local Route = self.Routes[self.Route or 1]
-		local index = 1
-		local offset = self.RenderOffset[self.SignalType] or Vector(0,0,0)
-		self.Sig = ""
-		self.Colors = ""
-		for k,v in ipairs(self.Lenses) do
-			if self.Routes[self.Route or 1].Repeater and IsValid(self.NextSignalLink) and (not self.Routes[self.Route or 1].Lights or self.Routes[self.Route or 1].Lights == "") then
-				break
-			end
-			if v ~= "M" then
-				--get the some models data
-				local data = #v ~= 1 and self.TrafficLightModels[self.SignalType][#v-1] or self.TrafficLightModels[self.SignalType][self.Signal_IS]
-				if not data then continue end
-				for i = 1,#v do
-					--Get the LightID and check, is this light must light up
-					local LightID = IsValid(self.NextSignalLink) and math.min(#Route.LightsExploded,self.FreeBS+1) or 1
-					local AverageState = Route.LightsExploded[LightID]:find(tostring(index)) or ((v[i] == "W" and self.InvationSignal and self.GoodInvationSignal == index) and 1 or 0)
-					local MustBlink = (v[i] == "W" and self.InvationSignal and self.GoodInvationSignal == index) or (AverageState > 0 and Route.LightsExploded[LightID][AverageState+1] == "b") --Blinking, when next is "b" (or it's invasion signal')
-					self.Sig = self.Sig..(AverageState > 0 and (MustBlink and 2 or 1) or 0)
-
-					if AverageState > 0 then
-						if self.GoodInvationSignal ~= index then self.Colors = self.Colors..(MustBlink and v[i]:lower() or v[i]:upper()) end
-						if v[i] == "R" then
-							self.AutoEnabled = not self.NonAutoStop
-							self.Red = true
-						end
-					end
-					index = index + 1
-				end
-			end
-		end
-	else
-		local number = self.RouteNumberReplace or ""
-		if self.ControllerLogicCheckOccupied then
-			self.PrevTime = self.PrevTime or 0
-			if (CurTime() - self.PrevTime) > 0.5 then
-				self.PrevTime = CurTime() + math.random(0.5,1.5)
-				if self.Node and self.TrackPosition then
-					self.Occupied,self.OccupiedBy,self.OccupiedByNow = Metrostroi.IsTrackOccupied(self.Node, self.TrackPosition.x,self.TrackPosition.forward,self.ARSOnly and "ars" or "light", self)
-				end
-			end
-			if self.Occupied ~= self.OccupiedOld then
-				hook.Run("Metrostroi.Signaling.ChangeRCState", self.Name, self.Occupied, self)
-				self.OccupiedOld = self.Occupied
-			end
-		
-		end
-		--[[
-		if self.MU or self.ARSOnly or self.RouteNumberSetup and self.RouteNumberSetup ~= "" or self.RouteNumber and self.RouteNumber ~= "" then
-			if self.NextSignalLink then
-				if not self.NextSignalLink.AutoEnabled and not self.AutoEnabled then
-					self.RouteNumberOverrite = self.NextSignalLink.RouteNumberOverrite ~= "" and self.NextSignalLink.RouteNumberOverrite or self.NextSignalLink.RouteNumber
-				else
-					self.RouteNumberOverrite = self.RouteNumber
-				end
-				if self.NextSignalLink.RouteNumberOverrite and not self.AutoEnabled and (self.Routes[self.Route or 1].EnRou or self.InvationSignal) then
-					number = number..self.NextSignalLink.RouteNumberOverrite
-				end
-				if self.NextSignalLink.RouteNumber and (self.Routes[self.Route or 1].EnRou and not self.AutoEnabled or self.InvationSignal) then
-					number = number..self.NextSignalLink.RouteNumber
-				end
-				--print(self.Name,self.NextSignalLink.RouteNumberOverrite)
-				self.RouteNumberOverrite = (self.RouteNumberOverrite or "")..number
-			else
-				self.RouteNumberOverrite = self.RouteNumber
-			end
-		end]]
-		if self.InvationSignal and self.GoodInvationSignal == -1 then
-			number = number.."W"
-		end
-		if self.KGU then number = number.."K" end
-		if number then self:SetNW2String("Number",number) end
-		local index = 1
-		self.Colors = ""
-		for k,v in ipairs(self.Lenses) do
-			if v ~= "M" then
-				--get the some models data
-				local data = #v ~= 1 and self.TrafficLightModels[self.SignalType][#v-1] or self.TrafficLightModels[self.SignalType][self.Signal_IS]
-				if not data then continue end
-				for i = 1,#v do
-					if (self.Sig[index] == "1" or self.Sig[index] == "2") then self.Colors = self.Colors..v[i]:lower() end
-					index = index + 1
-				end
-			end
-		end
-	end
-
-	if self.Controllers then
-		for k,v in pairs(self.Controllers) do
-			if self.Sig ~= v.Sig then
-				local Route = self.Routes[self.Route or 1]
-				local LightID = IsValid(self.NextSignalLink) and math.min(#Route.LightsExploded,self.FreeBS+1) or 1
-				local lights = Route.LightsExploded[LightID]
-				v:TriggerOutput("LenseEnabled",self,Route.LightsExploded[LightID])
-				v.Sig = self.Sig
-			end
-			if v.OldIS ~= self.InvationSignal then
-				if self.InvationSignal then
-					v:TriggerOutput("LenseEnabled",self,"I")
-				else
-					v:TriggerOutput("LenseDisabled",self,"I")
-				end
-				v.OldIS = self.InvationSignal
-			end
-		end
-	end
-	self:SetNW2String("Signal",self.Sig)
-	if not self.AutostopPresent then self:SetNW2Bool("Autostop",self.AutoEnabled) end
 
 	self:NextThink(CurTime() + 0.25)
-	return true
 end
 
 --Net functions
 --Send update, if parameters have been changed
 function ENT:SendUpdate(ply)
-	net.Start("metrostroi-signal")
+	net.Start("mplr-signal")
 		net.WriteEntity(self)
-		net.WriteInt(self.SignalType or 0,3)
 		net.WriteString(self.Name or "NOT LOADED")
-		net.WriteString(self.ARSOnly and "ARSOnly" or self.LensesStr)
-		net.WriteString(self.SignalType == 0 and self.RouteNumberSetup or "")
+		net.WriteString(self.Name1)
+		net.WriteString(self.Name2)
+		net.WriteString(self.Aspect)
 		net.WriteBool(self.Left)
-		net.WriteBool(self.Double)
-		net.WriteBool(self.DoubleL)
-		net.WriteBool(not self.NonAutoStop)
 	if ply then net.Send(ply) else net.Broadcast() end
 end
 
 --On receive update request, we send update
-net.Receive("metrostroi-signal", function(_, ply)
+net.Receive("mplr-signal", function(_, ply)
 	local ent = net.ReadEntity()
 	if not IsValid(ent) or not ent.SendUpdate then return end
 	ent:SendUpdate(ply)
