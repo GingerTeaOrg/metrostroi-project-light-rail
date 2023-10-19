@@ -3,7 +3,7 @@
 ENT.Type			= "anim"
 ENT.PrintName		= "Light Rail Platform"
 ENT.Spawnable		= false
-ENT.AdminSpawnable	= false
+ENT.AdminOnly	= false
 
 function ENT:PoolSize()
 	return 1024
