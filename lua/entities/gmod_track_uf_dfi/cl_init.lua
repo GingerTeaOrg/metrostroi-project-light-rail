@@ -280,7 +280,7 @@ function ENT:Draw()
 		draw.Text({
 			text = "Auf Zugschild achten!",
 			font = "Lumino", -- ..self:GetNW2Int("Style", 1),
-			pos = {200, 110},
+			pos = {204, 110},
 			xalign = TEXT_ALIGN_CENTER,
 			yalign = TEXT_ALIGN_LEFT,
 			color = Color(255, 136, 0)
