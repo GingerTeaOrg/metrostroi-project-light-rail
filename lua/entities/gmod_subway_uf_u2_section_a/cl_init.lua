@@ -1713,7 +1713,7 @@ ENT.ButtonMap["Left"] = {
 
 ENT.RTMaterialUF = CreateMaterial("MetrostroiRT1", "VertexLitGeneric", {["$vertexcolor"] = 0, ["$vertexalpha"] = 1, ["$nolod"] = 1})
 
-function ENT:Draw() self.BaseClass.Draw(self) end
+function ENT:Draw() self.BaseClass.Draw(self) self:UpdateWagonNumber() end
 
 function ENT:DrawPost()
 	self.RTMaterialUF:SetTexture("$basetexture", self.IBIS)
