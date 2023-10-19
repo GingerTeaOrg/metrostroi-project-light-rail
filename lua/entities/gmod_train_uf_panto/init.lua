@@ -62,7 +62,7 @@ function ENT:Think()
     
     local endscan = self:GetPos() + Vector(0,0,135)
     if self.Train.PantoUp == true then
-        self:CheckContact(self:GetPos(),self:GetUp(),1,Vector(0,0,5))
+        
 
         self:CheckVoltage(self.DeltaTime)
     end
@@ -71,14 +71,15 @@ function ENT:Think()
 end
 
 
-function ENT:CheckContact(pos,dir,id,cpos)
+function ENT:CheckContact(pos,dir)
     local result = util.TraceHull({
         start = pos,
         endpos = pos + dir * 117,
-        mask = -1,
+        mask = 1174421507,
+        collisiongroup = 4,
         filter = { self:GetNW2Entity("TrainEntity"), self }, --filter out the train entity and the panto itself
-        mins = Vector( -24,-2,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
-        maxs = Vector(24,2,1),
+        mins = Vector( -24,-3,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
+        maxs = Vector(24,3,2),
     })
     
     if not result.Hit then self:SetNW2Vector("PantoHeight",Vector(0,0,117)) return end --if nothing touches the panto, it can spring to maximum freely
@@ -92,7 +93,7 @@ function ENT:CheckContact(pos,dir,id,cpos)
     if IsValid(traceEnt) and traceEnt:GetClass() == "player" and self.Voltage > 40 and result.HitPos.z - pos.z < 100 and self.Debug == false then --if the player hits the bounding box, unalive them
         local pPos = traceEnt:GetPos()
         util.BlastDamage(traceEnt,traceEnt,pPos,64,3.0*self.Voltage)
-
+        
         local effectdata = EffectData()
         effectdata:SetOrigin(pPos + Vector(0,0,-16+math.random()*(40+0)))
         util.Effect("cball_explode",effectdata,true,true)
@@ -104,69 +105,23 @@ function ENT:CheckContact(pos,dir,id,cpos)
         effectdata:SetOrigin(pPos + Vector(0,math.random(-2,2),0))
         util.Effect("StunstickImpact",effectdata,true,true)
         sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
-        return true --yes, we are touching catenary
+        return result.Hit --yes, we are touching catenary
     end
+
 end
 
 
 function ENT:CheckVoltage(dT)
-    local C_mplr_train_requirewire = GetConvar("mplr_train_requirewire")
+    local C_mplr_train_requirewire = GetConVar("mplr_train_requirewire")
     -- Check contact states
     if (CurTime() - self.CheckTimeout) <= 0.25 then return end
     self.CheckTimeout = CurTime()
     local supported = C_mplr_train_requirewire:GetInt() > 0 and UF.MapHasFullSupport()
-    local feeder = self.Feeder and UF.Voltages[self.Feeder]
-    local volt = feeder or UF.Voltage or 750
 
-    -- Non-metrostroi maps
-    if not supported then
-        self.Voltage = volt
-        self.NextStates[1] = true
-        self.NextStates[2] = true
-        return
-    end
-
-
-    self.NextStates[1] = not self.DisableContacts and not self.DisableContactsManual
-                        and self:CheckContact(self.PantLPos,Vector(0,-1,0),1,self.PantoPos)
-
-    -- Detect changes in contact states
-    local i=1
-    local state = self.NextStates[i]
-    if state ~= self.ContactStates[i] then
-        self.ContactStates[i] = state
-        if not state then return end
-
-        self.VoltageDrop = -40*(0.5 + 0.5*math.random())
-
-        local dt = CurTime() - self.PlayTime[i]
-        self.PlayTime[i] = CurTime()
-
-        local volume = 0.53
-        if dt < 1.0 then volume = 0.43 end
-
-            
-    end
-
+    self.Voltage = UF.Voltage
     
-    -- Voltage spikes
-    self.VoltageDrop = math.max(-30,math.min(30,self.VoltageDrop + (0 - self.VoltageDrop)*10*dT))
+    self:CheckContact(self:GetPos(),self:GetUp())
 
-    -- Detect voltage
-    self.Voltage = 0
-    self.DropByPeople = 0
-    
-        if self.ContactStates[i] then
-            self.Voltage = volt + self.VoltageDrop
-        elseif IsValid(self.Connectors[i]) and self.Connectors[i].Coupled == self then
-            self.Voltage = self.Connectors[i].Power and UF.Voltage or 0
-        end
-
-    if self.VoltageDropByTouch > 0 then
-        local Rperson = 0.613
-        local Iperson = UF.Voltage / (Rperson/(self.VoltageDropByTouch + 1e-9))
-        self.DropByPeople = Iperson
-    end
 end
 
 function ENT:Debug()
