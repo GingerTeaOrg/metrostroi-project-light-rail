@@ -314,7 +314,7 @@ function ENT:Think()
 	self:SetNW2String("Type",self.SignalType)
 
 
-
+	self:SendUpdate()
 	self:NextThink(CurTime() + 0.25)
 end
 

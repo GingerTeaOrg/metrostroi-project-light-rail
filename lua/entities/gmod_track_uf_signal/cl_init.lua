@@ -27,6 +27,20 @@ net.Receive("mplr-signal", function()
     ent.Left = net.ReadBool()
 end)
 
+local timer = CurTime()
+local C_RenderDistance = GetConVar("mplr_signal_distance")
+hook.Add("Think","MPLRRenderSignals", function()
+    if CurTime() - timer < 1.5 or not IsValid(LocalPlayer()) then return end
+    timer = CurTime()
+    local plyPos = LocalPlayer():GetPos()
+    local dist = C_RenderDistance:GetInt()
+    for _,sig in pairs(ents.FindByClass("gmod_track_uf_signal*")) do
+        if not IsValid(sig) then continue end
+        local sigPos = sig:GetPos()
+        sig.RenderDisable = sigPos:Distance(plyPos) > dist or math.abs(plyPos.z - sigPos.z) > 1500
+    end
+end)
+
 function ENT:Think()
     local CurTime = CurTime()
     self:SetNextClientThink(CurTime + 0.0333)
@@ -48,11 +62,11 @@ function ENT:Draw()
     -- Draw model
     self:DrawModel()
 
-    cam.Start3D2D(self:GetPos() + Vector(-6.8,-4,124.5), Angle(0,-90,90), 0.05)
-        self:PrintText(0, 0, self.Name1, "Text",Color(78, 0, 0))        
+    cam.Start3D2D(self:GetPos() + Vector(-6.99,-4,124.5), Angle(0,-90,90), 0.05)
+        self:PrintText(0, 0, self.Name1 or "ER", "Text",Color(78, 0, 0))        
     cam.End3D2D()
-    cam.Start3D2D(self:GetPos() + Vector(-6.8,-5.25,116.5), Angle(0,-90,90), 0.06)
-        self:PrintText(0, 0, self.Name2, "TextLarge",Color(0, 0, 0))        
+    cam.Start3D2D(self:GetPos() + Vector(-6.99,-3.25,116.5), Angle(0,-90,90), 0.06)
+        self:PrintText2(0, 0, self.Name2 or "ER", "TextLarge",Color(0, 0, 0))        
     cam.End3D2D()
     self:SignalAspect(self.Aspect or "H2")
     
@@ -79,7 +93,7 @@ function ENT:SignalAspect(aspect)
     if not aspect then return end
 
     if aspect == "H0" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
-        print("H0")
+        --print("H0")
         self:ClientSprites(self:GetPos() + Vector(-5.7, -10.5, 146), 10, Color(204, 116, 0), false)
         self:ClientSprites(self:GetPos() + Vector(-5.7, -10.5, 166), 10, Color(27, 133, 0), false)
         self:ClientSprites(self:GetPos() + Vector(-5.7, -10.5, 157.7), 10, Color(200, 0, 0), true)
@@ -231,7 +245,14 @@ function ENT:PrintText(x, y, text, font,color)
 	end
 end
 
-
+function ENT:PrintText2(x, y, text, font,color)
+	local str = {utf8.codepoint(text, 1, -1)}
+	for i = 1, #str do
+		local char = utf8.char(str[i])
+		draw.SimpleText(char, font, (x + i) * 75, y * 15 + 50, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		
+	end
+end
 
 
 surface.CreateFont("Text", {
