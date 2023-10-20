@@ -380,12 +380,6 @@ if SERVER then
     end
 end
 
-if CLIENT then
-    files = file.Find("uf/cl*.lua","LUA")
-    for _,filename in pairs(files) do
-        AddCSLuaFile("uf/"..filename)
-        include("uf/"..filename)
-    end
-    RunConsoleCommand("metrostroi_drawdistance", "99999")
-end
 
+files = file.Find("uf/cl_*.lua","LUA")
+for _,filename in pairs(files) do AddCSLuaFile("uf/"..filename) end
