@@ -567,6 +567,7 @@ ENT.ButtonMap["Cab"] = {
 
 function ENT:Draw()
     self.BaseClass.Draw(self)
+    self:UpdateWagonNumber()
 end
 
 
