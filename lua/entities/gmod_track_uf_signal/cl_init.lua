@@ -3,8 +3,13 @@ include("shared.lua")
 --------------------------------------------------------------------------------
 function ENT:Initialize()
 
-
-
+    self.RT = CreateMaterial( "bg", "VertexLitGeneric", {
+        ["$basetexture"] = "color/white",
+        ["$model"] = 1,
+        ["$translucent"] = 1,
+        ["$vertexalpha"] = 1,
+        ["$vertexcolor"] = 1
+        } )
 
 end
 
@@ -28,12 +33,17 @@ net.Receive("mplr-signal", function()
 end)
 
 local timer = CurTime()
-local C_RenderDistance = GetConVar("mplr_signal_distance")
+
 hook.Add("Think","MPLRRenderSignals", function()
+    local C_RenderDistance = GetConVar("mplr_signal_distance")
     if CurTime() - timer < 1.5 or not IsValid(LocalPlayer()) then return end
     timer = CurTime()
     local plyPos = LocalPlayer():GetPos()
-    local dist = C_RenderDistance:GetInt()
+    --if C_RenderDistance:GetInt() then
+    --    local dist = C_RenderDistance:GetInt()
+    --else
+        local dist = 8192
+    --end
     for _,sig in pairs(ents.FindByClass("gmod_track_uf_signal*")) do
         if not IsValid(sig) then continue end
         local sigPos = sig:GetPos()
@@ -48,7 +58,7 @@ function ENT:Think()
     self.DeltaTime = (RealTime() - self.PrevTime)
     self.PrevTime = RealTime()
 
-
+    
     self.SignalType = self:GetNW2String("Type")
 
 
@@ -56,16 +66,24 @@ function ENT:Think()
 
 end
 
+
+
 function ENT:Draw()
 
     
     -- Draw model
     self:DrawModel()
-
-    cam.Start3D2D(self:GetPos() + Vector(-6.99,-4,124.5), Angle(0,-90,90), 0.05)
+    local ang = self:LocalToWorldAngles(Angle(0,90,90))
+    local pos = self:LocalToWorld(Vector(7.5, 3.99, 125))
+    local pos2 = self:LocalToWorld(Vector(7.5, 3.5, 117))
+    rectangle = self:LocalToWorld(Vector(7.5, 3.99, 125))
+    cam.Start3D2D(pos, ang, 0.05)
+        surface.SetMaterial(self.RT)
+        surface.SetDrawColor( 255, 255, 255, 255 )
+        surface.DrawTexturedRect(rectangle.x,rectangle.y,100,200)
         self:PrintText(0, 0, self.Name1 or "ER", "Text",Color(78, 0, 0))        
     cam.End3D2D()
-    cam.Start3D2D(self:GetPos() + Vector(-6.99,-3.25,116.5), Angle(0,-90,90), 0.06)
+    cam.Start3D2D(pos2,ang, 0.06)
         self:PrintText2(0, 0, self.Name2 or "ER", "TextLarge",Color(0, 0, 0))        
     cam.End3D2D()
     self:SignalAspect(self.Aspect or "H2")
@@ -91,23 +109,27 @@ end
 
 function ENT:SignalAspect(aspect)
     if not aspect then return end
+    pos_o = self:LocalToWorld(Vector(7.5, 10.4, 146.4))
+    pos_g = self:LocalToWorld(Vector(7.5, 10.4, 166.5))
+    pos_r = self:LocalToWorld(Vector(7.5, 10.4, 157.8))
+    pos_rr = self:LocalToWorld(Vector(-7.5, -9.5, 135.8))
 
     if aspect == "H0" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
         --print("H0")
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.5, 146), 10, Color(204, 116, 0), false)
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.5, 166), 10, Color(27, 133, 0), false)
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.5, 157.7), 10, Color(200, 0, 0), true)
-        self:ClientSprites(self:GetPos() + Vector(7.5, 9.7, 135.5), 10, Color(200, 0, 0), false)
+        self:ClientSprites(pos_o, 10, Color(204, 116, 0), false)
+        self:ClientSprites(pos_g, 10, Color(27, 133, 0), false)
+        self:ClientSprites(pos_r, 10, Color(200, 0, 0), true)
+        self:ClientSprites(pos_rr, 10, Color(200, 0, 0), false)
     elseif aspect == "H1" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.25, 146), 10, Color(204, 116, 0), false)
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.25, 166), 10, Color(27, 133, 0), true)
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.25, 157.5), 10, Color(200, 0, 0), false)
-        self:ClientSprites(self:GetPos() + Vector(7.5, 9.7, 135.5), 10, Color(200, 0, 0), true)
+        self:ClientSprites(pos_o, 10, Color(204, 116, 0), false)
+        self:ClientSprites(pos_g, 10, Color(27, 133, 0), true)
+        self:ClientSprites(pos_r, 10, Color(200, 0, 0), false)
+        self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)
     elseif aspect == "H2" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.25, 146), 10, Color(204, 116, 0), true)
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.25, 166), 10, Color(27, 133, 0), true)
-        self:ClientSprites(self:GetPos() + Vector(-5.7, -10.25, 157.5), 10, Color(200, 0, 0), false)
-        self:ClientSprites(self:GetPos() + Vector(7.5, 9.7, 135.5), 10, Color(200, 0, 0), true)   
+        self:ClientSprites(pos_o, 10, Color(204, 116, 0), true)
+        self:ClientSprites(pos_g, 10, Color(27, 133, 0), true)
+        self:ClientSprites(pos_r, 10, Color(200, 0, 0), false)
+        self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)   
     end
 end
 
