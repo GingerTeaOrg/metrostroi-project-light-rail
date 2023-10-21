@@ -2,20 +2,14 @@
 
 TOOL.AddToMenu = true
 TOOL.Name = "Light Rail Spawner"
-TOOL.Category = "Metrostroi: Light Rail"
+TOOL.Category = "Metrostroi: Project Light Rail"
 
-local C_MaxWagons = GetConVar("metrostroi_maxwagons")
+local C_MaxWagons = GetConVar("mplr_maxwagons")
 
 if CLIENT then
-    language.Add("Tool.train_spawner.name", "Train Spawner")
-    language.Add("Tool.train_spawner.desc", "Spawn a train")
-    language.Add("Tool.train_spawner.0", "Primary: Spawns a full train. Secondary: Reverse facing (yellow ed when facing the opposite side). Reload: Copy train settings.")
-    language.Add("Undone_81-7036", "Undone 81-7036 (does not work)")
-    language.Add("Undone_81-7037", "Undone 81-7037 (does not work)")
-    language.Add("Undone_81-717", "Undone 81-717")
-    language.Add("Undone_81-714", "Undone 81-714")
-    language.Add("Undone_Ezh3", "Undone Ezh3")
-    language.Add("Undone_Ema508T", "Undone Em508T")
+    language.Add("Tool.gm_ufspawner.name", "Train Spawner")
+    language.Add("Tool.gm_ufspawner.desc", "Spawn a train")
+    language.Add("Tool.gm_ufspawner.0", "Primary: Spawns a full train. Secondary: Reverse facing (yellow ed when facing the opposite side). Reload: Copy train settings.")
     language.Add("SBoxLimit_spawner_wrong_pos","Wrong train position! Can't spawn")
     language.Add("SBoxLimit_spawner_restrict","This train is restricted for you")
 end
@@ -108,7 +102,7 @@ function TOOL:UpdateGhost()
         local pos,ang
         if i==1 then
             pos,ang,good,canDraw = UpdateGhostPos(self:GetOwner())
-            if self:GetOwner():GetNW2Bool("metrostroi_train_spawner_rev") then
+            if self:GetOwner():GetNW2Bool("mplr_train_spawner_rev") then
                 ang = ang+Angle(0,180,0)
             end
         elseif type(t) ~= "string" then
@@ -120,7 +114,7 @@ function TOOL:UpdateGhost()
         --if not pos then bad = true else pos,ang = rpos,rang end
         if not good then
             e:SetColor(Color(255,150,150,255))
-        elseif self:GetOwner():GetNW2Bool("metrostroi_train_spawner_rev") then
+        elseif self:GetOwner():GetNW2Bool("mplr_train_spawner_rev") then
             e:SetColor(Color(255,255,150,255))
         else
             e:SetColor(Color(255,255,255,255))
@@ -166,7 +160,7 @@ function TOOL:Think()
                 e.GetDirtLevel = function() return 0.25 end
             end
             hook.Add("Think",self.GhostEntities[1],function()
-                if not IsValid(self.Owner:GetActiveWeapon()) or self.Owner:GetActiveWeapon():GetClass()~="gmod_tool" or GetConVar("gmod_toolmode"):GetString() ~= "train_spawner" then
+                if not IsValid(self.Owner:GetActiveWeapon()) or self.Owner:GetActiveWeapon():GetClass()~="gmod_tool" or GetConVar("gmod_toolmode"):GetString() ~= "gm_ufspawner" then
                     self:OnRemove()
                 end
             end)
@@ -217,18 +211,18 @@ function TOOL:SpawnWagon(trace)
         local ent
         if i == 1 then
             if spawnfunc then
-                ent = self.Train:SpawnFunction(ply,trace,spawnfunc(i,self.Settings,self.Train),self:GetOwner():GetNW2Bool("metrostroi_train_spawner_rev"),UpdateWagPos)
+                ent = self.Train:SpawnFunction(ply,trace,spawnfunc(i,self.Settings,self.Train),self:GetOwner():GetNW2Bool("mplr_train_spawner_rev"),UpdateWagPos)
             else
-                ent = self.Train:SpawnFunction(ply,trace,self.Train.Spawner.head or self.Train.ClassName,self:GetOwner():GetNW2Bool("metrostroi_train_spawner_rev"),UpdateWagPos)
+                ent = self.Train:SpawnFunction(ply,trace,self.Train.Spawner.head or self.Train.ClassName,self:GetOwner():GetNW2Bool("mplr_train_spawner_rev"),UpdateWagPos)
             end
-            --nil,self:GetOwner():GetNW2Bool("metrostroi_train_spawner_rev") and Angle(0,180,0) or Angle(0,0,0)) --Create a first entity in queue
+            --nil,self:GetOwner():GetNW2Bool("mplr_train_spawner_rev") and Angle(0,180,0) or Angle(0,0,0)) --Create a first entity in queue
             if ent then
                 undo.Create(self.Train.Spawner.head or self.Train.ClassName)
             else
                 self:GetOwner():LimitHit("spawner_wrong_pos")
                 return false
             end
-            --if self:GetOwner():GetNW2Bool("metrostroi_train_spawner_rev") then
+            --if self:GetOwner():GetNW2Bool("mplr_train_spawner_rev") then
                 --ent:SetAngles(ent:LocalToWorldAngles(Angle(0,180,0)))
             --end
             --if self.Rot then
@@ -335,8 +329,8 @@ function TOOL:SpawnWagon(trace)
         if self.Train.Spawner.func then self.Train.Spawner.func(ent,i,self.Settings.WagNum,LastRot) end
         if self.Train.Spawner.wagfunc then ent:GenerateWagonNumber(function(_,number) return self.Train.Spawner.wagfunc(ent,i,number) end) end
         if ent.TrainSpawnerUpdate then ent:TrainSpawnerUpdate() end
-        for k,v in pairs(ent.CustomSpawnerUpdates) do if k ~= "BaseClass" then v(ent) end end
-        hook.Run("MetrostroiSpawnerUpdate",ent,self.Settings)
+        --for k,v in pairs(ent.CustomSpawnerUpdates) do if k ~= "BaseClass" then v(ent) end end
+        hook.Run("MPLRSpawnerUpdate",ent,self.Settings)
         ent:UpdateTextures()
         ent.FrontAutoCouple = i > 1 and i < self.Settings.WagNum
         ent.RearAutoCouple = self.Settings.WagNum > 1
@@ -404,18 +398,18 @@ function TOOL:Reload(trace)
     if IsValid(trace.Entity) and trace.Entity._Settings then
         ply:ConCommand("gmod_tool train_spawner")
         ply:SelectWeapon("gmod_tool")
-        local tool = ply:GetTool("train_spawner")
+        local tool = ply:GetTool("gm_ufspawner")
         tool.AllowSpawn = true
         tool.Settings = trace.Entity._Settings
         local ENT = scripted_ents.Get(tool.Settings.Train)
         if not ENT then tool.AllowSpawn = false else tool.Train = ENT end
 
-        net.Start("train_spawner_open")
+        net.Start("train_spawner_uf_open")
             net.WriteTable(tool.Settings)
         net.Send(ply)
     end
 
-    local spawner = ents.Create("gmod_train_spawner")
+    local spawner = ents.Create("gmod_train_uf_spawner")
     spawner:SpawnFunction(ply)
 end
 function TOOL:LeftClick(trace)
@@ -448,7 +442,7 @@ function TOOL:LeftClick(trace)
                     ent:GenerateWagonNumber(self.Train.Spawner.wagfunc)
                     if ent.TrainSpawnerUpdate then ent:TrainSpawnerUpdate() end
                     for k,v in pairs(ent.CustomSpawnerUpdates) do if k ~= "BaseClass" then v(ent) end end
-                    hook.Run("MetrostroiSpawnerUpdate",ent,self.Settings)
+                    hook.Run("MPLRSpawnerUpdate",ent,self.Settings)
                     ent:UpdateTextures()
                     ent._Settings = self.Settings
                     table.insert(trains,ent)
@@ -465,12 +459,12 @@ function TOOL:LeftClick(trace)
             self.Settings.WagNum = C_MaxWagons:GetInt()
         end
 
-        if Metrostroi.TrainCountOnPlayer(self:GetOwner()) + self.Settings.WagNum > GetConVar("metrostroi_maxtrains_onplayer"):GetInt()*C_MaxWagons:GetInt()
-            or Metrostroi.TrainCount() + self.Settings.WagNum > GetConVar("metrostroi_maxtrains"):GetInt()*C_MaxWagons:GetInt() then
+        if Metrostroi.TrainCountOnPlayer(self:GetOwner()) + self.Settings.WagNum > GetConVar("mplr_maxtrains_onplayer"):GetInt()*C_MaxWagons:GetInt()
+            or Metrostroi.TrainCount() + self.Settings.WagNum > GetConVar("mplr_maxtrains"):GetInt()*C_MaxWagons:GetInt() then
                 self:GetOwner():LimitHit("train_limit")
             return true
         end
-        if hook.Run("MetrostroiSpawnerRestrict",self:GetOwner(),self.Settings) then
+        if hook.Run("MPLRSpawnerRestrict",self:GetOwner(),self.Settings) then
             self:GetOwner():LimitHit("spawner_restrict")
             return true
         end
@@ -504,7 +498,7 @@ function TOOL:RightClick(trace)
                     ent:GenerateWagonNumber(self.Train.Spawner.wagfunc)
                     if ent.TrainSpawnerUpdate then ent:TrainSpawnerUpdate() end
                     for k,v in pairs(ent.CustomSpawnerUpdates) do if k ~= "BaseClass" then v(ent) end end
-                    hook.Run("MetrostroiSpawnerUpdate",ent,self.Settings)
+                    hook.Run("MPLRSpawnerUpdate",ent,self.Settings)
                     ent:UpdateTextures()
                     ent._Settings = self.Settings
                     table.insert(trains,ent)
@@ -517,7 +511,7 @@ function TOOL:RightClick(trace)
     if not self.AllowSpawn or not self.Train then return end
     if CLIENT then return end
     self.Rev = not self.Rev
-    self:GetOwner():SetNW2Bool("metrostroi_train_spawner_rev",self.Rev)
+    self:GetOwner():SetNW2Bool("mplr_train_spawner_rev",self.Rev)
 
 end
 
@@ -527,11 +521,11 @@ function TOOL.BuildCPanel(panel)
 end
 
 if SERVER then
-    util.AddNetworkString "train_spawner_open"
-    net.Receive("train_spawner_open",function(len,ply)
-        ply:ConCommand("gmod_tool train_spawner")
+    util.AddNetworkString "train_spawner_uf_open"
+    net.Receive("train_spawner_uf_open",function(len,ply)
+        ply:ConCommand("gmod_tool gm_ufspawner")
         ply:SelectWeapon("gmod_tool")
-        local tool = ply:GetTool("train_spawner")
+        local tool = ply:GetTool("gm_ufspawner")
         tool.AllowSpawn = true
         tool.Settings = net.ReadTable()
         local ENT = scripted_ents.Get(tool.Settings.Train)
