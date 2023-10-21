@@ -14,6 +14,7 @@ function UF.AddARSSubSection(node,source)
     Metrostroi.ARSSubSections[ent] = true
     Metrostroi.ARSSubSectionCount = Metrostroi.ARSSubSectionCount + 1
 end
+--hook.Add("Metrostroi.AddARSSubSection","UFInjectSignalBlocks",UF.AddARSSubSection) --just hook it when Metrostroi does its business
 
 function UF.UpdateStations()
     if not Metrostroi.Stations then return end
@@ -37,7 +38,7 @@ function UF.UpdateStations()
                 ent = platform,
             }
             if station[platform.PlatformIndex] then
-                print(Format("Metrostroi: Error, station %03d has two platforms %d with same index!",platform.StationIndex,platform.PlatformIndex))
+                print(Format("MPLR: Error, station %03d has two platforms %d with same index!",platform.StationIndex,platform.PlatformIndex))
             else
                 station[platform.PlatformIndex] = platform_data
             end
@@ -56,12 +57,12 @@ hook.Add("Metrostroi.UpdateStations","UFInjectStations",UF.UpdateStations) --jus
 function UF.UpdateSignalEntities()
     if Metrostroi.IgnoreEntityUpdates then return end
     if CurTime() - Metrostroi.OldUpdateTime < 0.05 then
-        print("Metrostroi: Stopping all updates!")
+        print("MPLR: Stopping all updates!")
         Metrostroi.IgnoreEntityUpdates = true
         timer.Simple(0.2, function()
-            print("Metrostroi: Retrieve updates.")
+            print("MPLR: Retrieve updates.")
             Metrostroi.IgnoreEntityUpdates = false
-            Metrostroi.UpdateSignalEntities()
+            UF.UpdateSignalEntities()
             Metrostroi.UpdateSwitchEntities()
             Metrostroi.UpdateARSSections()
         end)
@@ -70,7 +71,7 @@ function UF.UpdateSignalEntities()
     Metrostroi.OldUpdateTime = CurTime()
     local options = { z_pad = 256 }
 
-    Metrostroi.UpdateSignalNames()
+    UF.UpdateSignalNames()
 
     Metrostroi.SignalEntitiesForNode = {}
     Metrostroi.SignalEntityPositions = {}
@@ -79,7 +80,7 @@ function UF.UpdateSignalEntities()
 
     local count = 0
     local repeater = 0
-    local entities = ents.FindByClass("gmod_track_uf_signal*")
+    local entities = ents.FindByClass("gmod_track_signal")
     print("MPLR: PreInitialize signals")
     for k,v in pairs(entities) do
         local pos = Metrostroi.GetPositionOnTrack(v:GetPos(),v:GetAngles() - Angle(0,90,0),options)[1]
@@ -100,21 +101,13 @@ function UF.UpdateSignalEntities()
                 print(Format("MPLR: Signal %s, second position not found, system can't detect direction of the signal!",v.Name))
                 v.TrackDir = true
             end
-            if not v.ARSOnly then
-                --v.AutostopPos = Metrostroi.GetTrackPosition(pos.path,v.TrackX - (v.TrackDir and 2.5 or -2.5))
-                --if not v.AutostopPos then print(Format("Metrostroi: Signal %s, can't place autostop!",v.Name)) end
-            end
         else
-            if not v.Routes or v.Routes[1].NextSignal ~= "" then
+            if v.NextSignal ~= "" then
                 print(Format("MPLR: Signal %s, position not found, system can't detect the track occupation!",v.Name))
             end
         end
-        if not v.Routes[1] then ErrorNoHalt(Format("MPRL: Signal %s don't have first route!",v.Name)) end
-        if v.Routes and v.Routes[1].Repeater then
-            repeater = repeater + 1
-        end
+        if not v.Routes[1] then ErrorNoHalt(Format("MPLR: Signal %s don't have first route!",v.Name)) end
         count = count + 1
-        v:PreInitalize()
     end
     print(Format("MPLR: Total signals: %u (normal: %u, repeaters: %u)", count, count-repeater, repeater))
 end
@@ -152,10 +145,6 @@ function UF.Save(name)
     for k,v in pairs(signals_ents) do
         if not Metrostroi.ARSSubSections[v] then
             local Routes = table.Copy(v.Routes)
-            for k,v in pairs(Routes) do
-                v.LightsExploded = nil
-                v.IsOpened = nil
-            end
             table.insert(signs,{
                 Class = "gmod_track_uf_signal",
                 Pos = v:GetPos(),
@@ -163,33 +152,22 @@ function UF.Save(name)
                 SignalType = v.SignalType,
                 Name = v.Name,
                 RouteNumberSetup = v.RouteNumberSetup,
-                LensesStr = v.LensesStr,
                 RouteNumber =   v.RouteNumber,
-                IsolateSwitches = v.IsolateSwitches,
-                ARSOnly = v.ARSOnly,
                 Routes = Routes,
-                Approve0 = v.Approve0,
-                TwoToSix = v.TwoToSix,
-                NonAutoStop = v.NonAutoStop,
                 Left = v.Left,
-                Double = v.Double,
-                DoubleL = v.DoubleL,
-                AutoStop = v.AutoStop,
                 PassOcc = v.PassOcc,
             })
         end
     end
     local switch_ents = ents.FindByClass("gmod_track_uf_switch")
-    for k,v in pairs(switch_ents) do
+    for k,v in ipairs(switch_ents) do
         table.insert(signs,{
-            Class = "gmod_track_switch",
+            Class = "gmod_track_uf_switch",
             Pos = v:GetPos(),
             Angles = v:GetAngles(),
             Name = v.Name,
-            Channel = v:GetChannel(),
             NotChangePos = v.NotChangePos,
             LockedSignal = v.LockedSignal,
-            Invertred = v.Invertred,
         })
     end
     --[[local signs_ents = ents.FindByClass("gmod_track_signs")
@@ -245,3 +223,193 @@ function UF.Save(name)
 end
 
 hook.Add("Metrostroi.Save","UFInjectSignals",UF.Save)
+
+function UF.Load(name,keep_signs)
+    if not Metrostroi then print("Quitting because Metrostroi not loaded") return end
+    name = name or game.GetMap()
+
+    --loadTracks(name)
+
+    -- Initialize stations list
+    UF.UpdateStations()
+    -- Print info
+    UF.PrintStatistics()
+
+    -- Ignore updates to prevent created/removed switches from constantly updating table of positions
+    Metrostroi.IgnoreEntityUpdates = true
+    UF.LoadSignalling(name,keep_signs)
+
+
+
+    timer.Simple(0.05,function()
+        -- No more ignoring updates
+        Metrostroi.IgnoreEntityUpdates = false
+        -- Load ARS entities
+        UF.UpdateSignalEntities()
+        -- Load switches
+        UF.UpdateSwitchEntities()
+    end)
+end
+hook.Add("Metrostroi.Load","UFLoadSignals",UF.Load)
+
+local function printTable(table, indent)
+    if not indent then indent = 0 end
+
+    for key, value in pairs(table) do
+        if type(value) == "table" then
+            print(string.rep("  ", indent) .. key .. "=")
+            printTable(value, indent + 1)
+        else
+            print(string.rep("  ", indent) .. key .. "= " .. tostring(value))
+        end
+    end
+end
+
+local function getFile(path,name,id)
+    local data,found
+    if file.Exists(Format(path..".txt",name),"DATA") then
+        print(Format("MPLR: Loading %s definition...",id))
+        data= util.JSONToTable(file.Read(Format(path..".txt",name),"DATA"))
+        found = true
+        printTable(data,1)
+    end
+    if not data and file.Exists(Format(path..".lua",name),"LUA") then
+        print(Format("MPLR: Loading default %s definition...",id))
+        data= util.JSONToTable(file.Read(Format(path..".lua",name),"LUA"))
+        found = true
+    end
+    if not found then
+        print(Format("%s definition file not found: %s",id,Format(path,name)))
+        return
+    elseif not data then
+        print(Format("Parse error in %s %s definition JSON",id,Format(path,name)))
+        return
+    end
+    return data
+end
+
+local function findKeyInNestedTable(table, keyToFind)
+    for key, value in pairs(table) do
+        if key == keyToFind then
+            return value
+        elseif type(value) == "table" then
+            local result = findKeyInNestedTable(value, keyToFind)
+            if result then
+                return result
+            end
+        end
+    end
+end
+
+function UF.LoadSignalling(name,keep)
+    if keep then return end
+    local signs = getFile("metrostroi_data/signs_%s",name,"Signal")
+
+    if not signs then return end
+
+    local signals_ents = ents.FindByClass("gmod_track_uf_signal")
+    for k,v in pairs(signals_ents) do SafeRemoveEntity(v) end
+    local switch_ents = ents.FindByClass("gmod_track_uf_switch")
+    for k,v in pairs(switch_ents) do SafeRemoveEntity(v) end
+    local signs_ents = ents.FindByClass("gmod_track_uf_signs")
+    for k,v in pairs(signs_ents) do SafeRemoveEntity(v) end
+
+    -- Create new entities (add a delay so the old entities clean up)
+    print("MPLR: Loading signs, signals, switches...")
+    local version
+    version = signs.Version
+    if not version then
+        print("MPLR: This signs file is incompatible with signs version")
+        signs = nil
+    else
+        signs.Version = nil
+    end
+    if version ~= 1.2 then
+        print(Format("MPLR: !!Converting from version %.1f!! signals converted to %s.",version,TwoToSix and "2/6" or "1/5"))
+    end
+    for k,v in pairs(signs) do
+        local ent = ents.Create(v.Class)
+        if IsValid(ent) then
+            ent:SetPos(v.Pos)
+            ent:SetAngles(v.Angles)
+            if v.Class == "gmod_track_switch" then
+                ---CHANGE
+                ent.LockedSignal = v.LockedSignal
+                ent.NotChangePos = v.NotChangePos
+                ent.Invertred = v.Invertred
+                ent.Name = v.Name,
+                ent:Spawn()
+            end
+            if v.Class == "gmod_track_uf_signal" then
+                ent.SignalType = v.SignalType
+                ent.Name = v.Name
+                ent.RouteNumber = v.RouteNumber
+                ent.IsolateSwitches = v.IsolateSwitches
+                ent.Routes = v.Routes
+                ent.Left = v.Left
+                ent:Spawn()
+            elseif v.Class == "gmod_track_uf_signs" then
+                ent.SignType = v.SignType
+                ent.YOffset = v.YOffset
+                ent.ZOffset = v.ZOffset
+                ent.Left = v.Left,
+                ent:Spawn()
+                ent:SendUpdate()
+            elseif v.Class == "gmod_track_uf_signal" then ent:Remove() end
+        end
+    end
+end
+
+function UF.PrintStatistics()
+    local totalLength = 0
+    for pathNo,path in pairs(Metrostroi.Paths) do
+        totalLength = totalLength + path.length
+    end
+
+    print(Format("Metrostroi / MPLR: Total %.3f km of paths defined:",totalLength/1000))
+    for pathNo,path in pairs(Metrostroi.Paths) do
+        print(Format("\t[%d] %.3f km (%d nodes)",path.id,path.length/1000,#path))
+    end
+
+    local count = #Metrostroi.SpatialLookup
+    local cells = {}
+    for _,z in pairs(Metrostroi.SpatialLookup) do
+        count = count + #z
+        for _,x in pairs(z) do
+            count = count + #x
+            for _,y in pairs(x) do
+                table.insert(cells,#y)
+            end
+        end
+    end
+    print(Format("Metrostroi: %d tables used for spatial lookup (%d cells)",count,#cells))
+    local maxn,avgn = 0,0
+    for k,v in pairs(cells) do maxn = math.max(maxn,v) avgn = avgn + v end
+    print(Format("Metrostroi: Most nodes in cell: %d, average nodes in cell: %.2f",maxn,avgn/#cells))
+end
+
+function UF.UpdateSwitchEntities()
+    if Metrostroi.IgnoreEntityUpdates then return end
+    Metrostroi.SwitchesForNode = {}
+    Metrostroi.SwitchesByName = {}
+
+    local entities = ents.FindByClass("gmod_track_uf_switch")
+    for k,v in pairs(entities) do
+        local pos = Metrostroi.GetPositionOnTrack(v:GetPos(),v:GetAngles() - Angle(0,90,0))[1]
+        if pos then
+            if not v.Name or v.Name == "" then
+                --pos.path.id.."/"..pos.node1.id
+                if not Metrostroi.SwitchesByName[pos.path.id] then Metrostroi.SwitchesByName[pos.path.id] = {} end
+                Metrostroi.SwitchesByName[pos.path.id][pos.node1.id] = v
+            end
+            Metrostroi.SwitchesForNode[pos.node1] = Metrostroi.SwitchesForNode[pos.node1] or {}
+            table.insert(Metrostroi.SwitchesForNode[pos.node1],v)
+            v.TrackPosition = pos -- FIXME: check that one switch belongs to one track
+        end
+        if v.Name and v.Name ~= "" then
+            Metrostroi.SwitchesByName[v.Name] = v
+        end
+
+    end
+    Metrostroi.PostSignalInitialize()
+end
