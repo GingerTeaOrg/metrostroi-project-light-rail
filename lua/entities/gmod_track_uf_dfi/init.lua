@@ -7,7 +7,7 @@ function ENT:Initialize()
 	
 	self:SetModel("models/lilly/uf/stations/dfi.mdl")
 	self:DropToFloor()
-	self.ValidLines = {["01"] = true, ["02"] = true, ["03"] = true, ["08"] = true}
+	self.ValidLines = {["01"] = true, ["02"] = true, ["03"] = true, ["04"] = true, ["05"] = true, ["06"] = true, ["08"] = true}
 	
 	self.DisplayedTrains = {}
 	
@@ -50,33 +50,33 @@ function ENT:Think()
 	self:SetNW2Int("Mode", self.Mode)
 	self:SetNW2String("Theme",self.CurrentTheme)
 	
-
-
-
 	
-	if not next(UF.IBISRegisteredTrains) then --either fall back to idle, train list, or current train display
+	
+	
+	
+	if not next(UF.IBISRegisteredTrains) or not Metrostroi.Paths then --either fall back to idle, train list, or current train display
 		self.Mode = 0
 	elseif self.Mode == 0 and next(UF.IBISRegisteredTrains) then
 		self.Mode = 1
 	end
-
+	
 	
 	
 	
 	if self.Mode > 0 then
 		
-		if CurTime() - self.LastRefresh > 2 then
+		if CurTime() - self.LastRefresh > 5 then
 			self.LastRefresh = CurTime()
 			print("Refreshing DFI")
-			self.ScannedTrains = self:ScanForTrains()
 			self.SortedTable = {}
 			self.WorkTable = {}--reset the table for next run
-			self.FilteredTable = {}
+			self.ScannedTrains = self:ScanForTrains()
+			
 		end
 	end
-
 	
-
+	
+	
 	if not self.ScannedTrains then return end --just quit if there's nothing to work with
 	--process everything into the list to be displayed on screen
 	local subtables = {}
@@ -90,12 +90,11 @@ function ENT:Think()
 	self.Train1, self.Train2, self.Train3, self.Train4 = unpack(subtables)  --take apart that table
 	if self.Train1 then
 		for k,v in pairs(self.Train1) do
-			local Train = k
-			if not Train.IBIS then self:Initialize() return end
+			local Train = v.train
 			self.Train1Ent = Train
 			self.Train1Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train1Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
-			self.Train1ETA = tostring(math.Round(math.Round(self.Train1[k] / 60)))
+			self.Train1ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train1ConsistLength = #Train.WagonList
 			self.Train1Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
 			self.Train1Vector = Vector(self.Train1Vector.x,self.Train1Vector.y,self.Train1Vector.z)
@@ -103,10 +102,10 @@ function ENT:Think()
 	end
 	if self.Train2 then
 		for k,v in pairs(self.Train2) do
-			local Train = k
+			local Train = v.train
 			self.Train2Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train2Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
-			self.Train2ETA = tostring(math.Round(math.Round(self.Train2[k] / 60)))
+			self.Train2ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train2ConsistLength = #Train.WagonList
 		end
 	else
@@ -116,10 +115,10 @@ function ENT:Think()
 	end
 	if self.Train3 then
 		for k,v in pairs(self.Train3) do
-			local Train = k
+			local Train = v.train
 			self.Train3Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train3Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
-			self.Train3ETA = tostring(math.Round(math.Round(self.Train3[k] / 60)))
+			self.Train3ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train3ConsistLength = #Train.WagonList
 		end
 	else
@@ -129,10 +128,10 @@ function ENT:Think()
 	end
 	if self.Train4 then
 		for k,v in pairs(self.Train4) do
-			local Train = k
+			local Train = v.train
 			self.Train4Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train4Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
-			self.Train4ETA = tostring(math.Round(math.Round(self.Train4[k] / 60)))
+			self.Train4ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train4ConsistLength = #Train.WagonList
 		end
 	else
@@ -147,7 +146,7 @@ function ENT:Think()
 	
 	self:SetNW2String("Train2Line",self.Train2Line)
 	self:SetNW2String("Train2Destination",self.Train2Destination)
-	self:SetNW2String("Train12Time",self.Train2ETA)
+	self:SetNW2String("Train2Time",self.Train2ETA)
 	
 	self:SetNW2String("Train3Line",self.Train3Line)
 	self:SetNW2String("Train3Destination",self.Train3Destination)
@@ -156,57 +155,58 @@ function ENT:Think()
 	self:SetNW2String("Train4Line",self.Train4Line)
 	self:SetNW2String("Train4Destination",self.Train4Destination)
 	self:SetNW2String("Train4Time",self.Train4ETA)
-
+	
+	
+	
 	if not next(UF.IBISRegisteredTrains) then --either fall back to idle, train list, or current train display
 		self.Mode = 0
 		
 	elseif tonumber(self.Train1ETA) > 0 then
 		self.Mode = 1
 	elseif tonumber(self.Train1ETA) == 0 then
-		for k,v in pairs(self.IgnoredTrains) do
-			if self.IgnoredTrains[k] == self.Train1Ent then
-				self.Mode = 1
-				break
-			else	
-				self.Mode = 2
-				table.insert(self.IgnoredTrains,self.Train1Ent)
-				break
-			end
-		end
+		
+		self.Mode = 2
+		
+		
 	end
 	
+end
+
+local function valueExists(table, value)
+    for _, v in ipairs(table) do
+        if v == value then
+            return true
+        end
+    end
+    return false
 end
 
 function ENT:ScanForTrains() --scrape all trains that have been logged into RBL, sort by distance, and display sorted by ETA
 	
 	
 	if not next(UF.IBISRegisteredTrains) then return end --No point in doing anything if there isn't a single train registered / table is empty
-
+	
 	-- Copy a simple list of registered trains
-	if not next(self.WorkTable) then --if it's empty we can simply insert it with no checks
-		for k,_ in pairs(UF.IBISRegisteredTrains) do --query the RBL dispatching table for logged in trains
-			if not k.IBIS or not tonumber(k.IBIS.Course) and not tonumber(k.IBIS.Route) then return end --guard against invalid values on the IBIS
-			if next(self.IgnoredTrains) then
-				for ky,val in pairs(self.IgnoredTrains) do
-					if val == k then
-						return
-					end
-				end
+
+	--[[for k,_ in pairs(UF.IBISRegisteredTrains) do
+		if not k.IBIS or not tonumber(k.IBIS.Route) then break end --guard against invalid values on the IBIS
+		for ke,val in pairs(self.WorkTable) do
+			if self.WorkTable[ke] ~= k then
+				table.insert(self.WorkTable,k)
+				print(k,val)
 			end
-			table.insert(self.WorkTable,k)
-			--print("insert to worktable",k)
 		end
-	elseif next(self.WorkTable) then --if the table isn't empty then we need to do some trickery
-		for k,_ in pairs(UF.IBISRegisteredTrains) do
-			for ke,v in pairs(self.WorkTable) do
-				if self.WorkTable[ke] == k then
-					break
-				else
-					table.insert(self.WorkTable,k)
-				end
-			end
+	end]]
+
+	for k,_ in pairs(UF.IBISRegisteredTrains) do
+		if not valueExists(self.WorkTable, k) then
+			table.insert(self.WorkTable,k)
+		else
+			break
 		end
 	end
+	
+	if #self.WorkTable < 1 then return end
 	
 	if #self.WorkTable > 4 then --let's cut it short. The display only ever does four different trains.
 		
@@ -222,50 +222,39 @@ function ENT:ScanForTrains() --scrape all trains that have been logged into RBL,
 			end
 		end
 	end
-	
-	for k,v in pairs(self.WorkTable) do
-		--print(k,v)
-		if self.WorkTable[k] ~= v then --only insert into work table when it isn't already there
-			table.insert(self.WorkTable,key)
-		end
-	end
 	if not next(self.WorkTable) then print("WorkTable Empty") return end --if nothing came of that, just exit
+	--if next(self.WorkTable) then print("WorkTable Length:", #self.WorkTable) end
 	
-	--open a filtered table. there should be some mechanism for defining which lines the display responds to
 
-	for k,v in pairs(self.WorkTable) do
-		local FilteredTrain = v
-		if not FilteredTrain.IBIS then print("Can't find IBIS on train", v) return end
-		if self.ValidLines[FilteredTrain.IBIS.CourseChar1..FilteredTrain.IBIS.CourseChar2] then
-			print("Train is on allowed line")
-			table.insert(self.FilteredTable,FilteredTrain)
+	
+	for k, v in ipairs(self.WorkTable) do
+		if not self.SortedTable[k] then
+			table.insert(self.SortedTable, {train = v, ETA = self:TrackETA(v)}) -- Insert a train and its ETA into the table
+		else
+			print("Train already exists in table; bailing")
+			break
 		end
 	end
 
-	if next(self.FilteredTable) then
-		for k, v in pairs(self.FilteredTable) do
-			if not self.SortedTable[k] then
-				self.SortedTable[v] = self:TrackETA(v) -- Insert a train and its ETA into the table
-			else
-				print("Train already exists in table; bailing")
-				break
-			end
-		end
-	else
-		print("FilteredTable is empty")
-		return
+	--now actually sort the table
+	table.sort(self.SortedTable, function(a, b) return a.ETA < b.ETA end)
+
+	local count = 0
+	for _ in pairs(self.SortedTable) do
+    	count = count + 1
 	end
 	
 
+	self.Train1Entry = count < 2 and count > 0
+	self.Train2Entry = count < 3 and count > 1
+	self.Train3Entry = count < 4 and count > 2
+	self.Train4Entry = count < 5 and count > 3
 
-	if next(self.SortedTable) then --now actually sort the table if it exists
-		table.sort(self.SortedTable,function(a, b) return a[2] > b[2] end)
-	elseif not next(self.SortedTable) then
-		print("SortedTable empty")
-		return
-	end
-	
 
+	self:SetNW2Bool("Train1Entry",self.Train1Entry) --We only display the entries that actually exist. Tell the client.
+	self:SetNW2Bool("Train2Entry",self.Train2Entry)
+	self:SetNW2Bool("Train3Entry",self.Train3Entry)
+	self:SetNW2Bool("Train4Entry",self.Train4Entry)
 
 	return self.SortedTable --return the shite
 	
