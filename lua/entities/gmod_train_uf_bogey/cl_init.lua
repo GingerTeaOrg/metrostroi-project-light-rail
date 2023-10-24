@@ -29,8 +29,12 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 
 ENT.EngineSNDConfig = {
     {
-        {"u2_1" ,40,00,16,1}, --initial speed, 
-        {"u2_2" ,80,40,24,1},
+        {"u2_1" ,80,0,80,0.5}, --initial speed, 
+        --{"u2_2" ,40,36,80,1},
+    },
+    {
+        {"u3_1" ,10,0,42,1}, --initial speed, 
+        {"u3_2" ,38,80,100,1},
     },
 }
 
@@ -120,20 +124,24 @@ function ENT:Think()
     end
 
     local speed = self:GetSpeed()
+    local temp = self.EngineSNDConfig[self.MotorSoundType]
 
     -- Engine sound
     local motorPower = self:GetMotorPower()*(1+math.max(0,(speed-55)/35)*0.4)
     if self.MotorSoundType ~= self:GetNWInt("MotorSoundType",1) or self.DisableEngines ~= self:GetNWBool("DisableEngines") then
         if self.MotorSoundType then
             for _,snd in ipairs(self.EngineSNDConfig[self.MotorSoundType+1]) do
+                print(snd)
                 self:SetSoundState(snd[1],0,0)
             end
         end
 
         self.MotorSoundType = self:GetNWInt("MotorSoundType",1)
         self.DisableEngines = self:GetNWBool("DisableEngines")
-        self.MotorSoundArr = self.EngineSNDConfig [self.MotorSoundType+1]
+        
+        self.MotorSoundArr = self.EngineSNDConfig[self.MotorSoundType]
     end
+    self.MotorSoundArr = self.EngineSNDConfig[self.MotorSoundType]
 
     if not self.DisableEngines and self.MotorSoundArr then
         self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1.5,1.5)
@@ -167,6 +175,7 @@ function ENT:Think()
                 end
                 local pitch = math.max(0,speed/snd[2])+0.06*streetC
                 self:SetSoundState(snd[1],motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2))
+                
             end
         end
     end
