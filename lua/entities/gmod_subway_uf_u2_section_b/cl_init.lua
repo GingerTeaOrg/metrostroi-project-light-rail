@@ -631,7 +631,6 @@ function ENT:UpdateWagonNumber()
                 end
             end
             --end
-            print(num1,num2,num3)
         end
     end
     
