@@ -90,7 +90,7 @@ ENT.SubwayTrain = {Type = "B", Name = "B-Wagen Series 1973", WagType = 0, Manufa
 ENT.AnnouncerPositions = {{Vector(293, 44, 102)}, {Vector(293, -44, 102)}}
 
 
-ENT.NumberRanges = {{5001, 5011}{5012, 5016},{5031, 5032},{5012, 5016},{5141, 5145}}
+ENT.NumberRanges = {{5001, 5011},{5012, 5016},{5031, 5032},{5012, 5016},{5141, 5145}}
 
 ENT.Spawner = {
 	model = {"models/lilly/mplr/ruhrbahn/b_1970/section-a.mdl"},
