@@ -65,7 +65,7 @@ function ENT:Think()
 	
 	if self.Mode > 0 then
 		
-		if CurTime() - self.LastRefresh > 5 then
+		if CurTime() - self.LastRefresh > 30 then
 			self.LastRefresh = CurTime()
 			print("Refreshing DFI")
 			self.SortedTable = {}

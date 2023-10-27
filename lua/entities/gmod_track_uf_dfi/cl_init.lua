@@ -218,7 +218,9 @@ function ENT:Draw()
 	if mode == 2 then
 		
 		local pos = self:LocalToWorld(Vector(-25, 96, 169))
+		local pos2 = self:LocalToWorld(Vector(-10, 106, 169))
 		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
+		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 95.6))
 		cam.Start3D2D(pos, ang, 0.03)
 		self:PrintText(-8, 0, self.LineString1, "Lumino_Big")
 		self:PrintText(-5.1, 0, self:GetNW2String("Train1Destination", "Testbahnhof"), "Lumino_Big")
@@ -226,22 +228,64 @@ function ENT:Draw()
 		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
 		self:PrintText(10.3, 12.5, "____", "Lumino")
 		self:PrintText(9.1, 13.1, ":", "Lumino")
+		cam.End3D2D()
+		cam.Start3D2D(pos2, ang2, 0.03)
+		self:PrintText(-8, 0, self.LineString1, "Lumino_Big")
+		self:PrintText(-5.1, 0, self:GetNW2String("Train1Destination", "Testbahnhof"), "Lumino_Big")
+		--self:PrintText(-5, 6, self:GetNW2String("TrainVia", "über Testplatz"), "Lumino")
+		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
+		self:PrintText(10.3, 12.5, "____", "Lumino")
+		self:PrintText(9.1, 13.1, ":", "Lumino")
 		
-		-- self:PrintText(9.7,12.4,"_","Lumino")
-		-- self:PrintText(9.33,13,".","Lumino Dot")
-		-- self:PrintText(10.5,12.4,"_","Lumino")
-		-- self:PrintText(10.94,13,".","Lumino Dot")
-		--[[self:PrintText(9.55,12.4,"_","Lumino")
-		self:PrintText(10.3,12.4,"_","Lumino")
-		self:PrintText(11.05,12.4,"_","Lumino")
-		self:PrintText(11.8,12.4,"_","Lumino")
-		self:PrintText(12.55,12.4,"_","Lumino")]]
 		cam.End3D2D()
 	elseif mode == 1 then
 		
 		local pos = self:LocalToWorld(Vector(-38.5, 96, 169.2))
+		local pos2 = self:LocalToWorld(Vector(-12, 105.88, 169))
 		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
+		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 95.6))
 		cam.Start3D2D(pos, ang, 0.03)
+		
+		---------------------------------------------------------------------------------
+		self:PrintText(-1.5, 0, self.LineString1, "Lumino_Big")
+		self:PrintText(1, 0, self.Train1Destination, "Lumino")
+		if #self.Train1Time == 2 then
+			self:PrintText(25, 0, self:GetNW2String("Train1Time", "10"), "Lumino")
+		elseif #self.Train1Time == 1 then
+			self:PrintText(26, 0, self:GetNW2String("Train1Time", "5"), "Lumino")
+		end
+		---------------------------------------------------------------------
+		if self.Train2Entry == true then
+			self:PrintText(-1.5, 6, self.LineString2, "Lumino_Big")
+			self:PrintText(1, 6, self.Train2Destination, "Lumino")
+			if #self.Train2Time == 2 then
+				self:PrintText(25, 6, self.Train2Time, "Lumino")
+			elseif #self.Train2Time == 1 then
+				self:PrintText(26, 6, self.Train2Time, "Lumino")
+			end
+		end
+		----------------------------------------------------------------------
+		if self.Train3Entry == true then
+			self:PrintText(-1.5, 12, self.LineString3, "Lumino_Big")
+			self:PrintText(1, 12, self.Train3Destination, "Lumino")
+			if #self.Train3Time == 2 then
+				self:PrintText(25, 12, self.Train3Time, "Lumino")
+			elseif #self.Train3Time == 1 then
+				self:PrintText(26, 12, self.Train3Time, "Lumino")
+			end
+		end
+		-------------------------------------------------------------------------------
+		if self.Train4Entry == true then
+			self:PrintText(-1.5, 18, self.LineString4, "Lumino_Big")
+			self:PrintText(1, 18, self.Train4Destination, "Lumino")
+			if #self.Train4Time == 2 then
+				self:PrintText(25, 18, self.Train4Time, "Lumino")
+			elseif #self.Train4Time == 1 then
+				self:PrintText(26, 18, self.Train4Time, "Lumino")
+			end
+		end
+		cam.End3D2D()
+		cam.Start3D2D(pos2, ang2, 0.03)
 		
 		---------------------------------------------------------------------------------
 		self:PrintText(-1.5, 0, self.LineString1, "Lumino_Big")
@@ -286,8 +330,23 @@ function ENT:Draw()
 		
 	elseif mode == 0 then
 		local pos = self:LocalToWorld(Vector(-25, 96, 169))
+		local pos2 = self:LocalToWorld(Vector(-12, 105.88, 169))
 		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
+		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 95.6))
 		cam.Start3D2D(pos, ang, 0.03)
+		-- surface.SetDrawColor(255, 255, 255, 255)
+		-- surface.DrawRect(0, 0, 256, 320)
+		
+		draw.Text({
+			text = "Auf Zugschild achten!",
+			font = "Lumino", -- ..self:GetNW2Int("Style", 1),
+			pos = {204, 110},
+			xalign = TEXT_ALIGN_CENTER,
+			yalign = TEXT_ALIGN_LEFT,
+			color = Color(255, 136, 0)
+		})
+		cam.End3D2D()
+		cam.Start3D2D(pos2, ang2, 0.03)
 		-- surface.SetDrawColor(255, 255, 255, 255)
 		-- surface.DrawRect(0, 0, 256, 320)
 		
