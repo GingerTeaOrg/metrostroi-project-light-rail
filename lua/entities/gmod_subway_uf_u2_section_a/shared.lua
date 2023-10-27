@@ -19,7 +19,10 @@ function ENT:PassengerCapacity() return 81 end
 function ENT:GetStandingArea()
 	return Vector(350, -20, 25), Vector(60, 20, 25) -- TWEAK: NEEDS TESTING INGAME
 end
-
+if CLIENT then
+	ENT.DecalPos = Vector(0, 0, 0)
+	ENT.CarNumPos = Vector(0, 0, 0)
+end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop = 0.01, "lilly/uf/u2/Bell_start.mp3", "lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}
@@ -170,22 +173,50 @@ function ENT:InitializeSounds()
 end
 
 ENT.AnnouncerPositions = {{Vector(420, -38.2, 80)}, {Vector(420, 38.2, 80)}}
-if CLIENT then
-	ENT.DecalPos = Vector(0, 0, 0)
-	ENT.CarNumPos = Vector(0, 0, 0)
-end
-local function GetDoorPosition(i, k)
 
-	-- math.random
-	return Vector(450, 0,5)
+
+
+function ENT:ReturnOpenDoors()
+	for k,v in ipairs(self.DoorStatesRight) do
+		
+		if v > 0.9 and k < 3 then
+			self.RightDoorPositions[k] = self.DoorVectorsRight[k]
+		elseif v > 0.9 and k > 2 then
+			self.u2sectionb.RightDoorPositions[k] = self.DoorVectorsRight[k]
+		elseif v < 0.9 and k < 3 then
+			self.RightDoorPositions[k] = nil
+		elseif v < 0.9 and k > 2 then
+			self.u2sectionb.RightDoorPositions[k] = nil
+		end
+		
+	end
+	for k,v in ipairs(self.DoorStatesLeft) do
+
+		if v > 0.9 and k < 3 then
+			self.u2sectionb.LeftDoorPositions[k] = self.DoorVectorsLeft[k]
+		elseif v > 0.9 and k > 2 then
+			self.LeftDoorPositions[k] = self.DoorVectorsLeft[k]
+		elseif v < 0.9 and k < 3 then
+			self.u2sectionb.LeftDoorPositions[k] = nil
+		elseif v < 0.9 and k > 2 then
+			self.LeftDoorPositions[k] = nil
+		end
+	end
 end
+
+ENT.DoorVectorsLeft = { [1] = Vector(-360,45.1,22.5),
+					    [2] = Vector(-118,45.1,22.5),
+						[3] = Vector(118,45.1,22.5),
+						[4] = Vector(360,45.1,22.5)}
+
+ENT.DoorVectorsRight = {[1] = Vector(360,-45.1,22.5),
+						[2] = Vector(118,-45.1,22.5),
+						[3] = Vector(-118,-45,22.5),
+						[4] = Vector(-360,-45.1,22.5)}
 
 ENT.LeftDoorPositions = {}
 ENT.RightDoorPositions = {}
-for i = 0, 3 do
-	table.insert(ENT.LeftDoorPositions, GetDoorPosition(i, k))
-	table.insert(ENT.RightDoorPositions, GetDoorPosition(i, k))
-end
+
 
 ENT.Cameras = {
 	{Vector(400, -55, 90), Angle(0, -170, 0), "Train.UF_U2.OutTheWindowRight"},
@@ -214,7 +245,7 @@ function ENT:InitializeSystems()
 	-- self:LoadSystem("duewag_electric")
 end
 
-ENT.SubwayTrain = {Type = "U2", Name = "U2h", WagType = 0, Manufacturer = "Düwag"}
+ENT.SubwayTrain = {Type = "U2", Name = "U2h", WagType = 0, Manufacturer = "Duewag"}
 
 ENT.AnnouncerPositions = {{Vector(293, 44, 102)}, {Vector(293, -44, 102)}}
 function ENT:DeltaTime()
@@ -360,9 +391,9 @@ ENT.Spawner = {
 		"Rollsign Texture",
 		"List",
 		function(ent)
-			local Announcer = {}
-			for k, v in pairs(UF.U2Rollsigns or {}) do Announcer[k] = v.name end
-			return Announcer
+			local Rollsigns = {}
+			for k, v in pairs(UF.U2Rollsigns or {}) do Rollsigns[k] = v.name end
+			return Rollsigns
 		end,
 		nil,
 		function(ent, val, rot, i, wagnum, rclk)

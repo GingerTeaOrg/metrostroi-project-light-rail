@@ -1723,7 +1723,7 @@ function ENT:DrawPost()
 		surface.DrawTexturedRectRotated(59, 16, 116, 25, 0)
 	end)
 
-	local mat = Material("models/lilly/uf/u2/rollsigns/frankfurt_stock.png")
+	local mat = self.Rollsign
 	self:DrawOnPanel("Rollsign", function(...)
 		surface.SetDrawColor(color_white)
 		surface.SetMaterial(mat)
@@ -1877,6 +1877,8 @@ function ENT:Initialize()
 	self:ShowHide("reverser", false)
 	self:UpdateWagonNumber()
 	-- self.u2sectionb:UpdateWagonNumber()
+
+	self.Rollsign = Material(self:GetNW2String("Rollsign","models/lilly/uf/u2/rollsigns/frankfurt_stock.png"),"vertexlitgeneric")
 end
 
 function ENT:Think()

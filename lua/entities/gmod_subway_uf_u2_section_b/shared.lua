@@ -21,6 +21,12 @@ function ENT:InitializeSystems()
 	self:LoadSystem("IBIS","IBIS_secondary")
 end
 
+function ENT:GetStandingArea()
+	return Vector(-350, -20, 25), Vector(-60, 20, 25) -- TWEAK: NEEDS TESTING INGAME
+end
+
+function ENT:PassengerCapacity() return 81 end
+
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	

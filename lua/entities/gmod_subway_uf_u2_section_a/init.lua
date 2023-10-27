@@ -433,8 +433,7 @@ function ENT:Initialize()
 		[KEY_PERIOD] = "BlinkerRightSet",
 
 		[KEY_COMMA] = "BlinkerLeftSet",
-		[KEY_MINUS] = "CycleIBISKey",
-		[KEY_PAD_MINUS] = "IBISkeyTurn",
+		[KEY_PAD_MINUS] = "IBISkeyTurnSet",
 
 		[KEY_LSHIFT] = {
 			[KEY_0] = "ReverserInsert",
@@ -1155,14 +1154,22 @@ function ENT:Think(dT)
 	end
 
 	if self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > 0 then
+		self:ReturnOpenDoors()
 		self.RightDoorsOpen = true
+		self.u2sectionb.RightDoorsOpen = true
 	else
+		self:ReturnOpenDoors()
 		self.RightDoorsOpen = false
+		self.u2sectionb.RightDoorsOpen = false
 	end
 	if self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0 or self.DoorStatesLeft[3] > 0 or self.DoorStatesLeft[3] > 0 then
+		self:ReturnOpenDoors()
 		self.LeftDoorsOpen = true
+		self.u2sectionb.LeftDoorsOpen = true
 	else
+		self:ReturnOpenDoors()
 		self.LeftDoorsOpen = false
+		self.u2sectionb.LeftDoorsOpen = false
 	end
 
 end
@@ -2078,10 +2085,10 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 
 				if v == 3 and self.DoorStatesRight[i] < 1 then
 					if self.DeltaTime > 0 or self.DeltaTime < 0 then
-						self.DoorStatesRight[i] = self.DoorStatesRight[i] + (0.8 * self.DeltaTime)
+						self.DoorStatesRight[i] = self.DoorStatesRight[i] + (0.8 * self.DeltaTime/8)
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					else
-						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.8
+						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.2
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					end
 				end
@@ -2104,10 +2111,10 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 			for i, v in ipairs(self.DoorRandomness) do
 				if v == 3 and self.DoorStatesLeft[i] < 1 then
 					if self.DeltaTime > 0 or self.DeltaTime < 0 then
-						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + (0.8 * self.DeltaTime)
+						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + (0.8 * self.DeltaTime/8)
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					else
-						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.8
+						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.2
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					end
 				end
@@ -2124,10 +2131,10 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 					if irStatus ~= "Sensor" .. i .. "Blocked" then
 						if v > 0 then
 							if self.DeltaTime > 0 or self.DeltaTime < 0 then
-								self.DoorStatesRight[i] = self.DoorStatesRight[i] - (0.8 * self.DeltaTime)
+								self.DoorStatesRight[i] = self.DoorStatesRight[i] - (0.8 * self.DeltaTime/8)
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							else
-								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.8
+								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.2
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							end
 						end
@@ -2142,10 +2149,10 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 					if irStatus ~= "Sensor" .. i + 4 .. "Blocked" then
 						if v > 0 then
 							if self.DeltaTime > 0 or self.DeltaTime < 0 then
-								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime)
+								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime/8)
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							else
-								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.8
+								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.2
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							end
 						end
@@ -2164,13 +2171,13 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 					if self.DeltaTime > 0 or self.DeltaTime < 0 then -- Check if dT is something we use
 						if self.DoorOpenMoments[i] == 0 then
 							-- Increase door state based on time (using dT)
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] + (0.8 * self.DeltaTime)
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] + (0.8 * self.DeltaTime/8)
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					else -- If dT is not usable
 						if self.DoorOpenMoments[i] == 0 then
 							-- Increase door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.8
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.2
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
@@ -2178,11 +2185,11 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 					if irStatus ~= "Sensor" .. i .. "Blocked" then
 						if self.DeltaTime > 0 or self.DeltaTime < 0 then
 							-- Decrease door state based on time (using dT)
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] - (0.8 * self.DeltaTime)
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] - (0.8 * self.DeltaTime/8)
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						else
 							-- Decrease door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.8
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.2
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
@@ -2202,7 +2209,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 				if v == 3 and self.DoorStatesLeft[i] < 1 then
 					if self.DeltaTime > 0 or self.DeltaTime < 0 then
 						if self.DoorOpenMoments[i] == 0 then
-							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + (0.8 * self.DeltaTime)
+							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + (0.8 * self.DeltaTime/8)
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							if self.DoorStatesLeft[i] == 1 then
 								self.DoorOpenMoments[i] = CurTime()
@@ -2210,17 +2217,17 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						end
 					else
 						if self.DoorOpenMoments[i] == 0 then
-							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.8
+							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.2
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						end
 					end
 				elseif self.DoorStatesLeft[i] > 0 and self.DoorOpenMoments[i] +5 < CurTime() then
 					if irStatus ~= "Sensor" .. i + 4 .. "Blocked" then
 						if self.DeltaTime > 0 or self.DeltaTime < 0 then
-							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime)
+							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime/8)
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						else
-							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.8
+							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.2
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						end
 					end
