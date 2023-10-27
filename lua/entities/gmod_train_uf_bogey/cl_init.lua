@@ -117,11 +117,10 @@ function ENT:Think()
     local train = self:GetNW2Entity("TrainEntity")
 
     local soundsmul = 1
-    local streetC,tunnelC = 0,1
-    if IsValid(train) then
-        streetC,tunnelC = train.StreetCoeff or 0,train.TunnelCoeff or 1
-        soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
-    end
+    local streetC,tunnelC = 1,1
+
+
+    --soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
 
     local speed = self:GetSpeed()
     local temp = self.EngineSNDConfig[self.MotorSoundType]
@@ -131,7 +130,7 @@ function ENT:Think()
     if self.MotorSoundType ~= self:GetNWInt("MotorSoundType",1) or self.DisableEngines ~= self:GetNWBool("DisableEngines") then
         if self.MotorSoundType then
             for _,snd in ipairs(self.EngineSNDConfig[self.MotorSoundType+1]) do
-                print(snd)
+                
                 self:SetSoundState(snd[1],0,0)
             end
         end
