@@ -95,6 +95,7 @@ function ENT:Think()
 			self.Train1Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train1Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train1ETA = tostring(math.Round(math.Round(v.ETA / 60)))
+			self.Train1Dist = v.DIST
 			self.Train1ConsistLength = #Train.WagonList
 			self.Train1Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
 			self.Train1Vector = Vector(self.Train1Vector.x,self.Train1Vector.y,self.Train1Vector.z)
@@ -107,6 +108,8 @@ function ENT:Think()
 			self.Train2Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train2ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train2ConsistLength = #Train.WagonList
+			self.Train2Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
+			self.Train2Vector = Vector(self.Train2Vector.x,self.Train2Vector.y,self.Train2Vector.z)
 		end
 	else
 		self.Train2Line = " " 
@@ -120,6 +123,8 @@ function ENT:Think()
 			self.Train3Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train3ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train3ConsistLength = #Train.WagonList
+			self.Train3Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
+			self.Train3Vector = Vector(self.Train3Vector.x,self.Train3Vector.y,self.Train3Vector.z)
 		end
 	else
 		self.Train3Line = " " 
@@ -133,6 +138,8 @@ function ENT:Think()
 			self.Train4Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train4ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train4ConsistLength = #Train.WagonList
+			self.Train4Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
+			self.Train4Vector = Vector(self.Train4Vector.x,self.Train4Vector.y,self.Train4Vector.z)
 		end
 	else
 		self.Train4Line = " " 
@@ -169,7 +176,7 @@ function ENT:Think()
 		
 		
 	end
-	
+
 end
 
 local function valueExists(table, value)
@@ -229,7 +236,8 @@ function ENT:ScanForTrains() --scrape all trains that have been logged into RBL,
 	
 	for k, v in ipairs(self.WorkTable) do
 		if not self.SortedTable[k] then
-			table.insert(self.SortedTable, {train = v, ETA = self:TrackETA(v)}) -- Insert a train and its ETA into the table
+			local eta,Dist = self:TrackETA(v)
+			table.insert(self.SortedTable, {train = v, ETA = eta, DIST = dist}) -- Insert a train and its ETA into the table
 		else
 			print("Train already exists in table; bailing")
 			break
