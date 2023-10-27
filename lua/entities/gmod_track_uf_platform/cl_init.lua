@@ -153,13 +153,7 @@ end
 -- Think loop that manages clientside models
 --------------------------------------------------------------------------------
 function ENT:Think()
-    --self.TestSound = CreateSound(self,Sound( "subway_stations_test1/orange_1.mp3" ))
-    --self.TestSound:SetDSP(117)
-    --self.TestSound:SetSoundLevel(105)
-    --self.TestSound:SetDSP(58)
-    --self.TestSound:Stop()
-    --self.TestSound:Play()
-    --self.TestSound:ChangeVolume(0.7)
+
     self.PrevTime = self.PrevTime or CurTime()
     self.DeltaTime = (CurTime() - self.PrevTime)
     self.PrevTime = CurTime()

@@ -56,9 +56,9 @@ function ENT:Initialize()
     end
 
     -- Drop to floor
-    self:DropToFloor()
-    if IsValid(self.PlatformStart) then self.PlatformStart:DropToFloor() end
-    if IsValid(self.PlatformEnd) then self.PlatformEnd:DropToFloor() end
+    --self:DropToFloor()
+    --if IsValid(self.PlatformStart) then self.PlatformStart:DropToFloor() end
+    --if IsValid(self.PlatformEnd) then self.PlatformEnd:DropToFloor() end
 
     -- Positions
     if IsValid(self.PlatformStart) then
@@ -100,34 +100,6 @@ function ENT:Initialize()
     for k,v in pairs(ars_ents) do
         local delta_z = math.abs(self.PlatformEnd.z-v:GetPos().z)
     end
-    --[[
-    self.NoEntry = {}
-    local position = Metrostroi.StationData and Metrostroi.StationData[self.StationIndex] and "outside" or "inside"
-    if Metrostroi.StationAnnouncesToEnd then
-        for i,route in ipairs(Metrostroi.WorkingStations) do
-            for k, station in ipairs(route) do
-                if station == self.StationIndex then
-                    local endst = route[self.PlatformIndex == 1 and #route or 1]
-                    if Metrostroi.StationAnnouncesToEnd[endst] then
-                        self.NoEntry.arr = Sound(Metrostroi.StationAnnouncesToEnd[endst][1]:Replace("inside",position))
-                        self.NoEntry.dep = Sound(Metrostroi.StationAnnouncesToEnd[endst][2]:Replace("inside",position))
-                    end
-                    break
-                end
-                if self.NoEntry.arr then break end
-            end
-        end
-    end
-    if not self.NoEntry.arr then
-        ErrorNoHalt("Metrostroi: Station "..self.VMF.PlatformStart.." can't choose no_entry sound!\n")
-        self.NoEntry.arr = Sound( "subway_stations/"..position.."/no_entry_arr.mp3" )
-        self.NoEntry.dep = Sound( "subway_stations/"..position.."/no_entry_dep.mp3" )
-    end
-    self.NoEntry.depot = Sound( "subway_stations/"..position.."/no_entry_depot.mp3" )
-    if Metrostroi.StationAnnouncesTo[self.StationIndex] and Metrostroi.StationAnnouncesTo[self.StationIndex][1] == self.PlatformIndex then
-        self.NoEntry.specarr = Sound(Metrostroi.StationAnnouncesTo[self.StationIndex][3])
-        self.NoEntry.specdep = Sound(Metrostroi.StationAnnouncesTo[self.StationIndex][4])
-    end]]
 end
 
 function ENT:OnRemove()
@@ -207,31 +179,35 @@ function ENT:GetDoorState()
     return false
 end
 
-ENT.TESTTEST = false
+
+function ENT:CheckDoorRandomness()
+    local train = v
+    local randomness = train.DoorRandomness
+
+    for _, value in pairs(randomness) do
+        if value ~= -1 then
+            return false
+        end
+    end
+    return true
+    
+end
+
+
 local dT = 0.25
 local trains  = {}
 function ENT:Think()
-    if not Metrostroi.Stations[self.StationIndex] then return end
+
+    --if not Metrostroi.Stations[self.StationIndex] then return end
     -- Send update to client
     self:SetNW2Int("WindowStart",self.WindowStart)
     self:SetNW2Int("WindowEnd",self.WindowEnd)
     self:SetNW2Int("PassengersLeft",self.PassengersLeft)
 
-    -- Check if any trains are at the platform
-    if Metrostroi.Stations[self.StationIndex]  then
-        self.MustPlayAnnounces = (not Metrostroi.Stations[self.StationIndex][self.PlatformIndex == 2 and 1 or 2] or self.PlatformIndex == 1)
-        self:SetNW2Bool("MustPlaySpooky",(not Metrostroi.Stations[self.StationIndex][self.PlatformIndex == 2 and 1 or 2]) and self.PlatformIndex == 1)
-        if self:GetNW2Bool("MustPlaySpooky") then
-        end
-        if not timer.Exists("metrostroi_station_announce_"..self:EntIndex()) and self.MustPlayAnnounces then
-            timer.Create("metrostroi_station_announce_"..self:EntIndex(),0,0,function() self:PlayAnnounce() end)
-        end
-        self.SyncAnnounces = self.InvertSides and Metrostroi.Stations[self.StationIndex][self.PlatformIndex == 2 and 1 or 2]
-        self:SetNW2Bool("MustPlayAnnounces",self.MustPlayAnnounces or self.InvertSides)
-    end
+
+
 
     local boardingDoorList = {}
-
     local CurrentTrain
     local TrainArrivedDist
 
@@ -248,19 +224,11 @@ function ENT:Think()
         if vertical_distance >= 192 or platform_distance >= 256 then continue end
 
         local minb,maxb = v:LocalToWorld(Vector(-480,0,0)),v:LocalToWorld(Vector(480,0,0)) --FIXME
-        --[[
-        local minb,maxb = v:WorldSpaceAABB() --FIXME
-        if (self:GetAngles()-v:GetAngles()):Forward().y > 0 then
-            local temp = maxb
-            maxb = minb
-            minb = temp
-        end
-        --local train_start     = (v:LocalToWorld(Vector(480,0,0)) - self.PlatformStart):Dot(self.PlatformDir) / (self.PlatformDir:Length()^2)
-        --local train_end           = (v:LocalToWorld(Vector(-480,0,0)) - self.PlatformStart):Dot(self.PlatformDir) / (self.PlatformDir:Length()^2)]]
         local train_start       = (maxb - self.PlatformStart):Dot(self.PlatformDir) / (self.PlatformDir:Length()^2)
         local train_end         = (minb - self.PlatformStart):Dot(self.PlatformDir) / (self.PlatformDir:Length()^2)
         local left_side         = train_start > train_end
         if self.InvertSides then left_side = not left_side end
+
 
         local doors_open        = left_side and v.LeftDoorsOpen or not left_side and v.RightDoorsOpen
         if (train_start < 0) and (train_end < 0) then doors_open = false end
@@ -384,7 +352,6 @@ function ENT:Think()
     self.BoardTime = BoardTime
     if CurrentTrain and not self.CurrentTrain then
         self.CurrentTrain = CurrentTrain
-        self:PlayAnnounce(1)
     elseif not CurrentTrain and self.CurrentTrain then
         self.CurrentTrain = nil
     end
@@ -410,23 +377,8 @@ function ENT:Think()
     end
 
     if self.OldOpened ~= self:GetDoorState() or self.OldPeopleGoing ~= PeopleGoing then
-        self.ARSOverride = true
         self.OldOpened = self:GetDoorState()
         self.OldPeopleGoing = PeopleGoing
-    end
-    -- Block local ARS sections
-    if self.ARSOverride ~= nil then
-        -- Signal override to all signals
-        local ars_ents = ents.FindInSphere(self.PlatformEnd,768)
-        for k,v in pairs(ars_ents) do
-            local delta_z = math.abs(self.PlatformEnd.z-v:GetPos().z)
-            if (v:GetClass() == "gmod_track_signal") and (delta_z < 128) then
-                v.OverrideTrackOccupied = self:GetDoorState()
-            end
-        end
-
-        -- Finish override
-        self.ARSOverride = nil
     end
     if self.BoardingDoorListLength ~= #boardingDoorList then
         -- Send boarding list FIXME make this nicer
