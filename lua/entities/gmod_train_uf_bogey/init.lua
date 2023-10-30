@@ -30,6 +30,13 @@ ENT.Types = {
         nil,
         Vector(4.3,-63,0),Vector(4.3,63,0),
     },
+    u3joint={
+        "models/lilly/uf/u3/jointbogey.mdl",
+        Vector(0,0.0,0),Angle(0,0,0),nil,
+        Vector(0,-61,-14),Vector(0,61,-14),
+        nil,
+        Vector(4.3,-63,0),Vector(4.3,63,0),
+    },
 	duewag_motor={
     "models/lilly/uf/bogey/duewag_motor.mdl",
     Vector(0,0.0,0),Angle(0,0,0),nil,
