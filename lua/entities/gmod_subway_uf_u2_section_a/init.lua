@@ -1538,14 +1538,8 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "DoorsCloseConfirmSet" then
-		if self:ReadTrainWire(16) > 0 and self:ReadTrainWire(6) > 0 then
-			self.DoorsPreviouslyUnlocked = false
-			self.DepartureConfirmed = true
-		else
-			self.DoorsPreviouslyUnlocked = false
-			self.DepartureConfirmed = true
-		end
-		self.CheckDoorsClosed = false
+		self.DoorsClosedAlarmAcknowledged = true
+		self.DepartureConfirmed = true
 	end
 
 	if button == "SetHoldingBrakeSet" then
@@ -2036,8 +2030,54 @@ ENT.CloseMomentsCalc = false
 
 function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
 	
-	
-	print(self.DeltaTime)
+	for i = 1, #self.WagonList do
+		if self:ReadTrainWire(6) < 1 then break end
+		if right then
+			local DoorStatesPerCar = self.WagonList[i].DoorStatesRight
+			for j = 1, 4 do
+				if DoorStatesPerCar[j] ~= 0 then
+					self.ArmDoorsClosedAlarm = true
+					self.DoorsClosed = false
+				end
+			end
+		elseif left then
+			local DoorStatesPerCar = self.WagonList[i].DoorStatesLeft
+			for j = 1, 4 do
+				if DoorStatesPerCar[j] ~= 0 then
+					self.ArmDoorsClosedAlarm = true
+					self.DoorsClosed = false
+				end
+			end
+		end
+	end
+	--simulate the relay system for triggering the departure chime
+	if right then
+		if self:ReadTrainWire(6) < 1 then
+			for i = 1, 4 do
+				if self.DoorStatesRight[i] ~= 0 then
+					self.ArmDoorsClosedAlarm = true
+					self.DoorsClosed = false
+				end
+				self.DoorsClosed = true
+			end
+		end
+	elseif left then
+		if self:ReadTrainWire(6) < 1 then
+			for i = 1, 4 do
+
+				if self.DoorStatesLeft[i] ~= 0 then
+					self.ArmDoorsClosedAlarm = true
+					self.DoorsClosed = false
+				end
+				self.DoorsClosed = true
+			end
+		end
+	end
+
+	self:SetNW2Bool("DoorsClosedAlarm",self.DoorsClosed and self.ArmDoorsClosedAlarm and not door1 and not self.DoorsClosedAlarmAcknowledged)
+
+
+
 	
 	--local irStatus = self:IRIS(self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > or self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0 or self.DoorStatesLeft[3] > 0 or self.DoorStatesLeft[4]) -- Call IRIS function to get IR gate sensor status, but only when the doors are open
 	local irStatus = self:IRIS(true)
@@ -2088,7 +2128,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						self.DoorStatesRight[i] = self.DoorStatesRight[i] + (0.8 * self.DeltaTime/8)
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					else
-						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.2
+						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.1
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					end
 				end
@@ -2114,7 +2154,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + (0.8 * self.DeltaTime/8)
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					else
-						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.2
+						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.1
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					end
 				end
@@ -2134,7 +2174,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 								self.DoorStatesRight[i] = self.DoorStatesRight[i] - (0.8 * self.DeltaTime/8)
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							else
-								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.2
+								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.1
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							end
 						end
@@ -2152,7 +2192,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime/8)
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							else
-								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.2
+								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.1
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							end
 						end
@@ -2177,7 +2217,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 					else -- If dT is not usable
 						if self.DoorOpenMoments[i] == 0 then
 							-- Increase door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.2
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.1
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
@@ -2189,7 +2229,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						else
 							-- Decrease door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.2
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.1
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
@@ -2217,7 +2257,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						end
 					else
 						if self.DoorOpenMoments[i] == 0 then
-							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.2
+							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.1
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						end
 					end
@@ -2227,7 +2267,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime/8)
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						else
-							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.2
+							self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.1
 							self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 						end
 					end
