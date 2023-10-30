@@ -1,6 +1,6 @@
 ENT.Type = "anim"
 ENT.Base = "gmod_subway_base"
-ENT.PrintName = "Düwag U2h"
+ENT.PrintName = "Duewag U2h"
 ENT.Author = "LillyWho"
 ENT.Contact = ""
 ENT.Purpose = ""
@@ -77,7 +77,7 @@ function ENT:InitializeSounds()
 		"lilly/uf/u2/overhaul/doorsareclosed_loop.mp3",
 		"lilly/uf/u2/overhaul/doorsareclosed_loop_end.mp3"
 	}
-	self.SoundPositions["DoorsCloseAlarm"] = {5, 1e9, Vector(412, 0, 53), 0.1}
+	self.SoundPositions["DoorsCloseAlarm"] = {10, 1e9, Vector(386, 20, 8, 0, 53), 0.1}
 
 	self.SoundNames["rolling_10"] = {loop = true, "lilly/uf/u2/Moto/engine_loop_start.mp3"}
 	self.SoundNames["rolling_70"] = {loop = true, "lilly/uf/u2/rumb1.mp3"}
