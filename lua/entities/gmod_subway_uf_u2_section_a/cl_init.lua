@@ -1841,6 +1841,7 @@ function ENT:Initialize()
 	self.DoorOpenSoundPlayed = false
 	self.DoorCloseSoundPlayed = false
 	self.DoorsOpen = false
+	self.ArmDoorCloseAlarm = false
 
 	self.CamshaftMadeSound = false
 	self.AnnouncementTriggered = false
@@ -1878,7 +1879,7 @@ function ENT:Initialize()
 	self:UpdateWagonNumber()
 	-- self.u2sectionb:UpdateWagonNumber()
 
-	self.Rollsign = Material(self:GetNW2String("Rollsign","models/lilly/uf/u2/rollsigns/frankfurt_stock.png"),"vertexlitgeneric")
+	self.Rollsign = Material(self:GetNW2String("Rollsign","models/lilly/uf/u2/rollsigns/frankfurt_stock.png"))
 end
 
 function ENT:Think()
@@ -2009,7 +2010,7 @@ function ENT:Think()
 	self:ShowHide("reverser", self:GetNW2Bool("ReverserInserted", false))
 
 	local Door12a = math.Clamp(self:GetNW2Float("Door12a"), 0, 1)
-	local Door34a = self:GetNW2Float("Door34a")
+	local Door34a = math.Clamp(self:GetNW2Float("Door34a"), 0, 1)
 
 	local Door56b = self:GetNW2Float("Door56b")
 	local Door78b = self:GetNW2Float("Door78b")
@@ -2025,6 +2026,7 @@ function ENT:Think()
 
 	self:Animate("Door_rl2", Door56b, 0, 100, 100, 10, 0)
 	self:Animate("Door_rl1", Door56b, 0, 100, 100, 10, 0)
+
 
 	if self:GetNW2Bool("Microphone", false) == true then
 		if self.Microphone == false then
@@ -2060,7 +2062,8 @@ function ENT:Think()
 	self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 80) / 100 * 1.5
 	self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
 	--self:Animate("Throttle", 0, -45, 45, 3, false, false)
-	self:SetSoundState("DoorsCloseAlarm", self:GetNW2Bool("DoorCloseAlarm", false) and 1 or 0, 1)
+	local alarm = self:GetNW2Bool("DoorsClosedAlarm", false)
+	self:SetSoundState("DoorsCloseAlarm", alarm and 80 or 0, 1)
 
 	if self:GetNW2Bool("DeadmanAlarmSound", false) == true or self:GetNW2Bool("TractionAppliedWhileStillNoDeadman", false) == true then
 		self:SetSoundState("Deadman", 1, 1)
@@ -2093,7 +2096,7 @@ function ENT:Think()
 			Door12aMove = false -- we're not moving
 			LastMove12a = 0 -- reset the timer
 		end
-		-- print(Door12aMove)
+		print(Door12aMove)
 		if Door12aMove == true and LastMove12a ~= 0 and not DoorsClosing then -- just in case the boolean isn't working reliably, the timer should suss it out
 			self:SetSoundState("Door_open1r", 1, 1) -- sound on
 		elseif not Door12aMove and LastMove12a == 0 and not DoorsClosing then
