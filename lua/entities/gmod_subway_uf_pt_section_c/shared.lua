@@ -1,7 +1,7 @@
 ENT.Type            = "anim"
 ENT.Base            = "gmod_subway_base"
-ENT.PrintName 		= "Düwag Pt"
-ENT.PrintNameTranslated       = "Düwag Pt"
+ENT.PrintName 		= "Duewag Pt"
+ENT.PrintNameTranslated       = "Duewag Pt"
 ENT.Author          = ""
 ENT.Contact         = ""
 ENT.Purpose         = ""
@@ -22,7 +22,7 @@ ENT.SubwayTrain = {
     Type = "P8",
     Name = "Pt",
     WagType = 1,
-    Manufacturer = "Düwag",
+    Manufacturer = "Duewag",
 }
 
 ENT.Spawner = {
@@ -30,5 +30,5 @@ ENT.Spawner = {
         "models/lilly/uf/pt/section-c.mdl",
         "models/lilly/uf/pt/section-ab.mdl"
     },
-    interim = "gmod_subway_uf_pt_section_c",
+    interim = "gmod_subway_uf_pt_section_ab",
 }
