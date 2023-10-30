@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u2/u2h/windows"
+	//"$translucent" 1
+	"$surfaceprop" "Glass"
+	"$model"	1
+	"$alphatest" 1
+	"$envmapmask" "models/lilly/uf/u2/u2h/windows-env"
+}

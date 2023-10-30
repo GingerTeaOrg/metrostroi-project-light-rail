@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u3/scheinwerfer"
+	"$alphatest" 1
+}
