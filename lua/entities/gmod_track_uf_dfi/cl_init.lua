@@ -241,9 +241,9 @@ function ENT:Draw()
 	elseif mode == 1 then
 		
 		local pos = self:LocalToWorld(Vector(-38.5, 96, 169.2))
-		local pos2 = self:LocalToWorld(Vector(-12, 105.88, 169))
+		local pos2 = self:LocalToWorld(Vector(5, 105.99, 169))
 		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
-		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 95.6))
+		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 96))
 		cam.Start3D2D(pos, ang, 0.03)
 		
 		---------------------------------------------------------------------------------
