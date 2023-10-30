@@ -65,12 +65,27 @@ function ENT:Think()
 	
 	if self.Mode > 0 then
 		
-		if CurTime() - self.LastRefresh > 30 then
+		if CurTime() - self.LastRefresh > 1 then
 			self.LastRefresh = CurTime()
 			print("Refreshing DFI")
 			self.SortedTable = {}
 			self.WorkTable = {}--reset the table for next run
 			self.ScannedTrains = self:ScanForTrains()
+
+			self.EntitiesInProximity = ents.FindInSphere(self:GetPos(),600)
+
+			for k,v in pairs(self.EntitiesInProximity) do
+				local prefix = "gmod_subway_uf_"
+    			local prefix2 = "gmod_subway_mplr_"
+    			if string.sub(v:GetClass(), 1, #prefix) == prefix or string.sub(v:GetClass(), 1, #prefix2) == prefix2 then
+					continue
+				else
+					self.EntitiesInProximity[k] = nil
+				end
+			end
+			for k,v in pairs(self.EntitiesInProximity) do
+				print(k,v)
+			end
 			
 		end
 	end
@@ -92,6 +107,7 @@ function ENT:Think()
 		for k,v in pairs(self.Train1) do
 			local Train = v.train
 			self.Train1Ent = Train
+			if not IsValid(self.Train1Ent) then break end
 			self.Train1Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train1Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train1ETA = tostring(math.Round(math.Round(v.ETA / 60)))
@@ -104,6 +120,8 @@ function ENT:Think()
 	if self.Train2 then
 		for k,v in pairs(self.Train2) do
 			local Train = v.train
+			if not IsValid(Train) then break end
+			self.Train2Ent = Train
 			self.Train2Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train2Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train2ETA = tostring(math.Round(math.Round(v.ETA / 60)))
@@ -119,6 +137,7 @@ function ENT:Think()
 	if self.Train3 then
 		for k,v in pairs(self.Train3) do
 			local Train = v.train
+			if not IsValid(Train) then break end
 			self.Train3Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train3Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train3ETA = tostring(math.Round(math.Round(v.ETA / 60)))
@@ -134,6 +153,7 @@ function ENT:Think()
 	if self.Train4 then
 		for k,v in pairs(self.Train4) do
 			local Train = v.train
+			if not IsValid(Train) then break end
 			self.Train4Line = string.sub(Train.IBIS.Course,1,2)
 			self.Train4Destination = Train:GetNW2String("IBIS:DestinationText","ERROR")
 			self.Train4ETA = tostring(math.Round(math.Round(v.ETA / 60)))
