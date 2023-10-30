@@ -120,7 +120,7 @@ else
         local train = net.ReadEntity()
         if not IsValid(train) or not train.RenderClientEnts then return end
         local snd = net.ReadString()
-        print(snd)
+        --print(snd)
         if train.AnnouncerPositions then
             
             for k, v in ipairs(train.AnnouncerPositions) do
