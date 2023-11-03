@@ -1540,6 +1540,9 @@ function ENT:OnButtonPress(button, ply)
 	if button == "DoorsCloseConfirmSet" then
 		self.DoorsClosedAlarmAcknowledged = true
 		self.DepartureConfirmed = true
+		if self.DoorsClosed == true then
+			self.ArmDoorsClosedAlarm = false
+		end
 	end
 
 	if button == "SetHoldingBrakeSet" then
@@ -2029,52 +2032,63 @@ ENT.CloseMoments = {}
 ENT.CloseMomentsCalc = false
 
 function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
-	
+	--simulate the relay system for triggering the departure chime. One for MU mode, one for SU mode.
 	for i = 1, #self.WagonList do
 		if self:ReadTrainWire(6) < 1 then break end
-		if right then
+		if right and not door1 then --exempt the door1 button, because that's not a passenger transfer. That's for special drivers' issues.
 			local DoorStatesPerCar = self.WagonList[i].DoorStatesRight
 			for j = 1, 4 do
 				if DoorStatesPerCar[j] ~= 0 then
 					self.ArmDoorsClosedAlarm = true
 					self.DoorsClosed = false
+					break --if even a single door is open, we don't need to check for anything else. Just quit because we've set the flag already.
+				else
+					self.DoorsClosed = true
 				end
 			end
-		elseif left then
+		elseif left and not door1 then
 			local DoorStatesPerCar = self.WagonList[i].DoorStatesLeft
 			for j = 1, 4 do
 				if DoorStatesPerCar[j] ~= 0 then
 					self.ArmDoorsClosedAlarm = true
 					self.DoorsClosed = false
+					break
+				else
+					self.DoorsClosed = true
 				end
 			end
 		end
 	end
-	--simulate the relay system for triggering the departure chime
-	if right then
+	
+	if right and not door1 then
 		if self:ReadTrainWire(6) < 1 then
 			for i = 1, 4 do
-				if self.DoorStatesRight[i] ~= 0 then
+				local DoorStatesPerCar = self.DoorStatesRight
+				if DoorStatesPerCar[i] ~= 0 then
 					self.ArmDoorsClosedAlarm = true
 					self.DoorsClosed = false
+					break
+				else
+					self.DoorsClosed = true
 				end
-				self.DoorsClosed = true
 			end
 		end
-	elseif left then
+	elseif left and not door1 then
 		if self:ReadTrainWire(6) < 1 then
 			for i = 1, 4 do
-
-				if self.DoorStatesLeft[i] ~= 0 then
+				local DoorStatesPerCar = self.DoorStatesLeft
+				if DoorStatesPerCar[i] ~= 0 then
 					self.ArmDoorsClosedAlarm = true
 					self.DoorsClosed = false
+					break
+				else
+					self.DoorsClosed = true
 				end
-				self.DoorsClosed = true
 			end
 		end
 	end
 
-	self:SetNW2Bool("DoorsClosedAlarm",self.DoorsClosed and self.ArmDoorsClosedAlarm and not door1 and not self.DoorsClosedAlarmAcknowledged)
+	self:SetNW2Bool("DoorsClosedAlarm",self.DoorsClosed and self.ArmDoorsClosedAlarm and not door1)
 
 
 
@@ -2128,7 +2142,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						self.DoorStatesRight[i] = self.DoorStatesRight[i] + (0.8 * self.DeltaTime/8)
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					else
-						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.1
+						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.25
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					end
 				end
@@ -2154,7 +2168,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + (0.8 * self.DeltaTime/8)
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					else
-						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.1
+						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.25
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					end
 				end
@@ -2174,7 +2188,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 								self.DoorStatesRight[i] = self.DoorStatesRight[i] - (0.8 * self.DeltaTime/8)
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							else
-								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.1
+								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.25
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							end
 						end
@@ -2192,7 +2206,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime/8)
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							else
-								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.1
+								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.25
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							end
 						end
@@ -2217,7 +2231,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 					else -- If dT is not usable
 						if self.DoorOpenMoments[i] == 0 then
 							-- Increase door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.1
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.5
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
@@ -2229,7 +2243,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						else
 							-- Decrease door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.1
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.5
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
