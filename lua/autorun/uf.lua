@@ -1,4 +1,3 @@
-
 if not UF and Metrostroi then
     -- Global library
     UF = {}
@@ -357,29 +356,29 @@ function UF.RegisterTrain(LineCourse, train) --Registers a train for the RBL sim
         AddCSLuaFile("uf/rollsigns/"..filename)
         include("uf/rollsigns/"..filename)
     end
-
+    
     if not UF.RoutingTable then
         UF.SwitchTable = {}
         UF.RoutingTable = {} --manually set routing table, for determining what IBIS Line/Route consists of what switch, where the switch needs to point, and what constitutes left or right 
     end
-
+    
     files = file.Find("uf/routing/*/*.lua","LUA")
     for _,filename in pairs(files) do
         AddCSLuaFile("uf/routing/"..filename)
         include("uf/routing/"..filename)
     end
-
     
-
-
-if SERVER then
-    files = file.Find("uf/sv*.lua","LUA")
-    for _,filename in pairs(files) do
-        AddCSLuaFile("uf/"..filename)
-        include("uf/"..filename)
+    
+    
+    
+    if SERVER then
+        files = file.Find("uf/sv*.lua","LUA")
+        for _,filename in pairs(files) do
+            AddCSLuaFile("uf/"..filename)
+            include("uf/"..filename)
+        end
     end
-end
-
-
-files = file.Find("uf/cl_*.lua","LUA")
-for _,filename in pairs(files) do AddCSLuaFile("uf/"..filename) end
+    
+    
+    files = file.Find("uf/cl_*.lua","LUA")
+    for _,filename in pairs(files) do AddCSLuaFile("uf/"..filename) end
