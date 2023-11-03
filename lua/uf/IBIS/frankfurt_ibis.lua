@@ -53,7 +53,7 @@ UF.AddIBISDestinations("Frankfurt", {
 		[703] = "SONDERWAGEN NICHT EINSTEIGEN",
 		[704] = "Eissporthalle",
 		[707] = "Konstablerwache",
-		[708] = "Seckbacker Ldstr",
+		[708] = "Seckbacher Ldstr",
 		[709] = "Hauptbahnhof",
 		[710] = "Heddernheim",
 		[711] = "Ginnheim",
