@@ -14,7 +14,7 @@ ENT.SkinsType = "U2h"
 
 ENT.DontAccelerateSimulation = true
 
-function ENT:PassengerCapacity() return 81 end
+function ENT:PassengerCapacity() return 50 end
 
 function ENT:GetStandingArea()
 	return Vector(350, -20, 25), Vector(60, 20, 25) -- TWEAK: NEEDS TESTING INGAME
