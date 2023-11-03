@@ -30,7 +30,7 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 ENT.EngineSNDConfig = {
     {
         {"u2_1" ,80,0,80,0.5}, --initial speed, 
-        --{"u2_2" ,40,36,80,1},
+        {"u2_2" ,40,30,80,0.5},
     },
     {
         {"u3_1" ,10,0,42,1}, --initial speed, 
@@ -116,8 +116,9 @@ function ENT:Think()
     -- Get interesting parameters
     local train = self:GetNW2Entity("TrainEntity")
 
-    local soundsmul = 1
-    local streetC,tunnelC = 1,1
+    local soundsmul = 10
+    local streetC,tunnelC = 0,0
+
 
 
     --soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
