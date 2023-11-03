@@ -113,6 +113,12 @@ function ENT:Initialize()
 	
 	
 	self.AnnouncementPlayed = false
+
+	self.Abbreviations = {	["Ldstr"] = "Landstr.",
+							["Pl"] = "Platz",
+							["Hhmrk"] = "Hohemark",
+							["Bmmrsh"] = "Bommersheim",
+							}
 	
 	
 end
@@ -127,10 +133,11 @@ function ENT:PrintText(x, y, text, font)
 end
 
 function ENT:Think()
+	
 	local mode = self:GetNW2Int("Mode", 0)
 	self.Theme = self:GetNW2String("Theme","Frankfurt")
 	
-	self.Destination = self:GetNW2String("Train1Destination", "Testbahnhof")
+
 	if self.Theme == "Frankfurt" or self.Theme == "Essen" or self.Theme == "Duesseldorf" then
 		if string.sub(self:GetNW2String("Train1Line", "04"),1,1) == "0" then
 			self.LineString1 = "U" .. string.sub(self:GetNW2String("Train1Line", "U4"), 2,2)
@@ -181,7 +188,7 @@ function ENT:Think()
 		self.AnnouncementPlayed = true
 		if self.Theme == "Frankfurt" then
 			if self.Destination1 ~= "Leerfahrt" and self.Destination1 ~= "PROBEWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= "FAHRSCHULE NICHT EINSTEIGEN" and self.Destination1 ~= "SONDERWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= " " then
-				self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString1.." ".."Richtung".." "..self.Destination..".mp3", 2, 1, 1, 1, self:GetPos())
+				self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString1.." ".."Richtung".." "..self.Destination1..".mp3", 2, 1, 1, 1, self:GetPos())
 			else
 				self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/Bitte Nicht Einsteigen.mp3", 2, 1, 1, 1, self:GetPos())
 			end
@@ -206,8 +213,18 @@ function ENT:Think()
 	self.Train3Entry = self:GetNW2Bool("Train3Entry",false)
 	self.Train4Entry = self:GetNW2Bool("Train4Entry",false)
 
-
+	self.Train1Destination = self:SubstituteAbbreviation(self.Train1Destination)
 	
+end
+
+function ENT:SubstituteAbbreviation(Input)
+	for k,v in pairs(self.Abbreviations) do
+		if string.find(Input,k,1,true) then
+			output = string.gsub(Input,k,self.Abbreviations[k],1)
+		end
+	end
+	print(output)
+	return output
 end
 
 function ENT:Draw()
@@ -223,15 +240,15 @@ function ENT:Draw()
 		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 95.6))
 		cam.Start3D2D(pos, ang, 0.03)
 		self:PrintText(-8, 0, self.LineString1, "Lumino_Big")
-		self:PrintText(-5.1, 0, self:GetNW2String("Train1Destination", "Testbahnhof"), "Lumino_Big")
+		self:PrintText(-5.1, 0, self.Train1Destination, "Lumino_Big")
 		--self:PrintText(-5, 6, self:GetNW2String("TrainVia", "über Testplatz"), "Lumino")
 		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
 		self:PrintText(10.3, 12.5, "____", "Lumino")
-		self:PrintText(9.1, 13.1, ":", "Lumino")
+		self:PrintText(9.1, 13.1, ".", "Lumino")
 		cam.End3D2D()
 		cam.Start3D2D(pos2, ang2, 0.03)
 		self:PrintText(-8, 0, self.LineString1, "Lumino_Big")
-		self:PrintText(-5.1, 0, self:GetNW2String("Train1Destination", "Testbahnhof"), "Lumino_Big")
+		self:PrintText(-5.1, 0, self.Train1Destination, "Lumino_Big")
 		--self:PrintText(-5, 6, self:GetNW2String("TrainVia", "über Testplatz"), "Lumino")
 		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
 		self:PrintText(10.3, 12.5, "____", "Lumino")
