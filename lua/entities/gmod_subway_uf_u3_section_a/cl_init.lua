@@ -47,6 +47,26 @@ ENT.ButtonMap["Rollsign"] = {
 	}
 }
 
+ENT.ButtonMap["Dashboard1"] = {
+	pos = Vector(464, 33, 68.4),
+	ang = Angle(0, -90, 9),
+	width = 370,
+	height = 50,
+	scale = 0.069,
+
+	buttons = {}
+}
+
+ENT.ButtonMap["Dashboard2"] = {
+	pos = Vector(466, 33, 71.25),
+	ang = Angle(0, -90, 54.4),
+	width = 370,
+	height = 50,
+	scale = 0.069,
+
+	buttons = {}
+}
+
 ENT.Lights = {
 	-- Headlight glow
 	[1] = {
@@ -309,6 +329,24 @@ function ENT:Think()
 	self.DeltaTime = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
 	self.ScrollModifier = 0.548
+
+	local Door12a = math.Clamp(self:GetNW2Float("Door12a"), 0, 1)
+	local Door34a = math.Clamp(self:GetNW2Float("Door34a"), 0, 1)
+
+	local Door56b = self:GetNW2Float("Door56b")
+	local Door78b = self:GetNW2Float("Door78b")
+
+	self:Animate("Door_fr2", Door12a, 0, 100, 100, 10, 0)
+	self:Animate("Door_fr1", Door12a, 0, 100, 100, 10, 0)
+
+	self:Animate("Door_rr2", Door34a, 0, 100, 100, 10, 0)
+	self:Animate("Door_rr1", Door34a, 0, 100, 100, 10, 0)
+
+	self:Animate("Door_fl2", Door78b, 0, 100, 100, 10, 0)
+	self:Animate("Door_fl1", Door78b, 0, 100, 100, 10, 0)
+
+	self:Animate("Door_rl2", Door56b, 0, 100, 100, 10, 0)
+	self:Animate("Door_rl1", Door56b, 0, 100, 100, 10, 0)
 end
 
 function ENT:OnAnnouncer(volume) return self:GetPackedBool("AnnPlay") and volume or 0 end
