@@ -22,31 +22,37 @@ function ENT:Think()
 	self.PrevTime = CurTime()
     
     if self.PantoRaised == true then
-         self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
-         if self.SoundPlayed == false then
+        if not self.PantoMomentRegistered then
+            self.PantoMomentRegistered = true
+            self.PantoMoment = CurTime()
+        end
+        if self.SoundPlayed == false and CurTime() - self.PantoMoment > ((self.PantoHeight.z / 117 * 100) / 100) * 1.5 then --calculate the current percentage of the panto pased on the maximum extension. Extending the panto to full takes 1.5sec, calculate how long it takes at every height.
             self.SoundPlayed = true
-            if self:GetNW2Bool("HitWire",false) then
-                self:PlayOnceFromPos("plonk","lilly/uf/common/panto_applied.mp3",2,1,0,2,self:GetPos() + Vector(0,0,self.PantoHeight.z))
-            end
-         end
+            
+            self:PlayOnceFromPos("plonk","lilly/uf/common/panto_applied.mp3",2,1,0,2,self:GetPos() + Vector(0,0,self.PantoHeight.z))
+            
+        end
+        self.PantoHeight = self:GetNW2Vector("PantoHeight",Vector(0,0,0))
+         
     elseif self.PantoRaised == false then
          self.PantoHeight = Vector(0,0,0)
          self.SoundPlayed = false
+         self.FirstRaise = true
+         self.PantoMomentRegistered = false
     end
     self.PantoHeight.z = math.Round(self.PantoHeight.z,2)
     self:Draw()
-
+    print(self.PantoHeight.z)
 end
 
 function ENT:Draw()
     self:DrawModel()
     --self:Debug()
     if self.PantoRaised == true then
-        if self.FirstRaise then
-            self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,20,0,0.01))
+        if self.FirstRaise == true then
+            self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,1.5,2,0))
         else
             self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,0.1,1,1))
-            self.FirstRaise = false
         end
        
     else
@@ -108,8 +114,8 @@ function ENT:Animate(clientProp, value, min, max, speed, damping, stickyness)
 end
 
 function ENT:Debug()
-    local mins = self:GetNWVector("mins",Vector(-2,-24,0))
-    local maxs = self:GetNWVector("maxs",Vector(2,24,3))
+    local mins = self:GetNWVector("mins",Vector(-24,-24,0))
+    local maxs = self:GetNWVector("maxs",Vector(24,24,3))
     --print(self:GetPos())
-    render.DrawWireframeBox( self:GetPos(), self:WorldToLocalAngles(Angle(0, 0, 0)), Vector( -2,-24,0 ), Vector(maxs.x,maxs.y,self.PantoHeight.z), Color( 255, 255, 255 ), true )
+    render.DrawWireframeBox( self:GetPos(), self:GetAngles(), Vector( -2,-24,0 ), Vector(maxs.x,maxs.y,self.PantoHeight.z), Color( 255, 255, 255 ), true )
 end

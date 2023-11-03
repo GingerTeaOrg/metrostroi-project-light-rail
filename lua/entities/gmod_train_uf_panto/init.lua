@@ -61,6 +61,7 @@ function ENT:Think()
     self.PrevTime = CurTime()
     
     local endscan = self:GetPos() + Vector(0,0,135)
+
     if self.Train.PantoUp == true then
         
 
@@ -75,11 +76,10 @@ function ENT:CheckContact(pos,dir)
     local result = util.TraceHull({
         start = pos,
         endpos = pos + dir * 117,
-        mask = 1174421507,
-        collisiongroup = 4,
-        filter = { self:GetNW2Entity("TrainEntity"), self }, --filter out the train entity and the panto itself
-        mins = Vector( -24,-3,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
-        maxs = Vector(24,3,2),
+        mask = MASK_SHOT_HULL,
+        filter = { self }, --filter out the panto itself
+        mins = Vector( -24,-24,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
+        maxs = Vector(24,24,2),
     })
     
     if not result.Hit then self:SetNW2Vector("PantoHeight",Vector(0,0,117)) return end --if nothing touches the panto, it can spring to maximum freely
