@@ -1,26 +1,20 @@
 include("shared.lua")
+ENT.flux = include("flux.lua")
+
+
 
 --------------------------------------------------------------------------------
 function ENT:Initialize()
-
+    
     self.RT = CreateMaterial( "bg", "VertexLitGeneric", {
         ["$basetexture"] = "color/white",
         ["$model"] = 1,
         ["$translucent"] = 1,
         ["$vertexalpha"] = 1,
         ["$vertexcolor"] = 1
-        } )
-
+    } )
+    
 end
-
-
-
-
-function ENT:OnRemove()
-
-end
-
-
 
 net.Receive("mplr-signal", function()
     local ent = net.ReadEntity()
@@ -28,7 +22,6 @@ net.Receive("mplr-signal", function()
     ent.Name = net.ReadString()
     ent.Name1 = net.ReadString()
     ent.Name2 = net.ReadString()
-    ent.Aspect = net.ReadString()
     ent.Left = net.ReadBool()
 end)
 
@@ -42,7 +35,7 @@ hook.Add("Think","MPLRRenderSignals", function()
     --if C_RenderDistance:GetInt() then
     --    local dist = C_RenderDistance:GetInt()
     --else
-        local dist = 8192
+    local dist = 8192
     --end
     for _,sig in pairs(ents.FindByClass("gmod_track_uf_signal*")) do
         if not IsValid(sig) then continue end
@@ -52,24 +45,34 @@ hook.Add("Think","MPLRRenderSignals", function()
 end)
 
 function ENT:Think()
+
     local CurTime = CurTime()
     self:SetNextClientThink(CurTime + 0.0333)
     self.PrevTime = self.PrevTime or RealTime()
     self.DeltaTime = (RealTime() - self.PrevTime)
     self.PrevTime = RealTime()
-
     
+    if not self.Name then
+        if self.Sent and (CurTime - self.Sent) > 0 then
+            self.Sent = nil
+        end
+        if not self.Sent then
+            net.Start("metrostroi-signal")
+            net.WriteEntity(self)
+            net.SendToServer()
+            self.Sent = CurTime + 1.5
+        end
+        return true
+    end
+    
+    self.Aspect = self:GetNW2String("Aspect","H0")
     self.SignalType = self:GetNW2String("Type")
-
-
-
-
 end
 
 
 
 function ENT:Draw()
-
+    
     
     -- Draw model
     self:DrawModel()
@@ -78,33 +81,75 @@ function ENT:Draw()
     local pos2 = self:LocalToWorld(Vector(7.5, 3.5, 117))
     rectangle = self:LocalToWorld(Vector(7.5, 3.99, 125))
     cam.Start3D2D(pos, ang, 0.05)
-        surface.SetMaterial(self.RT)
-        surface.SetDrawColor( 255, 255, 255, 255 )
-        surface.DrawTexturedRect(rectangle.x,rectangle.y,100,200)
-        self:PrintText(0, 0, self.Name1 or "ER", "Text",Color(78, 0, 0))        
+    surface.SetMaterial(self.RT)
+    surface.SetDrawColor( 255, 255, 255, 255 )
+    surface.DrawTexturedRect(rectangle.x,rectangle.y,100,200)
+    self:PrintText(0, 0, self.Name1 or "ER", "Text",Color(78, 0, 0))        
     cam.End3D2D()
     cam.Start3D2D(pos2,ang, 0.06)
-        self:PrintText2(0, 0, self.Name2 or "ER", "TextLarge",Color(0, 0, 0))        
+    self:PrintText2(0, 0, self.Name2 or "ER", "TextLarge",Color(0, 0, 0))        
     cam.End3D2D()
-    self:SignalAspect(self.Aspect or "H2")
     
-
-
+    self:SignalAspect(self.Aspect or "H0")
+    --[[if self.PreviousAspect ~= self.Aspect then
+        
+        self:FadeFromTo(self.PreviousAspect,self.Aspect)
+        self.PreviousAspect = self.Aspect
+    end]]
+    
+    
+    
+    
 end
 
+function ENT:FadeFromTo(PreviousAspect,NextAspect)
+    
+    if not PreviousAspect and NextAspect then return end
+    if PreviousAspect == NextAspect then return end
+    local fadeDuration = 4
+    if not self.FadeRecorded then
+        self.FadeRecorded = true
+        self.FadeStart = CurTime()
+        self.Fade = math.Clamp((CurTime() - self.FadeStart) / fadeDuration,0,1)
+        local deltaTime = RealFrameTime()
+        if PreviousAspect == "H0" and NextAspect == "H1" then
+            --self.AlphaRed = Lerp(self.Fade, 255, 0)
+            flux.to(self.AlphaRed, 2, { ["self.AlphaRed"] = 0 })
+            --self.AlphaGreen = Lerp(self.Fade, 0, 255)
+            flux.to(self.AlphaGreen, 2, { ["self.AlphaGreen"] = 255})
+            self.AlphaOrange = 0
+        elseif PreviousAspect == "H0" and NextAspect == "H2" then
+            --self.AlphaRed = Lerp(self.Fade, 255, 0)
+            flux.to(self.AlphaRed, 2, { ["self.AlphaRed"] = 0 })
+            --self.AlphaGreen = Lerp(self.Fade, 0, 255)
+            flux.to(self.AlphaGreen, 2, { ["self.AlphaGreen"] = 255})
+            --self.AlphaOrange = Lerp(self.Fade, 0, 255)
+            flux.to(self.AlphaOrange, 2, { ["self.AlphaOrange"] = 255})
+        elseif PreviousAspect == "H1" and NextAspect == "H0" then
+            self.AlphaRed = Lerp(self.Fade, 0, 255)
+            self.AlphaGreen = Lerp(self.Fade, 255, 0)
+            self.AlphaOrange = 0
+        elseif PreviousAspect == "H1" and NextAspect == "H2" then
+            self.AlphaOrange = Lerp(self.Fade, 0, 255)
+            self.AlphaRed = 0
+        elseif PreviousAspect == "H2" and NextAspect == "H1" then
+            self.AlphaRed = 0
+            self.AlphaOrange = Lerp(self.Fade, 0, 255)
+            self.AlphaGreen = 255
+        elseif PreviousAspect == "H2" and NextAspect == "H0" then
+            self.AlphaOrange = Lerp(self.Fade, 255, 0)
+            self.AlphaGreen = Lerp(self.Fade, 255, 0)
+            self.AlphaRed = Lerp(self.Fade, 0, 255)
+        end
+    end
+    self.FadeRecorded = false
+end
 
-function ENT:ClientSprites(position, size, color,active)
-
+function ENT:ClientSprites(position, size, color,active,fadeIn,fadeOut)
     if not active then return end
-
     local material = Material("effects/yellowflare")
-
-    
-	render.SetMaterial( material )
-	render.DrawSprite( position, size, size, color) 
-  
-    
-    
+    render.SetMaterial( material )
+    render.DrawSprite( position, size, size, color) 
 end
 
 function ENT:SignalAspect(aspect)
@@ -113,23 +158,35 @@ function ENT:SignalAspect(aspect)
     pos_g = self:LocalToWorld(Vector(7.5, 10.4, 166.5))
     pos_r = self:LocalToWorld(Vector(7.5, 10.4, 157.8))
     pos_rr = self:LocalToWorld(Vector(-7.5, -9.5, 135.8))
-
+    
     if aspect == "H0" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
         --print("H0")
+        --self:ClientSprites(pos_o, 10, Color(204, 116, 0,self.AlphaOrange), true)
         self:ClientSprites(pos_o, 10, Color(204, 116, 0), false)
+        --self:ClientSprites(pos_g, 10, Color(27, 133, 0,self.AlphaGreen or 255), true)
         self:ClientSprites(pos_g, 10, Color(27, 133, 0), false)
+        --self:ClientSprites(pos_r, 10, Color(200, 0, 0,self.AlphaRed or 255), true)
         self:ClientSprites(pos_r, 10, Color(200, 0, 0), true)
+        --self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)
         self:ClientSprites(pos_rr, 10, Color(200, 0, 0), false)
     elseif aspect == "H1" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
+        --self:ClientSprites(pos_o, 10, Color(204, 116, 0,self.AlphaOrange), true)
         self:ClientSprites(pos_o, 10, Color(204, 116, 0), false)
+        --self:ClientSprites(pos_g, 10, Color(27, 133, 0,self.AlphaGreen), true)
         self:ClientSprites(pos_g, 10, Color(27, 133, 0), true)
+        --self:ClientSprites(pos_r, 10, Color(200, 0, 0,self.AlphaRed), true)
         self:ClientSprites(pos_r, 10, Color(200, 0, 0), false)
+        --self:ClientSprites(pos_rr, 10, Color(200, 0, 0,alpha_rr), true)
         self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)
     elseif aspect == "H2" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
+        --self:ClientSprites(pos_o, 10, Color(204, 116, 0,self.AlphaOrange), true)
         self:ClientSprites(pos_o, 10, Color(204, 116, 0), true)
+        --self:ClientSprites(pos_g, 10, Color(27, 133, 0,self.AlphaGreen), true)
         self:ClientSprites(pos_g, 10, Color(27, 133, 0), true)
+        --self:ClientSprites(pos_r, 10, Color(200, 0, 0,self.AlphaRed), true)
         self:ClientSprites(pos_r, 10, Color(200, 0, 0), false)
-        self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)   
+        --self:ClientSprites(pos_rr, 10, Color(200, 0, 0,alpha_rr), true)
+        self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)      
     end
 end
 
@@ -138,7 +195,7 @@ local debug = GetConVar("metrostroi_drawsignaldebug")
 local function enableDebug()
     if debug:GetBool() then
         hook.Add("PreDrawEffects","MetrostroiSignalDebug",function()
-            for _,sig in pairs(ents.FindByClass("gmod_track_signal")) do
+            for _,sig in pairs(ents.FindByClass("gmod_track_uf_signal")) do
                 if IsValid(sig) and LocalPlayer():GetPos():Distance(sig:GetPos()) < 384 then
                     local pos = sig:LocalToWorld(Vector(48,0,150))
                     local ang = sig:LocalToWorldAngles(Angle(0,180,90))
@@ -259,55 +316,55 @@ cvars.AddChangeCallback( "metrostroi_drawsignaldebug", enableDebug)
 enableDebug()
 
 function ENT:PrintText(x, y, text, font,color)
-	local str = {utf8.codepoint(text, 1, -1)}
-	for i = 1, #str do
-		local char = utf8.char(str[i])
-		draw.SimpleText(char, font, (x + i) * 55, y * 15 + 50, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		
-	end
+    local str = {utf8.codepoint(text, 1, -1)}
+    for i = 1, #str do
+        local char = utf8.char(str[i])
+        draw.SimpleText(char, font, (x + i) * 55, y * 15 + 50, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        
+    end
 end
 
 function ENT:PrintText2(x, y, text, font,color)
-	local str = {utf8.codepoint(text, 1, -1)}
-	for i = 1, #str do
-		local char = utf8.char(str[i])
-		draw.SimpleText(char, font, (x + i) * 75, y * 15 + 50, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		
-	end
+    local str = {utf8.codepoint(text, 1, -1)}
+    for i = 1, #str do
+        local char = utf8.char(str[i])
+        draw.SimpleText(char, font, (x + i) * 75, y * 15 + 50, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        
+    end
 end
 
 
 surface.CreateFont("Text", {
-	font = "AkzidenzGroteskBE-Cn", --Akzidenz Gotesk BE Cn
-	size = 160,
-	weight = 500,
-	blursize = 0,
-	scanlines = 0,
-	antialias = false,
-	underline = false,
-	italic = false,
-	strikeout = false,
-	symbol = false,
-	rotary = false,
-	shadow = false,
-	additive = false,
-	outline = false,
-	extended = true
+    font = "AkzidenzGroteskBE-Cn", --Akzidenz Gotesk BE Cn
+    size = 160,
+    weight = 500,
+    blursize = 0,
+    scanlines = 0,
+    antialias = false,
+    underline = false,
+    italic = false,
+    strikeout = false,
+    symbol = false,
+    rotary = false,
+    shadow = false,
+    additive = false,
+    outline = false,
+    extended = true
 })
 surface.CreateFont("TextLarge", {
-	font = "AkzidenzGroteskBE-Cn", --Akzidenz Gotesk BE Cn
-	size = 254,
-	weight = 500,
-	blursize = 0,
-	scanlines = 0,
-	antialias = true,
-	underline = false,
-	italic = false,
-	strikeout = false,
-	symbol = false,
-	rotary = false,
-	shadow = false,
-	additive = false,
-	outline = false,
-	extended = true
+    font = "AkzidenzGroteskBE-Cn", --Akzidenz Gotesk BE Cn
+    size = 254,
+    weight = 500,
+    blursize = 0,
+    scanlines = 0,
+    antialias = true,
+    underline = false,
+    italic = false,
+    strikeout = false,
+    symbol = false,
+    rotary = false,
+    shadow = false,
+    additive = false,
+    outline = false,
+    extended = true
 })
