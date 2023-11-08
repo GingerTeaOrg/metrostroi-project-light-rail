@@ -187,7 +187,7 @@ function ENT:Think()
 	if mode == 2 and self.AnnouncementPlayed == false then
 		self.AnnouncementPlayed = true
 		if self.Theme == "Frankfurt" then
-			if self.Destination1 ~= "Leerfahrt" and self.Destination1 ~= "PROBEWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= "FAHRSCHULE NICHT EINSTEIGEN" and self.Destination1 ~= "SONDERWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= " " then
+			if self.Destination1 ~= "Leerfahrt" and self.Destination1 ~= "PROBEWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= "FAHRSCHULE NICHT EINSTEIGEN" and self.Destination1 ~= "SONDERWAGEN NICHT EINSTEIGEN" and self.Destination1 ~= " " and self.Destination1 then
 				self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/"..self.LineString1.." ".."Richtung".." "..self.Destination1..".mp3", 2, 1, 1, 1, self:GetPos())
 			else
 				self:PlayOnceFromPos("lilly/uf/DFI/frankfurt/Bitte Nicht Einsteigen.mp3", 2, 1, 1, 1, self:GetPos())
@@ -213,7 +213,7 @@ function ENT:Think()
 	self.Train3Entry = self:GetNW2Bool("Train3Entry",false)
 	self.Train4Entry = self:GetNW2Bool("Train4Entry",false)
 
-	self.Train1Destination = self:SubstituteAbbreviation(self.Train1Destination)
+	self.Train1Destination = self:SubstituteAbbreviation(self.Train1Destination) or self.Train1Destination
 	
 end
 
