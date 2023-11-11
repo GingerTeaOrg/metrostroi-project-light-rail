@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "models/lilly/uf/stations/jahnstrasse/glass"
+	"$surfaceprop" "Glass"
+	"$alphatest" 1
+}
