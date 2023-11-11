@@ -6,7 +6,7 @@ include("shared.lua")
 util.AddNetworkString("metrostroi_bogey_contact")
 
 local DECOUPLE_TIMEOUT      = 2     -- Time after decoupling furing wich a bogey cannot couple
-local COUPLE_MAX_DISTANCE   = 20    -- Maximum distance between couple offsets
+local COUPLE_MAX_DISTANCE   = 30    -- Maximum distance between couple offsets
 local COUPLE_MAX_ANGLE      = 18    -- Maximum angle between bogeys on couple
 
 
@@ -84,7 +84,7 @@ function ENT:Initialize()
     end
 
     -- Store coupling point offset
-    self.CouplingPointOffset = Vector(-168.13,0,0)
+    self.CouplingPointOffset = Vector(-480,0,0)
 
     -- Create wire controls
     if Wire_CreateInputs then
