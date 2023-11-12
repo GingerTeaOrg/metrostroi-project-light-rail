@@ -9,4 +9,5 @@ end
 function ENT:Think()
     self.BaseClass.Think()
     UF.UpdateSignalBlocks()
+    self:NextThink(CurTime() + 0.25)
 end
