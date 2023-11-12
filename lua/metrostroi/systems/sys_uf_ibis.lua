@@ -281,7 +281,7 @@ if CLIENT then
 		font = "LCDDot TR Regular",
 		size = 55,
 		weight = 10,
-		blursize = false,
+		blursize = 0,
 		antialias = true, -- can be disabled for pixel perfect font, but at low resolution the font is looks corrupted
 		underline = false,
 		italic = false,
