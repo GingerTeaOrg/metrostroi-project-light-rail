@@ -19,10 +19,10 @@ end
 net.Receive("mplr-signal", function()
     local ent = net.ReadEntity()
     if not IsValid(ent) then return end
+    ent.Routes = net.ReadTable()
     ent.Name = net.ReadString()
     ent.Name1 = net.ReadString()
     ent.Name2 = net.ReadString()
-    ent.Left = net.ReadBool()
 end)
 
 local timer = CurTime()
