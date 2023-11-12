@@ -56,7 +56,7 @@ end
 
 hook.Add("Initialize", "UF_MapInitialize", function()
     if not Metrostroi then return end
-    timer.Simple(10.0,UF.Load)
+    timer.Simple(6,UF.Load)
 end)
 
 
@@ -97,7 +97,7 @@ function UF.UpdateStations()
         end
     end
 end
-hook.Add("Metrostroi.UpdateStations","UFInjectStations",UF.UpdateStations) --just hook it when Metrostroi does its business
+
 
 function UF.UpdateSignalEntities()
     if Metrostroi.IgnoreEntityUpdates then return end
@@ -158,7 +158,7 @@ function UF.UpdateSignalEntities()
     print(Format("MPLR: Total signals: %u (normal: %u, repeaters: %u)", count, count-repeater, repeater))
 end
 
-hook.Add("Metrostroi.UpdateSignalEntities","UFInjectSignals",UF.UpdateSignalEntities) --just hook it when Metrostroi does its business
+
 
 function UF.UpdateSignalNames()
     print("MPLR: Updating signal names...")
@@ -178,7 +178,7 @@ function UF.UpdateSignalNames()
         end
     end
 end
-hook.Add("Metrostroi.UpdateSignalNames","UFInjectSignalNames",UF.UpdateSignalNames)
+
 
 function UF.CheckForSignal(node, min_x, max_x)
     -- Check if the current node contains a signal (or any other conditions you need)
@@ -315,7 +315,7 @@ function UF.Save(name)
                 Name1 = v.Name1,
                 Name2 = v.Name2,
                 Name = v.Name,
-                DistantSignal = v.DistantSignal,
+                Routes = v.Routes,
             })
         end
     end
@@ -350,7 +350,7 @@ function UF.Save(name)
     
 end
 
-hook.Add("Metrostroi.Save","UFInjectSignals",UF.Save)
+
 
 function UF.Load(name,keep_signs)
     if not Metrostroi then print("Quitting because Metrostroi not loaded") return end
@@ -368,7 +368,6 @@ function UF.Load(name,keep_signs)
     UF.LoadSignalling(name,keep_signs)
     
     
-    
     timer.Simple(0.05,function()
         -- No more ignoring updates
         Metrostroi.IgnoreEntityUpdates = false
@@ -377,9 +376,13 @@ function UF.Load(name,keep_signs)
         -- Load switches
         UF.UpdateSwitchEntities()
         UF.ConstructDefaultSignalBlocks()
+        Server = ents.Create("gmod_mplr_signalserver")
+        Server:Spawn()
+        print("Spawned central signalling server")
+        Server:SetPos(UF.ServerPos or Vector(0,0,0))
     end)
 end
-hook.Add("Metrostroi.Load","UFLoadSignals",UF.Load)
+
 
 
 
@@ -455,60 +458,79 @@ function UF.ConstructDefaultSignalBlocks() --those signals that do not need dyna
     end
 end
 
-
-
-function UF.UpdateSignalBlocks()
-    for k,v in ipairs(UF.SignalBlocks) do
-        local CurrentBlock = UF.SignalBlocks[k]
-
+function UF.OpenRoute(signal, route, ent)
+    print("Route Change requested on signal:", signal, "to route", route, "by entity:", train)
+    if UF.ActiveRoutes[signal] == route then
+        print("Requested route already active, bailing out")
+        return
+    end
+    
+    UF.ActiveRoutes[signal] = route --we're changing the currently active route on this signal, write that down, squire!
+    for k, v in ipairs(UF.SignalBlocks) do
+        local CurrentBlock = UF.SignalBlocks[k] --target the iteration's signal block
         local function GetSignals()
-            for ky,val in pairs(CurrentBlock) do
-                if type(ky) == "string" then
-                    return ky,val
+            for ky, _ in pairs(CurrentBlock) do --check the iteration's signal block
+                if type(ky) == "string" then --filter out the occupation boolean
+                    return ky --return the guff
                 end
             end
         end
+        
+        local CurrentSignal = GetSignals()
+        if CurrentSignal ~= signal then continue end --if the iteration buffer isn't addressing our current signal, bail and look for it elsewhere
+        local CurrentSignalEnt = Metrostroi.SignalEntitiesByName[CurrentSignal] --target the signal's entity for operations
+        local RoutesTable = CurrentSignalEnt.Routes --a little shortcut to the routes table, for readability
+        CurrentBlock[signal] = RoutesTable[route].DistantSignal
+    end
+end
 
+
+function UF.UpdateSignalBlocks()
+    for k, v in pairs(UF.SignalBlocks) do
+        local CurrentBlock = UF.SignalBlocks[k]
+        local function GetSignals()
+            for ky, val in pairs(CurrentBlock) do
+                if type(ky) == "string" then return ky, val end
+            end
+        end
+
+        --print(CurrentBlock)
         local CurrentSignal, DistantSignal = GetSignals()
-
         local CurrentSignalEnt, DistantSignalEnt = Metrostroi.SignalEntitiesByName[CurrentSignal], Metrostroi.SignalEntitiesByName[DistantSignal]
-
+        if not DistantSignalEnt then continue end
         local CurrentPos = CurrentSignalEnt.TrackPosition
-        local DistantPos = DistantSignalEnt.TrackPosiion
-
-        for train,_ in pairs(Metrostroi.TrainPositions) do
-            local TrainPos = Metrostroi.TrainPositions[train][1].x
-            if CurrentPos.forward then
-                if CurrentPos.x < TrainPos and DistantPos.x > TrainPos then
-                    if CurrentBlock.Occupied == false then
-                        print(k, "Changing block to occupied")
+        local DistantPos = DistantSignalEnt.TrackPosition
+        if not next(Metrostroi.TrainPositions) then CurrentBlock.Occupied = false end
+        if not next(Metrostroi.TrainPositions) then return end
+        for ky, val in pairs(Metrostroi.TrainPositions) do
+            local TrainPos = Metrostroi.TrainPositions[ky]
+            for k2, v2 in pairs(TrainPos) do
+                if v2.path == CurrentSignalEnt.Node.path then
+                    local x1,x2 = v2.x ,v2.x
+                    if ((x1 >= CurrentPos.x) and (x1 <= DistantPos.x)) or ((x2 >= CurrentPos.x) and (x2 <= DistantPos.x)) or ((x1 <= CurrentPos.x) and (x2 >= DistantPos.x)) then
+                        if CurrentBlock.Occupied == false then print(CurrentSignal, "Changing to occupied", CurrentPos.x, DistantPos.x) end
+                        CurrentBlock.Occupied = true
+                    else
+                        CurrentBlock.Occupied = false
                     end
-                    CurrentBlock.Occupied = true
-                    continue
-                else
-                    CurrentBlock.Occupied = false
-                end
-            elseif not CurrentPos.forward then
-                if CurrentPos.x > TrainPos and DistantPos.x < TrainPos then
-                    if CurrentBlock.Occupied == false then
-                        print(k, "Changing block to occupied")
-                    end
-                    CurrentBlock.Occupied = true
-                    continue
-                else
-                    CurrentBlock.Occupied = false
-                    continue
                 end
             end
         end
     end
 end
 
-hook.Add("Think","SignalController",UF.UpdateSignalBlocks())
-hook.Run("SignalController")
 
 function UF.SignalController()
     for k,v in pairs(UF.SignalBlocks) do
+        local CurrentBlock = UF.SignalBlocks[k]
+        local function GetSignals()
+            for ky, val in pairs(CurrentBlock) do
+                if type(ky) == "string" then return ky, val end
+            end
+        end
+        local CurrentSignal, DistantSignal = GetSignals()
+        local CurrentSignalEnt, DistantSignalEnt = Metrostroi.SignalEntitiesByName[CurrentSignal], Metrostroi.SignalEntitiesByName[DistantSignal]
+        CurrentBlock.Occupied = CurrentSignalEnt.Occupied 
     end
 end
 
@@ -548,7 +570,7 @@ function UF.LoadSignalling(name,keep)
                 --ent.DistantSignal = v.DistantSignal
                 ent.Routes = v.Routes,
                 ent:Spawn()
-                --ent:SendUpdate()
+                ent:SendUpdate()
             elseif v.Class == "gmod_track_uf_signs" then
                 ent.SignType = v.SignType
                 ent.YOffset = v.YOffset
@@ -559,6 +581,8 @@ function UF.LoadSignalling(name,keep)
             end
         end
     end
+    
+    
 end
 
 function UF.IsTrackOccupied(src_node,x,dir,t,maximum_x)
