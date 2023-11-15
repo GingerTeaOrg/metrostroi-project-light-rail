@@ -1,4 +1,4 @@
-- Base assets by alTerr, used and modified with permission.
+- Base UF assets by alTerr, used and modified with permission.
 
 
 - Additional textures (C) by Daniel Schmidt Photography: https://www.danielschmidt.com/2018/10/06/vgf50/
@@ -13,7 +13,7 @@
 
 - Duewag Door and Door Opener Button Models by "TramKatze"
 
-- New Pantograph models by "TramKatze"
+- New Pantograph model type "Stemmmann Einholm" by "TramKatze"
 
 - Code coaching by "BlackFox" and "Glebq" of Metrostroi
 
@@ -29,6 +29,6 @@
 
 - IBIS scripting support by Anton Borisovich
 
-- Electrical Engineering insights by Fred Walter
+- U2 Electrical Engineering insights by Fred Walter
 
 - Archival documentation support for electrical schematics, Bernd Rodmann Historische Straßenbahn Frankfurt
