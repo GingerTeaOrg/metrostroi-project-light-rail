@@ -10,6 +10,9 @@ function ENT:Initialize()
 	self.ValidLines = {["01"] = true, ["02"] = true, ["03"] = true, ["04"] = true, ["05"] = true, ["06"] = true, ["08"] = true}
 	
 	self.DisplayedTrains = {}
+
+	util.PrecacheModel("lilly/uf/stations/dfi_hands_hours.mdl")
+	util.PrecacheModel("lilly/uf/stations/dfi_hands_minutes.mdl")
 	
 	self.LastRefresh = CurTime()
 	self.HasRefreshed = true

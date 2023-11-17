@@ -100,27 +100,57 @@ function ENT:DrawOnPanel(func)
 	cam.End3D2D()
 end
 
-function ENT:DrawRTOnPanel(rt)
-	cam.Start3D2D(self:LocalToWorld(Vector(-22, 96.4, 166)), Angle(0, 0, 96), 0.03)
-	surface.SetMaterial(rt.mat)
-	surface.DrawTexturedRectRotated(200 / 2, 50 / 2, 200, 50, 0)
-	cam.End3D2D()
+function ENT:DrawRTOnPanel()
+	surface.SetMaterial(self.Overlay)
+	surface.SetDrawColor(0, 0, 0, 255)
+	surface.DrawTexturedRectRotated(140, 155, 1690, 380, 0)
 end
+
+
+
+
+function ENT:ClockFace()
+	local serverTime = os.time() -- Get the server time in UTC
+	local gmtPlus1Offset = 1 * 60 * 60 -- GMT+1 in seconds
+	local gmtPlus1Time = serverTime + gmtPlus1Offset
+	
+	-- Format the time into hours and minutes
+	local hours = tonumber(os.date("%H", gmtPlus1Time))
+	local minutes = tonumber(os.date("%M", gmtPlus1Time))
+	
+	self.Hours:SetPoseParameter("position",60 / hours * 100)
+	self.Minutes:SetPoseParameter("position",60 / minutes * 100)
+end
+
+
+
 
 function ENT:Initialize() 
 	self.DFI = self:CreateRT("DFI", 10000, 10000)
+	self.Overlay = CreateMaterial( "Overlay", "VertexLitGeneric", {
+		["$basetexture"] = "color/rgb/000",
+		["$vertexcolor"] = 1,
+	} )
+	self.Hours = ents.CreateClientProp("lilly/uf/stations/dfi_hands_hours.mdl")
+	self.Minutes = ents.CreateClientProp("lilly/uf/stations/dfi_hands_minutes.mdl")
+	self.Hours:Spawn()
+	self.Minutes:Spawn()
+	
+	--self.Hours:SetPos(LocalToWorld(Vector(0,0,0)))
+	--self.Minutes:SetPos(LocalToWorld(Vector(0,0,0)))
+	
 	
 	
 	
 	self.AnnouncementPlayed = false
+	
+	self.Abbreviations = {	["Ldstr"] = "Landstr.", --FIXME: Introduce a table so that this can be made more flexible. Hardcoding is nono.
+	["Pl"] = "Platz",
+	["Hhmrk"] = "Hohemark",
+	["Bmmrsh"] = "Bommersheim",
+}
 
-	self.Abbreviations = {	["Ldstr"] = "Landstr.",
-							["Pl"] = "Platz",
-							["Hhmrk"] = "Hohemark",
-							["Bmmrsh"] = "Bommersheim",
-							}
-	
-	
+
 end
 
 function ENT:PrintText(x, y, text, font)
@@ -133,11 +163,15 @@ function ENT:PrintText(x, y, text, font)
 end
 
 function ENT:Think()
+
+	
+	
+	self:ClockFace()
 	
 	local mode = self:GetNW2Int("Mode", 0)
 	self.Theme = self:GetNW2String("Theme","Frankfurt")
 	
-
+	
 	if self.Theme == "Frankfurt" or self.Theme == "Essen" or self.Theme == "Duesseldorf" then
 		if string.sub(self:GetNW2String("Train1Line", "04"),1,1) == "0" then
 			self.LineString1 = "U" .. string.sub(self:GetNW2String("Train1Line", "U4"), 2,2)
@@ -212,7 +246,7 @@ function ENT:Think()
 	self.Train2Entry = self:GetNW2Bool("Train2Entry",false)
 	self.Train3Entry = self:GetNW2Bool("Train3Entry",false)
 	self.Train4Entry = self:GetNW2Bool("Train4Entry",false)
-
+	
 	self.Train1Destination = self:SubstituteAbbreviation(self.Train1Destination) or self.Train1Destination
 	
 end
@@ -231,7 +265,6 @@ function ENT:Draw()
 	self:DrawModel()
 	
 	local mode = self:GetNW2Int("Mode", 0)
-	
 	if mode == 2 then
 		
 		local pos = self:LocalToWorld(Vector(-25, 96, 169))
@@ -253,7 +286,7 @@ function ENT:Draw()
 		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
 		self:PrintText(10.3, 12.5, "____", "Lumino")
 		self:PrintText(9.1, 13.1, ":", "Lumino")
-		
+		self:DrawRTOnPanel(self.Overlay)
 		cam.End3D2D()
 	elseif mode == 1 then
 		
@@ -301,9 +334,10 @@ function ENT:Draw()
 				self:PrintText(26, 18, self.Train4Time, "Lumino")
 			end
 		end
+		
 		cam.End3D2D()
 		cam.Start3D2D(pos2, ang2, 0.03)
-		
+		self:DrawRTOnPanel(self.Overlay)
 		---------------------------------------------------------------------------------
 		self:PrintText(-1.5, 0, self.LineString1, "Lumino_Big")
 		self:PrintText(1, 0, self.Train1Destination, "Lumino")
@@ -342,14 +376,15 @@ function ENT:Draw()
 				self:PrintText(26, 18, self.Train4Time, "Lumino")
 			end
 		end
+		
 		cam.End3D2D()
 		
 		
 	elseif mode == 0 then
 		local pos = self:LocalToWorld(Vector(-25, 96, 169))
-		local pos2 = self:LocalToWorld(Vector(-12, 105.88, 169))
+		local pos2 = self:LocalToWorld(Vector(-12, 106, 169))
 		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
-		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 95.6))
+		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 96.8))
 		cam.Start3D2D(pos, ang, 0.03)
 		-- surface.SetDrawColor(255, 255, 255, 255)
 		-- surface.DrawRect(0, 0, 256, 320)
@@ -375,7 +410,10 @@ function ENT:Draw()
 			yalign = TEXT_ALIGN_LEFT,
 			color = Color(255, 136, 0)
 		})
+		
 		cam.End3D2D()
+
 	end
+	
 end
 
