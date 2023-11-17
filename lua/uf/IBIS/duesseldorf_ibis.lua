@@ -13,9 +13,16 @@ UF.AddIBISAnnouncementScript("Düsseldorf",{ --The general routine for announcem
     [2] = "station",
 })
 
+UF.AddIBISAnnouncementScript("Düsseldorf Vintage",{ --The general routine for announcement. Strings are from UF.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
+
+    [1] = "gong_old",
+    [2] = "station",
+})
+
 UF.AddIBISCommonFiles("Düsseldorf",{
-    ["gong"] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/next_station.mp3"] = 1.2},
-    ["terminus"] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"] = 1},
+    ["gong"] = {["lilly/uf/IBIS/announcements/rheinbahn/common/gong.mp3"] = 1.2},
+	["gong_old"] = {["lilly/uf/IBIS/announcements/rheinbahn/common/gong_vintage.mp3"] = 1.2},
+    ["terminus"] = {["lilly/uf/IBIS/announcements/rheinbahn/common/terminus.mp3"] = 1},
     ["request_stop"] = {["lilly/uf/IBIS/announcements/rheinbahn/common/request_stop.mp3"] = 1.5},
 })
 
