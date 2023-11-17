@@ -19,7 +19,7 @@ UF.AddIBISCommonFiles("Düsseldorf",{
     ["request_stop"] = {["lilly/uf/IBIS/announcements/rheinbahn/common/request_stop.mp3"] = 1.5},
 })
 
-UF.AddIBISDestinations("Frankfurt",{
+UF.AddIBISDestinations("Düsseldorf",{
     [158] = "Grunewald",
     [159] = "Karl-Jarres-Str",
     [160] = "Kremerstraße",
@@ -32,8 +32,37 @@ UF.AddIBISDestinations("Frankfurt",{
     [363] = "Auf Dem Damm",
     [670] = "Heinrich-Heine-Allee",
     [881] = "Messe Ost",
- 
-
-
 }
 )
+
+UF.AddIBISAnnouncementMetadata("Düsseldorf",
+                               { -- format: {[station] = {[line] = {[route] = {[audiofile] = seconds}}}} | Sets the "station" element announcement routine for each station on a basis of line, route
+		[704] = {
+				["07"] = {
+						["01"] = {
+								[1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/704.mp3"] = 1.8},
+								[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/704_interchange_06.mp3"] = 16},
+								[3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"] = 2}
+						},
+						["02"] = {
+								[1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/704.mp3"] = 1.8},
+								[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/704_interchange_06.mp3"] = 16},
+								[3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"] = 2}
+						}
+				},
+				["06"] = {
+						["01"] = {
+								[1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/704.mp3"] = 1.8},
+								[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/704_interchange_06.mp3"] = 16},
+								[3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"] = 2}
+						},
+						["02"] = {
+								[1] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/704.mp3"] = 1.8},
+								[2] = {["lilly/uf/IBIS/announcements/ffm/ubahn/stations/704_interchange_06.mp3"] = 16},
+								[3] = {["lilly/uf/IBIS/announcements/ffm/ubahn/common/exit_left.mp3"] = 2}
+						}
+				},
+			},
+		
+
+})
