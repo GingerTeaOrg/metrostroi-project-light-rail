@@ -311,7 +311,7 @@ function ENT:Initialize()
 	self.Speed = 0
 	self.ThrottleState = 0
 	self.ThrottleEngaged = false
-	self.ReverserState = 0
+
 	self.ReverserLeverState = 0
 	self.ReverserEnaged = 0
 	self.BrakePressure = 0
@@ -843,8 +843,7 @@ function ENT:Think(dT)
 
 	if IsValid(self.FrontBogey) and IsValid(self.MiddleBogey) and IsValid(self.RearBogey) then
 
-		if self.Duewag_U2.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.Duewag_U2.ReverserLeverStateA == -1 or self.Duewag_U2.ReverserLeverStateB == 3
-					or self.Duewag_U2.ReverserLeverStateB == -1 then
+		if self.Duewag_U2.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.Duewag_U2.ReverserLeverStateA == -1 or self.Duewag_U2.ReverserLeverStateB == 3 then
 
 			if self.DepartureConfirmed == true then
 
@@ -1099,7 +1098,7 @@ function ENT:Think(dT)
 	end
 
 	-- 15000*N / 20  ---(N < 0 and 1 or 0) ------- 1 unit = 110kw / 147hp | Total kW of U2 300kW
-	if self.Duewag_U2:IsLeadingCab() == true then
+	if self.Duewag_U2:IsLeadingCab() == "a" then
 		if self.Panel.WarnBlink < 1 then
 			self:WriteTrainWire(20, self.Panel.BlinkerLeft > 0 and 1 or 0)
 			self:WriteTrainWire(21, self.Panel.BlinkerRight > 0 and 1 or 0)
@@ -2088,7 +2087,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 		end
 	end
 
-	self:SetNW2Bool("DoorsClosedAlarm",self.DoorsClosed and self.ArmDoorsClosedAlarm and not door1)
+	self:SetNW2Bool("DoorsClosedAlarm",self.Duewag_U2:IsLeadingCab == "a" and self.DoorsClosed and self.ArmDoorsClosedAlarm and not door1)
 
 
 

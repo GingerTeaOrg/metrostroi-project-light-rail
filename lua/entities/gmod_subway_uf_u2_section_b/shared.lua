@@ -17,7 +17,7 @@ function ENT:InitializeSystems()
 	--self:LoadSystem("Duewag_U2")
 	--self:LoadSystem("Duewag_Deadman")
 	self:LoadSystem("IBIS_secondary")
-	self:LoadSystem("Panel","U2_panel2")
+	self:LoadSystem("Panel","U2_panel")
 	self:LoadSystem("IBIS","IBIS_secondary")
 end
 
@@ -26,13 +26,13 @@ function ENT:GetStandingArea()
 end
 
 function ENT:PassengerCapacity() return 81 end
-
+ENT.MirrorCams = {Vector(-441, 72, 150), Angle(1, -180, 0), 15, Vector(-441, -72, 150), Angle(1, -180, 0), 15}
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 	self.SoundNames["bell"] = {loop=0.01,"lilly/uf/u2/Bell_start.mp3","lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}	
-	self.SoundPositions["bell"] = {1100,1e9,Vector(-386,-20,8),0.7}
+	self.SoundPositions["bell"] = {1100,1e9,Vector(-386,20,8),0.7}
 	self.SoundNames["bell_in"] = {loop=0.01,"lilly/uf/u2/insidecab/Bell_start.mp3","lilly/uf/u2/insidecab/Bell_loop.mp3", "lilly/uf/u2/insidecab/Bell_end.mp3"}	
-	self.SoundPositions["bell_in"] = {800,1e9,Vector(-386,-20,50),1}
+	self.SoundPositions["bell_in"] = {800,1e9,Vector(-386,20,50),1}
 	
 	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.mp3"}	
 	self.SoundPositions["Startup"] = {800,1e9,Vector(550,0,55),1}
@@ -58,7 +58,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Door_close1"] = {400,1e9,Vector(300,100,120),1}
 	
 	self.SoundNames["Deadman"] = {loop=0.5,"lilly/uf/common/deadman_start.mp3","lilly/uf/common/deadman_loop.mp3","lilly/uf/common/deadman_end.mp3"}
-	self.SoundPositions["Deadman"] = {800,1e9,Vector(401,14,14),.7}
+	self.SoundPositions["Deadman"] = {800,1e9,Vector(-401,-14,14),.7}
 	
 	self.SoundNames["DoorsCloseAlarm"] = {loop=0.01,"lilly/uf/u2/overhaul/doorsareclosed_loop_start.mp3","lilly/uf/u2/overhaul/doorsareclosed_loop.mp3","lilly/uf/u2/overhaul/doorsareclosed_loop_end.mp3"}
 	self.SoundPositions["DoorsCloseAlarm"] = {400,1e9,Vector(412,0,53),0.8}
@@ -137,10 +137,10 @@ function ENT:InitializeSounds()
 	self.SoundPositions["Blinker_off"] = {10,1e9,Vector(400,-5,200),1}
 
 	self.SoundNames["Battery_breaker"] = {"lilly/uf/u2/u2_battery_breaker_on.mp3"}
-	self.SoundPositions["Battery_breaker"] = {10,1e9,Vector(400,-5,200),1}
+	self.SoundPositions["Battery_breaker"] = {10, 1e9, Vector(-400, 5, 200), 1}
 
 	self.SoundNames["Battery_breaker_off"] = {"lilly/uf/u2/u2_battery_breaker_off.mp3"}
-	self.SoundPositions["Battery_breaker_off"] = {10,1e9,Vector(400,-5,200),1}
+	self.SoundPositions["Battery_breaker_off"] = {10, 1e9, Vector(-400, 5, 200), 1}
 	
 	self.SoundNames["MotorType1"] = {loop=5, "lilly/uf/bogeys/u2/test/engine_loop_primary_start.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary.mp3", "lilly/uf/bogeys/u2/test/engine_loop_primary_end.mp3"}
 	self.SoundPositions["MotorType1"] = {1100,1e9,Vector(540,0,70),0.035}
