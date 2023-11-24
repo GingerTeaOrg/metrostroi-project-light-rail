@@ -257,7 +257,7 @@ function ENT:SubstituteAbbreviation(Input)
 			output = string.gsub(Input,k,self.Abbreviations[k],1)
 		end
 	end
-	print(output)
+	--print(output)
 	return output
 end
 
