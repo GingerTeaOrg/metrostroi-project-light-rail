@@ -15,6 +15,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("Battery","Relay","Switch", {bass = true})
     self.Train:LoadSystem("Headlights","Relay","Switch", {bass = true})
     self.Train:LoadSystem("WarnBlink","Relay","Switch", {bass = true, normally_closed = false})
+    self.Train:LoadSystem("Wiper","Relay","Switch", {bass = true, normally_closed = false})
     self.Train:LoadSystem("DriverLight","Relay","Switch", {bass = true})
     self.Train:LoadSystem("BatteryDisable","Relay","Switch", {bass = true})
     self.Train:LoadSystem("BlinkerRight","Relay","Switch", {bass = true})
@@ -71,6 +72,8 @@ function TRAIN_SYSTEM:Initialize()
     self.Button8a = 0
 
 
+    self.Wiper = 0
+
     self.ReduceBrake = 0
 
     self.Blinker = 0
@@ -123,5 +126,5 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return {"BlinkerRight","BlinkerLeft","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn","PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements","Headlights"}
+    return {"Wiper","BlinkerRight","BlinkerLeft","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn","PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements","Headlights"}
 end
