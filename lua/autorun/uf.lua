@@ -51,6 +51,7 @@ end)
 hook.Add("OnEntityCreated", "UFTrains", function(ent)
 	local prefix = "gmod_subway_uf_"
 	local prefix2 = "gmod_subway_mplr_"
+	if not IsValid(ent) then return end
 	if string.sub(ent:GetClass(), 1, #prefix) == prefix or string.sub(ent:GetClass(), 1, #prefix2) == prefix2 then UF.SpawnedTrains[ent] = true end
 end)
 
