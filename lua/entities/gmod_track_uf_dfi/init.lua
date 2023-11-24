@@ -30,7 +30,7 @@ function ENT:Initialize()
 	self.FilteredTable = {}
 	self.SortedTable = {}
 	self.Themes = {[1] = "Frankfurt", [2] = "Duesseldorf", [3] = "Essen", [4] = "Hannover"}
-	self.CurrentTheme = self.Themes[1]
+	self.CurrentTheme = self:GetInternalVariable("Theme") or self.Themes[1]
 	self.IgnoredTrains = {}
 end
 
@@ -62,8 +62,6 @@ function ENT:Think()
 	elseif self.Mode == 0 and next(UF.IBISRegisteredTrains) then
 		self.Mode = 1
 	end
-	
-	
 	
 	
 	if self.Mode > 0 then
@@ -116,8 +114,8 @@ function ENT:Think()
 			self.Train1ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train1Dist = v.DIST
 			self.Train1ConsistLength = #Train.WagonList
-			self.Train1Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
-			self.Train1Vector = Vector(self.Train1Vector.x,self.Train1Vector.y,self.Train1Vector.z)
+			self.Train1Vector = Metrostroi.GetPositionOnTrack(self.Train1Ent:GetPos(),self.Train1Ent:GetAngles())[1]
+
 		end
 	end
 	if self.Train2 then
@@ -130,7 +128,6 @@ function ENT:Think()
 			self.Train2ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train2ConsistLength = #Train.WagonList
 			self.Train2Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
-			self.Train2Vector = Vector(self.Train2Vector.x,self.Train2Vector.y,self.Train2Vector.z)
 		end
 	else
 		self.Train2Line = " " 
@@ -146,7 +143,6 @@ function ENT:Think()
 			self.Train3ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train3ConsistLength = #Train.WagonList
 			self.Train3Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
-			self.Train3Vector = Vector(self.Train3Vector.x,self.Train3Vector.y,self.Train3Vector.z)
 		end
 	else
 		self.Train3Line = " " 
@@ -162,7 +158,6 @@ function ENT:Think()
 			self.Train4ETA = tostring(math.Round(math.Round(v.ETA / 60)))
 			self.Train4ConsistLength = #Train.WagonList
 			self.Train4Vector = Metrostroi.GetPositionOnTrack(Train:GetPos(),Train:GetAngles())[1]
-			self.Train4Vector = Vector(self.Train4Vector.x,self.Train4Vector.y,self.Train4Vector.z)
 		end
 	else
 		self.Train4Line = " " 
@@ -190,16 +185,21 @@ function ENT:Think()
 	
 	if not next(UF.IBISRegisteredTrains) then --either fall back to idle, train list, or current train display
 		self.Mode = 0
+		self.IgnoredTrains = {}
 		
 	elseif tonumber(self.Train1ETA) > 0 then
 		self.Mode = 1
-	elseif tonumber(self.Train1ETA) == 0 then
+	elseif tonumber(self.Train1ETA) == 0 or self.Train1Dist < 20 then
 		
 		self.Mode = 2
-		
+
+		local CourseRoute = self.Train1Ent.IBIS.Course.."/"..self.Train1Ent.IBIS.Route
+		if not valueExists(self.IgnoredTrains,CourseRoute) then
+			table.insert(self.IgnoredTrains,CourseRoute)
+		end
 		
 	end
-
+	self:NextThink(CurTime() + 0.25)
 end
 
 local function valueExists(table, value)
@@ -240,21 +240,29 @@ function ENT:ScanForTrains() --scrape all trains that have been logged into RBL,
 	
 	if #self.WorkTable > 4 then --let's cut it short. The display only ever does four different trains.
 		
-		-- Desired number of pairs to keep
-		local desiredPairCount = 4
-		
 		-- Iterate through the table and remove excess pairs
 		local currentPairCount = 0
 		for key, value in pairs(self.WorkTable) do
 			currentPairCount = currentPairCount + 1
-			if currentPairCount > desiredPairCount then
+			if currentPairCount > 4 then
 				self.WorkTable[key] = nil
 			end
 		end
 	end
+
+	for k,v in ipairs(self.WorkTable) do
+		local MyPath = self.TrackPosition.path
+		local TrainPos = Metrostroi.GetPositionOnTrack(v:GetPos(),v:GetAngles())[1]
+		local TrainPath = TrainPos.path
+		if MyPath ~= TrainPath then
+			table.remove(self.WorkTable,k)
+		else
+			continue
+		end
+	end
+
 	if not next(self.WorkTable) then print("WorkTable Empty") return end --if nothing came of that, just exit
 	--if next(self.WorkTable) then print("WorkTable Length:", #self.WorkTable) end
-	
 
 	
 	for k, v in ipairs(self.WorkTable) do
@@ -296,7 +304,7 @@ function ENT:TrackETA(train) --universal function for having Metrostroi calculat
 	if train then
 		local TrainPosOnTrack = Metrostroi.GetPositionOnTrack(train:GetPos(),train:GetAngles())[1] --input the train's world vector and get its position on the node system
 		if not TrainPosOnTrack then return end
-		return Metrostroi.GetTravelTime(TrainPosOnTrack.node1,self.TrackPosition.node1) --return the travel time between the train and the display
+		return UF.GetTravelTime(TrainPosOnTrack.node1,self.TrackPosition.node1) --return the travel time between the train and the display
 	else
 		return nil
 	end
