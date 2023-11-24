@@ -10,7 +10,7 @@ function ENT:Initialize()
         ["Underground_Small_Pole"] = "models/lilly/uf/signals/Underground_Small_Pole.mdl",
     }
 
-    self.SignalType = self.SignalTypes[self:GetInternalVariable("Type") or "Underground_Small_Pole"]
+    self.SignalType = self.SignalTypes[self:GetInternalVariable("Type") or "Underground_Small_Pole"] or self:GetNW2String("Type")
     self:SetModel("models/lilly/uf/signals/Underground_Small_Pole.mdl" or self.SignalType)
     self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos(), self:GetAngles())[1]
     self.Node = self.TrackPosition.node1
