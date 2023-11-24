@@ -42,7 +42,7 @@ function ENT:Think()
     end
     self.PantoHeight.z = math.Round(self.PantoHeight.z,2)
     self:Draw()
-    print(self.PantoHeight.z)
+    --print(self.PantoHeight.z)
 end
 
 function ENT:Draw()
