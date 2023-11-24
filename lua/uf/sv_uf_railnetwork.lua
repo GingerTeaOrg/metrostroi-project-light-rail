@@ -752,3 +752,58 @@ function UF.UpdateSwitchEntities()
     end
     Metrostroi.PostSignalInitialize()
 end
+
+--------------------------------------------------------------------------------
+-- Get travel time between two nodes in seconds
+--------------------------------------------------------------------------------
+function UF.GetTravelTime(src,dest)
+    -- Determine direction of travel
+    --assert(src.path == dest.path)
+    local direction = src.x < dest.x
+
+    -- Accumulate travel time
+    local travel_time = 0
+    local travel_dist = 0
+    local travel_speed = 60
+    local iter = 0
+    function scan(node,path)
+        local oldx
+        local oldars
+        while (node) and (node ~= dest) do
+            local ars_speed
+            --local ars_joint = Metrostroi.GetARSJoint(node,node.x+0.01,path or true)
+            --[[if ars_joint then
+                --[[if oldx and oldx ~= ars_joint.TrackPosition.x then
+                    print(Format("\t\t\t%.2f:\t%s->%s",(ars_joint.TrackPosition.x - oldx)/18.8,oldars.Name,ars_joint.Name))
+                end
+                oldx = ars_joint.TrackPosition.x
+                oldars = ars_joint
+                --print(ars_joint.Name)
+                local ARSLimit = ars_joint:GetMaxARS()
+                --print(ARSLimit)
+                if ARSLimit >= 4  then
+                    ars_speed = ARSLimit*10
+                end
+                --print(ars_speed)
+            end]]
+            --if ars_speed then travel_speed = ars_speed end
+            --print(Format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
+
+            -- Assume 70% of travel speed
+            local speed = travel_speed * 0.82
+
+            -- Add to travel time
+            travel_dist = travel_dist + node.length
+            travel_time = travel_time + (node.length / (speed/3.6))
+            node = node.next
+            if not node then break end
+            if src.path == dest.path and node.branches and node.branches[1][2].path == src.path then scan(node,src.x > node.branches[1][2].x) end
+            if src.path == dest.path and node.branches and  node.branches[2] and node.branches[2][2].path == src.path then scan(node,src.x > node.branches[1][1].x) end
+            assert(iter < 10000, "OH SHI~")
+            iter = iter + 1
+        end
+    end
+    scan(src)
+
+    return travel_time,travel_dist
+end
