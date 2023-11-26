@@ -204,7 +204,7 @@ Metrostroi.AddSkin("train", "White_b", {
 	}
 })
 
-Metrostroi.AddSkin("train", "SanDiego", {
+--[[Metrostroi.AddSkin("train", "SanDiego", {
 	name = "San Diego",
 	typ = "U2h",
 	textures = {main = "models/lilly/uf/u2/u2h/san diego", main_left = "models/lilly/uf/u2/u2h/san_diego_left", decals = "models/lilly/uf/u2/u2h/decals-stadtwerke"}
@@ -218,7 +218,7 @@ Metrostroi.AddSkin("train", "SanDiego_b", {
 		-- main_left = "models/lilly/uf/u2/u2h/white-left",
 		decals = "models/lilly/uf/u2/u2h/decals-modern"
 	}
-})
+})]]
 --[[
 
 Metrostroi.AddSkin("train","Orange",{
