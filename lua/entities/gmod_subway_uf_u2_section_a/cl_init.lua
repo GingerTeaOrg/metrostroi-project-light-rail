@@ -1566,9 +1566,6 @@ ENT.ButtonMap["BOStrab"] = {
             model = {
                 var = "OpenBOStrab",
                 sndvol = 1,
-                snd = function(val)
-                    return val and "door_cab_open" or "door_cab_close"
-                end,
                 sndmin = 90,
                 sndmax = 1e3,
                 sndang = Angle(-90, 0, 0)
