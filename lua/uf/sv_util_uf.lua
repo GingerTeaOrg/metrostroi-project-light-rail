@@ -196,13 +196,42 @@ end
 function UF.MapHasFullSupport(typ)
     if not typ then
         return (#Metrostroi.Paths > 0)
-    elseif typ=="ars" then
-        return next(Metrostroi.SignalEntitiesByName)
-    elseif typ=="auto" then
-        return Metrostroi.HaveAuto
-    elseif typ=="sbpp" then
-        return Metrostroi.HaveSBPP
-    elseif typ=="pa" then
-        return next(Metrostroi.PAMConfTest)
     end
+end
+
+function UF.TrainCount(...)
+    local classnames = {...}
+    if #classnames == 1 then
+        return #ents.FindByClass(classnames[1])
+    end
+
+    local N = 0
+    for k,v in pairs(#classnames > 0 and classnames or UF.TrainClasses) do
+        if not baseclass.Get(v).SubwayTrain then continue end
+        N = N + #ents.FindByClass(v)
+    end
+    return N
+end
+
+function UF.TrainCountOnPlayer(ply ,...)
+    local classnames = {...}
+    local typ
+    if type(classnames[1]) == "number" then
+        typ = classnames[1]
+        classnames = {}
+    end
+    if CPPI then
+        local N = 0
+        for k,v in pairs(#classnames > 0 and classnames or UF.TrainClasses) do
+            if not baseclass.Get(v).SubwayTrain then continue end
+            local ents = ents.FindByClass(v)
+            for k2,v2 in pairs(ents) do
+                if ply == v2:CPPIGetOwner() and (not typ or v2.SubwayTrain.WagType == typ) then
+                    N = N + 1
+                end
+            end
+        end
+        return N
+    end
+    return 0
 end
