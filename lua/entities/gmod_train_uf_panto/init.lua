@@ -125,7 +125,7 @@ function ENT:CheckVoltage(dT)
     
     
     local hit, hitEnt = self:CheckContact(self:GetPos(),self:GetUp())
-    if not IsValid(hitEnt) then self.Voltage = 0 print("error") return end
+    if not IsValid(hitEnt) then self.Voltage = 0 return end
     if hitEnt:GetClass() == "prop_static" and string.gmatch(hitEnt:GetModel(), "overhead_wire") == "overhead_wire" then
         self.Voltage = UF.Voltage
     else
