@@ -20,8 +20,35 @@ ENT.SubwayTrain = {
 	Type = "P8",
 	Name = "Pt",
 	WagType = 2,
-	Manufacturer = "Düwag",
+	Manufacturer = "Duewag",
 }
+
+function ENT:CreatePanto(pos, ang, type)
+	local panto = ents.Create("gmod_train_uf_panto")
+
+	panto:SetPos(self:LocalToWorld(pos))
+	panto:SetAngles(self:GetAngles() + ang)
+
+	panto.PantoType = type
+	panto.NoPhysics = self.NoPhysics or true
+	panto:Spawn()
+
+	panto.SpawnPos = pos
+	panto.SpawnAng = ang
+
+	panto:SetNW2Entity("TrainEntity", self)
+	panto.Train = self
+	if self.NoPhysics then
+		panto:SetParent(self)
+	else
+		constraint.Weld(panto, self, 0, 0, 0, true)
+	end
+
+	table.insert(self.TrainEntities, panto)
+	-- panto:Activate()
+	return panto
+
+end
 
 function ENT:Initialize()
 	
@@ -50,7 +77,10 @@ function ENT:Initialize()
 	
 	
 	self.FrontCouple = self.SectionA:CreateCoupleUF_a(Vector( 390,0,10),Angle(0,0,0),true,"pt")	
-	self.RearCouple = self.SectionB:CreateCoupleUF_b(Vector( 390,0,10),Angle(0,0,0),false,"pt")				
+	self.RearCouple = self.SectionB:CreateCoupleUF_b(Vector( 390,0,10),Angle(0,0,0),false,"pt")
+	
+	self.Panto = self:CreatePanto(Vector(93, 0, 130), Angle(0, 90, 0), "diamond")
+	self.PantoUp = false
 	
 	
 	--self.SectionA.BaseClass:Initialize(self.SectionA)
@@ -189,7 +219,8 @@ function ENT:CreateSectionA(pos)
 	SecA:Spawn()
 	--SecA:Initialize()
 	SecA:SetOwner(self:GetOwner())
-	SecA:SetNW2Entity("SectionC",self)
+	SecA.SectionC = self
+	SecA.SectionB = self.SectionB
 	local xmin = 5
 	local xmax = 5
 	
@@ -220,7 +251,8 @@ function ENT:CreateSectionB(pos)
 	SecB:Spawn()
 	--SecB:Initialize()
 	SecB:SetOwner(self:GetOwner())
-	SecB:SetNW2Entity("SectionC",self)
+	SecB.SectionC = self
+	SecB.SectionA = self.SectionA
 	local xmin = 5
 	local xmax = 5
 	
