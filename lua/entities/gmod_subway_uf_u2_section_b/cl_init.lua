@@ -1436,8 +1436,7 @@ function ENT:Think()
     self:Animate("Throttle", self:GetNW2Float("ThrottleAnim", 0), -45, 45, 50)
 
     self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 80) / 100 * 1.5
-
-    self:Animate("Speedo", self.SpeedoAnim, 0, 200, 1, 0.1, false)
+    self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
 
     if self.ParenTrain and self.ParentTrain:GetNW2Bool("Headlights", false) ==
         true and self:GetNW2Bool("Headlights", false) == true then

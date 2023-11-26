@@ -1259,10 +1259,22 @@ function ENT:OnButtonPress(button, ply)
 
 	if button == "PantographRaiseSet" then
 		self.Panel.PantographRaise = 1
-		if self.Duewag_U2.BatteryOn == true then self.PantoUp = true end
+		if self.Duewag_U2.BatteryOn == true then 
+			self.PantoUp = true
+			if self:ReadTrainWire(6) > 0 then
+				self:WriteTrainWire(17,0)
+			end
+		end
 
 	end
-	if button == "PantographLowerSet" then if self.Duewag_U2.BatteryOn == true then self.PantoUp = false end end
+	if button == "PantographLowerSet" then 
+		if self.Duewag_U2.BatteryOn == true then 
+			self.PantoUp = false
+			if self:ReadTrainWire(6) > 0 then
+				self:WriteTrainWire(17,0)
+			end
+		end 
+	end
 
 	if button == "EmergencyBrakeSet" and self:GetNW2Bool("EmergencyBrake", false) == false then
 		self:SetNW2Bool("EmergencyBrake", true)
@@ -1344,15 +1356,15 @@ function ENT:OnButtonPress(button, ply)
 		end
 	end
 
-	if self.Duewag_U2.ReverserLeverStateA == 0 then
+	if self.Duewag_U2.ReverserLeverStateB == 0 and self.Duewag_U2.ReverserLeverStateA == 0 then
 		if button == "ReverserInsert" then
-			if self.Duewag_U2.ReverserInsertedA == false then
-				self.Duewag_U2.ReverserInsertedA = true
-			elseif self.Duewag_U2.ReverserInsertedB and not self.Duewag_U2.ReverserInsertedA then
+			if self.Duewag_U2.ReverserInsertedB and not self.Duewag_U2.ReverserInsertedA then
 				self.Duewag_U2.ReverserInsertedA = true
 				self.Duewag_U2.ReverserInsertedB = false
 			elseif not self.Duewag_U2.ReverserInsertedB and self.Duewag_U2.ReverserInsertedA then
 				self.Duewag_U2.ReverserInsertedA = false
+			elseif not self.Duewag_U2.ReverserInsertedB and not self.Duewag_U2.ReverserInsertedA then
+				self.Duewag_U2.ReverserInsertedA = true
 			end
 		end
 	end
@@ -2087,7 +2099,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 		end
 	end
 
-	self:SetNW2Bool("DoorsClosedAlarm",self.Duewag_U2:IsLeadingCab == "a" and self.DoorsClosed and self.ArmDoorsClosedAlarm and not door1)
+	self:SetNW2Bool("DoorsClosedAlarm",self.Duewag_U2:IsLeadingCab() == "a" and self.DoorsClosed and self.ArmDoorsClosedAlarm and not door1)
 
 
 

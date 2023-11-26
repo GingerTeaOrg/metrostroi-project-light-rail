@@ -2443,7 +2443,7 @@ function ENT:Think()
                  self:GetNW2Bool("TurnIBISKey", false) == true and 0 or 1, 0,
                  100, 800, 0, 0)
 
-    self:ShowHide("reverser", self:GetNW2Bool("ReverserInserted", false))
+    self:ShowHide("reverser", self:GetNW2Bool("ReverserInsertedA", false))
 
     local Door12a = math.Clamp(self:GetNW2Float("Door12a"), 0, 1)
     local Door34a = math.Clamp(self:GetNW2Float("Door34a"), 0, 1)

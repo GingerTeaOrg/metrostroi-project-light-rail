@@ -490,15 +490,16 @@ function ENT:OnButtonPress(button,ply)
 	
 	
 	
-	if self.ParentTrain.Duewag_U2.ReverserLeverStateB == 0 then
+	if self.ParentTrain.Duewag_U2.ReverserLeverStateB == 0 and self.ParentTrain.Duewag_U2.ReverserLeverStateA == 0 then
 		if button == "ReverserInsert" then
-			if self.ParentTrain.Duewag_U2.ReverserInsertedB == false then
-				self.ParentTrain.Duewag_U2.ReverserInsertedB = true
-			elseif self.ParentTrain.Duewag_U2.ReverserInsertedB and not self.ParentTrain.Duewag_U2.ReverserInsertedA then
+			if self.ParentTrain.Duewag_U2.ReverserInsertedB and not self.ParentTrain.Duewag_U2.ReverserInsertedA then
 				self.ParentTrain.Duewag_U2.ReverserInsertedA = false
+				self.ParentTrain.Duewag_U2.ReverserInsertedB = false
+			elseif not self.ParentTrain.Duewag_U2.ReverserInsertedB and not self.ParentTrain.Duewag_U2.ReverserInsertedA then
 				self.ParentTrain.Duewag_U2.ReverserInsertedB = true
 			elseif not self.ParentTrain.Duewag_U2.ReverserInsertedB and self.ParentTrain.Duewag_U2.ReverserInsertedA then
-				self.ParentTrain.Duewag_U2.ReverserInsertedB = false
+				self.ParentTrain.Duewag_U2.ReverserInsertedA = false
+				self.ParentTrain.Duewag_U2.ReverserInsertedB = true
 			end
 		end
 	end

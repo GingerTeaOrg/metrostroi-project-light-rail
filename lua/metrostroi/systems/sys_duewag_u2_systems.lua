@@ -254,10 +254,10 @@ function TRAIN_SYSTEM:Think(Train)
     end
 
     if self.Train:GetNW2Bool("BatteryOn", false) == true then -- if the battery is on, we can command the pantograph
-        self.PantoUp = self.Train:GetNW2Bool("PantoUp")
+        self.PantoUp = self.Train:GetNW2Bool("PantoUp") or self.Train:ReadTrainWire(17) > 0
     end
 
-    self.Train:SetNW2Bool("ReverserInserted", self.ReverserInsertedA)
+    self.Train:SetNW2Bool("ReverserInsertedA", self.ReverserInsertedA)
     self.Train:SetNW2Bool("ReverserInsertedB", self.ReverserInsertedB)
 
     if self.ReverserInsertedA or self.ReverserInsertedB then
@@ -698,7 +698,10 @@ function TRAIN_SYSTEM:MUHandler()
         self.VZ = false
 
     end
-    print(self.ReverserState)
+
+
+
+
     ---------------------------------------------------------------------------------------
 
     if self.Train:ReadTrainWire(10) > 0 then -- if the emergency brake is pulled high
@@ -740,10 +743,19 @@ function TRAIN_SYSTEM:MUHandler()
         self.Train:WriteTrainWire(6, 0)
     end
 
+    self.Train.PantoUp = self.Train.PantoUp or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(17) > 0
+
     if self.Train.PantoUp == true then
+        if self.Train:ReadTrainWire(6) > 0 then
+            self.Train:WriteTrainWire(17,1)
+        end
         self.Train:SetNW2Bool("PantoUp", true)
     elseif self.Train.PantoUp == false then
         self.Train:SetNW2Bool("PantoUp", false)
+
+        if self.Train:ReadTrainWire(6) > 0 then
+            self.Train:WriteTrainWire(17,0)
+        end
     end
     -- print(self.Train:GetNW2Bool("PantoUp"))
     -- print(self.Train:GetNW2Bool("Fans"))
