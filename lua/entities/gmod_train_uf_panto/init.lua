@@ -78,8 +78,8 @@ function ENT:CheckContact(pos,dir)
         endpos = pos + dir * 117,
         mask = MASK_SHOT_HULL,
         filter = { self }, --filter out the panto itself
-        mins = Vector( -24,-24,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
-        maxs = Vector(24,24,2),
+        mins = Vector( -26,-26,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
+        maxs = Vector(26,26,4),
     })
     
     if not result.Hit then self:SetNW2Vector("PantoHeight",Vector(0,0,117)) return end --if nothing touches the panto, it can spring to maximum freely
@@ -90,7 +90,8 @@ function ENT:CheckContact(pos,dir)
     --print("traceorigin",PhysObj:WorldToLocalVector(pos),"hitpos",PhysObj:WorldToLocalVector(result.HitPos),"calculated height diff",pantoheight.z)
     self:SetNW2Vector("PantoHeight",pantoheight)
     local traceEnt = result.Entity
-    if IsValid(traceEnt) and traceEnt:GetClass() == "player" and self.Voltage > 40 and result.HitPos.z - pos.z < 100 and self.Debug == false then --if the player hits the bounding box, unalive them
+
+    if IsValid(traceEnt) and traceEnt:GetClass() == "player" and UF.Voltage > 40 then --if the player hits the bounding box, unalive them
         local pPos = traceEnt:GetPos()
         util.BlastDamage(traceEnt,traceEnt,pPos,64,3.0*self.Voltage)
         
@@ -99,13 +100,16 @@ function ENT:CheckContact(pos,dir)
         util.Effect("cball_explode",effectdata,true,true)
         sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
         return false --don't return anything because... I mean, a human body is a conductor, just not a very good one
-    elseif IsValid(traceEnt) and result.Hit and self.Voltage > 40 and math.random(0,100) >= 97 and self.Train.Speed > 5 then --randomly create some sparks if we're hitting catenary, with a 12% chance
-        local pPos = result.HitPos
-        local effectdata = EffectData()
-        effectdata:SetOrigin(pPos + Vector(0,math.random(-2,2),0))
-        util.Effect("StunstickImpact",effectdata,true,true)
-        sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
-        return result.Hit --yes, we are touching catenary
+    elseif result.Hit and UF.Voltage > 40 then --randomly create some sparks if we're hitting catenary, with a 12% chance
+        if self.Train.Speed >= 5 and math.random(0,100) >= 80 then
+            local pPos = result.HitPos
+            local effectdata = EffectData()
+            effectdata:SetOrigin(pPos + Vector(0,math.random(-2,2),0))
+            util.Effect("StunstickImpact",effectdata,true,true)
+            sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
+        end
+        print(traceEnt)
+        return result.Hit, traceEnt --yes, we are touching catenary
     end
 
 end
@@ -118,9 +122,15 @@ function ENT:CheckVoltage(dT)
     self.CheckTimeout = CurTime()
     local supported = C_mplr_train_requirewire:GetInt() > 0 and UF.MapHasFullSupport()
 
-    self.Voltage = UF.Voltage
     
-    self:CheckContact(self:GetPos(),self:GetUp())
+    
+    local hit, hitEnt = self:CheckContact(self:GetPos(),self:GetUp())
+    if not IsValid(hitEnt) then self.Voltage = 0 print("error") return end
+    if hitEnt:GetClass() == "prop_static" and string.gmatch(hitEnt:GetModel(), "overhead_wire") == "overhead_wire" then
+        self.Voltage = UF.Voltage
+    else
+        self.Voltage = 0
+    end
 
 end
 
