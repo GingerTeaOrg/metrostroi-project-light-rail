@@ -24,6 +24,12 @@ function ENT:Initialize()
 	self.FrontCouple = self.SectionC.FrontCouple
 	self.RearCouple = self.SectionC.RearCouple
 
+	--self.FrontStepR = self:CreateFoldingSteps("front_r")
+	--self.RearStepR = self:CreateFoldingSteps("front_r_back")
+	--self.FrontStepL = self:CreateFoldingSteps("front_l")
+	--self.RearStepL = self:CreateFoldingSteps("front_l_back")
+
+
 	self.ReverserInserted = false
 
 	-- print("UF: Init Pt Section A/B")
@@ -128,6 +134,10 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 	self.SectionC = self:GetNW2Entity("SectionC")
 
+	self.PrevTime = self.PrevTime or CurTime()
+	self.DeltaTime = (CurTime() - self.PrevTime)
+	self.PrevTime = CurTime()
+
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed", self.Speed * 100)
 
@@ -142,6 +152,11 @@ function ENT:Think()
 	elseif self.SectionC.Duewag_Pt.ReverserLeverState == -1 then
 		self:SetNW2Float("ReverserAnim", 0)
 	end
+	self.Anims = {}
+	self.FrontStepR:SetPoseParameter("position",self:Animate("FrontStepR",0,0,100,1,10,false))
+	self.FrontStepR:Activate()
+	local Phys = self.FrontStepR:GetPhysicsObject()
+	Phys:EnableCollisions()
 
 	-- print(self.SectionC.Duewag_Pt.ReverserLeverState)
 
@@ -330,4 +345,107 @@ function ENT:CreateCoupleUF_b(pos, ang, forward, typ)
 	-- Add to cleanup list
 	table.insert(self.TrainEntities, coupler)
 	return coupler
+end
+
+function ENT:CreateFoldingSteps(pos)
+
+	if pos == "front_r" then
+		local step = ents.Create("prop_physics")
+		step:SetModel("models/lilly/uf/pt/step_r.mdl")
+
+		step:Spawn()
+		step.SpawnPos = self:LocalToWorld(Vector(0,0,0))
+		step:SetPos(self:LocalToWorld(Vector(237,0,0)))
+		step.SpawnAng = Angle(0,0,0)
+		step:SetAngles(self:GetAngles())
+		constraint.Weld(step, self, 0, 0, 0, true, false)
+		table.insert(self.TrainEntities, step)
+		--step:SetParent(self)
+		return step
+	elseif pos == "front_r_back" then
+		local step = ents.Create("prop_physics")
+		step:SetModel("models/lilly/uf/pt/step_r_back.mdl")
+		step.SpawnPos = self:LocalToWorld(Vector(0,0,0))
+		step:SetPos(self:LocalToWorld(Vector(0,0,0)))
+		step.SpawnAng = Angle(0,0,0)
+		step:SetAngles(self:GetAngles())
+		step:Spawn()
+		constraint.Weld(step, self, 0, 0, 0, true, false)
+		table.insert(self.TrainEntities, step)
+		--step:SetParent(self)
+		return step
+	elseif pos == "front_l" then
+		local step = ents.Create("prop_physics")
+		step:SetModel("models/lilly/uf/pt/step_r.mdl")
+		step.SpawnPos = self:LocalToWorld(Vector(667, 0, 0))
+		step:SetPos(self:LocalToWorld(Vector(430, 0, 0)))
+		step.SpawnAng = Angle(0, 180, 0)
+		step:SetAngles(self:GetAngles() + self:LocalToWorldAngles(Angle(0,0,180)))
+		step:Spawn()
+		constraint.Weld(step, self, 0, 0, 0, true, false)
+		table.insert(self.TrainEntities, step)
+		--step:SetParent(self)
+		return step
+	elseif pos == "front_l_back" then
+		local step = ents.Create("prop_physics")
+		step:SetModel("models/lilly/uf/pt/step_r_back.mdl")
+		step.SpawnPos = self:LocalToWorld(Vector(431.5, 0, 0))
+		step:SetPos(self:LocalToWorld(Vector(194, 0, 0)))
+		step:SetAngles(self:GetAngles() + self:LocalToWorldAngles(Angle(0,0,180)))
+		step.SpawnAng = Angle(0, 180, 0)
+		step:Spawn()
+		constraint.Weld(step, self, 0, 0, 0, true, false)
+		table.insert(self.TrainEntities, step)
+		--step:SetParent(self)
+		return step
+	end
+end
+
+
+--------------------------------------------------------------------------------
+-- Animation function
+--------------------------------------------------------------------------------
+function ENT:Animate(clientProp, value, min, max, speed, damping, stickyness)
+    local id = clientProp
+    if not self.Anims[id] then
+        self.Anims[id] = {}
+        self.Anims[id].val = value
+        self.Anims[id].V = 0.0
+    end
+
+    if damping == false then
+        local dX = speed * self.DeltaTime
+        if value > self.Anims[id].val then
+            self.Anims[id].val = self.Anims[id].val + dX
+        end
+        if value < self.Anims[id].val then
+            self.Anims[id].val = self.Anims[id].val - dX
+        end
+        if math.abs(value - self.Anims[id].val) < dX then
+            self.Anims[id].val = value
+        end
+    else
+        -- Prepare speed limiting
+        local delta = math.abs(value - self.Anims[id].val)
+        local max_speed = 1.5*delta / self.DeltaTime
+        local max_accel = 0.5 / self.DeltaTime
+
+        -- Simulate
+        local dX2dT = (speed or 128)*(value - self.Anims[id].val) - self.Anims[id].V * (damping or 8.0)
+        if dX2dT >  max_accel then dX2dT =  max_accel end
+        if dX2dT < -max_accel then dX2dT = -max_accel end
+
+        self.Anims[id].V = self.Anims[id].V + dX2dT * self.DeltaTime
+        if self.Anims[id].V >  max_speed then self.Anims[id].V =  max_speed end
+        if self.Anims[id].V < -max_speed then self.Anims[id].V = -max_speed end
+
+        self.Anims[id].val = math.max(0,math.min(1,self.Anims[id].val + self.Anims[id].V * self.DeltaTime))
+
+        -- Check if value got stuck
+        if (math.abs(dX2dT) < 0.001) and stickyness and (self.DeltaTime > 0) then
+            self.Anims[id].stuck = true
+        end
+    end
+    
+    return min + (max-min)*self.Anims[id].val
 end
