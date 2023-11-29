@@ -2,7 +2,7 @@ include("shared.lua")
 
 ENT.ClientSounds = {}
 ENT.ClientProps = {}
-ENT.ButtonMap = {}
+ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
 
@@ -27,7 +27,7 @@ ENT.ClientProps["Throttle"] = {model = "models/lilly/uf/common/cab/throttle.mdl"
 
 ENT.ClientProps["headlights_on"] = {model = "models/lilly/uf/u3/headlights_lit.mdl", pos = Vector(0.1, 0, 0), ang = Angle(0, 0, 0), scale = 1}
 
-ENT.ButtonMap["IBISScreen"] = {
+ENT.ButtonMapMPLR["IBISScreen"] = {
 	pos = Vector(469.83, -0.75, 73.41),
 	ang = Angle(0, -135, 78.8), -- (0,44.5,-47.9),
 	width = 147,
@@ -35,7 +35,7 @@ ENT.ButtonMap["IBISScreen"] = {
 	scale = 0.0311
 }
 
-ENT.ButtonMap["Rollsign"] = {
+ENT.ButtonMapMPLR["Rollsign"] = {
 	pos = Vector(470, -28, 121),
 	ang = Angle(0, 90, 90),
 	width = 890,
@@ -47,7 +47,7 @@ ENT.ButtonMap["Rollsign"] = {
 	}
 }
 
-ENT.ButtonMap["Dashboard1"] = {
+ENT.ButtonMapMPLR["Dashboard1"] = {
 	pos = Vector(464, 33, 68.4),
 	ang = Angle(0, -90, 9),
 	width = 370,
@@ -57,7 +57,7 @@ ENT.ButtonMap["Dashboard1"] = {
 	buttons = {}
 }
 
-ENT.ButtonMap["Dashboard2"] = {
+ENT.ButtonMapMPLR["Dashboard2"] = {
 	pos = Vector(466, 33, 71.25),
 	ang = Angle(0, -90, 54.4),
 	width = 370,
@@ -350,4 +350,4 @@ function ENT:Think()
 end
 
 function ENT:OnAnnouncer(volume) return self:GetPackedBool("AnnPlay") and volume or 0 end
-Metrostroi.GenerateClientProps()
+UF.GenerateClientProps()

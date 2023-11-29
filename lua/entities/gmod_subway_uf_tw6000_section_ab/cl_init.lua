@@ -2,7 +2,7 @@ include("shared.lua")
 
 ENT.ClientSounds = {}
 ENT.ClientProps = {}
-ENT.ButtonMap = {}
+ENT.ButtonMapMPLR = {}
 
 
 ENT.Lights = {
@@ -30,7 +30,7 @@ ENT.ClientProps["Speedo"] = {
 	scale = 10
 }
 
-ENT.ButtonMap["IBISScreen"] = {
+ENT.ButtonMapMPLR["IBISScreen"] = {
     pos = Vector(385,-22,72),
     ang = Angle(0,-147,70),--(0,44.5,-47.9),
     width = 117,
@@ -38,7 +38,7 @@ ENT.ButtonMap["IBISScreen"] = {
     scale = 0.0311,
 }
 
-ENT.ButtonMap["Rollsign"] = {
+ENT.ButtonMapMPLR["Rollsign"] = {
     pos = Vector(394,-12,121.8),
     ang = Angle(0,90,90),
     width = 560,
@@ -50,7 +50,7 @@ ENT.ButtonMap["Rollsign"] = {
     }
 }
 
-ENT.ButtonMap["Rollsign1"] = {
+ENT.ButtonMapMPLR["Rollsign1"] = {
     pos = Vector(394,-22.8,121.8),
     ang = Angle(0,90,90),
     width = 158,

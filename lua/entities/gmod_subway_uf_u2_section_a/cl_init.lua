@@ -2,7 +2,7 @@ include("shared.lua")
 
 ENT.ClientSounds = {}
 ENT.ClientProps = {}
-ENT.ButtonMap = {}
+ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
 
@@ -405,7 +405,7 @@ ENT.ClientProps["blinds_l"] = {
     hideseat = 8
 }
 
-ENT.ButtonMap["Drivers_Door"] = {
+ENT.ButtonMapMPLR["Drivers_Door"] = {
     pos = Vector(385.874, -10.7466, 24.4478),
     ang = Angle(0, -90, -90),
     width = 25,
@@ -435,7 +435,7 @@ ENT.ButtonMap["Drivers_Door"] = {
         }
     }
 }
-ENT.ButtonMap["Drivers_Door2"] = {
+ENT.ButtonMapMPLR["Drivers_Door2"] = {
     pos = Vector(385.874, -35.7466, 24.4478),
     ang = Angle(0, 90, -90),
     width = 25,
@@ -466,7 +466,7 @@ ENT.ButtonMap["Drivers_Door2"] = {
     }
 }
 
-ENT.ButtonMap["Button1a"] = {
+ENT.ButtonMapMPLR["Button1a"] = {
     pos = Vector(395.8, -51, 50.5),
     ang = Angle(0, 0, 90),
     width = 5,
@@ -497,7 +497,7 @@ ENT.ButtonMap["Button1a"] = {
     }
 }
 
-ENT.ButtonMap["Button2a"] = {
+ENT.ButtonMapMPLR["Button2a"] = {
     pos = Vector(326, -51, 50.5),
     ang = Angle(0, 0, 90),
     width = 5,
@@ -528,7 +528,7 @@ ENT.ButtonMap["Button2a"] = {
     }
 }
 
-ENT.ButtonMap["Button3a"] = {
+ENT.ButtonMapMPLR["Button3a"] = {
     pos = Vector(151, -51, 50.5),
     ang = Angle(0, 0, 90),
     width = 5,
@@ -559,7 +559,7 @@ ENT.ButtonMap["Button3a"] = {
     }
 }
 
-ENT.ButtonMap["Button4a"] = {
+ENT.ButtonMapMPLR["Button4a"] = {
     pos = Vector(83.7, -51, 50.5),
     ang = Angle(0, 0, 90),
     width = 5,
@@ -590,7 +590,7 @@ ENT.ButtonMap["Button4a"] = {
     }
 }
 
-ENT.ButtonMap["Button8b"] = {
+ENT.ButtonMapMPLR["Button8b"] = {
     pos = Vector(395.8, 51, 50.5),
     ang = Angle(90, 0, -90),
     width = 5,
@@ -621,7 +621,7 @@ ENT.ButtonMap["Button8b"] = {
     }
 }
 
-ENT.ButtonMap["Button7b"] = {
+ENT.ButtonMapMPLR["Button7b"] = {
     pos = Vector(326, 51, 50.5),
     ang = Angle(90, 0, -90),
     width = 5,
@@ -652,7 +652,7 @@ ENT.ButtonMap["Button7b"] = {
     }
 }
 
-ENT.ButtonMap["Button6b"] = {
+ENT.ButtonMapMPLR["Button6b"] = {
     pos = Vector(150.6, 51, 50.5),
     ang = Angle(90, 0, -90),
     width = 5,
@@ -683,7 +683,7 @@ ENT.ButtonMap["Button6b"] = {
     }
 }
 
-ENT.ButtonMap["Button5b"] = {
+ENT.ButtonMapMPLR["Button5b"] = {
     pos = Vector(82.8, 51, 50.5),
     ang = Angle(90, 0, -90),
     width = 5,
@@ -714,7 +714,7 @@ ENT.ButtonMap["Button5b"] = {
     }
 }
 
-ENT.ButtonMap["DeadmanButton"] = {
+ENT.ButtonMapMPLR["DeadmanButton"] = {
     pos = Vector(410.2, -1.3, 52),
     ang = Angle(90, 0, -90),
     width = 3,
@@ -745,7 +745,7 @@ ENT.ButtonMap["DeadmanButton"] = {
     }
 }
 
-ENT.ButtonMap["Cab"] = {
+ENT.ButtonMapMPLR["Cab"] = {
     pos = Vector(419.6, 24.88, 55.2),
     ang = Angle(0, -90, 8),
     width = 500,
@@ -1547,7 +1547,7 @@ ENT.ButtonMap["Cab"] = {
     }
 }
 
-ENT.ButtonMap["BOStrab"] = {
+ENT.ButtonMapMPLR["BOStrab"] = {
     pos = Vector(422, -33, 55.2),
     ang = Angle(0, -122, 0),
     width = 90,
@@ -1573,7 +1573,7 @@ ENT.ButtonMap["BOStrab"] = {
         }
     }
 }
-ENT.ButtonMap["IBISKey"] = {
+ENT.ButtonMapMPLR["IBISKey"] = {
     pos = Vector(416, -19.4, 57.4),
     ang = Angle(0, -45, 90),
     width = 10,
@@ -1602,7 +1602,7 @@ ENT.ButtonMap["IBISKey"] = {
         }
     }
 }
---[[ENT.ButtonMap["Lefthand"] = {
+--[[ENT.ButtonMapMPLR["Lefthand"] = {
 pos = Vector(532.6,-19.2,83.09),
 ang = Angle(0,90,0),
 width = 112,
@@ -1610,14 +1610,14 @@ height = 25,
 scale = 0.04,
 }]]
 
-ENT.ButtonMap["IBISScreen"] = {
+ENT.ButtonMapMPLR["IBISScreen"] = {
     pos = Vector(419.74, -12.76, 60.35),
     ang = Angle(0, -135.45, 48.5), -- (0,44.5,-47.9),
     width = 117,
     height = 29.9,
     scale = 0.0311
 }
-ENT.ButtonMap["IBIS"] = {
+ENT.ButtonMapMPLR["IBIS"] = {
     pos = Vector(415.2, -18, 61),
     ang = Angle(48, -225, 0),
     width = 100,
@@ -1916,7 +1916,7 @@ ENT.ButtonMap["IBIS"] = {
     }
 }
 
-ENT.ButtonMap["Microphone"] = {
+ENT.ButtonMapMPLR["Microphone"] = {
     pos = Vector(417.4, 0.6, 73),
     ang = Angle(120, -10, 184),
     width = 50,
@@ -1936,7 +1936,7 @@ ENT.ButtonMap["Microphone"] = {
     }
 }
 
-ENT.ButtonMap["Rollsign"] = {
+ENT.ButtonMapMPLR["Rollsign"] = {
     pos = Vector(424.5, -25, 109),
     ang = Angle(0, 90, 90),
     width = 780,
@@ -1948,7 +1948,7 @@ ENT.ButtonMap["Rollsign"] = {
     }
 }
 
-ENT.ButtonMap["Blinds"] = {
+ENT.ButtonMapMPLR["Blinds"] = {
     pos = Vector(415, 40, 100),
     ang = Angle(0, 280, 90),
     width = 50,
@@ -1973,7 +1973,7 @@ ENT.ButtonMap["Blinds"] = {
     }
 }
 
-ENT.ButtonMap["CabWindowL"] = {
+ENT.ButtonMapMPLR["CabWindowL"] = {
     pos = Vector(397, 45, 95),
     ang = Angle(0, 0, 90),
     width = 300,
@@ -1998,7 +1998,7 @@ ENT.ButtonMap["CabWindowL"] = {
     }
 }
 
-ENT.ButtonMap["CabWindowR"] = {
+ENT.ButtonMapMPLR["CabWindowR"] = {
     pos = Vector(415, -45, 95),
     ang = Angle(0, 180, 90),
     width = 300,
@@ -2023,7 +2023,7 @@ ENT.ButtonMap["CabWindowR"] = {
     }
 }
 
-ENT.ButtonMap["Left"] = {
+ENT.ButtonMapMPLR["Left"] = {
     pos = Vector(415, 30, 56),
     ang = Angle(0, 180, 0),
     width = 160,
@@ -2785,7 +2785,7 @@ function ENT:Think()
     self:ScrollTracker()
 
 end
-Metrostroi.GenerateClientProps()
+UF.GenerateClientProps()
 
 function ENT:U2SoundEngine()
 

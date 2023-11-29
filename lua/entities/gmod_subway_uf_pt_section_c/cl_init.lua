@@ -7,7 +7,7 @@ include("shared.lua")
 ENT.ClientProps = {}
 ENT.AutoAnims = {}
 ENT.ClientSounds = {}
-ENT.ButtonMap = {}
+ENT.ButtonMapMPLR = {}
 
 local function GetDoorPosition(i,k,j)
 	if j == 0 
@@ -53,4 +53,4 @@ function ENT:Think()
 	
 end
 
-Metrostroi.GenerateClientProps()
+UF.GenerateClientProps()

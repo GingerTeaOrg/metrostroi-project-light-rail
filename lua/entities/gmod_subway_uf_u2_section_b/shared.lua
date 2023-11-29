@@ -1,5 +1,5 @@
 ENT.Type            = "anim"
-ENT.Base            = "gmod_subway_base"
+ENT.Base            = "gmod_subway_uf_base"
 
 ENT.PrintNameTranslated       = "U2 Section B"
 ENT.Author          = ""

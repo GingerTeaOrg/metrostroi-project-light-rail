@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "gmod_subway_base"
+ENT.Base = "gmod_subway_uf_base"
 ENT.PrintName = "Duewag U2h"
 ENT.Author = "LillyWho"
 ENT.Contact = ""
@@ -8,7 +8,7 @@ ENT.Instructions = ""
 ENT.Category = "Metrostroi: Project Light Rail"
 
 ENT.Spawnable = false
-ENT.AdminSpawnable = false
+ENT.AdminSpawnable = true
 
 ENT.SkinsType = "U2h"
 

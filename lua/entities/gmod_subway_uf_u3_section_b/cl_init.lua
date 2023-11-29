@@ -2,7 +2,7 @@ include("shared.lua")
 
 ENT.ClientSounds = {}
 ENT.ClientProps = {}
-ENT.ButtonMap = {}
+ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
 
