@@ -3,4 +3,4 @@ CreateClientConVar("mplr_camera_jerk_intensity","7.5",true,true,"How much the ca
 concommand.Add("mplr_manual", function()--ply, _, args)
     gui.OpenURL("https://lillywho.github.io")
 end)
-print("Set all the convars!")
+print("MPLR: Set all the convars!")
