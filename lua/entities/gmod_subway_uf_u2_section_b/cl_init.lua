@@ -5,6 +5,142 @@ ENT.AutoAnims = {}
 ENT.ClientSounds = {}
 ENT.ButtonMapMPLR = {}
 
+ENT.Lights = {
+    -- Headlight glow
+    [1] = {
+        "headlight",
+        Vector(-410, 39, 43),
+        Angle(10, 0, 0),
+        Color(216, 161, 92),
+        fov = 60,
+        farz = 600,
+        brightness = 1.2,
+        texture = "models/metrostroi_train/equipment/headlight",
+        shadows = 1,
+        headlight = true
+    },
+    [2] = {
+        "headlight",
+        Vector(-410, -39, 43),
+        Angle(10, 0, 0),
+        Color(216, 161, 92),
+        fov = 60,
+        farz = 600,
+        brightness = 1.2,
+        texture = "models/metrostroi_train/equipment/headlight",
+        shadows = 1,
+        headlight = true
+    },
+    [3] = {
+        "light",
+        Vector(-406, 0, 100),
+        Angle(0, 0, 0),
+        Color(216, 161, 92),
+        fov = 40,
+        farz = 450,
+        brightness = 3,
+        texture = "effects/flashlight/soft",
+        shadows = 1,
+        headlight = true
+    },
+    [4] = {
+        "headlight",
+        Vector(-545, 38.5, 40),
+        Angle(-20, 0, 0),
+        Color(255, 0, 0),
+        fov = 50,
+        brightness = 0.7,
+        farz = 50,
+        texture = "models/metrostroi_train/equipment/headlight2",
+        shadows = 0,
+        backlight = true
+    },
+    [5] = {
+        "headlight",
+        Vector(-545, -38.5, 40),
+        Angle(-20, 0, 0),
+        Color(255, 0, 0),
+        fov = 50,
+        brightness = 0.7,
+        farz = 50,
+        texture = "models/metrostroi_train/equipment/headlight2",
+        shadows = 0,
+        backlight = true
+    },
+    [6] = {
+        "headlight",
+        Vector(-406, 39, 98),
+        Angle(90, 0, 0),
+        Color(226, 197, 160),
+        brightness = 0.9,
+        scale = 0.7,
+        texture = "effects/flashlight/soft.vmt"
+    }, -- cab lights
+    [16] = {
+        "headlight",
+        Vector(-406, -39, 98),
+        Angle(90, 0, 0),
+        Color(226, 197, 160),
+        brightness = 0.9,
+        scale = 0.7,
+        texture = "effects/flashlight/soft.vmt"
+    },
+    [7] = {
+        "headlight",
+        Vector(-545, 38.5, 45),
+        Angle(-20, 0, 0),
+        Color(255, 102, 0),
+        fov = 50,
+        brightness = 0.7,
+        farz = 50,
+        texture = "models/metrostroi_train/equipment/headlight2",
+        shadows = 0,
+        backlight = true
+    },
+    [8] = {
+        "headlight",
+        Vector(-545, -38.5, 45),
+        Angle(-20, 0, 0),
+        Color(255, 102, 0),
+        fov = 50,
+        brightness = 0.7,
+        farz = 50,
+        texture = "models/metrostroi_train/equipment/headlight2",
+        shadows = 0,
+        backlight = true
+    },
+    [9] = {
+        "dynamiclight",
+        Vector(-400, 30, 490),
+        Angle(90, 0, 0),
+        Color(226, 197, 160),
+        fov = 100,
+        brightness = 0.9,
+        scale = 1.0,
+        texture = "effects/flashlight/soft.vmt"
+    }, -- passenger light front left
+    [10] = {
+        "dynamiclight",
+        Vector(-400, -30, 490),
+        Angle(90, 0, 0),
+        Color(226, 197, 160),
+        fov = 100,
+        brightness = 1.0,
+        scale = 1.0,
+        texture = "effects/flashlight/soft.vmt"
+    }, -- passenger light front right
+    [11] = {
+        "dynamiclight",
+        Vector(-327, -52, 71),
+        Angle(90, 0, 0),
+        Color(255, 102, 0),
+        fov = 100,
+        brightness = 1.0,
+        scale = 1.0,
+        texture = "effects/flashlight/soft.vmt"
+    }
+}
+
 local function GetDoorPosition(i, k, j)
     if j == 0 then
         return Vector(230.8 - 35.0 * k - 232.2 * i, -67.5 * (1 - 2 * k), 4.3)
@@ -133,17 +269,13 @@ ENT.ButtonMapMPLR["Rollsign"] = {
     width = 780,
     height = 160,
     scale = 0.0625,
-    buttons = {
-        -- {ID = "LastStation-",x=000,y=0,w=400,h=205, tooltip=""},
-        -- {ID = "LastStation+",x=400,y=0,w=400,h=205, tooltip=""},
-    }
 }
 
 ENT.ClientProps["reverser"] = {
     model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
     pos = Vector(0, 0.5, 0),
     ang = Angle(0, 180, 0),
-    hideseat = 0.2
+
 }
 ENT.ClientProps["Throttle"] = {
     model = "models/lilly/uf/common/cab/throttle.mdl",
@@ -564,14 +696,6 @@ ENT.ButtonMapMPLR["Cab"] = {
                 model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",
                 z = -5,
                 name = "BlinkerLamp",
-                sprite = {
-                    bright = 0.3,
-                    size = 0.15,
-                    scale = 0.03,
-                    vscale = 0.02,
-                    color = Color(0, 109, 0),
-                    z = 7.7
-                }
             }
         }, {
             ID = "DepartureBlockedLamp",
@@ -581,7 +705,7 @@ ENT.ButtonMapMPLR["Cab"] = {
             tooltip = "Train not cleared for departure",
             model = {
                 lamp = {
-
+                    model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",
                     var = "DepartureBlocked",
                     z = 0,
                     anim = true,
@@ -906,6 +1030,7 @@ ENT.ButtonMapMPLR["Cab"] = {
                 model = "models/lilly/uf/u2/cab/battery_switch.mdl",
                 z = 0,
                 ang = 0,
+                --[[getfunc =  function(ent) return ent:GetPackedBool("FlickBatterySwitchOn") and 1 or 0.5 or ent:GetPackedBool("FlickBatterySwitchOff") and 1 or 0.5 end,]]
                 var = "Speaker",
                 speed = 1,
                 vmin = 0,
@@ -1203,6 +1328,18 @@ ENT.ButtonMapMPLR["Cab"] = {
             radius = 10,
             tooltip = "Sander indicator",
             model = {
+                lamp = {
+                    var = "Sand",
+                    z = 0,
+                    anim = true,
+                    lcolor = Color(129, 0, 0),
+                    lz = 12,
+                    lbright = 3,
+                    lfov = 130,
+                    lfar = 16,
+                    lnear = 8,
+                    lshadows = 0
+                },
                 model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",
                 z = -7,
                 ang = 0,
@@ -1423,7 +1560,7 @@ end
 
 function ENT:Animations()
 
-    self:Animate("Throttle", self:GetNW2Float("ThrottleAnim", 0), -45, 45, 50)
+    self:Animate("Throttle", self:GetNW2Float("ThrottleAnimB", 0), -45, 45, 50)
 
     self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 80) / 100 * 1.5
     self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
@@ -1451,7 +1588,6 @@ function ENT:Animations()
         self:ShowHide("headlights_on", false)
     end
 
-    self:Animate("Throttle", self:GetNW2Float("ThrottleAnim", 0), -45, 45, 50)
 
     if self:GetPackedBool("FlickBatterySwitchOn", false) == true then
         self.BatterySwitch = 1
