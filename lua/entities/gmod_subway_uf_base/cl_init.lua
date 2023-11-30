@@ -297,10 +297,10 @@ end)
 --------------------------------------------------------------------------------
 -- Buttons layout
 --------------------------------------------------------------------------------
-ENT.ButtonMap = {} --Leave nil if unused
+ENT.ButtonMapMPLR = {} --Leave nil if unused
 
 -- General Panel
-    table.insert(ENT.ButtonMap,{
+    table.insert(ENT.ButtonMapMPLR,{
     pos = Vector(7,0,0),
     ang = Angle(0,90,90),
     width = 300,
@@ -569,13 +569,13 @@ local function isValidTrainDriver(ply)
     local train = util.TraceLine({
         start = LocalPlayer():GetPos(),
         endpos = LocalPlayer():GetPos() - LocalPlayer():GetAngles():Up() * 100,
-        filter = function( ent ) if ent.ButtonMap ~= nil then return true end end
+        filter = function( ent ) if ENT.ButtonMapMPLR ~= nil then return true end end
     }).Entity
     if not IsValid(train) then
         train = util.TraceLine({
             start = LocalPlayer():EyePos(),
             endpos = LocalPlayer():EyePos() + LocalPlayer():EyeAngles():Forward() * 300,
-            filter = function( ent ) if ent.ButtonMap ~= nil then return true end end
+            filter = function( ent ) if ENT.ButtonMapMPLR ~= nil then return true end end
         }).Entity
     end
     return IsValid(train) and train, true
@@ -637,13 +637,13 @@ end)
 
 local function enableDebug()
     if C_DrawDebug:GetInt() > 0 then
-        hook.Add("PostDrawTranslucentRenderables","MetrostroiTrainDebug",function(bDrawingDepth,bDrawingSkybox)
+        hook.Add("PostDrawTranslucentRenderables","MPLRTrainDebug",function(bDrawingDepth,bDrawingSkybox)
             if bDrawingSkybox then return end
-            for ent in pairs(Metrostroi.SpawnedTrains) do
+            for ent in pairs(UF.SpawnedTrains) do
                 -- Debug draw for buttons
-                if ent.ButtonMap ~= nil then
+                if ent.ButtonMapMPLR ~= nil then
                     draw.NoTexture()
-                    for kp,panel in pairs(ent.ButtonMap) do
+                    for kp,panel in pairs(ent.ButtonMapMPLR) do
                         if kp ~= "BaseClass" and LocalPlayer():GetPos():DistToSqr(ent:LocalToWorld(panel.pos)) < 262144 then
                             ent:DrawOnPanel(kp,function()
                                 surface.SetDrawColor(0,0,255)
@@ -672,8 +672,8 @@ local function enableDebug()
                                             surface.SetDrawColor(255,255,0)
                                         elseif ent.HiddenPanels[kp] then
                                             surface.SetDrawColor(100,0,0)
-                                        elseif not button.ID or button.ID[1] == "!" then
-                                            surface.SetDrawColor(25,40,180)
+                                        --[[elseif not button.ID or button.ID[1] == "!" then
+                                            surface.SetDrawColor(25,40,180)]]
                                         elseif button.state then
                                             surface.SetDrawColor(255,0,0)
                                         else
@@ -702,10 +702,10 @@ local function enableDebug()
             end
         end)
     else
-        hook.Remove("PostDrawTranslucentRenderables","MetrostroiTrainDebug")
+        hook.Remove("PostDrawTranslucentRenderables","MPLRTrainDebug")
     end
 end
-hook.Remove("PostDrawTranslucentRenderables","MetrostroiTrainDebug")
+hook.Remove("PostDrawTranslucentRenderables","MPLRTrainDebug")
 cvars.AddChangeCallback( "metrostroi_drawdebug", enableDebug)
 enableDebug()
 
@@ -1210,9 +1210,9 @@ function ENT:Think()
             self.Street = 0
         end
     end
-    if not self.HandleMouseInput and self.ButtonMap then
+    if not self.HandleMouseInput and self.ButtonMapMPLR then
         if self == LocalPlayer().InMetrostroiTrain then
-            for kp,pan in pairs(self.ButtonMap) do
+            for kp,pan in pairs(self.ButtonMapMPLR) do
                 if not self:ShouldDrawPanel(kp) then continue end
                 --If player is looking at this panel
                 if pan.mouse and not pan.outside and pan.aimX and pan.aimY then
@@ -1232,7 +1232,7 @@ function ENT:Think()
         end
     end
 
-    if self.ButtonMap and (not self.LastCheck or RealTime()-self.LastCheck > 0.5) then
+    if self.ButtonMapMPLR and (not self.LastCheck or RealTime()-self.LastCheck > 0.5) then
         self.LastCheck = RealTime()
         local screenshotMode = C_ScreenshotMode:GetBool()
         if self.ScreenshotMode ~= screenshotMode then
@@ -1277,14 +1277,14 @@ function ENT:Think()
                 self.Sounds[k] = nil
             end
         end
-        for k,v in pairs(self.ButtonMap) do
+        for k,v in pairs(self.ButtonMapMPLR) do
             if not v.pos then continue end
 
             if not v.hide or (v.nohide or screenshotMode) then
                 self.HiddenPanelsDistance[k] = v.screenHide
                 continue
             end
-            self.HiddenPanelsDistance[k] = not self:ShouldDrawClientEnt(k,self.ButtonMap[k])
+            self.HiddenPanelsDistance[k] = not self:ShouldDrawClientEnt(k,self.ButtonMapMPLR[k])
         end
     end
 
@@ -1735,7 +1735,7 @@ end
 
 function ENT:DrawOnPanel(index,func,overr)
     if not overr and not self:ShouldDrawPanel(index) then return end
-    local panel = self.ButtonMapMatrix and self.ButtonMapMatrix[index] or self.ButtonMap[index]
+    local panel = self.ButtonMapMatrix and self.ButtonMapMatrix[index] or self.ButtonMapMPLR[index]
     cam.Start3D2D(self:LocalToWorld(panel.pos),self:LocalToWorldAngles(panel.ang),panel.scale)
         func(panel)
     cam.End3D2D()
@@ -1743,7 +1743,7 @@ end
 
 function ENT:DrawRTOnPanel(index,rt,overr)
     if not overr and not self:ShouldDrawPanel(index) then return end
-    local panel = self.ButtonMapMatrix[index] or self.ButtonMap[index]
+    local panel = self.ButtonMapMatrix[index] or self.ButtonMapMPLR[index]
     cam.Start3D2D(self:LocalToWorld(panel.pos),self:LocalToWorldAngles(panel.ang),panel.scale)
         surface.SetMaterial(rt.mat)
         --surface.DrawTexturedRect(0,0,panel.width,panel.height)
@@ -2121,7 +2121,7 @@ end
 
 local function findAimButton(ply,train)
     local panel,panelDist = nil,1e9
-    for kp,pan in pairs(train.ButtonMap) do
+    for kp,pan in pairs(train.ButtonMapMPLR) do
         if not train:ShouldDrawPanel(kp) then continue end
         --If player is looking at this panel
         if pan.aimedAt and (pan.buttons or pan.sensor or pan.mouse) and pan.aimedAt < panelDist then
@@ -2170,7 +2170,7 @@ hook.Add("Think","mplr-cabin-panel",function()
     local train, outside = isValidTrainDriver(ply)
     if not IsValid(train) then return end
     if gui.IsConsoleVisible() or gui.IsGameUIVisible() or IsValid(vgui.GetHoveredPanel()) and not vgui.IsHoveringWorld() and  vgui.GetHoveredPanel():GetParent() ~= vgui.GetWorldPanel() then return end
-    if train.ButtonMap ~= nil then
+    if train.ButtonMapMPLR ~= nil then
         canDrawCrosshair = true
         local plyaimvec
         if outside then
@@ -2182,7 +2182,7 @@ hook.Add("Think","mplr-cabin-panel",function()
             plyaimvec = gui.ScreenToVector(x,y) -- ply:GetAimVector() is unreliable when in seats
         end
         -- Loop trough every panel
-        for k2,panel in pairs(train.ButtonMap) do
+        for k2,panel in pairs(train.ButtonMapMPLR) do
             if not panel.ang then continue end
             if not train:ShouldDrawPanel(k2) then continue end
             local pang = train:LocalToWorldAngles(panel.ang)
@@ -2237,7 +2237,14 @@ hook.Add("Think","mplr-cabin-panel",function()
                         toolTipText = toolTipText..newTT
                         toolTipPosition = Metrostroi.GetPhrase(newTTpos)
                     end]]
-                    if GetConVar("metrostroi_disablehovertextpos"):GetInt() == 0 and button.tooltipState and button.tooltip then
+                    local convar
+                    if IsValid(GetConVar("metrostroi_disablehovertextpos")) then
+                        convar = GetConVar("metrostroi_disablehovertextpos")
+                    elseif IsValid(GetConVar("metrostroi_disablehovertext")) then
+                        convar = GetConVar("metrostroi_disablehovertext")
+                    end
+
+                    if convar == 0 and button.tooltipState and button.tooltip then
                         toolTipText = toolTipText..button.tooltipState(train)
                     end
                 end
@@ -2277,8 +2284,8 @@ end
 
 -- Goes over a train's buttons and clears them, sending a message if needed
 function ENT:ClearButtons()
-    if self.ButtonMap == nil then return end
-    for _,panel in pairs(self.ButtonMap) do
+    if self.ButtonMapMPLR == nil then return end
+    for _,panel in pairs(self.ButtonMapMPLR) do
         if panel.buttons then
             for _,button in pairs(panel.buttons) do
                 if button.state == true then
@@ -2293,8 +2300,8 @@ end
 function ENT:HidePanel(kp,hide)
     if hide and not self.HiddenPanels[kp] then
         self.HiddenPanels[kp] = true
-        if self.ButtonMap[kp].props then
-            for _,v in pairs(self.ButtonMap[kp].props) do
+        if self.ButtonMapMPLR[kp].props then
+            for _,v in pairs(self.ButtonMapMPLR[kp].props) do
                 --self.Hidden[v] = true
                 self:ShowHide(v,false,true)
                 self.Hidden.override[v] = true
@@ -2303,8 +2310,8 @@ function ENT:HidePanel(kp,hide)
     end
     if not hide and self.HiddenPanels[kp] then
         self.HiddenPanels[kp] = nil
-        if self.ButtonMap[kp].props then
-            for _,v in pairs(self.ButtonMap[kp].props) do
+        if self.ButtonMapMPLR[kp].props then
+            for _,v in pairs(self.ButtonMapMPLR[kp].props) do
                 --self.Hidden[v] = false
                 self.Hidden.override[v] = false
                 self:ShowHide(v,true,true)
@@ -2320,7 +2327,7 @@ local function handleKeyEvent(ply,key,pressed)
     local train, outside = isValidTrainDriver(ply)
 
     if not IsValid(train) then return end
-    if train.ButtonMap == nil then return end
+    if train.ButtonMapMPLR == nil then return end
     if key == MOUSE_LEFT and not pressed then train:ClearButtons() end
     if pressed then
         local button,x,y,system = findAimButton(ply,train)
