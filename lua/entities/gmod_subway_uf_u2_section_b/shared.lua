@@ -16,7 +16,6 @@ ENT.DontAccelerateSimulation = true
 function ENT:InitializeSystems()
 	--self:LoadSystem("Duewag_U2")
 	--self:LoadSystem("Duewag_Deadman")
-	self:LoadSystem("IBIS_secondary")
 	self:LoadSystem("Panel","U2_panel")
 	self:LoadSystem("IBIS","IBIS_secondary")
 end
