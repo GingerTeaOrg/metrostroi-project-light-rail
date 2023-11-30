@@ -784,14 +784,6 @@ ENT.ButtonMapMPLR["Cab"] = {
                 model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",
                 z = -5,
                 name = "BlinkerLamp",
-                sprite = {
-                    bright = 0.3,
-                    size = 0.15,
-                    scale = 0.03,
-                    vscale = 0.02,
-                    color = Color(0, 109, 0),
-                    z = 7.7
-                }
             }
         }, {
             ID = "DepartureBlockedLamp",
@@ -973,7 +965,7 @@ ENT.ButtonMapMPLR["Cab"] = {
             tooltip = "High Beam On",
             model = {
                 model = "models/lilly/uf/u2/cab/button_bulge_blue.mdl",
-                z = 0,
+                z = -6,
                 ang = 45,
                 anim = false,
                 var = "HighbeamLamp"
@@ -2388,12 +2380,14 @@ function ENT:Think()
     self:Animate("blinds_l", self:GetNW2Float("Blinds", 0), 0, 100, 50, 9, 0)
 
     self:ShowHide("RetroEquipment", self:GetNW2Bool("RetroMode", false))
-    if self:GetNW2Float("ThrottleStateAnim", 0) >= 0.5 then
-        self:Animate("Throttle", self:GetNWFloat("ThrottleStateAnim", 0.5), -45,
+
+    self.ThrottleStateAnim = self:GetNW2Float("ThrottleStateAnim", 0)
+    if self.ThrottleStateAnim >= 0.5 then
+        self:Animate("Throttle", self.ThrottleStateAnim, -45,
                      45, 50, 8, false)
-    elseif self:GetNW2Float("ThrottleStateAnim", 0) <= 0.5 then
+    elseif self.ThrottleStateAnim <= 0.5 then
         self:Animate("Throttle", math.Clamp(
-                         self:GetNWFloat("ThrottleStateAnim", 0.5), 0.09, 1),
+                        self.ThrottleStateAnim, 0.09, 1),
                      -45, 45, 50, 8, false)
     end
 
