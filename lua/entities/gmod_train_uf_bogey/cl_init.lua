@@ -116,9 +116,15 @@ function ENT:Think()
     -- Get interesting parameters
     local train = self:GetNW2Entity("TrainEntity")
 
-    local soundsmul = 10
-    local streetC,tunnelC = 0,0
 
+    local soundsmul = 1
+    --[[local streetC,tunnelC = 1,0
+    if IsValid(train) then
+        
+        soundsmul = math.Clamp(tunnelC^0.5+(streetC^0.5)*0.2,0,1)
+    end]]
+
+    streetC,tunnelC = 0,0--train.StreetCoeff or 0,train.TunnelCoeff or 1
 
 
     --soundsmul = math.Clamp(tunnelC^1.5+(streetC^0.5)*0.2,0,1)
@@ -149,17 +155,14 @@ function ENT:Think()
         local modulation = math.max(0,(speed-60)/30)*0.7+(0.2 + 1.0*math.max(0,0.2+math.sin(t)*math.sin(t*3.12)*math.sin(t*0.24)*math.sin(t*4.0)))*math.Clamp((speed-15)/60,0,1)
         local mod2 = 1.0-math.min(1.0,(math.abs(self.MotorPowerSound)/0.1))
         if (speed > -1.0) and (math.abs(self.MotorPowerSound)+modulation) >= 0.0 then
-            --local startVolRamp = 0.2 + 0.8*math.max(0.0,math.min(1.0,(speed - 1.0)*0.5))
+
             local powerVolRamp
             if self.MotorSoundType==2 then
-                powerVolRamp = 0.2*modulation*mod2 + 6*math.abs(self.MotorPowerSound)--2.0*(math.abs(motorPower)^2)
+                powerVolRamp = 0.2*modulation*mod2 + 6*math.abs(self.MotorPowerSound)
             else
-                powerVolRamp = 0.3*modulation*mod2 + 2*math.abs(self.MotorPowerSound)--2.0*(math.abs(motorPower)^2)
+                powerVolRamp = 0.3*modulation*mod2 + 2*math.abs(self.MotorPowerSound)
             end
 
-            --local k,x = 1.0,math.max(0,math.min(1.1,(speed-1.0)/80))
-            --local motorPchRamp = (k*x^3 - k*x^2 + x)
-            --local motorPitch = 0.03+1.85*motorPchRamp
             local volumemul = math.min(1,(speed/4)^3)
             local motorsnd = math.min(1.0,math.max(0.0,1.25*(math.abs(self.MotorPowerSound))))
             local motorvol = (soundsmul^0.3)*math.Clamp(motorsnd + powerVolRamp,0,1)*volumemul
@@ -230,7 +233,7 @@ function ENT:Think()
             local brakeRamp2 = math.min(1.0,math.max(0.0,speed/3.0))
             local ramp = 0.3+math.Clamp((40-speed)/40,0,1)*0.7
             if self.SquealType <= 4 then
-                self:SetSoundState(self.SquealSound1,soundsmul*brakeSqueal1*ramp*self.SquealVolume,1+0.05*(1.0-brakeRamp2))
+                self:SetSoundState(self.SquealSound1,brakeSqueal1*ramp*self.SquealVolume,1+0.05*(1.0-brakeRamp2))
                 --[[self:SetSoundState("brake_loop1",typ==1 and soundsmul*brakeSqueal1*ramp*0.2 or 0,1+0.05*(1.0-brakeRamp2))
                 self:SetSoundState("brake_loop2",typ==2 and soundsmul*brakeSqueal1*ramp or 0,1+0.05*(1.0-brakeRamp2))
                 self:SetSoundState("brake_loop3",typ==3 and soundsmul*brakeSqueal1*ramp or 0,1+0.05*(1.0-brakeRamp2))
