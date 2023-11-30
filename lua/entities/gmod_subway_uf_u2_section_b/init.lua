@@ -299,20 +299,20 @@ function ENT:OnButtonPress(button,ply)
 		self.Panel.SetPointRight = 1
 	end
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
-	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUp" then self.ParentTrain.Duewag_U2.ThrottleRate = 3 end
-		if button == "ThrottleDown" then self.ParentTrain.Duewag_U2.ThrottleRate = -3 end
+	if self.ParentTrain.Duewag_U2.ThrottleRateB == 0 then
+		if button == "ThrottleUp" then self.ParentTrain.Duewag_U2.ThrottleRateB = 3 end
+		if button == "ThrottleDown" then self.ParentTrain.Duewag_U2.ThrottleRateB = -3 end
 	end
 	
-	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpFast" then self.ParentTrain.Duewag_U2.ThrottleRate = 10 end
-		if button == "ThrottleDownFast" then self.ParentTrain.Duewag_U2.ThrottleRate = -10 end
+	if self.ParentTrain.Duewag_U2.ThrottleRateB == 0 then
+		if button == "ThrottleUpFast" then self.ParentTrain.Duewag_U2.ThrottleRateB = 10 end
+		if button == "ThrottleDownFast" then self.ParentTrain.Duewag_U2.ThrottleRateB = -10 end
 		
 	end
 	
-	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRate = 20 end
-		if button == "ThrottleDownReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRate = -20 end
+	if self.ParentTrain.Duewag_U2.ThrottleRateB == 0 then
+		if button == "ThrottleUpReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRateB = 20 end
+		if button == "ThrottleDownReallyFast" then self.ParentTrain.Duewag_U2.ThrottleRateB = -20 end
 		
 	end
 	
@@ -323,71 +323,71 @@ function ENT:OnButtonPress(button,ply)
 		self.Panel.Door1 = 1
 	end
 	
-	if self.ParentTrain.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleZero" then self.ParentTrain.Duewag_U2.ThrottleState = 0 end
+	if self.ParentTrain.Duewag_U2.ThrottleRateB == 0 then
+		if button == "ThrottleZero" then self.ParentTrain.Duewag_U2.ThrottleStateB = 0 end
 		if self:GetNW2Bool("EmergencyBrake",false) == true then
 			self:SetNW2Bool("EmergencyBrake",false)
 		end
 	end
 	
 	if button == "Throttle10Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 10
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 10
 	end
 	
 	if button == "Throttle20Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 20
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 20
 	end
 	
 	if button == "Throttle30Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 30
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 30
 	end
 	if button == "Throttle40Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 40
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 40
 	end
 	if button == "Throttle50Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 50
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 50
 	end
 	if button == "Throttle60Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 60
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 60
 	end
 	if button == "Throttle70Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 70
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 70
 	end
 	if button == "Throttle80Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 80
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 80
 	end
 	if button == "Throttle90Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = 90
+		self.ParentTrain.Duewag_U2.ThrottleStateB = 90
 	end
 	
 	if button == "Throttle10-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -10
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -10
 	end
 	
 	if button == "Throttle20-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -20
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -20
 	end
 	
 	if button == "Throttle30-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -30
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -30
 	end
 	if button == "Throttle40-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -40
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -40
 	end
 	if button == "Throttle50-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -50
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -50
 	end
 	if button == "Throttle60-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -60
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -60
 	end
 	if button == "Throttle70-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -70
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -70
 	end
 	if button == "Throttle80-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -80
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -80
 	end
 	if button == "Throttle90-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleState = -90
+		self.ParentTrain.Duewag_U2.ThrottleStateB = -90
 	end
 	
 	if button == "PantographRaiseSet" then
@@ -1063,11 +1063,11 @@ function ENT:OnButtonRelease(button,ply)
 		
 	end
 	
-	if (button == "ThrottleUp" and self.ParentTrain.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDown" and self.ParentTrain.Duewag_U2.ThrottleRate < 0) then
-		self.ParentTrain.Duewag_U2.ThrottleRate = 0
+	if (button == "ThrottleUp" and self.ParentTrain.Duewag_U2.ThrottleRateB > 0) or (button == "ThrottleDown" and self.ParentTrain.Duewag_U2.ThrottleRateB < 0) then
+		self.ParentTrain.Duewag_U2.ThrottleRateB = 0
 	end
-	if (button == "ThrottleUpFast" and self.ParentTrain.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDownFast" and self.ParentTrain.Duewag_U2.ThrottleRate < 0) then
-		self.ParentTrain.Duewag_U2.ThrottleRate = 0
+	if (button == "ThrottleUpFast" and self.ParentTrain.Duewag_U2.ThrottleRateB > 0) or (button == "ThrottleDownFast" and self.ParentTrain.Duewag_U2.ThrottleRateB < 0) then
+		self.ParentTrain.Duewag_U2.ThrottleRateB = 0
 	end
 	
 	

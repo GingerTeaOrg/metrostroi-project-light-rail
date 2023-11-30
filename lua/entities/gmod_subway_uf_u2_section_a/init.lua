@@ -1130,7 +1130,7 @@ function ENT:Think(dT)
 
 	self.ThrottleState = math.Clamp(self.ThrottleState, -100, 100)
 
-	self:SetNWInt("ThrottleStateAnim", self.Duewag_U2.ThrottleStateAnim)
+
 
 	-- Send door states to client
 	self:SetNW2Float("Door12a", self.DoorStatesRight[1])
@@ -1206,20 +1206,20 @@ function ENT:OnButtonPress(button, ply)
 	if button == "SetPointLeftSet" then self.Panel.SetPointLeft = 1 end
 	if button == "SetPointRightSet" then self.Panel.SetPointRight = 1 end
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
-	if self.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUp" then self.Duewag_U2.ThrottleRate = 3 end
-		if button == "ThrottleDown" then self.Duewag_U2.ThrottleRate = -3 end
+	if self.Duewag_U2.ThrottleRateA == 0 then
+		if button == "ThrottleUp" then self.Duewag_U2.ThrottleRateA = 3 end
+		if button == "ThrottleDown" then self.Duewag_U2.ThrottleRateA = -3 end
 	end
 
-	if self.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpFast" then self.Duewag_U2.ThrottleRate = 10 end
-		if button == "ThrottleDownFast" then self.Duewag_U2.ThrottleRate = -10 end
+	if self.Duewag_U2.ThrottleRateA == 0 then
+		if button == "ThrottleUpFast" then self.Duewag_U2.ThrottleRateA = 10 end
+		if button == "ThrottleDownFast" then self.Duewag_U2.ThrottleRateA = -10 end
 
 	end
 
-	if self.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleUpReallyFast" then self.Duewag_U2.ThrottleRate = 20 end
-		if button == "ThrottleDownReallyFast" then self.Duewag_U2.ThrottleRate = -20 end
+	if self.Duewag_U2.ThrottleRateA == 0 then
+		if button == "ThrottleUpReallyFast" then self.Duewag_U2.ThrottleRateA = 20 end
+		if button == "ThrottleDownReallyFast" then self.Duewag_U2.ThrottleRateA = -20 end
 
 	end
 
@@ -1228,34 +1228,34 @@ function ENT:OnButtonPress(button, ply)
 		self.Panel.Door1 = 1
 	end
 
-	if self.Duewag_U2.ThrottleRate == 0 then
-		if button == "ThrottleZero" then self.Duewag_U2.ThrottleState = 0 end
+	if self.Duewag_U2.ThrottleRateA == 0 then
+		if button == "ThrottleZero" then self.Duewag_U2.ThrottleStateA = 0 end
 		if self:GetNW2Bool("EmergencyBrake", false) == true then self:SetNW2Bool("EmergencyBrake", false) end
 	end
 
-	if button == "Throttle10Pct" then self.Duewag_U2.ThrottleState = 10 end
+	if button == "Throttle10Pct" then self.Duewag_U2.ThrottleStateA = 10 end
 
-	if button == "Throttle20Pct" then self.Duewag_U2.ThrottleState = 20 end
+	if button == "Throttle20Pct" then self.Duewag_U2.ThrottleStateA = 20 end
 
-	if button == "Throttle30Pct" then self.Duewag_U2.ThrottleState = 30 end
-	if button == "Throttle40Pct" then self.Duewag_U2.ThrottleState = 40 end
-	if button == "Throttle50Pct" then self.Duewag_U2.ThrottleState = 50 end
-	if button == "Throttle60Pct" then self.Duewag_U2.ThrottleState = 60 end
-	if button == "Throttle70Pct" then self.Duewag_U2.ThrottleState = 70 end
-	if button == "Throttle80Pct" then self.Duewag_U2.ThrottleState = 80 end
-	if button == "Throttle90Pct" then self.Duewag_U2.ThrottleState = 90 end
+	if button == "Throttle30Pct" then self.Duewag_U2.ThrottleStateA = 30 end
+	if button == "Throttle40Pct" then self.Duewag_U2.ThrottleStateA = 40 end
+	if button == "Throttle50Pct" then self.Duewag_U2.ThrottleStateA = 50 end
+	if button == "Throttle60Pct" then self.Duewag_U2.ThrottleStateA = 60 end
+	if button == "Throttle70Pct" then self.Duewag_U2.ThrottleStateA = 70 end
+	if button == "Throttle80Pct" then self.Duewag_U2.ThrottleStateA = 80 end
+	if button == "Throttle90Pct" then self.Duewag_U2.ThrottleStateA = 90 end
 
-	if button == "Throttle10-Pct" then self.Duewag_U2.ThrottleState = -10 end
+	if button == "Throttle10-Pct" then self.Duewag_U2.ThrottleStateA = -10 end
 
-	if button == "Throttle20-Pct" then self.Duewag_U2.ThrottleState = -20 end
+	if button == "Throttle20-Pct" then self.Duewag_U2.ThrottleStateA = -20 end
 
-	if button == "Throttle30-Pct" then self.Duewag_U2.ThrottleState = -30 end
-	if button == "Throttle40-Pct" then self.Duewag_U2.ThrottleState = -40 end
-	if button == "Throttle50-Pct" then self.Duewag_U2.ThrottleState = -50 end
-	if button == "Throttle60-Pct" then self.Duewag_U2.ThrottleState = -60 end
-	if button == "Throttle70-Pct" then self.Duewag_U2.ThrottleState = -70 end
-	if button == "Throttle80-Pct" then self.Duewag_U2.ThrottleState = -80 end
-	if button == "Throttle90-Pct" then self.Duewag_U2.ThrottleState = -90 end
+	if button == "Throttle30-Pct" then self.Duewag_U2.ThrottleStateA = -30 end
+	if button == "Throttle40-Pct" then self.Duewag_U2.ThrottleStateA = -40 end
+	if button == "Throttle50-Pct" then self.Duewag_U2.ThrottleStateA = -50 end
+	if button == "Throttle60-Pct" then self.Duewag_U2.ThrottleStateA = -60 end
+	if button == "Throttle70-Pct" then self.Duewag_U2.ThrottleStateA = -70 end
+	if button == "Throttle80-Pct" then self.Duewag_U2.ThrottleStateA = -80 end
+	if button == "Throttle90-Pct" then self.Duewag_U2.ThrottleStateA = -90 end
 
 	if button == "PantographRaiseSet" then
 		self.Panel.PantographRaise = 1
@@ -1798,8 +1798,8 @@ function ENT:OnButtonRelease(button, ply)
 	if button == "ThrowCouplerSet" then self.Panel.ThrowCoupler = 0 end
 	if button == "EmergencyBrakeSet" then end
 
-	if (button == "ThrottleUp" and self.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDown" and self.Duewag_U2.ThrottleRate < 0) then self.Duewag_U2.ThrottleRate = 0 end
-	if (button == "ThrottleUpFast" and self.Duewag_U2.ThrottleRate > 0) or (button == "ThrottleDownFast" and self.Duewag_U2.ThrottleRate < 0) then self.Duewag_U2.ThrottleRate = 0 end
+	if (button == "ThrottleUp" and self.Duewag_U2.ThrottleRateA > 0) or (button == "ThrottleDown" and self.Duewag_U2.ThrottleRateA < 0) then self.Duewag_U2.ThrottleRateA = 0 end
+	if (button == "ThrottleUpFast" and self.Duewag_U2.ThrottleRateA > 0) or (button == "ThrottleDownFast" and self.Duewag_U2.ThrottleRateA < 0) then self.Duewag_U2.ThrottleRateA = 0 end
 
 	if button == "Rollsign+" then
 		self:SetNW2Bool("Rollsign+", false)
@@ -1941,7 +1941,10 @@ function ENT:OnButtonRelease(button, ply)
 	end
 
 	if button == "OpenBOStrab" then
-		self:SetPackedBool("BOStrab", true)
+		net.Start("manual")
+		net.WriteBool(true)
+		net.Send(self:GetDriverPly())
+		
 		-- self:SetPackedBool("BOStrab",false)
 	end
 
@@ -2153,7 +2156,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						self.DoorStatesRight[i] = self.DoorStatesRight[i] + (0.8 * self.DeltaTime/8)
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					else
-						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.25
+						self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.2
 						math.Clamp(self.DoorStatesRight[i], 0, 1)
 					end
 				end
@@ -2179,7 +2182,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + (0.8 * self.DeltaTime/8)
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					else
-						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.25
+						self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.2
 						math.Clamp(self.DoorStatesLeft[i], 0, 1)
 					end
 				end
@@ -2199,7 +2202,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 								self.DoorStatesRight[i] = self.DoorStatesRight[i] - (0.8 * self.DeltaTime/8)
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							else
-								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.25
+								self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.20
 								self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 							end
 						end
@@ -2217,7 +2220,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - (0.8 * self.DeltaTime/8)
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							else
-								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.25
+								self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.20
 								self.DoorStatesLeft[i] = math.Clamp(self.DoorStatesLeft[i], 0, 1)
 							end
 						end
@@ -2242,7 +2245,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 					else -- If dT is not usable
 						if self.DoorOpenMoments[i] == 0 then
 							-- Increase door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.5
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.2
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end
@@ -2254,7 +2257,7 @@ function ENT:DoorHandler(unlock, left, right, door1, idleunlock) -- Are the door
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						else
 							-- Decrease door state without using dT
-							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.5
+							self.DoorStatesRight[i] = self.DoorStatesRight[i] - 0.2
 							self.DoorStatesRight[i] = math.Clamp(self.DoorStatesRight[i], 0, 1)
 						end
 					end

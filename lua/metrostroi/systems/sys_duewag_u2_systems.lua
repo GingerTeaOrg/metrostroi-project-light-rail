@@ -62,7 +62,8 @@ function TRAIN_SYSTEM:Initialize()
     self.BlinkerOnL = 0
     self.BlinkerOnR = 0
     self.BlinkerOnWarn = 0
-    self.ThrottleRate = 0
+    
+
     self.ThrottleEngaged = false
     self.TractionConditionFulfilled = false
     self.BrakePressure = 2.7
@@ -70,6 +71,11 @@ function TRAIN_SYSTEM:Initialize()
 
     self.ThrottleStateAnim = 0 -- whether to stop listening to the throttle input
     self.ThrottleStateAnimB = 0
+
+    self.ThrottleStateA = 0
+    self.ThrottleStateB = 0
+    self.ThrottleRateA = 0
+    self.ThrottleRateB = 0
 
     self.ThrottleCutOut = 0
 
@@ -172,14 +178,35 @@ function TRAIN_SYSTEM:Think(Train)
     self.DeltaTime = (RealTime() - self.PrevTime)
     self.PrevTime = RealTime()
     local dT = self.DeltaTime
+    --Control Throttles in A or B independently, but....
+    self.ThrottleStateA = math.Clamp(self.ThrottleStateA + self.ThrottleRateA,-100,100)
+    self.ThrottleStateB = math.Clamp(self.ThrottleStateB + self.ThrottleRateB,-100,100)
 
-    self.ThrottleState = self.ThrottleState + self.ThrottleRate
+    if self.ReverserLeverStateA > 0 or self.ReverserLeverStateA < 0 then --only pass on the actual value if the respective reverser is engaged
+        self.ThrottleState = self.ThrottleStateA
+    elseif self.ReverserLeverStateB > 0 or self.ReverserLeverStateB < 0 then
+        self.ThrottleState = self.ThrottleStateB
+    end
 
-    self.ThrottleState = math.Clamp(self.ThrottleState, -100, 100)
+    if self.ThrottleStateA <= 100 then -- Throttle animation handling. Adapt the value to the pose parameter on the model
+        self.ThrottleStateAnimA = self.ThrottleStateA / 200 + 0.5
+    elseif (self.ThrottleStateA >= 0) then
+        self.ThrottleStateAnimA = (self.ThrottleStateA * -0.1)
+
+    end
+    if self.ThrottleStateB <= 100 then -- Throttle animation handling. Adapt the value to the pose parameter on the model
+        self.ThrottleStateAnimB = self.ThrottleStateB / 200 + 0.5
+    elseif (self.ThrottleStateB >= 0) then
+        self.ThrottleStateAnimB = (self.ThrottleStateB * -0.1)
+
+    end
+
+
+    
 
     if IsValid(self.Train.u2sectionb) then
-        self.Train.u2sectionb:SetNW2Float("ThrottleAnim",
-                                          self.ThrottleStateAnimB)
+        self.Train.u2sectionb:SetNW2Float("ThrottleAnimB", self.ThrottleStateAnimB)
+        self.Train:SetNW2Float("ThrottleStateAnim",self.ThrottleStateAnimA)
     end
     -- Is the throttle engaged? We need to know that for a few things!
     if self.ThrottleState > 0 then
@@ -435,19 +462,6 @@ function TRAIN_SYSTEM:Think(Train)
         elseif self.Train:GetNW2Bool("DeadmanTripped", false) == true then
 
         end
-    end
-
-    if self.ThrottleState <= 100 then -- Throttle animation handling. Adapt the value to the pose parameter on the model
-        self.ThrottleStateAnim = self.ThrottleState / 200 + 0.5
-    elseif (self.ThrottleState >= 0) then
-        self.ThrottleStateAnim = (self.ThrottleState * -0.1)
-
-    end
-    if self.ThrottleState <= 100 then -- Throttle animation handling. Adapt the value to the pose parameter on the model
-        self.ThrottleStateAnimB = self.ThrottleState / 200 + 0.5
-    elseif (self.ThrottleState >= 0) then
-        self.ThrottleStateAnimB = (self.ThrottleState * -0.1)
-
     end
 
     if self.ThrottleState < 0 and self.Speed < 8 or self.Train:ReadTrainWire(10) >
