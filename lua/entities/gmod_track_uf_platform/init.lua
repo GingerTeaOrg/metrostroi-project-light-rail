@@ -3,32 +3,6 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 
-
-function ENT:PlayAnnounce(arriving,Ann)
-    if not arriving then
-        if self.MustPlayAnnounces then
-            local tbl = Metrostroi.StationSound
-            if not tbl and not Ann then return end
-            local snd = Ann or table.Random(tbl)
-            if not snd.sound then snd.sound = Sound(snd[1]) end
-            sound.Play(snd.sound,self:LocalToWorld(Vector(0,-1200,200)),90,100,1)
-            sound.Play(snd.sound,self:LocalToWorld(Vector(0,1200,200)),90,100,1)
-            timer.Adjust( "metrostroi_station_announce_"..self:EntIndex(), snd[2]+math.random(10,30),0,function() self:PlayAnnounce() end)
-            if self.SyncAnnounces and not Ann then
-                local ent = Metrostroi.Stations[self.StationIndex][self.PlatformIndex == 2 and 1 or 2].ent
-                if IsValid(ent) then ent:PlayAnnounce(nil,snd) end
-            end
-        else
-            timer.Remove("metrostroi_station_announce_"..self:EntIndex())
-        end
-    elseif arriving == 1 then
-
-    elseif arriving == 2 then
-        sound.Play(Ann,self:LocalToWorld(Vector(-1200,0,50)),120,100,0.4)
-        sound.Play(Ann,self:LocalToWorld(Vector(1200,0,50)),120,100,0.4)
-    end
-end
-
 --------------------------------------------------------------------------------
 -- Initialize the platform data
 --------------------------------------------------------------------------------
@@ -56,9 +30,9 @@ function ENT:Initialize()
     end
 
     -- Drop to floor
-    --self:DropToFloor()
-    --if IsValid(self.PlatformStart) then self.PlatformStart:DropToFloor() end
-    --if IsValid(self.PlatformEnd) then self.PlatformEnd:DropToFloor() end
+    self:DropToFloor()
+    if IsValid(self.PlatformStart) then self.PlatformStart:DropToFloor() end
+    if IsValid(self.PlatformEnd) then self.PlatformEnd:DropToFloor() end
 
     -- Positions
     if IsValid(self.PlatformStart) then
@@ -96,14 +70,7 @@ function ENT:Initialize()
     -- FIXME make this nicer
     for i=1,32 do self:SetNW2Vector("TrainDoor"..i,Vector(0,0,0)) end
     self:SetNW2Int("TrainDoorCount",0)
-    local ars_ents = ents.FindInSphere(self.PlatformEnd,768)
-    for k,v in pairs(ars_ents) do
-        local delta_z = math.abs(self.PlatformEnd.z-v:GetPos().z)
-    end
-end
 
-function ENT:OnRemove()
-    timer.Destroy("metrostroi_station_announce_"..self:EntIndex())
 end
 
 --------------------------------------------------------------------------------
@@ -216,7 +183,7 @@ function ENT:Think()
 
     local BoardTime = 8+7
     for k,v in pairs(ents.FindByClass("gmod_subway_*")) do
-        if v.Base ~= "gmod_subway_base" and v:GetClass() ~= "gmod_subway_base" then continue end
+        if v.Base ~= "gmod_subway_uf_base" then continue end
         if not IsValid(v) or v:GetPos():Distance(self:GetPos()) > self.PlatformStart:Distance(self.PlatformEnd) then continue end
 
         local platform_distance = ((self.PlatformStart-v:GetPos()) - ((self.PlatformStart-v:GetPos()):Dot(self.PlatformNorm))*self.PlatformNorm):Length()
@@ -278,8 +245,8 @@ function ENT:Think()
             local door_count = #v.LeftDoorPositions
             if not left_side then door_count = #v.RightDoorPositions end
 
-            -- Get maximum boarding rate for normal russian subway train doors
-            local max_boarding_rate = 1.4 * door_count * dT
+            -- Get maximum boarding rate
+            local max_boarding_rate = 1.2 * door_count * dT
             -- Get boarding rate based on passenger density
             local boarding_rate = math.min(max_boarding_rate,passenger_count)
             if self.PlatformLast then boarding_rate = 0 end
@@ -317,12 +284,12 @@ function ENT:Think()
                     self.WindowStart = (self.WindowStart - left) % self:PoolSize()
                 end
             end
-            --[[ People boarded train
+            --People boarded train
             if boarded > 0 then
                 if IsValid(driver) then
                     driver:AddDeaths(boarded)
                 end
-            end]]
+            end
             -- Change number of people in train
             v:BoardPassengers(passenger_delta)
 
@@ -333,6 +300,7 @@ function ENT:Think()
                 end
             else
                 for k, vec in pairs(v.RightDoorPositions) do
+                    if type(vec) ~= "Vector" then continue end
                     table.insert(boardingDoorList, v:LocalToWorld(vec))
                 end
             end
@@ -344,7 +312,6 @@ function ENT:Think()
             -- Add doors to boarding list
             --print("BOARDING",boarding_rate,"DELTA = "..passenger_delta,self.PlatformLast,v:GetNW2Int("PassengerCount"))
         end
-        if v.UPO then v.UPO.AnnouncerPlay = self.AnnouncerPlay end
         v.BoardTimer = self.BoardTimer
         boarding = boarding or passengers_can_board
     end
