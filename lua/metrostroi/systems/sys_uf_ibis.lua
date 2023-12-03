@@ -540,7 +540,7 @@ function TRAIN_SYSTEM:Think()
 	----print("Course Number:"..self.Train:GetNW2String("IBIS:CourseChar1",nil)..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")..self.Train:GetNW2String("IBIS:CourseChar5"))
 
 	----print("IBIS loaded")
-	if self.Train.BatteryOn == true and self.Train:GetNW2Bool("TurnIBISKey", false) == true then
+	if (self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0) and self.Train:GetNW2Bool("TurnIBISKey", false) == true then
 		self.PowerOn = 1
 		self.Train:SetNW2Bool("IBISPowerOn", true)
 		if self.ColdBoot and self.State < 1 then
@@ -551,21 +551,21 @@ function TRAIN_SYSTEM:Think()
 			self.Menu = 0
 		end
 		----print("IBIS powered")
-	elseif self.Train.BatteryOn == true and self.Train:GetNW2Bool("TurnIBISKey", false) == false then
+	elseif (self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0) and self.Train:GetNW2Bool("TurnIBISKey", false) == false then
 		self.PowerOn = 0
 		self.Train:SetNW2Bool("IBISPowerOn", false)
 		self.State = 0
 		self.Menu = 0
 		self.Train:SetNW2Bool("IBISBootupComplete", false)
 		self.Train:SetNW2Bool("IBISChime", false)
-	elseif self.Train.BatteryOn == false and self.Train:GetNW2Bool("TurnIBISKey", false) == false then
+	elseif (self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0) and self.Train:GetNW2Bool("TurnIBISKey", false) == false then
 		self.PowerOn = 0
 		self.Train:SetNW2Bool("IBISPowerOn", false)
 		self.State = 0
 		self.Menu = 0
 		self.Train:SetNW2Bool("IBISBootupComplete", false)
 		self.Train:SetNW2Bool("IBISChime", false)
-	elseif self.Train.BatteryOn == false and self.Train:GetNW2Bool("TurnIBISKey", false) == true then
+	elseif (self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0) and self.Train:GetNW2Bool("TurnIBISKey", false) == true then
 		self.PowerOn = 0
 		self.Train:SetNW2Bool("IBISPowerOn", false)
 		self.State = 0
