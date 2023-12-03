@@ -669,8 +669,8 @@ function TRAIN_SYSTEM:MUHandler()
     elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 0 then
         self.ReverserState = 0
         self.BatteryStartUnlock = false
-        self.VE = false
-        self.VZ = false
+        self.VE = false or self.Train:ReadTrainWire(6) < 1
+        self.VZ = false or self.Train:ReadTrainWire(6) > 0
         -- self.Train:WriteTrainWire(6,0)
     elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 2 then
         self.VZ = true
