@@ -108,7 +108,6 @@ function ENT:CheckContact(pos,dir)
             util.Effect("StunstickImpact",effectdata,true,true)
             sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
         end
-        print(traceEnt)
         return result.Hit, traceEnt --yes, we are touching catenary
     end
 
