@@ -790,7 +790,7 @@ function UF.GetTravelTime(src,dest)
             --print(Format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
 
             -- Assume 70% of travel speed
-            local speed = travel_speed * 0.82
+            local speed = travel_speed * 0.7
 
             -- Add to travel time
             travel_dist = travel_dist + node.length
