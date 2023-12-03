@@ -1335,3 +1335,59 @@ function TRAIN_SYSTEM:Switching(Left,Right)
 		self.SelectAlternate = nil
 	end
 end
+
+function TRAIN_SYSTEM:AutomaticAnnouncement()
+	local station = Metrostroi.Stations[self.CurrentStation]
+	local dir = platform.PlatformEnd - platform.PlatformStart
+	local pos1 = Metrostroi.GetPositionOnTrack(platform.PlatformStart,dir:Angle())[1]
+    local pos2 = Metrostroi.GetPositionOnTrack(platform.PlatformEnd,dir:Angle())[1]
+
+	local enteredVia = "null"
+
+	local dir1 = "null"
+	if pos2.x > pos1.x then
+		dir1 = "up"
+	elseif pos1.x < pos2.x then
+		dir1 = "down"
+	end
+
+	
+
+	local trainPos = Metrostroi.GetPositionOnTrack(self.Train:GetPos(), self.Train:GetAngles())[1]
+
+	if enteredVia == "null" and trainPos.x == pos1.x then
+		enteredVia = "start"
+	elseif enteredVia == "null" and trainPos.x == pos1.x then
+		enteredVia = "end"
+	end
+
+	if dir1 == "up" and enteredVia ~= "null" then
+		if enteredVia == "start" and trainPos.x > pos2.x and trainPos.x - pos2.x > 30 then
+			self.CurrentStationInternal = self.CurrentStationInternal + 1
+			self.CurrentStation = self.RouteTable[self.CourseChar1 .. self.CourseChar2][self.RouteChar1 .. self.RouteChar2][self.CurrentStationInternal]
+			enteredVia = "null" --reset station entry point because we're gone from the station, so we need to rearm for next time.
+		elseif enteredVia == "end" and trainPos.x < pos1.x and trainPos.x + pos1.x > 30 then --station points upwards on the coordinate system and we are travelling downwards the system, that means the start is our last point of contact from which we measure distance, DOWNwards the coordinate system
+			self.CurrentStationInternal = self.CurrentStationInternal + 1
+			self.CurrentStation = self.RouteTable[self.CourseChar1 .. self.CourseChar2][self.RouteChar1 .. self.RouteChar2][self.CurrentStationInternal]
+			enteredVia = "null"
+		end
+	elseif dir1 == "down" and enteredVia ~= "null" then
+		if enteredVia == "start" and trainPos.x < pos2.x and trainPos.x + pos2.x > 30 then
+			self.CurrentStationInternal = self.CurrentStationInternal + 1
+			self.CurrentStation = self.RouteTable[self.CourseChar1 .. self.CourseChar2][self.RouteChar1 .. self.RouteChar2][self.CurrentStationInternal]
+			enteredVia = "null"
+		elseif enteredVia == "end" and trainPos.x > pos1.x and trainPos.x - pos1.x > 30 then
+			self.CurrentStationInternal = self.CurrentStationInternal + 1
+			self.CurrentStation = self.RouteTable[self.CourseChar1 .. self.CourseChar2][self.RouteChar1 .. self.RouteChar2][self.CurrentStationInternal]
+			enteredVia = "null"
+		end
+	elseif dir1 == "up" and enteredVia == "null" and (trainPos.x < pos1.x or trainPos.x > pos2.x) then --if the train is in a terminus or got spawned there, there is no detected entry point, so just take any exit as the point to measure from
+		self.CurrentStationInternal = self.CurrentStationInternal + 1
+		self.CurrentStation = self.RouteTable[self.CourseChar1 .. self.CourseChar2][self.RouteChar1 .. self.RouteChar2][self.CurrentStationInternal]
+		enteredVia = "null"
+	elseif dir2 == "down" and enteredVia == "null" and (trainPos.x < pos2.x or trainPos.x > pos1.x) then
+		self.CurrentStationInternal = self.CurrentStationInternal + 1
+		self.CurrentStation = self.RouteTable[self.CourseChar1 .. self.CourseChar2][self.RouteChar1 .. self.RouteChar2][self.CurrentStationInternal]
+		enteredVia = "null"
+	end
+end
