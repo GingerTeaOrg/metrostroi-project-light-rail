@@ -1022,7 +1022,7 @@ function ENT:Think(dT)
 				end
 			end
 
-		elseif self.Duewag_U2.ReverserLeverStateA == -1 then
+		elseif self.Duewag_U2.ReverserLeverStateA == -1 or self.Duewag_U2.ReverserLeverStateB == -1 then
 			if self.Duewag_U2.ThrottleState < 0 then
 				self.RearBogey.MotorForce = 5980
 				self.FrontBogey.MotorForce = 5980
@@ -1091,9 +1091,7 @@ function ENT:Think(dT)
 			end
 
 		end
-		-- self.FrontBogey.PneumaticBrakeForce = 100
-		-- self.MiddleBogey.PneumaticBrakeForce = 60
-		-- self.RearBogey.PneumaticBrakeForce = 100
+
 
 	end
 
@@ -1161,10 +1159,18 @@ function ENT:Think(dT)
 		self.RightDoorsOpen = false
 		self.u2sectionb.RightDoorsOpen = false
 	end
-	if self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0 or self.DoorStatesLeft[3] > 0 or self.DoorStatesLeft[3] > 0 then
+	if (self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0) and (self.DoorStatesLeft[3] < 0.9 and self.DoorStatesLeft[4] < 0.9) then
+		self:ReturnOpenDoors()
+		self.LeftDoorsOpen = false
+		self.u2sectionb.LeftDoorsOpen = true
+	elseif (self.DoorStatesLeft[1] > 0.8 or self.DoorStatesLeft[2] > 0.8) and (self.DoorStatesLeft[3] > 0.8 and self.DoorStatesLeft[4] > 0.8) then
 		self:ReturnOpenDoors()
 		self.LeftDoorsOpen = true
 		self.u2sectionb.LeftDoorsOpen = true
+	elseif (self.DoorStatesLeft[1] < 0.8 or self.DoorStatesLeft[2] < 0.8) and (self.DoorStatesLeft[3] > 0.8 and self.DoorStatesLeft[4] > 0.8) then
+		self:ReturnOpenDoors()
+		self.LeftDoorsOpen = true
+		self.u2sectionb.LeftDoorsOpen = false
 	else
 		self:ReturnOpenDoors()
 		self.LeftDoorsOpen = false
