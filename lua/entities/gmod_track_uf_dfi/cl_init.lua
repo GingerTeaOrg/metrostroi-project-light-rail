@@ -286,7 +286,7 @@ function ENT:Draw()
 		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
 		self:PrintText(10.3, 12.5, "____", "Lumino")
 		self:PrintText(9.1, 13.1, ":", "Lumino")
-		self:DrawRTOnPanel(self.Overlay)
+
 		cam.End3D2D()
 	elseif mode == 1 then
 		
@@ -337,7 +337,7 @@ function ENT:Draw()
 		
 		cam.End3D2D()
 		cam.Start3D2D(pos2, ang2, 0.03)
-		self:DrawRTOnPanel(self.Overlay)
+		
 		---------------------------------------------------------------------------------
 		self:PrintText(-1.5, 0, self.LineString1, "Lumino_Big")
 		self:PrintText(1, 0, self.Train1Destination, "Lumino")
