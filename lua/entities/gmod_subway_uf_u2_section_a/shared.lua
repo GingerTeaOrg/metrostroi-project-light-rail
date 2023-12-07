@@ -177,28 +177,33 @@ ENT.AnnouncerPositions = {{Vector(420, -38.2, 80)}, {Vector(420, 38.2, 80)}}
 
 
 function ENT:ReturnOpenDoors()
+
+	if self.DoorStatesRight[1] < 0.8 and self.DoorStatesRight[2] < 0.8 and self.DoorStatesRight[3] < 0.8 and self.DoorStatesRight[4] < 0.8 then
+		self.RightDoorPositions = {}
+	end
 	for k,v in ipairs(self.DoorStatesRight) do
 		
-		if v > 0.9 and k < 3 then
+		if v > 0.8 and k < 3 then
 			self.RightDoorPositions[k] = self.DoorVectorsRight[k]
-		elseif v > 0.9 and k > 2 then
+		elseif v > 0.8 and k > 2 then
 			self.u2sectionb.RightDoorPositions[k] = self.DoorVectorsRight[k]
-		elseif v < 0.9 and k < 3 then
+		elseif v < 0.8 and k < 3 then
 			self.RightDoorPositions[k] = nil
-		elseif v < 0.9 and k > 2 then
+		elseif v < 0.8 and k > 2 then
 			self.u2sectionb.RightDoorPositions[k] = nil
 		end
 		
 	end
+
 	for k,v in ipairs(self.DoorStatesLeft) do
 
-		if v > 0.9 and k < 3 then
+		if v > 0.8 and k < 3 then
 			self.u2sectionb.LeftDoorPositions[k] = self.DoorVectorsLeft[k]
-		elseif v > 0.9 and k > 2 then
+		elseif v > 0.8 and k > 2 then
 			self.LeftDoorPositions[k] = self.DoorVectorsLeft[k]
-		elseif v < 0.9 and k < 3 then
+		elseif v < 0.8 and k < 3 then
 			self.u2sectionb.LeftDoorPositions[k] = nil
-		elseif v < 0.9 and k > 2 then
+		elseif v < 0.8 and k > 2 then
 			self.LeftDoorPositions[k] = nil
 		end
 	end
