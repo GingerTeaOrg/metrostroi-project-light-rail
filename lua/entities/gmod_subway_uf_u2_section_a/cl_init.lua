@@ -1867,15 +1867,15 @@ ENT.ButtonMapMPLR["IBIS"] = {
                 sndang = Angle(-90, 0, 0)
             }
         }, {
-            ID = "SpecialAnnouncementSet",
+            ID = "ServiceAnnouncementSet",
             x = 85,
             y = 96,
             radius = 10,
-            tooltip = "Special Annoucements",
+            tooltip = "Service Annoucements",
             model = {
                 z = 0,
                 ang = 0,
-                var = "SpecialAnnouncement",
+                var = "ServiceAnnouncement",
                 speed = 1,
                 vmin = 0,
                 vmax = 1,
