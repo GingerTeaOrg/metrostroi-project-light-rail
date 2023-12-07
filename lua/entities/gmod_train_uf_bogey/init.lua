@@ -480,12 +480,6 @@ function ENT:Think()
     end
     self:NextThink(CurTime())
 
-    -- Trigger outputs
-    if Wire_TriggerOutput then
-        Wire_TriggerOutput(self, "Speed", absSpeed)
-        Wire_TriggerOutput(self, "Voltage", self.Voltage)
-        Wire_TriggerOutput(self, "BrakeCylinderPressure", self.BrakeCylinderPressure)
-    end
     return true
 end
 
