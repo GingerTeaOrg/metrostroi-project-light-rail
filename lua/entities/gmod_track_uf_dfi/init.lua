@@ -46,6 +46,8 @@ function ENT:Initialize()
     }
     self.CurrentTheme = self:GetInternalVariable("Theme") or self.Themes[1]
     self.IgnoredTrains = {}
+
+	self.ParentDisplay = self:GetInternalVariable("ParentDisplay") or nil
 end
 
 local function valueExists(table, value)
@@ -100,8 +102,62 @@ function ENT:Think()
 
     if not next(self.ScannedTrains) or not self.EntitiesInProximity then
         self.Mode = 0
+        self:NextThink(CurTime() + 0.25)
         return
     end
+
+    if not self.ParentDisplay then 
+        self:ProcessResults() 
+    else
+        self:CopyResults()
+    end
+
+    if not next(UF.IBISRegisteredTrains) or not self.Train1ETA then -- either fall back to idle, train list, or current train display
+        self.Mode = 0
+        self.IgnoredTrains = {}
+
+    elseif self.Train1ETA and tonumber(self.Train1ETA) > 0 then
+        self.Mode = 1
+    elseif self.Train1ETA and tonumber(self.Train1ETA) == 0 or self.Train1Dist and
+        self.Train1Dist < 20 then
+
+        self.Mode = 2
+
+        local CourseRoute = self.Train1Ent.IBIS.Course .. "/" ..
+                                self.Train1Ent.IBIS.Route
+        if not valueExists(self.IgnoredTrains, CourseRoute) then
+            table.insert(self.IgnoredTrains, CourseRoute)
+        end
+
+    end
+    self:NextThink(CurTime() + 0.25)
+end
+
+function ENT:CopyResults()
+
+    self.Mode = self.ParentTrain.Mode
+
+
+    self.Train1Line = self.ParentDisplay.Train1Line
+    self.Train1Destination = self.ParentDisplay.Train1Display
+    self.Train1ETA = self.ParentDisplay.Train1ETA
+    self.Train1ConsistLength = self.ParentDisplay.Train1ConsistLength
+
+    self.Train2Line = self.ParentDisplay.Train2Line
+    self.Train2Destination = self.ParentDisplay.Train2Display
+    self.Train2ETA = self.ParentDisplay.Train2ETA
+
+    self.Train3Line = self.ParentDisplay.Train3Line
+    self.Train3Destination = self.ParentDisplay.Train3Display
+    self.Train3ETA = self.ParentDisplay.Train3ETA
+
+    self.Train4Line = self.ParentDisplay.Train4Line
+    self.Train4Destination = self.ParentDisplay.Train4Display
+    self.Train4ETA = self.ParentDisplay.Train4ETA
+
+end
+
+function ENT:ProcessResults()
 
     if not self.ScannedTrains then return end -- just quit if there's nothing to work with
     -- process everything into the list to be displayed on screen
@@ -200,26 +256,6 @@ function ENT:Think()
     self:SetNW2String("Train4Line", self.Train4Line)
     self:SetNW2String("Train4Destination", self.Train4Destination)
     self:SetNW2String("Train4Time", self.Train4ETA)
-
-    if not next(UF.IBISRegisteredTrains) or not self.Train1ETA then -- either fall back to idle, train list, or current train display
-        self.Mode = 0
-        self.IgnoredTrains = {}
-
-    elseif self.Train1ETA and tonumber(self.Train1ETA) > 0 then
-        self.Mode = 1
-    elseif self.Train1ETA and tonumber(self.Train1ETA) == 0 or self.Train1Dist and
-        self.Train1Dist < 20 then
-
-        self.Mode = 2
-
-        local CourseRoute = self.Train1Ent.IBIS.Course .. "/" ..
-                                self.Train1Ent.IBIS.Route
-        if not valueExists(self.IgnoredTrains, CourseRoute) then
-            table.insert(self.IgnoredTrains, CourseRoute)
-        end
-
-    end
-    self:NextThink(CurTime() + 0.25)
 end
 
 function ENT:ScanForTrains() -- scrape all trains that have been logged into RBL, sort by distance, and display sorted by ETA

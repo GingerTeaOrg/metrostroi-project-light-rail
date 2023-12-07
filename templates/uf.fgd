@@ -17,6 +17,7 @@
 	PlatformIndex(integer) : "Platform index" : 1 : "Index of platform (1: left, 2: right, 3: ...)"
 	PlatformStart(target_destination) : "Start of the platform (arrival side)"
 	PlatformEnd(target_destination) : "End of the platform (departure side)"
+	ParentDisplay(target_destination) : "Entity that this display should be subordinate to"
 	ThemeName(string) : "Theme" : "Frankfurt" : "Set the display's city theme which alters its behaviour. Essen,Frankfurt,Duesseldorf,Hannover"
 ]
 
