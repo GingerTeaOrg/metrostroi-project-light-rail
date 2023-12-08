@@ -163,7 +163,6 @@ end
 function UF.UpdateSignalNames()
     print("MPLR: Updating signal names...")
     if not Metrostroi.SignalEntitiesByName then Metrostroi.SignalEntitiesByName = {} end
-    if not Metrostroi.GetARSJointCache then Metrostroi.GetARSJointCache = {} end
     local entities = ents.FindByClass("gmod_track_uf_signal*")
     for k,v in pairs(entities) do
         if not IsValid(v) then continue end
@@ -441,7 +440,7 @@ function UF.ConstructDefaultSignalBlocks() --those signals that do not need dyna
     print("MPLR: Loading default Signal blocks")
     for k,v in pairs(Metrostroi.SignalEntitiesByName) do
         if #v.Routes == 1 then
-            print(k,v)
+            print("Constructing default signal blocks: "..k,v)
             --UF.SignalBlocks[k] = v.Routes[1].DistantSignal
             table.insert(UF.SignalBlocks,{[k] = v.Routes[1].DistantSignal,Occupied = false})
             UF.ActiveRoutes[k] = 1
@@ -459,7 +458,7 @@ function UF.ConstructDefaultSignalBlocks() --those signals that do not need dyna
 end
 
 function UF.OpenRoute(signal, route, ent)
-    print("Route Change requested on signal:", signal, "to route", route, "by entity:", train)
+    print("Route Change requested on signal:", signal, "to route", route, "by entity:", ent)
     if UF.ActiveRoutes[signal] == route then
         print("Requested route already active, bailing out")
         return
@@ -485,7 +484,7 @@ function UF.OpenRoute(signal, route, ent)
 end
 
 
-function UF.UpdateSignalBlocks()
+function UF.UpdateSignalBlockOccupation()
     for k, v in pairs(UF.SignalBlocks) do
         local CurrentBlock = UF.SignalBlocks[k]
         local function GetSignals()
@@ -493,7 +492,7 @@ function UF.UpdateSignalBlocks()
                 if type(ky) == "string" then return ky, val end
             end
         end
-
+        
         --print(CurrentBlock)
         local CurrentSignal, DistantSignal = GetSignals()
         local CurrentSignalEnt, DistantSignalEnt = Metrostroi.SignalEntitiesByName[CurrentSignal], Metrostroi.SignalEntitiesByName[DistantSignal]
