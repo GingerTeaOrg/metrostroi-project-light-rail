@@ -534,7 +534,7 @@ function ENT:SpawnFunction(ply, tr)
     ent:Spawn()
     ent:Activate()
 
-    if not inhibitrerail then Metrostroi.RerailBogey(ent) end
+    if not inhibitrerail then UF.RerailBogey(ent) end
     return ent
 end
 
