@@ -22,7 +22,8 @@ function ENT:Think(dT)
 	self.dT = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
 	local Bogey = self:GetNW2Entity("TrainBogey")
-	
+	local Train = Bogey:GetNW2Entity("TrainEntity")
+
 	if not IsValid(Bogey) then return end
 	self.Meters = self.Meters + self.dT * Bogey.Speed * Bogey.SpeedSign
 	
@@ -42,7 +43,7 @@ function ENT:PhysicsCollide(data,physobj)
 				
 				local pitch_var = math.random(90,110)
 				local pitch = pitch_var*math.max(0.8,math.min(1.3,speed/40))
-				self:EmitSound("lilly/uf/bogeys/u2/jointH"..math.random(2,3)..".mp3",100,pitch )
+				self:EmitSound("lilly/uf/bogeys/u3/Stuk0"..math.random(1,6)..".mp3",100,pitch )
 			end
 		end
 	end
