@@ -193,10 +193,19 @@ function UF.murder(v)
     end
 end
 
-function UF.MapHasFullSupport(typ)
+function UF.MapHasFullSupport(typ) --todo establish criteria for when a map is fully finished
     if not typ then
         return (#Metrostroi.Paths > 0)
     end
+end
+
+function UF.convertToSourceForce(newtonMetrePerSecond)
+    local newtonInKg = 0.1 -- 1 Newton is roughly 0.1 kilograms
+    local inchToMeter = 0.0254 -- 1 inch is equal to 0.0254 meters
+    local conversionFactor = newtonInKg / inchToMeter -- Conversion factor assuming 1sU = 1in
+    
+    local result = newtonMetrePerSecond * conversionFactor
+    return result
 end
 
 function UF.TrainCount(...)
