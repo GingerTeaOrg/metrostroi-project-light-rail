@@ -42,7 +42,7 @@ function UF.AngleFromPanel(panel,ang,train)
     return true_ang
 end
 
-Metrostroi.PrecacheModels = Metrostroi.PrecacheModels or {}
+UF.PrecacheModels = UF.PrecacheModels or {}
 function UF.GenerateClientProps()
     local self = ENT
     if not self.AutoAnimNames then self.AutoAnimNames = {} end
@@ -451,7 +451,7 @@ function UF.GenerateClientProps()
     end
     for k,v in pairs(self.ClientProps) do
         if not v.model then continue end
-        Metrostroi.PrecacheModels[v.model] = true
+        UF.PrecacheModels[v.model] = true
     end
     for k,v in pairs(self.Lights or {}) do
         if not v.hidden then continue end
@@ -462,4 +462,20 @@ function UF.GenerateClientProps()
     end
     --ret = ret.."\n}"
     --SetClipboardText(ret)
+end
+
+UF.SpriteCache1 = UF.SpriteCache1 or {}
+UF.SpriteCache2 = UF.SpriteCache2 or {}
+function UF.MakeSpriteTexture(path,isSprite)
+    if isSprite then
+        if UF.SpriteCache1[path] then return UF.SpriteCache1[path] end
+        matSprite["$basetexture"] = path
+        UF.SpriteCache1[path] = CreateMaterial(path..":sprite","Sprite",matSprite)
+        return UF.SpriteCache1[path]
+    else
+        if UF.SpriteCache1[path] then return UF.SpriteCache1[path] end
+        matUnlit["$basetexture"] = path
+        UF.SpriteCache2[path] = CreateMaterial(path..":spriteug","UnlitGeneric",matUnlit)
+        return UF.SpriteCache2[path]
+    end
 end
