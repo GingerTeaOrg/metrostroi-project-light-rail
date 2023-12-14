@@ -18,15 +18,6 @@ function ENT:Initialize()
     self.Left = false
 end
 
-function ENT:FindNextSignalAhead(signal_name)
-    --print("Searching for signal", signal_name)
-    return Metrostroi.GetSignalByName(signal_name)
-end
-
-function ENT:UpdateDistantSignalEnt()
-    if IsValid(self.DistantSignalEnt) then return end
-    return self:FindNextSignalAhead(self.DistantSignal)
-end
 
 function ENT:UpdateSignalAspect()
 	
