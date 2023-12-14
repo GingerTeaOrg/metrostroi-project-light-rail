@@ -5,7 +5,7 @@ function ENT:Initialize()
 	self:SetModel("models/metrostroi/signals/box.mdl")
 	Metrostroi.DropToFloor(self)
 	
-	self.ID = 000
+	self.ID = self.ID or 000
 	-- Initial state of the switch
 	self.AlternateTrack = false
 	self.AlreadyLocked = false
@@ -14,7 +14,9 @@ function ENT:Initialize()
 	self.SignalCaller = {}
 	self.LastSignalTime = 0
 
-	self.Left = GetInternalVariable("MetrostroiValueForLeft") or UF.SwitchTable[self.ID["left"]]
+	self.OpenDoorEqualsSwitchState = self.OpenDoorEqualsSwitchState or GetInternalVariable("OpenDoorEqualsSwitchState")
+
+	self.Left = "alt"
 	self.Right = self.Left == "main" and "alt" or self.Left == "alt" and "main"
 
 	self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos())[1]
@@ -31,6 +33,8 @@ function ENT:Initialize()
 			end)
 		end
 	end
+
+	if not next(self.TrackSwitches) then print(tostring(self)..",".."NO PROP_DOOR_ROTATING FOUND") end
 
 	UF.UpdateSignalEntities()
 end
@@ -65,7 +69,7 @@ end
 
 function ENT:IsTrainInRange(train)
 	local pos = self.TrackPosition --the switch coordinates on the node system
-
+	if not self.SignalCaller[1] then return end
 	local SwitchVector = Vector(pos.x,pos.y,pos.z) --Get the x y z coordinates and express them as a vector
 	local Train = Metrostroi.GetPositionOnTrack(self.SignalCaller[1]:GetPos())[1] --same for the train
 	local TrainVector = Vector(Train.x,Train.y,Train.z)
@@ -98,12 +102,16 @@ function ENT:Think()
 			self.InhibitSwitching = true
 		end
 	end
-	
+
 	-- Force door state state
-	if self.AlternateTrack then
-		for k,v in pairs(self.TrackSwitches) do v:Fire("Open","","0") end
-	else
+	if self.AlternateTrack and self.OpenDoorEqualsSwitchState == "Open" then
+		for k,v in pairs(self.TrackSwitches) do v:Fire("Open","","0") end --todo use GetInternalVariable to determine what prop_door_rotating state counts as diverting track and what as main track
+	elseif self.AlternateTrack and self.OpenDoorEqualsSwitchState == "Closed" then
 		for k,v in pairs(self.TrackSwitches) do v:Fire("Close","","0") end
+	elseif not self.AlternateTrack and self.OpenDoorEqualsSwitchState == "Open" then
+		for k,v in pairs(self.TrackSwitches) do v:Fire("Close","","0") end
+	elseif not self.AlternateTrack and self.OpenDoorEqualsSwitchState == "Closed" then
+		for k,v in pairs(self.TrackSwitches) do v:Fire("Open","","0") end
 	end
 	
 	-- Force signal

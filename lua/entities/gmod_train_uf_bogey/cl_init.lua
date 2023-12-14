@@ -3,9 +3,9 @@ include("shared.lua")
 -- Bogey-related sounds
 ENT.SoundNames = {}
 ENT.SoundNames["u2_1"]  = "lilly/uf/bogeys/u2/motor_primary.wav"
-ENT.SoundNames["u2_2"]  = "lilly/uf/bogeys/u2/motor_secondary.wav"
+ENT.SoundNames["u2_2"]  = "lilly/uf/bogeys/u2/motor_secondary_test.wav"
 --ENT.SoundNames["u2_3"]  = "lilly/uf/u2/overhaul/u2_engine_secondary.mp3"
-
+ENT.SoundNames["u3_1"] = "lilly/uf/bogeys/u3/motor_primary.wav"
 
 
 
@@ -29,8 +29,8 @@ ENT.SoundNames["brake_squeal2"]       = "lilly/uf/bogeys/u2/brake_squeal.mp3"
 
 ENT.EngineSNDConfig = {
     {
-        {"u2_1" ,80,0,80,0.5}, --initial speed, 
-        {"u2_2" ,40,30,80,0.5},
+        {"u2_1" ,80,0,80,1}, --initial speed, 
+        {"u2_2" ,40,30,80,1},
     },
     {
         {"u3_1" ,10,0,42,1}, --initial speed, 
@@ -176,7 +176,7 @@ function ENT:Think()
                 elseif next  and speed > next[3] then
                     volume = math.max(0,(snd[4]-speed)/(snd[4]-next[3]))
                 end
-                local pitch = math.max(0,speed/snd[2])+0.06*streetC
+                local pitch = math.max(0,speed/snd[2])+0.12
                 self:SetSoundState(snd[1],motorvol*volume*(snd[5] or 1),math.Clamp(pitch,0,2))
                 
             end
