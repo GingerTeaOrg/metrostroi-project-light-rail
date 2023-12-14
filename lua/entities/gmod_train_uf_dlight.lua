@@ -9,11 +9,11 @@ ENT.Spawnable       = false
 ENT.AdminSpawnable  = false
 
 if SERVER then return end
-MetrostroiDLights = MetrostroiDLights or 0
+MPLRDLights = MPLRDLights or 0
 
 function ENT:Initialize()
-    self.ID = 817200-MetrostroiDLights
-    MetrostroiDLights = MetrostroiDLights + 3
+    self.ID = 817200-MPLRDLights
+    MPLRDLights = MPLRDLights + 3
 
     self.Strength = self.Strength or 1
     self.Color = self.Color or Color(255,220,80)

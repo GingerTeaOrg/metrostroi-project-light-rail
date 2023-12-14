@@ -1,5 +1,5 @@
 --[[-------------------------------------------------------------------------
-Client sprite entity for metrostroi trains, trying to copy
+Client sprite entity for MPLR trains, trying to copy
 env_sprite render behavior with oun functions
 ---------------------------------------------------------------------------]]
 AddCSLuaFile()
@@ -10,22 +10,22 @@ ENT.Spawnable       = false
 ENT.AdminSpawnable  = false
 
 if SERVER then return end
-MetrostroiSprites = MetrostroiSprites or {}
-MetrostroiSprites2D = MetrostroiSprites2D or {}
+MPLRSprites = MPLRSprites or {}
+MPLRSprites2D = MPLRSprites2D or {}
 
 local function colAlpha(col,a)
     return Color(col.r*a,col.g*a,col.b*a)
 end
 
-hook.Add("PostDrawTranslucentRenderables","MetrostroiClientSprite",function(_,isSkybox)
+hook.Add("PostDrawTranslucentRenderables","MPLRClientSprite",function(_,isSkybox)
     --print(ENT.Sprites)
     if isSkybox then return end
     --cam.Start3D()
 
     --render.SetLightingMode(2)
 
-    for i=1, #MetrostroiSprites do
-        local ent = MetrostroiSprites[i]
+    for i=1, #MPLRSprites do
+        local ent = MPLRSprites[i]
         if not ent.Visible or ent.Brightness <= 0 then continue end
 
 
@@ -37,8 +37,8 @@ hook.Add("PostDrawTranslucentRenderables","MetrostroiClientSprite",function(_,is
         end
     end
 
-    for i=1, #MetrostroiSprites2D do
-        local ent = MetrostroiSprites2D[i]
+    for i=1, #MPLRSprites2D do
+        local ent = MPLRSprites2D[i]
         if not ent.Visible or ent.Brightness <= 0 then continue end
 
 
@@ -54,8 +54,8 @@ hook.Add("PostDrawTranslucentRenderables","MetrostroiClientSprite",function(_,is
     end
 
     --render.SetLightingMode(0)
-    --[[for i=1, #MetrostroiSprites2D do
-        local ent = MetrostroiSprites2D[i]
+    --[[for i=1, #MPLRSprites2D do
+        local ent = MPLRSprites2D[i]
         if not ent.Visible or ent.Brightness <= 0 then continue end
 
         ent._visibility = util.PixelVisible(ent:GetPos(), 5, ent.vHandle)--math.max(0,util.PixelVisible(pos, 5, vHandle)-0.25)/0.75
@@ -63,7 +63,7 @@ hook.Add("PostDrawTranslucentRenderables","MetrostroiClientSprite",function(_,is
     --cam.End3D()
 end)
 
-hook.Remove("PreDrawViewModel","MetrostroiClientSprite",function()
+hook.Remove("PreDrawViewModel","MPLRClientSprite",function()
 end)
 
 function ENT:Initialize()
@@ -74,17 +74,17 @@ function ENT:Initialize()
     self:SetVisible(true)
 
     self.vHandle = util.GetPixelVisibleHandle()
-    table.insert(MetrostroiSprites2D,self)
+    table.insert(MPLRSprites2D,self)
 end
 
 function ENT:OnRemove()
     if self.Is3D then
-        for i,v in ipairs(MetrostroiSprites) do
-            if self == v then table.remove(MetrostroiSprites,i) end
+        for i,v in ipairs(MPLRSprites) do
+            if self == v then table.remove(MPLRSprites,i) end
         end
     else
-        for i,v in ipairs(MetrostroiSprites2D) do
-            if self == v then table.remove(MetrostroiSprites2D,i) end
+        for i,v in ipairs(MPLRSprites2D) do
+            if self == v then table.remove(MPLRSprites2D,i) end
         end
     end
 end
@@ -96,7 +96,7 @@ end
 __TEST = (__TEST or 0) + 1
 function ENT:SetTexture(texture,isSprite)
     self.Texture = texture
-    self.Material = Metrostroi.MakeSpriteTexture(texture,isSprite)
+    self.Material = UF.MakeSpriteTexture(texture,isSprite)
     --[[if isSprite then
         self.Material = CreateMaterial(texture..":sprite0000"..__TEST,"Sprite",{
             ["$basetexture"] = texture,
@@ -128,9 +128,9 @@ end
 function ENT:Set3D(is3D)
     self:OnRemove()
     if is3D then
-        table.insert(MetrostroiSprites,self)
+        table.insert(MPLRSprites,self)
     else
-        table.insert(MetrostroiSprites2D,self)
+        table.insert(MPLRSprites2D,self)
     end
     self.Is3D = is3D
 end
