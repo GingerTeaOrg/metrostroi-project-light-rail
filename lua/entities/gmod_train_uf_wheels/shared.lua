@@ -26,8 +26,8 @@ physenv.AddSurfaceData([[
 "gmod_ice"
 {
 	"friction"	"0.01"
-	"elasticity"	"0.01"
-	"audioroughnessfactor" "0.01"
+	"audiohardnessfactor" "0.0"
+	"audioroughnessfactor" "0.0"
 	"gamematerial"	"X"
 }
 ]])
