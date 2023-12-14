@@ -484,13 +484,13 @@ end
 function ENT:GetDirtLevel()
     return self:GetNW2Float("DirtLevel",0.25)
 end
-hook.Remove("Think","metrostroi_collect_garbage",function()
+hook.Remove("Think","mplr_collect_garbage",function()
     if Metrostroi.CollectGarbage then
         collectgarbage("collect")
         Metrostroi.CollectGarbage = false
     end
 end)
-hook.Add("EntityRemoved","metrostroi_bass_disable",function(ent)
+hook.Add("EntityRemoved","mplr_bass_disable",function(ent)
     if ent.BASSSounds then
         for k,v in pairs(ent.BASSSounds) do
             ent:DestroySound(v)
@@ -505,7 +505,7 @@ function ENT:SetCSBodygroup(csent,id,value)
 end
 local elapsed = SysTime()
 local spawnedCount = 0
-hook.Add("Think","SpawnElasped",function() elapsed = SysTime() spawnedCount = 0 end)
+hook.Add("Think","SpawnElapsed",function() elapsed = SysTime() spawnedCount = 0 end)
 function ENT:CreateCSEnts()
     local mul = C_SoftDraw:GetFloat()/100
     local time = mul*0.01
@@ -2018,7 +2018,7 @@ end
 --------------------------------------------------------------------------------
 -- Look into mirrors hook
 --------------------------------------------------------------------------------
-hook.Add("InputMouseApply", "mplr_TrainView", function(cmd,x,y,ang)
+--[[hook.Add("InputMouseApply", "mplr_TrainView", function(cmd,x,y,ang)
     local seat = LocalPlayer():GetVehicle()
     if (not seat) or (not seat:IsValid()) then
         return
@@ -2033,9 +2033,10 @@ hook.Add("InputMouseApply", "mplr_TrainView", function(cmd,x,y,ang)
     target_ang:RotateAroundAxis(seat:GetAngles():Right(),ang.r)
     train.CamAnglesComp = target_ang
     train.CamAng = ang
-end)
+end)]]
 
 hook.Add("CalcVehicleView", "mplr_TrainView", function(seat,ply,tbl)
+    print("running")
     local train = ply.InMetrostroiTrain
     if not IsValid(train) then
         return
@@ -2576,7 +2577,7 @@ function ENT:SetLightPower(index,power,brightness)
     if not power then return end
     -- Create light
     if lightData[1] == "light" or lightData[1] == "glow" then
-        local light = ents.CreateClientside("gmod_train_sprite")
+        local light = ents.CreateClientside("gmod_train_uf_sprite")
         light:SetPos(self:LocalToWorld(lightData[2]))
         --light:SetLocalAngles(lightData[3])
 
@@ -2622,7 +2623,7 @@ function ENT:SetLightPower(index,power,brightness)
         light:Update() --"effects/flashlight/caustics"
         self.GlowingLights[index] = light
     elseif lightData[1] == "dynamiclight" then
-        local light = ents.CreateClientside("gmod_train_dlight")
+        local light = ents.CreateClientside("gmod_train_uf_dlight")
         light:SetParent(self)
 
         -- Set position
