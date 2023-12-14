@@ -43,7 +43,7 @@ function TRAIN_SYSTEM:Think()
 	self.Speed = math.abs(self.Train.Speed)
 	
 	-- Check if battery is on and MUDeadman conditions are met
-	if self.Train:GetNW2Bool("BatteryOn", false) == true then
+	if self.Train:GetNW2Bool("BatteryOn", false) == true or self.Train:ReadTrainWire(6) > 0 and self.Train:ReadTrainWire(7) > 0 then
 		
 		if self.Train:ReadTrainWire(6) > 0 and #self.Train.WagonList < 2 and math.random(0,100) <= 33 and self.Speed > 5 then
 			self.IsPressed = 0
@@ -51,12 +51,9 @@ function TRAIN_SYSTEM:Think()
 			self.BrokenConsistProtect = true
 			self.MUDeadman = false
 		end
+
+		self.MUDeadman = self.Train:ReadTrainWire(12) > 0 and self.Train:ReadTrainWire(6) > 0
 		
-		if self.Train:ReadTrainWire(12) > 0 and self.Train:ReadTrainWire(6) > 0 and not self.BrokenConsistProtect then
-			self.MUDeadman = true
-		else
-			self.MUDeadman = false
-		end
 		
 		-- Handle various deadman and emergency shut-off scenarios
 		if self.IsPressed == 1 or self.MUDeadman == true and not self.BrokenConsistProtect then
@@ -90,7 +87,7 @@ function TRAIN_SYSTEM:Think()
 				end
 			end
 			-- Handle scenarios when pedal is not pressed
-		elseif self.IsPressed == 0 or self.MUDeadman == false then
+		elseif self.IsPressed == 0 and self.MUDeadman == false then
 			if self.Speed < 5 then
 				if self.EmergencyShutOff == false and self.Speed < 80 then
 					-- Reset deadman conditions if speed is low
@@ -134,7 +131,7 @@ function TRAIN_SYSTEM:Think()
 		end
 		
 		-- Handle emergency stop when deadman is tripped
-		if self.Train:GetNW2Bool("DeadmanTripped") == true and self.Train.Duewag_U2.ReverserLeverState == 0 and self.Train.Duewag_U2.ThrottleState == 0 then
+		if self.Train:GetNW2Bool("DeadmanTripped") == true and (self.Train.Duewag_U2.ReverserLeverStateA == 0 or self.Train.Duewag_U2.ReverserLeverStateA == 0) and self.Train.Duewag_U2.ThrottleState == 0 then
 			
 			self.TrainHasReset = true
 			self.Train:SetNW2Bool("DeadmanTripped", false)
@@ -191,5 +188,18 @@ function TRAIN_SYSTEM:Think()
 	if self.Train:GetNW2Bool("BatteryOn", false) == false then
 		self.Train:SetNW2Bool("DeadmanTripped", false)
 		self.TrainHasReset = true
+	end
+	
+	if self.Train:GetNW2Bool("BatteryOn", false) == true or
+	self.Train:ReadTrainWire(6) > 0 then -- if either the battery is on or the EMU cables signal multiple unit mode
+		
+		self.Train:WriteTrainWire(12, self.IsPressed)
+
+
+		
+		
+		
+		--self.Train:SetNW2Bool("TractionAppliedWhileStillNoDeadman", (self.ReverserState ~= 0 and self.Train:ReadTrainWire(12) < 1 and self.ThrottleState > 0) or false)
+		
 	end
 end
