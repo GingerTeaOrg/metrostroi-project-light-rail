@@ -52,7 +52,7 @@ function ENT:Draw()
         if self.FirstRaise == true then
             self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,1.5,2,0))
         else
-            self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,0.1,1,1))
+            self:SetPoseParameter("position",self:Animate("1",(self.PantoHeight.z - 9) / (117 - 10),0,100,1.6,1,1))
         end
        
     else
