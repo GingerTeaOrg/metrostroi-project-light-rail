@@ -135,16 +135,7 @@ function ENT:Initialize()
 	}
 	
 	self.RearCouple = self.ParentTrain.RearCouple
-	--self.FrontCouple = self:CreateCoupleUF(Vector( 0,0,23),Angle(0,180,0),true,"u2")	
-	
-	--self.RearBogey:SetRenderMode(RENDERMODE_TRANSALPHA)
-	--self.RearBogey:SetColor(Color(0,0,0,0))		
-	
-	--self.Timer = CurTime()	
-	--self.Timer2 = CurTime()
-	--[[self:SetNW2Entity("RearBogey",self.ParentTrain.RearBogey)
-	self:SetNW2Entity("MiddleBogey",self.ParentTrain.MiddleBogey)
-	self:SetNW2Entity("FrontBogey",self.ParentTrain.FrontBogey)]]
+
 	undo.Create(self.ClassName)	
 	undo.AddEntity(self)	
 	undo.SetPlayer(self.Owner)
@@ -175,9 +166,7 @@ function ENT:Initialize()
 		[37] = { "light",Vector(-84.6012,-51,49.7), Angle(0,0,0), Color(9,142,0),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --door button front right 4
 		[38] = { "light",Vector(-416.20,6,54), Angle(0,0,0), Color(0,90,59),     brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt" }, --indicator indication lamp in cab
 	}
-	--[[for k,v in pairs(self.Lights) do
-	self:SetLightPower(k,false)
-end]]
+
 
 self.BrakePressure = 0	
 
@@ -448,10 +437,6 @@ function ENT:OnButtonPress(button,ply)
 		
 	end
 	
-	if button == "WarningAnnouncementSet" then
-		--self:Wait(1)
-		self:SetNW2Bool("WarningAnnouncement", true)
-	end
 	
 	if button == "Blinds+" then
 		
@@ -1099,10 +1084,6 @@ function ENT:OnButtonRelease(button,ply)
 		------print("DeadmanPressedNo")
 	end
 	
-	if button == "WarningAnnouncementSet" then
-		self:SetNW2Bool("WarningAnnouncement", false)
-	end
-	
 	if button == "BellEngageSet" then
 		self:SetNW2Bool("Bell",false)
 	end
@@ -1255,18 +1236,18 @@ function ENT:Think()
 		self:SetModel("models/lilly/uf/u2/u2_vintage_b.mdl")
 	end
 	self:SetNW2String("DoorSideUnlocked", self.DoorSideUnlocked)
-	if self.ParentTrain.Duewag_U2:IsLeadingCab() == "b" then
-		if self.Panel.WarnBlink < 1 then
-			self:WriteTrainWire(20, self.Panel.BlinkerLeft > 0 and 1 or 0)
-			self:WriteTrainWire(21, self.Panel.BlinkerRight > 0 and 1 or 0)
-		elseif self.Panel.WarnBlink > 0 then
-			self:WriteTrainWire(20, 1)
-			self:WriteTrainWire(21, 1)
-		elseif self.Panel.BlinkerLeft > 0 or self.Panel.BlinkerRight > 0 then
-			self:WriteTrainWire(20, self.Panel.BlinkerLeft > 0 and 1 or 0)
-			self:WriteTrainWire(21, self.Panel.BlinkerRight > 0 and 1 or 0)
-		end
+
+	if self.Panel.WarnBlink < 1 then
+		self:WriteTrainWire(20, self.Panel.BlinkerLeft > 0 and 1 or 0)
+		self:WriteTrainWire(21, self.Panel.BlinkerRight > 0 and 1 or 0)
+	elseif self.Panel.WarnBlink > 0 then
+		self:WriteTrainWire(20, 1)
+		self:WriteTrainWire(21, 1)
+	elseif self.Panel.BlinkerLeft > 0 or self.Panel.BlinkerRight > 0 then
+		self:WriteTrainWire(20, self.Panel.BlinkerLeft > 0 and 1 or 0)
+		self:WriteTrainWire(21, self.Panel.BlinkerRight > 0 and 1 or 0)
 	end
+
 	
 	
 end

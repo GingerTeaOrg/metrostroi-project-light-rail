@@ -186,11 +186,11 @@ function ENT:ReturnOpenDoors()
 		if v > 0.8 and k < 3 then
 			self.RightDoorPositions[k] = self.DoorVectorsRight[k]
 		elseif v > 0.8 and k > 2 then
-			self.u2sectionb.RightDoorPositions[k] = self.DoorVectorsRight[k]
+			self.SectionB.RightDoorPositions[k] = self.DoorVectorsRight[k]
 		elseif v < 0.8 and k < 3 then
 			self.RightDoorPositions[k] = nil
 		elseif v < 0.8 and k > 2 then
-			self.u2sectionb.RightDoorPositions[k] = nil
+			self.SectionB.RightDoorPositions[k] = nil
 		end
 		
 	end
@@ -198,11 +198,11 @@ function ENT:ReturnOpenDoors()
 	for k,v in ipairs(self.DoorStatesLeft) do
 
 		if v > 0.8 and k < 3 then
-			self.u2sectionb.LeftDoorPositions[k] = self.DoorVectorsLeft[k]
+			self.SectionB.LeftDoorPositions[k] = self.DoorVectorsLeft[k]
 		elseif v > 0.8 and k > 2 then
 			self.LeftDoorPositions[k] = self.DoorVectorsLeft[k]
 		elseif v < 0.8 and k < 3 then
-			self.u2sectionb.LeftDoorPositions[k] = nil
+			self.SectionB.LeftDoorPositions[k] = nil
 		elseif v < 0.8 and k > 2 then
 			self.LeftDoorPositions[k] = nil
 		end
@@ -230,6 +230,7 @@ ENT.Cameras = {
 	{Vector(70.5 + 10, 6, 90), Angle(0, 0, 0), "Train.UF_U2.PassengerStanding2"},
 	{Vector(490.5, 0, 100), Angle(0, 180, 0), "Train.Common.RouteNumber"},
 	{Vector(388, -30, 80), Angle(0, -90, 0), "Train.UF_U2.RouteList"},
+	{Vector(388, 0, 120), Angle(0, -180, 0), "Train.UF_U2.Rollsign"},
 	{Vector(450, 0, 70), Angle(80, 0, 0), "Train.Common.CouplerCamera"},
 	{Vector(350, 60, 5), Angle(10, -80, 0), "Train.UF_U2.Bogey"},
 	{Vector(413, -11, 62), Angle(35, -46, 0), "Train.UF_U2.IBIS"},
@@ -237,7 +238,7 @@ ENT.Cameras = {
 	{Vector(250, 6, 200), Angle(0, 180, 0), "Train.UF_U2.Panto"}
 }
 
-ENT.MirrorCams = {Vector(441, 72, 15), Angle(1, 180, 0), 15, Vector(441, -72, 15), Angle(1, 180, 0), 15}
+ENT.MirrorCams = {Vector(441, 72, 15), Angle(1, 180, 0), 15, Vector(441, -72, 15), Angle(1, 180, 0), 18}
 
 function ENT:InitializeSystems()
 	self:LoadSystem("Duewag_U2")

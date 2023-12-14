@@ -5,7 +5,7 @@ ENT.ClientProps = {}
 ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
-
+ENT.MirrorCams = {Vector(441, 72, 15), Angle(1, 180, 0), 15, Vector(441, -72, 15), Angle(1, 180, 0), 18}
 ENT.Lights = {
     -- Headlight glow
     [1] = {
@@ -783,7 +783,7 @@ ENT.ButtonMapMPLR["Cab"] = {
             model = {
                 model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",
                 z = -5,
-                name = "BlinkerLamp",
+                name = "BlinkerLamp"
             }
         }, {
             ID = "DepartureBlockedLamp",
@@ -2113,9 +2113,9 @@ function ENT:DrawPost()
     self:DrawOnPanel("Rollsign", function(...)
         surface.SetDrawColor(color_white)
         surface.SetMaterial(mat)
-        surface.DrawTexturedRectUV(0, 0, 780, 160, 0, self.ScrollModifier, 1,
-                                   self.ScrollModifier + 0.015)
+        surface.DrawTexturedRectUV(0, 0, 780, 160, 0, self.ScrollModifier, 1, self.ScrollModifier + 0.015)
     end)
+
 end
 
 function ENT:OnPlay(soundid, location, range, pitch)
@@ -2207,8 +2207,8 @@ end
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-
-    self.u2sectionb = self:GetNWEntity("U2b")
+    self.ScrollModifier = 0
+    self.SectionB = self:GetNWEntity("U2b")
 
     self.IBIS = self:CreateRT("IBIS", 512, 128)
 
@@ -2257,7 +2257,7 @@ function ENT:Initialize()
     -- self.LeftMirror = self:CreateRT("LeftMirror",512,256)
     -- self.RightMirror = self:CreateRT("RightMirror",128,256)
 
-    self.ScrollModifier = 0
+    
     self.ScrollMoment = 0
 
     self.PrevTime = 0
@@ -2271,7 +2271,7 @@ function ENT:Initialize()
     self:ShowHide("reverser", true)
     self:ShowHide("reverser", false)
     self:UpdateWagonNumber()
-    -- self.u2sectionb:UpdateWagonNumber()
+    -- self.SectionB:UpdateWagonNumber()
 
     self.Rollsign = Material(self:GetNW2String("Rollsign",
                                                "models/lilly/uf/u2/rollsigns/frankfurt_stock.png"))
@@ -2284,17 +2284,17 @@ function ENT:Think()
     self.DeltaTime = (CurTime() - self.PrevTime)
     self.PrevTime = CurTime()
 
-    self.u2sectionb = self:GetNWEntity("U2b")
+    self.SectionB = self:GetNWEntity("U2b")
 
     if self:GetNW2String("Texture", "") == "SVB" then
         self:ShowHide("carnumber1", false)
         self:ShowHide("carnumber2", false)
         self:ShowHide("carnumber3", false)
-        if IsValid(self.u2sectionb) then
-            self.u2sectionb:ShowHide("carnumber1", false)
-            self.u2sectionb:ShowHide("carnumber2", false)
-            self.u2sectionb:ShowHide("carnumber3", false)
-            self.u2sectionb:ShowHide("duewag_decal", false)
+        if IsValid(self.SectionB) then
+            self.SectionB:ShowHide("carnumber1", false)
+            self.SectionB:ShowHide("carnumber2", false)
+            self.SectionB:ShowHide("carnumber3", false)
+            self.SectionB:ShowHide("duewag_decal", false)
         end
         self:ShowHide("duewag_decal", false)
     elseif self:GetNW2String("Texture", "") == "OrEbSW" or
@@ -2304,23 +2304,23 @@ function ENT:Think()
         local leftNum, middleNum, rightNum = self.ClientEnts["carnumber1"],
                                              self.ClientEnts["carnumber2"],
                                              self.ClientEnts["carnumber3"]
-        if IsValid(self.u2sectionb) then
+        if IsValid(self.SectionB) then
             local leftNum1, middleNum2, rightNum3 =
-                self.u2sectionb.ClientEnts["carnumber1"],
-                self.u2sectionb.ClientEnts["carnumber2"],
-                self.u2sectionb.ClientEnts["carnumber3"]
+                self.SectionB.ClientEnts["carnumber1"],
+                self.SectionB.ClientEnts["carnumber2"],
+                self.SectionB.ClientEnts["carnumber3"]
         end
-        if IsValid(self.u2sectionb) and IsValid(leftNum1) and
+        if IsValid(self.SectionB) and IsValid(leftNum1) and
             IsValid(middleNum2) and IsValid(rightNum3) then
             leftNum1:SetPos(self:LocalToWorld(Vector(0, 0, 9)))
             middleNum2:SetPos(self:LocalToWorld(Vector(0, 0, 9)))
             rightNum3:SetPos(self:LocalToWorld(Vector(0, 0, 9)))
         end
-        if IsValid(self.u2sectionb) and
-            IsValid(self.u2sectionb.ClientEnts["cab_decal"]) and
-            IsValid(self.u2sectionb.ClientEnts["duewag_decal"]) then
-            local decal2 = self.u2sectionb.ClientEnts["cab_decal"]
-            local duewag2 = self.u2sectionb.ClientEnts["duewag_decal"]
+        if IsValid(self.SectionB) and
+            IsValid(self.SectionB.ClientEnts["cab_decal"]) and
+            IsValid(self.SectionB.ClientEnts["duewag_decal"]) then
+            local decal2 = self.SectionB.ClientEnts["cab_decal"]
+            local duewag2 = self.SectionB.ClientEnts["duewag_decal"]
             decal2:SetPos(self:LocalToWorld(Vector(0.17, 0, 8)))
             duewag2:SetPos(self:LocalToWorld(Vector(0.17, 0, -18)))
         end
@@ -2346,9 +2346,9 @@ function ENT:Think()
         self:GetNW2Bool("OldMirror", false) == false then
         self:ShowHide("Mirror_vintage", false)
         self:ShowHide("Mirror", true)
-        if IsValid(self.u2sectionb) then
-            self.u2sectionb:ShowHide("Mirror_vintage", false)
-            self.u2sectionb:ShowHide("Mirror", true)
+        if IsValid(self.SectionB) then
+            self.SectionB:ShowHide("Mirror_vintage", false)
+            self.SectionB:ShowHide("Mirror", true)
         end
     elseif self:GetNW2Bool("RetroMode", false) == true and
         self:GetNW2Bool("OldMirror", false) == false or
@@ -2358,9 +2358,9 @@ function ENT:Think()
         self:GetNW2Bool("RetroMode", false) == true then
         self:ShowHide("Mirror", false)
         self:ShowHide("Mirror_vintage", true)
-        if IsValid(self.u2sectionb) then
-            self.u2sectionb:ShowHide("Mirror", false)
-            self.u2sectionb:ShowHide("Mirror_vintage", true)
+        if IsValid(self.SectionB) then
+            self.SectionB:ShowHide("Mirror", false)
+            self.SectionB:ShowHide("Mirror_vintage", true)
         end
     end
 
@@ -2383,11 +2383,9 @@ function ENT:Think()
 
     self.ThrottleStateAnim = self:GetNW2Float("ThrottleStateAnim", 0)
     if self.ThrottleStateAnim >= 0.5 then
-        self:Animate("Throttle", self.ThrottleStateAnim, -45,
-                     45, 50, 8, false)
+        self:Animate("Throttle", self.ThrottleStateAnim, -45, 45, 50, 8, false)
     elseif self.ThrottleStateAnim <= 0.5 then
-        self:Animate("Throttle", math.Clamp(
-                        self.ThrottleStateAnim, 0.09, 1),
+        self:Animate("Throttle", math.Clamp(self.ThrottleStateAnim, 0.09, 1),
                      -45, 45, 50, 8, false)
     end
 
@@ -2398,7 +2396,7 @@ function ENT:Think()
     if self:GetNW2Bool("IBISKeyBeep", false) == true then
         if self.IBISBeep == false then
             self.IBISBeep = true
-            self:PlayOnce("IBIS_beep", "cabin", 1, 1)
+            self:PlayOnce("IBIS_beep", "cabin", 0.6, 1)
         else
         end
     else
@@ -2410,10 +2408,10 @@ function ENT:Think()
         if self.AnnouncementPlayed == false then
             self.AnnouncementPlayed = true
             self:PlayOnceFromPos("PSA",
-                                 self:GetNW2String("ServiceAnnouncement"), 2, 1,
+                                 self:GetNW2String("ServiceAnnouncement"), 1, 1,
                                  1, 2, Vector(293, 44, 102))
             self:PlayOnceFromPos("PSA2",
-                                 self:GetNW2String("ServiceAnnouncement"), 2, 1,
+                                 self:GetNW2String("ServiceAnnouncement"), 1, 1,
                                  1, 2, Vector(293, -44, 102))
         end
     else
@@ -2477,11 +2475,7 @@ function ENT:Think()
 
     ----print(self.CamshaftMadeSound)
 
-    if self:GetPackedBool("Headlights", false) == true then
-        self:ShowHide("headlights_on", true, 0)
-    elseif self:GetPackedBool("Headlights", false) == false then
-        self:ShowHide("headlights_on", false, 0)
-    end
+    self:ShowHide("headlights_on", self:GetPackedBool("Headlights",false), 0)
 
     if self:GetNW2Bool("BlinkerShineLeft", false) == true then
         self:SetLightPower(11, true)
@@ -2669,12 +2663,12 @@ function ENT:Think()
             self:GetNW2Bool("IBISChime", false) == true and
             self.IBISBootCompleted == false then
             self.IBISBootCompleted = true
-            self:PlayOnce("IBIS_bootup", Vector(412, -12, 55), 1, 1)
+            self:PlayOnce("IBIS_bootup", Vector(412, -12, 55), 0.4, 1)
 
         end
         if self:GetNW2Bool("IBISError", false) and not self.IBISErrorPlayed then
             self.IBISErrorPlayed = true
-            self:PlayOnce("IBIS_error", Vector(412, -12, 55), 1, 1)
+            self:PlayOnce("IBIS_error", Vector(412, -12, 55), 0.4, 1)
         elseif not self:GetNW2Bool("IBISError", false) then
             self.IBISErrorPlayed = false
         end
@@ -2688,13 +2682,13 @@ function ENT:Think()
         end
 
         if self:GetPackedBool("WarningAnnouncement") == true then
-            self:PlayOnce("Keep Clear", Vector(350, -30, 113), 1, 1)
+            self:PlayOnce("Keep Clear", Vector(350, -30, 113), 0.8, 1)
         end
     elseif self:GetNW2Bool("BatteryOn", false) == false then -- what shall we do when the battery is off
         self.StartupSoundPlayed = false
         if self.BatteryBreakerOffSoundPlayed == false then
             self.BatteryBreakerOffSoundPlayed = true
-            self:PlayOnce("Battery_breaker_off", "cabin", 20, 1)
+            self:PlayOnce("Battery_breaker_off", "cabin", 1, 1)
         end
 
     end
@@ -2775,7 +2769,7 @@ function ENT:Think()
     -- self:SetSoundState("rumb1",0 or rol40*rollings,rol40p) --57
     -- self:SetSoundState("Cruise"  ,rol70*rollings,rol70p) --70
 
-    self:U2SoundEngine()
+    -- self:U2SoundEngine()
     self:ScrollTracker()
 
 end
@@ -2832,25 +2826,30 @@ end
 
 function ENT:ScrollTracker()
 
-    if self:GetNW2Bool("Rollsign+", false) == true then
-        self.ScrollModifier = self.ScrollModifier + (0.005 * FrameTime())
-        self.ScrollMoment = RealTime()
-        self.ScrollModifier = math.Clamp(self.ScrollModifier, 0, 1)
-    elseif self:GetNW2Bool("Rollsign-", false) == true then
-        self.ScrollModifier = self.ScrollModifier - (0.005 * FrameTime())
-        self.ScrollMoment = RealTime()
-        self.ScrollModifier = math.Clamp(self.ScrollModifier, 0, 1)
-    elseif self:GetNW2Bool("Rollsign-", false) == false and
-        self:GetNW2Bool("Rollsign+", false) == false then
-        self.ScrollModifier = self.ScrollModifier
-        self.ScrollModifier = math.Clamp(self.ScrollModifier, 0, 1)
-    elseif self:GetNW2Bool("Rollsign-", false) == false and
-        self:GetNW2Bool("Rollsign+", false) == false and self.ScrollMoment -
-        RealTime() > 20 then
-        self.ScrollModifier = self:GetNW2Float("ActualScrollState")
-        self.ScrollModifier = math.Clamp(self.ScrollModifier, 0, 1)
+    --[[alternative:
+    local curTime = RealTime()
+    local lastFrameTime = curTime - FrameTime()
+    local deltaTime = curTime - lastFrameTime]]
+
+    local RollsignPlus = self:GetNW2Bool("Rollsign+", false)
+    local RollsignMinus = self:GetNW2Bool("Rollsign-", false)
+    local curTime = RealTime()
+    local deltaTime = curTime - (self.lastUpdateTime or curTime)
+    self.lastUpdateTime = curTime
+
+    if self:GetNW2Bool("Rollsign+", false) then
+        self.ScrollModifier = self.ScrollModifier + 0.005 * FrameTime()
+    elseif self:GetNW2Bool("Rollsign-", false) then
+        self.ScrollModifier = self.ScrollModifier - 0.005 * FrameTime()
     end
+    self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
+    --print(self.ScrollModifier)
 end
+
+net.Start("RollsignState")
+        net.WriteEntity(ENT)
+        net.WriteFloat(ENT.ScrollModifier or 0)
+net.SendToServer()
 
 function ENT:OnAnnouncer(volume)
     return self:GetPackedBool("AnnPlay") and volume or 0

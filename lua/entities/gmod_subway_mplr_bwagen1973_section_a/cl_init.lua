@@ -9,7 +9,7 @@ ENT.AutoAnimNames = {}
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
 
-	self.u2sectionb = self:GetNWEntity("SectionB")
+	self.SectionB = self:GetNWEntity("SectionB")
 
     self.IBIS = self:CreateRT("IBIS", 512, 128)
 

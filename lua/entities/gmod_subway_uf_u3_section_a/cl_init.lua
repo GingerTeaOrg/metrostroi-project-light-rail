@@ -27,6 +27,13 @@ ENT.ClientProps["Throttle"] = {model = "models/lilly/uf/common/cab/throttle.mdl"
 
 ENT.ClientProps["headlights_on"] = {model = "models/lilly/uf/u3/headlights_lit.mdl", pos = Vector(0.1, 0, 0), ang = Angle(0, 0, 0), scale = 1}
 
+ENT.ClientProps["reverser"] = {
+	model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
+	pos = Vector(46, 7, 12),
+	ang = Angle(0, 0, 0),
+	hideseat = 0.2
+}
+
 ENT.ButtonMapMPLR["IBISScreen"] = {
 	pos = Vector(469.83, -0.75, 73.41),
 	ang = Angle(0, -135, 78.8), -- (0,44.5,-47.9),
@@ -53,7 +60,7 @@ ENT.ButtonMapMPLR["Dashboard1"] = {
 	width = 370,
 	height = 50,
 	scale = 0.069,
-
+	
 	buttons = {}
 }
 
@@ -63,7 +70,7 @@ ENT.ButtonMapMPLR["Dashboard2"] = {
 	width = 370,
 	height = 50,
 	scale = 0.069,
-
+	
 	buttons = {}
 }
 
@@ -162,7 +169,7 @@ function ENT:OnPlay(soundid, location, range, pitch)
 end
 
 function ENT:UpdateWagonNumber()
-
+	
 	for i = 0, 3 do
 		-- self:ShowHide("TrainNumberL"..i,i<count)
 		-- self:ShowHide("TrainNumberR"..i,i<count)
@@ -172,7 +179,7 @@ function ENT:UpdateWagonNumber()
 		local num1 = tonumber(string.sub(self:GetNW2Int("WagonNumber"), 1, 1), 10)
 		local num2 = tonumber(string.sub(self:GetNW2Int("WagonNumber"), 2, 2), 10)
 		local num3 = tonumber(string.sub(self:GetNW2Int("WagonNumber"), 3, 3), 10)
-
+		
 		if IsValid(intnum1) then
 			if num1 < 1 then
 				intnum1:SetSkin(10)
@@ -194,7 +201,7 @@ function ENT:UpdateWagonNumber()
 				intnum3:SetSkin(num3)
 			end
 		end
-
+		
 		if IsValid(leftNum) then
 			if num1 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
 				leftNum:SetSkin(10)
@@ -233,66 +240,66 @@ end
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
-
-	self.u2sectionb = self:GetNWEntity("U2b")
-
+	
+	self.SectionB = self:GetNWEntity("U2b")
+	
 	self.IBIS = self:CreateRT("IBIS", 512, 128)
-
+	
 	self.Locked = 0
-
+	
 	self.EngineSNDConfig = {}
-
+	
 	self.SoundNames = {}
-
+	
 	self.MotorPowerSound = 0
 	self.CabLight = 0
-
+	
 	self.SpeedoAnim = 0
 	self.VoltAnim = 0
 	self.AmpAnim = 0
-
+	
 	self.Microphone = false
 	self.BlinkerTicked = false
 	self.DoorOpenSoundPlayed = false
 	self.DoorCloseSoundPlayed = false
 	self.DoorsOpen = false
-
+	
 	self.CamshaftMadeSound = false
 	self.AnnouncementTriggered = false
 	self.ThrottleLastEngaged = 0
-
+	
 	self.IBISBootCompleted = false
 	self.IBISBeep = false
-
+	
 	self.BatteryBreakerOnSoundPlayed = false
 	self.BatteryBreakerOffSoundPlayed = false
-
+	
 	self.BlinkerPrevOn = false
-
+	
 	self.WarningAnnouncement = false
-
+	
 	self.CabWindowL = 0
 	self.CabWindowR = 0
-
+	
 	-- self.LeftMirror = self:CreateRT("LeftMirror",512,256)
 	-- self.RightMirror = self:CreateRT("RightMirror",128,256)
-
+	
 	self.ScrollModifier = 0
 	self.ScrollMoment = 0
-
+	
 	self.PrevTime = 0
 	self.DeltaTime = 0
 	self.MotorPowerSound = 0
-
+	
 	self.Nags = {"Nag1", "Nag2", "Nag3"}
 	self.Speed = 0
-
+	
 	self.BatterySwitch = 0.5
 	self:ShowHide("reverser", true)
 	self:ShowHide("reverser", false)
 	self:UpdateWagonNumber()
-	-- self.u2sectionb:UpdateWagonNumber()
-
+	-- self.SectionB:UpdateWagonNumber()
+	
 	self.Rollsign = Material(self:GetNW2String("Rollsign","models/lilly/uf/u2/rollsigns/frankfurt_stock.png"))
 end
 ENT.RTMaterialUF = CreateMaterial("MetrostroiRT1", "VertexLitGeneric", {["$vertexcolor"] = 0, ["$vertexalpha"] = 1, ["$nolod"] = 1})
@@ -303,7 +310,7 @@ function ENT:DrawPost()
 		surface.SetDrawColor(0, 65, 11)
 		surface.DrawTexturedRectRotated(74, 41, 144, 75, 0)
 	end)
-
+	
 	local mat = self.Rollsign
 	self:DrawOnPanel("Rollsign", function(...)
 		surface.SetDrawColor(color_white)
@@ -324,30 +331,122 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-
+	self:SoundRoutine()
+	self:Animations()
+	
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
 	self.ScrollModifier = 0.548
-
+	
+	self:ShowHide("reverser", self:GetNW2Bool("ReverserInsertedA",false))
+	
 	local Door12a = math.Clamp(self:GetNW2Float("Door12a"), 0, 1)
 	local Door34a = math.Clamp(self:GetNW2Float("Door34a"), 0, 1)
-
+	
 	local Door56b = self:GetNW2Float("Door56b")
 	local Door78b = self:GetNW2Float("Door78b")
-
-	self:Animate("Door_fr2", Door12a, 0, 100, 100, 10, 0)
-	self:Animate("Door_fr1", Door12a, 0, 100, 100, 10, 0)
-
-	self:Animate("Door_rr2", Door34a, 0, 100, 100, 10, 0)
-	self:Animate("Door_rr1", Door34a, 0, 100, 100, 10, 0)
-
-	self:Animate("Door_fl2", Door78b, 0, 100, 100, 10, 0)
-	self:Animate("Door_fl1", Door78b, 0, 100, 100, 10, 0)
-
-	self:Animate("Door_rl2", Door56b, 0, 100, 100, 10, 0)
-	self:Animate("Door_rl1", Door56b, 0, 100, 100, 10, 0)
+	
+	self.ThrottleStateAnim = self:GetNW2Float("ThrottleStateAnim", 0)
+	if self.ThrottleStateAnim >= 0.5 then
+		self:Animate("Throttle", self.ThrottleStateAnim, -45, 45, 50, 8, false)
+	elseif self.ThrottleStateAnim <= 0.5 then
+		self:Animate("Throttle", math.Clamp(self.ThrottleStateAnim, 0.09, 1),
+		-45, 45, 50, 8, false)
+	end
+	
+	self:Animate("reverser", self:GetNW2Float("ReverserAnimate"), 0, 100, 50, 9, false)
 end
 
 function ENT:OnAnnouncer(volume) return self:GetPackedBool("AnnPlay") and volume or 0 end
 UF.GenerateClientProps()
+
+function ENT:SoundRoutine()
+    if self:GetNW2Bool("Bell", false) == true then
+        self:SetSoundState("bell", 1, 1)
+        self:SetSoundState("bell_in", 1, 1)
+    else
+        self:SetSoundState("bell", 0, 1)
+        self:SetSoundState("bell_in", 0, 1)
+    end
+
+    if self:GetNW2Bool("WarningAnnouncement") == true then
+        self:PlayOnce("WarningAnnouncement", "cabin", 1, 1)
+
+    end
+    self:SetSoundState("Deadman", self:GetNW2Bool(
+                           "DeadmanAlarmSound", false) and 1 or 0, 1)
+end
+
+function ENT:Animations()
+
+
+
+    self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 80) / 100 * 1.5
+    self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
+
+
+    self:ShowHide("reverser",
+                  self:GetNW2Bool("ReverserInsertedB", false))
+
+    self:Animate("reverser", self:GetNW2Float("ReverserAnimate", 0.5), 0, 100,
+                 50)
+
+    self.CabWindowL = self:GetNW2Float("CabWindowL", 0)
+    self.CabWindowR = self:GetNW2Float("CabWindowR", 0)
+    self:Animate("window_cab_r", self:GetNW2Float("CabWindowR", 0), 0, 100, 50,
+                 9, false)
+    self:Animate("window_cab_l", self:GetNW2Float("CabWindowL", 0), 0, 100, 50,
+                 9, false)
+
+    if self:GetNW2Bool("Headlights", false) == true and
+        self:GetNW2Bool("Headlights", false) == true then
+        self:ShowHide("headlights_on", true)
+    else
+        self:ShowHide("headlights_on", false)
+    end
+
+
+    if self:GetPackedBool("FlickBatterySwitchOn", false) == true then
+        self.BatterySwitch = 1
+    elseif self:GetPackedBool("FlickBatterySwitchOff", false) == true then
+        self.BatterySwitch = 0
+    else
+        self.BatterySwitch = 0.5
+    end
+
+    self:Animate("Mirror", self:GetNW2Float("Mirror", 0), 0, 100, 17, 1, 0)
+    self:Animate("Mirror_vintage", self:GetNW2Float("Mirror", 0), 0, 100, 17, 1,
+                 0)
+
+    self:ShowHide("RetroEquipment",
+                  self:GetNW2Bool("RetroMode", false))
+
+    self:Animate("Door_fr2", self:GetNW2Float("Door12a"), 0, 100,
+                 50, 0, 0)
+    self:Animate("Door_fr1", self:GetNW2Float("Door12a"), 0, 100,
+                 50, 0, 0)
+
+    self:Animate("Door_rr2", self:GetNW2Float("Door34a"), 0, 100,
+                 50, 0, 0)
+    self:Animate("Door_rr1", self:GetNW2Float("Door34a"), 0, 100,
+                 50, 0, 0)
+
+    self:Animate("Door_fl2", self:GetNW2Float("Door78b"), 0, 100,
+                 50, 0, 0)
+    self:Animate("Door_fl1", self:GetNW2Float("Door78b"), 0, 100,
+                 50, 0, 0)
+
+    self:Animate("Door_rl2", self:GetNW2Float("Door56b"), 0, 100,
+                 50, 0, 0)
+    self:Animate("Door_rl1", self:GetNW2Float("Door56b"), 0, 100,
+                 50, 0, 0)
+    if self:GetNW2Bool("RetroMode", false) == false then
+        self:ShowHide("Mirror_vintage", false)
+        self:ShowHide("Mirror", true)
+    elseif self:GetNW2Bool("RetroMode", false) == true then
+        self:ShowHide("Mirror", false)
+        self:ShowHide("Mirror_vintage", true)
+    end
+
+end
