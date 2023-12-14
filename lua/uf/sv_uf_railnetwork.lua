@@ -3,6 +3,8 @@ UF.PZBSections = {}
 
 UF.SignalBlocks = {}
 
+UF.SwitchEntitiesByName = {}
+
 
 function UF.CreatePZB()
     if next(UF.PZBSections) then return end
@@ -376,9 +378,11 @@ function UF.Load(name,keep_signs)
         UF.UpdateSwitchEntities()
         UF.ConstructDefaultSignalBlocks()
         Server = ents.Create("gmod_mplr_signalserver")
-        Server:Spawn()
-        print("Spawned central signalling server")
+        Server.Model = UF.ServerModel or nil
+        Server.SoundLoop = UF.ServerSound or nil
         Server:SetPos(UF.ServerPos or Vector(0,0,0))
+        Server:Spawn()
+        print("MPLR: Spawned central signalling server")
     end)
 end
 
@@ -558,7 +562,7 @@ function UF.LoadSignalling(name,keep)
                 ent.LockedSignal = v.LockedSignal
                 ent.NotChangePos = v.NotChangePos
                 ent.Inverted = v.Inverted
-                ent.Name = v.Name,
+                ent.ID = v.ID,
                 ent:Spawn()
             end
             if v.Class == "gmod_track_uf_signal" then
@@ -749,7 +753,6 @@ function UF.UpdateSwitchEntities()
         end
         
     end
-    Metrostroi.PostSignalInitialize()
 end
 
 --------------------------------------------------------------------------------
