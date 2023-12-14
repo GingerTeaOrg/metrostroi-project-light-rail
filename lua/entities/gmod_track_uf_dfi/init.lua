@@ -5,6 +5,8 @@ function ENT:Initialize()
 
     if not UF then return end
 
+    self:DropToFloor()
+    
     self:SetModel("models/lilly/uf/stations/dfi.mdl")
     self:DropToFloor()
     self.ValidLines = {
@@ -19,8 +21,7 @@ function ENT:Initialize()
 
     self.DisplayedTrains = {}
 
-    util.PrecacheModel("lilly/uf/stations/dfi_hands_hours.mdl")
-    util.PrecacheModel("lilly/uf/stations/dfi_hands_minutes.mdl")
+
 
     self.LastRefresh = CurTime()
     self.HasRefreshed = true
@@ -70,7 +71,11 @@ end
 
 function ENT:Think()
     self.BaseClass:Think()
-    self.TrackPosition = Metrostroi.GetPositionOnTrack(self.Position,
+
+    self.Time = os.date("%I%M",os.time())
+    self:SetNW2String("Time",self.Time)
+    
+    self.TrackPosition = self.TrackPosition or Metrostroi.GetPositionOnTrack(self.Position,
                                                        self:GetAngles())[1]
     self:SetNW2Int("Mode", self.Mode)
     self:SetNW2String("Theme", self.CurrentTheme)
