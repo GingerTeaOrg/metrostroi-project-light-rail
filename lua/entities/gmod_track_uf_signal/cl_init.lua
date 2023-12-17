@@ -154,40 +154,50 @@ end
 
 function ENT:SignalAspect(aspect)
     if not aspect then return end
+    self:GetPlayerDistance()
     pos_o = self:LocalToWorld(Vector(7.5, 10.4, 146.4))
     pos_g = self:LocalToWorld(Vector(7.5, 10.4, 166.5))
     pos_r = self:LocalToWorld(Vector(7.5, 10.4, 157.8))
     pos_rr = self:LocalToWorld(Vector(-7.5, -9.5, 135.8))
+
+    local ScalingEnabled = GetConVar("mplr_enable_signal_sprite_scaling"):GetInt() > 0
+    
+    self.SpriteSize = ScalingEnabled and math.Clamp(10 + self.DistanceFactor,10,30) or 10
     
     if aspect == "H0" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
-        --print("H0")
         --self:ClientSprites(pos_o, 10, Color(204, 116, 0,self.AlphaOrange), true)
-        self:ClientSprites(pos_o, 10, Color(204, 116, 0), false)
-        --self:ClientSprites(pos_g, 10, Color(27, 133, 0,self.AlphaGreen or 255), true)
-        self:ClientSprites(pos_g, 10, Color(27, 133, 0), false)
-        --self:ClientSprites(pos_r, 10, Color(200, 0, 0,self.AlphaRed or 255), true)
-        self:ClientSprites(pos_r, 10, Color(200, 0, 0), true)
-        --self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)
-        self:ClientSprites(pos_rr, 10, Color(200, 0, 0), false)
+        self:ClientSprites(pos_o, self.SpriteSize, Color(204, 116, 0), false)
+        --self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0,self.AlphaGreen or 255), true)
+        self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0), false)
+        --self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0,self.AlphaRed or 255), true)
+        self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0), true)
+        --self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0), true)
+        self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0), false)
     elseif aspect == "H1" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
-        --self:ClientSprites(pos_o, 10, Color(204, 116, 0,self.AlphaOrange), true)
-        self:ClientSprites(pos_o, 10, Color(204, 116, 0), false)
-        --self:ClientSprites(pos_g, 10, Color(27, 133, 0,self.AlphaGreen), true)
-        self:ClientSprites(pos_g, 10, Color(27, 133, 0), true)
-        --self:ClientSprites(pos_r, 10, Color(200, 0, 0,self.AlphaRed), true)
-        self:ClientSprites(pos_r, 10, Color(200, 0, 0), false)
-        --self:ClientSprites(pos_rr, 10, Color(200, 0, 0,alpha_rr), true)
-        self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)
+        --self:ClientSprites(pos_o, self.SpriteSize, Color(204, 116, 0,self.AlphaOrange), true)
+        self:ClientSprites(pos_o, self.SpriteSize, Color(204, 116, 0), false)
+        --self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0,self.AlphaGreen), true)
+        self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0), true)
+        --self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0,self.AlphaRed), true)
+        self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0), false)
+        --self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0,alpha_rr), true)
+        self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0), true)
     elseif aspect == "H2" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
-        --self:ClientSprites(pos_o, 10, Color(204, 116, 0,self.AlphaOrange), true)
-        self:ClientSprites(pos_o, 10, Color(204, 116, 0), true)
-        --self:ClientSprites(pos_g, 10, Color(27, 133, 0,self.AlphaGreen), true)
-        self:ClientSprites(pos_g, 10, Color(27, 133, 0), true)
-        --self:ClientSprites(pos_r, 10, Color(200, 0, 0,self.AlphaRed), true)
-        self:ClientSprites(pos_r, 10, Color(200, 0, 0), false)
-        --self:ClientSprites(pos_rr, 10, Color(200, 0, 0,alpha_rr), true)
-        self:ClientSprites(pos_rr, 10, Color(200, 0, 0), true)      
+        --self:ClientSprites(pos_o, self.SpriteSize, Color(204, 116, 0,self.AlphaOrange), true)
+        self:ClientSprites(pos_o, self.SpriteSize, Color(204, 116, 0), true)
+        --self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0,self.AlphaGreen), true)
+        self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0), true)
+        --self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0,self.AlphaRed), true)
+        self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0), false)
+        --self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0,alpha_rr), true)
+        self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0), true)      
     end
+end
+
+function ENT:GetPlayerDistance() --get distance to the player so that we can scale up the sprites artificially
+    local ply = LocalPlayer()
+    local plyDist = ply:GetPos():Distance2DSqr(self:GetPos()) --Let's just do a simplified 2D vector. It's not *that* crucial to have the Z axis, too.
+    self.DistanceFactor = (plyDist / 5) * 0.0005
 end
 
 local debug = GetConVar("metrostroi_drawsignaldebug")
