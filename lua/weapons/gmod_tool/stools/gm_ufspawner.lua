@@ -60,7 +60,7 @@ end
 
 function UpdateGhostPos(pl)
     local trace = util.TraceLine(util.GetPlayerTrace(pl))
-    local tbl =  Metrostroi.RerailGetTrackData(trace.HitPos,pl:GetAimVector())
+    local tbl =  UF.RerailGetTrackData(trace.HitPos,pl:GetAimVector())
 
     if not tbl then tbl = Trace(pl, trace) end
     local class = IsValid(trace.Entity) and trace.Entity:GetClass()
@@ -79,7 +79,7 @@ end
 
 function UpdateWagPos(pl)
     local trace = util.TraceLine(util.GetPlayerTrace(pl))
-    local tbl =  Metrostroi.RerailGetTrackData(trace.HitPos,pl:GetAimVector())
+    local tbl =  UF.RerailGetTrackData(trace.HitPos,pl:GetAimVector())
 
     if not tbl then tbl = Trace(pl, trace) end
     local pos,ang = Vector(0,0,0),Angle(0,0,0)
@@ -299,7 +299,7 @@ function TOOL:SpawnWagon(trace)
                 bogeyE2:SetPos(ent:LocalToWorld(bogeyE2.SpawnPos))
             end
 
-           -- Metrostroi.RerailTrain(ent) --Rerail train
+           UF.RerailTrain(ent) --Rerail train
             --LastEnt:LocalToWorld(bogeyL1:WorldToLocal(Vector))))
 
             LastRot = rot
