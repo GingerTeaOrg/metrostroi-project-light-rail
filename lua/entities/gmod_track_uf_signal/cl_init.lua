@@ -160,14 +160,14 @@ function ENT:SignalAspect(aspect)
     pos_r = self:LocalToWorld(Vector(7.5, 10.4, 157.8))
     pos_rr = self:LocalToWorld(Vector(-7.5, -9.5, 135.8))
 
-    local ScalingEnabled = GetConVar("mplr_enable_signal_sprite_scaling"):GetInt() > 0
+    local ScalingEnabled = GetConVar("mplr_enable_signal_sprite_scaling"):GetBool()
     
-    self.SpriteSize = ScalingEnabled and math.Clamp(10 + self.DistanceFactor,10,30) or 10
+    self.SpriteSize = ScalingEnabled and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" and math.Clamp(10 + self.DistanceFactor,10,30) or 10
     
     if aspect == "H0" and self.SignalType == "models/lilly/uf/signals/Underground_Small_Pole.mdl" then
-        --self:ClientSprites(pos_o, 10, Color(204, 116, 0,self.AlphaOrange), true)
+
         self:ClientSprites(pos_o, self.SpriteSize, Color(204, 116, 0), false)
-        --self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0,self.AlphaGreen or 255), true)
+
         self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0), false)
         --self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0,self.AlphaRed or 255), true)
         self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0), true)
