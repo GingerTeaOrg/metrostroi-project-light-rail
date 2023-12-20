@@ -27,6 +27,141 @@ function ENT:CreatePanto(pos, ang, type)
     return panto
 
 end
+
+function ENT:CreateCustomCoupler(pos, ang, forward, type, a_b)
+    -- Create bogey entity
+    local coupler = ents.Create("gmod_train_uf_couple")
+    coupler:SetPos(self:LocalToWorld(pos))
+    coupler:SetAngles(self:GetAngles() + ang)
+    coupler.CoupleType = "u2"
+    coupler:Spawn()
+
+    -- Assign ownership
+    if CPPI and IsValid(self:CPPIGetOwner()) then
+        coupler:CPPISetOwner(self:CPPIGetOwner())
+    end
+
+    -- Some shared general information about the bogey
+    coupler:SetNW2Bool("IsForwardCoupler", forward)
+    coupler:SetNW2Entity("TrainEntity", self)
+    coupler.SpawnPos = pos
+    coupler.SpawnAng = ang
+    local index = 1
+    local x = self:WorldToLocal(
+                  coupler:LocalToWorld(coupler.CouplingPointOffset)).x
+    for i, v in ipairs(self.JointPositions) do
+        if v > pos.x then
+            index = i + 1
+        else
+            break
+        end
+    end
+    table.insert(self.JointPositions, index, x)
+    -- Constraint bogey to the train
+    if self.NoPhysics then
+        bogey:SetParent(coupler)
+    else
+        if a_b == "a" then
+            constraint.AdvBallsocket(self, coupler, 0, -- bone
+            0, -- bone
+            pos, Vector(0, 0, 0), 1, -- forcelimit
+            1, -- torquelimit
+            -2, -- xmin
+            -2, -- ymin
+            -15, -- zmin
+            2, -- xmax
+            2, -- ymax
+            15, -- zmax
+            0.1, -- xfric
+            0.1, -- yfric
+            1, -- zfric
+            0, -- rotonly
+            1 -- nocollide
+            )
+        elseif a_b == "b" then
+            constraint.AdvBallsocket(self.SectionB, coupler, 0, -- bone
+            0, -- bone
+            pos, Vector(0, 0, 0), 1, -- forcelimit
+            1, -- torquelimit
+            -2, -- xmin
+            -2, -- ymin
+            -15, -- zmin
+            2, -- xmax
+            2, -- ymax
+            15, -- zmax
+            0.1, -- xfric
+            0.1, -- yfric
+            1, -- zfric
+            0, -- rotonly
+            1 -- nocollide
+            )
+        end
+    end
+    if a_b == "a" then
+        constraint.Axis(coupler, self, 0, 0, Vector(0, 0, 0), Vector(0, 0, 0),
+                        0, 0, 0, 1, Vector(0, 0, 1), false)
+    elseif a_b == "b" then
+        constraint.Axis(coupler, self.SectionB, 0, 0, Vector(0, 0, 0),
+                        Vector(0, 0, 0), 0, 0, 0, 1, Vector(0, 0, 1), false)
+    end
+
+    -- Add to cleanup list
+    table.insert(self.TrainEntities, coupler)
+    return coupler
+end
+function ENT:CreateBogeyUF(pos, ang, forward, type, a_b)
+    -- Create bogey entity
+    local bogey = ents.Create("gmod_train_uf_bogey")
+    bogey:SetPos(self:LocalToWorld(pos))
+    bogey:SetAngles(self:GetAngles() + ang)
+    bogey.BogeyType = type
+    bogey.NoPhysics = self.NoPhysics
+    bogey:Spawn()
+
+    -- Assign ownership
+    if CPPI and IsValid(self:CPPIGetOwner()) then
+        bogey:CPPISetOwner(self:CPPIGetOwner())
+    end
+
+    -- Some shared general information about the bogey
+    self.SquealSound = self.SquealSound or math.floor(4 * math.random())
+    self.SquealSensitivity = self.SquealSensitivity or math.random()
+    bogey.SquealSensitivity = self.SquealSensitivity
+    bogey:SetNW2Int("SquealSound", self.SquealSound)
+    bogey:SetNW2Bool("IsForwardBogey", forward)
+    bogey:SetNW2Entity("TrainEntity", self)
+    bogey.SpawnPos = pos
+    bogey.SpawnAng = ang
+    local index = 1
+    for i, v in ipairs(self.JointPositions) do
+        if v > pos.x then
+            index = i + 1
+        else
+            break
+        end
+    end
+    table.insert(self.JointPositions, index, pos.x + 53.6)
+    table.insert(self.JointPositions, index + 1, pos.x - 53.6)
+    -- Constraint bogey to the train
+    if self.NoPhysics then
+        bogey:SetParent(self)
+    else
+        if a_b == "a" then
+            constraint.Axis(bogey, self, 0, 0, Vector(0, 0, 0), Vector(0, 0, 0),
+                            0, 0, 0, 1, Vector(0, 0, 1), false)
+            constraint.NoCollide(bogey, self)
+            constraint.NoCollide(bogey, self.SectionB)
+        elseif a_b == "b" then
+            constraint.Axis(bogey, self.SectionB, 0, 0, Vector(0, 0, 0),
+                            Vector(0, 0, 0), 0, 0, 0, 1, Vector(0, 0, 1), false)
+            constraint.NoCollide(bogey, self)
+            constraint.NoCollide(bogey, self.SectionB)
+        end
+    end
+    -- Add to cleanup list
+    table.insert(self.TrainEntities, bogey)
+    return bogey
+end
 -----------------------------------DUPLICATOR----------------------------------
 
 function ENT:PreEntityCopy()
@@ -996,12 +1131,12 @@ end
 --------------------------------------------------------------------------------
 -- Create a couple for the train
 --------------------------------------------------------------------------------
-function ENT:CreateCouple(pos,ang,forward,typ)
+function ENT:CreateCouple(pos,ang,forward,type)
     -- Create bogey entity
     local coupler = ents.Create("gmod_train_couple")
     coupler:SetPos(self:LocalToWorld(pos))
     coupler:SetAngles(self:GetAngles() + ang)
-    coupler.CoupleType = typ
+    coupler.CoupleType = type
     coupler:Spawn()
 
     -- Assign ownership
@@ -2231,10 +2366,10 @@ local types = {Texture = "train",PassTexture = "pass",CabTexture = "cab"}
 function ENT:FindFineSkin()
     if not self.SkinsType then return end
 
-    for id,typ in pairs(types) do
+    for id,type in pairs(types) do
         local fineSkins = {all={},def={}}
-        for k,v in pairs(Metrostroi.Skins[typ]) do
-            if v.textures and v.typ == self.SkinsType then
+        for k,v in pairs(Metrostroi.Skins[type]) do
+            if v.textures and v.type == self.SkinsType then
                 table.insert(fineSkins.all,k)
                 if v.def then table.insert(fineSkins.def,k) end
             end
