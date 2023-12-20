@@ -324,9 +324,9 @@ function ENT:Initialize()
     self.ReverserInsert = false
     self.BatteryOn = false
 
-    self.FrontBogey:SetNWInt("MotorSoundType", 1)
-    self.MiddleBogey:SetNWInt("MotorSoundType", 1)
-    self.RearBogey:SetNWInt("MotorSoundType", 1)
+    self.FrontBogey:SetNWString("MotorSoundType","U2")
+    self.MiddleBogey:SetNWString("MotorSoundType","U2")
+    self.RearBogey:SetNWString("MotorSoundType","U2")
     self.FrontBogey:SetNWBool("Async", false)
     self.MiddleBogey:SetNWBool("Async", false)
     self.RearBogey:SetNWBool("Async", false)
