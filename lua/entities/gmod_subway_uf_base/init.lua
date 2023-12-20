@@ -1,13 +1,13 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-function ENT:CreatePanto(pos, ang, type)
+function ENT:CreatePanto(pos, ang, typ)
     local panto = ents.Create("gmod_train_uf_panto")
 
     panto:SetPos(self:LocalToWorld(pos))
     panto:SetAngles(self:GetAngles() + ang)
 
-    panto.PantoType = type
+    panto.PantoType = typ
     panto.NoPhysics = self.NoPhysics or true
     panto:Spawn()
 
@@ -28,12 +28,12 @@ function ENT:CreatePanto(pos, ang, type)
 
 end
 
-function ENT:CreateCustomCoupler(pos, ang, forward, type, a_b)
+function ENT:CreateCustomCoupler(pos, ang, forward, typ, a_b)
     -- Create bogey entity
     local coupler = ents.Create("gmod_train_uf_couple")
     coupler:SetPos(self:LocalToWorld(pos))
     coupler:SetAngles(self:GetAngles() + ang)
-    coupler.CoupleType = "u2"
+    coupler.CoupleType = typ
     coupler:Spawn()
 
     -- Assign ownership
@@ -109,12 +109,12 @@ function ENT:CreateCustomCoupler(pos, ang, forward, type, a_b)
     table.insert(self.TrainEntities, coupler)
     return coupler
 end
-function ENT:CreateBogeyUF(pos, ang, forward, type, a_b)
+function ENT:CreateBogeyUF(pos, ang, forward, typ, a_b)
     -- Create bogey entity
     local bogey = ents.Create("gmod_train_uf_bogey")
     bogey:SetPos(self:LocalToWorld(pos))
     bogey:SetAngles(self:GetAngles() + ang)
-    bogey.BogeyType = type
+    bogey.BogeyType = typ
     bogey.NoPhysics = self.NoPhysics
     bogey:Spawn()
 
@@ -1131,12 +1131,12 @@ end
 --------------------------------------------------------------------------------
 -- Create a couple for the train
 --------------------------------------------------------------------------------
-function ENT:CreateCouple(pos,ang,forward,type)
+function ENT:CreateCouple(pos,ang,forward,typ)
     -- Create bogey entity
     local coupler = ents.Create("gmod_train_couple")
     coupler:SetPos(self:LocalToWorld(pos))
     coupler:SetAngles(self:GetAngles() + ang)
-    coupler.CoupleType = type
+    coupler.CoupleType = typ
     coupler:Spawn()
 
     -- Assign ownership
@@ -1215,7 +1215,7 @@ function ENT:CreateSeatEntity(seat_info)
     if CPPI and IsValid(self:CPPIGetOwner()) then seat:CPPISetOwner(self:CPPIGetOwner()) end
 
     -- Hide the entity visually
-    if seat_info.type == "passenger" then
+    if seat_info.typ == "passenger" then
         seat:SetColor(Color(0,0,0,0))
         seat:SetRenderMode(RENDERMODE_TRANSALPHA)
     end
@@ -1224,7 +1224,7 @@ function ENT:CreateSeatEntity(seat_info)
     local seats = self:GetNW2Int("seats",0)+1
     self:SetNW2Entity("seat_"..seats, seat)
     self:SetNW2Int("seats", seats)
-    seat:SetNW2String("SeatType", seat_info.type)
+    seat:SetNW2String("SeatType", seat_info.typ)
     seat:SetNW2Entity("TrainEntity", self)
     seat_info.entity = seat
 
@@ -1241,10 +1241,10 @@ end
 --------------------------------------------------------------------------------
 -- Create a seat position
 --------------------------------------------------------------------------------
-function ENT:CreateSeat(type,offset,angle,model)
+function ENT:CreateSeat(typ,offset,angle,model)
     -- Add a new seat
     local seat_info = {
-        type = type,
+        typ = typ,
         offset = offset,
         model = model,
         angle = angle or Angle(0,0,0),
@@ -1252,7 +1252,7 @@ function ENT:CreateSeat(type,offset,angle,model)
     table.insert(self.Seats,seat_info)
 
     -- If needed, create an entity for this seat
-    if (type == "driver") or (type == "instructor") or (type == "passenger") then
+    if (typ == "driver") or (typ == "instructor") or (typ == "passenger") then
         return self:CreateSeatEntity(seat_info)
     end
 end
@@ -1263,7 +1263,7 @@ function ENT:IsWrenchPresent()
     if self.DriversWrenchMissing then return false end
     for k,v in pairs(self.Seats) do
         if IsValid(v.entity) and v.entity.GetPassenger and
-            ((v.type == "driver") or (v.type == "instructor")) then
+            ((v.typ == "driver") or (v.typ == "instructor")) then
             local player = v.entity:GetPassenger(0)
             if player and player:IsValid() then return true end
         end
@@ -1390,7 +1390,7 @@ function ENT:SetLightPower(index,power,brightness)
                 lightData[4].b*brightness
             )
         )
-        light:SetKeyValue("rendermode", lightData.type or 3) -- 9: WGlow, 3: Glow
+        light:SetKeyValue("rendermode", lightData.typ or 3) -- 9: WGlow, 3: Glow
         light:SetKeyValue("renderfx", 14)
         light:SetKeyValue("model", lightData.texture or "sprites/glow1.vmt")
 --      light:SetKeyValue("model", "sprites/light_glow02.vmt")
@@ -1419,7 +1419,7 @@ function ENT:SetLightPower(index,power,brightness)
                 lightData[4].b*brightness
             )
         )
-        light:SetKeyValue("rendermode", lightData.type or 9) -- 9: WGlow, 3: Glow
+        light:SetKeyValue("rendermode", lightData.typ or 9) -- 9: WGlow, 3: Glow
         light:SetKeyValue("renderfx", 14)
 --      light:SetKeyValue("model", "sprites/glow1.vmt")
         light:SetKeyValue("model", lightData.texture or "sprites/light_glow02.vmt")
@@ -1473,7 +1473,7 @@ function ENT:HandleJoystickInput(ply)
                 local inputname = Metrostroi.JoystickSystemMap[k]
                 self.JoystickBuffer[k] = jvalue
                 if inputname then
-                    if type(jvalue) == "boolean" then
+                    if typ(jvalue) == "boolean" then
                         if jvalue then
                             jvalue = 1.0
                         else
@@ -1626,7 +1626,7 @@ function ENT:CreateJointSound(sndnum)
     local jID = self.SpeedSign>0 and 1 or #self.JointPositions
     table.insert(self.Joints,
         {
-            type = sndnum,
+            typ = sndnum,
             state = jID,
             dist = self.JointPositions[jID]
         }
@@ -1697,9 +1697,9 @@ function ENT:Think()
                             ch = iD
                         else
                             if (iD==1 and dist>first) and IsValid(self.FrontTrain) then
-                                self.FrontTrain:CreateJointSound(j.type)
+                                self.FrontTrain:CreateJointSound(j.typ)
                             elseif (iD~=1 and dist<last) and IsValid(self.RearTrain) then
-                                self.RearTrain:CreateJointSound(j.type)
+                                self.RearTrain:CreateJointSound(j.typ)
                             end
                             table.remove(self.Joints, i)
                         end
@@ -1707,7 +1707,7 @@ function ENT:Think()
                     end
                 end
                 if ch then
-                    self:PlayOnce(ch%2>0 and "a" or "b","styk",j.type,math.floor(j.state/2))
+                    self:PlayOnce(ch%2>0 and "a" or "b","styk",j.typ,math.floor(j.state/2))
                 end
             end
         end
@@ -1801,7 +1801,7 @@ function ENT:Think()
             if system.OutputsList and (not system.DontAccelerateSimulation) then
                 for _,name in pairs(system.OutputsList) do
                     local value = (system[name] or 0)
-                    --if type(value) == "boolean" then value = value and 1 or 0 end
+                    --if typ(value) == "boolean" then value = value and 1 or 0 end
                     if not self.DataCache[sys_name] then self.DataCache[sys_name] = {} end
                     if self.DataCache[sys_name][name] ~= value then
                         self:TriggerTurbostroiInput(sys_name,name,value)
@@ -2368,8 +2368,8 @@ function ENT:FindFineSkin()
 
     for id,type in pairs(types) do
         local fineSkins = {all={},def={}}
-        for k,v in pairs(Metrostroi.Skins[type]) do
-            if v.textures and v.type == self.SkinsType then
+        for k,v in pairs(Metrostroi.Skins[typ]) do
+            if v.textures and v.typ == self.SkinsType then
                 table.insert(fineSkins.all,k)
                 if v.def then table.insert(fineSkins.def,k) end
             end

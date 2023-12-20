@@ -33,6 +33,10 @@ if not UF and Metrostroi then
 
 end
 
+UF.BogeyTypes = UF.BogeyTypes or {} --bogey models and params
+UF.BogeySounds = UF.BogeySounds or {} --bogey sounds
+UF.CouplerTypes = UF.CouplerTypes or {} --coupler models and params
+
 util.PrecacheModel("models/lilly/uf/stations/dfi_hands_hours.mdl")
 util.PrecacheModel("models/lilly/uf/stations/dfi_hands_minutes.mdl")
 
