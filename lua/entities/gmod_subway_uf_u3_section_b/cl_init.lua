@@ -22,9 +22,15 @@ ENT.ClientProps["Door_rl1"] = {model = "models/lilly/uf/u3/door_1.mdl", pos = Ve
 
 ENT.ClientProps["Door_rl2"] = {model = "models/lilly/uf/u3/door_2.mdl", pos = Vector(-458.5, 0, 0), ang = Angle(0, 0, 0), scale = 1, nohide = true}
 
+
+ENT.ClientProps["mirror_r"] = {model = "models/lilly/uf/u3/mirror_r.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
+ENT.ClientProps["mirror_l"] = {model = "models/lilly/uf/u3/mirror_l.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
+
+
+
 ENT.ButtonMapMPLR["Rollsign"] = {
-	pos = Vector(-470, -28, 121),
-	ang = Angle(0, 90, 90),
+	pos = Vector(-470, 28, 121),
+	ang = Angle(0, -90, 90),
 	width = 890,
 	height = 160,
 	scale = 0.0625,

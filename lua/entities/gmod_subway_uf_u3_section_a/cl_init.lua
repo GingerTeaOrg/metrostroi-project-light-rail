@@ -22,6 +22,8 @@ ENT.ClientProps["Door_rl1"] = {model = "models/lilly/uf/u3/door_1.mdl", pos = Ve
 
 ENT.ClientProps["Door_rl2"] = {model = "models/lilly/uf/u3/door_2.mdl", pos = Vector(458.5, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
 
+ENT.ClientProps["mirror_r"] = {model = "models/lilly/uf/u3/mirror_r.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 0, 0), scale = 1, nohide = true}
+ENT.ClientProps["mirror_l"] = {model = "models/lilly/uf/u3/mirror_l.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 0, 0), scale = 1, nohide = true}
 
 ENT.ClientProps["Throttle"] = {model = "models/lilly/uf/common/cab/throttle.mdl", pos = Vector(45.1, 7.45, 12), ang = Angle(0, 0, 0), nohide = true}
 
@@ -61,9 +63,106 @@ ENT.ButtonMapMPLR["Dashboard1"] = {
 	height = 50,
 	scale = 0.069,
 	
-	buttons = {}
+	buttons = {
+		{
+            ID = "RetainerOnSet",
+            x = 14.5,
+            y = 18,
+            radius = 10,
+            tooltip = "Enable Retainer Brake Manually",
+            model = {
+                model = "models/lilly/uf/u3/cab/retainer_on.mdl",
+                z = 1.8,
+                ang = 90,
+                anim = true,
+                var = "RetainerOn",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+		{
+            ID = "RetainerOffSet",
+            x = 14.5,
+            y = 36.5,
+            radius = 10,
+            tooltip = "Disable Retainer Brake Manually",
+            model = {
+                model = "models/lilly/uf/u3/cab/retainer_on.mdl",
+                z = 1.8,
+                ang = 90,
+                anim = true,
+                var = "RetainerOff",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+		{
+            ID = "CircuitOnSet",
+            x = 48,
+            y = 36.5,
+            radius = 10,
+            tooltip = "Close Circuit Breaker",
+            model = {
+                model = "models/lilly/uf/u3/cab/circuit_on.mdl",
+                z = 1.8,
+                ang = 90,
+                anim = true,
+                var = "CircuitOn",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+		{
+            ID = "CircuitOffSet",
+            x = 48,
+            y = 18,
+            radius = 10,
+            tooltip = "Open Circuit Breaker",
+            model = {
+                model = "models/lilly/uf/u3/cab/circuit_off.mdl",
+                z = 1.8,
+                ang = 90,
+                anim = true,
+                var = "CircuitOff",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+		
 }
-
+}
 ENT.ButtonMapMPLR["Dashboard2"] = {
 	pos = Vector(466, 33, 71.25),
 	ang = Angle(0, -90, 54.4),
@@ -71,7 +170,105 @@ ENT.ButtonMapMPLR["Dashboard2"] = {
 	height = 50,
 	scale = 0.069,
 	
-	buttons = {}
+	buttons = {
+		{
+            ID = "BatteryOnSet",
+            x = 14.5,
+            y = 18,
+            radius = 10,
+            tooltip = "Enable Battery",
+            model = {
+                model = "models/lilly/uf/u3/cab/battery_on.mdl",
+                z = 1.8,
+                ang = 90,
+                anim = true,
+                var = "BatteryOn",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+		{
+            ID = "PantoLowerSet",
+            x = 48,
+            y = 36.5,
+            radius = 10,
+            tooltip = "Lower Pantograph",
+            model = {
+                model = "models/lilly/uf/u3/cab/panto_off.mdl",
+                z = 1.8,
+                ang = 90,
+                anim = true,
+                var = "PantoOff",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+		{
+            ID = "PantoRaiseSet",
+            x = 48,
+            y = 18,
+            radius = 10,
+            tooltip = "Raise Pantograph",
+            model = {
+                model = "models/lilly/uf/u3/cab/panto_on.mdl",
+                z = 1.8,
+                ang = 90,
+                anim = true,
+                var = "PantoOn",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+		{
+            ID = "BatteryOffSet",
+            x = 14.5,
+            y = 36.5,
+            radius = 10,
+            tooltip = "Enable Battery",
+            model = {
+                model = "models/lilly/uf/u3/cab/battery_off.mdl",
+                z = 1.8,
+                ang = 90,
+                anim = true,
+                var = "BatteryOff",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+	
+	}
 }
 
 ENT.Lights = {
@@ -376,6 +573,11 @@ function ENT:SoundRoutine()
     end
     self:SetSoundState("Deadman", self:GetNW2Bool(
                            "DeadmanAlarmSound", false) and 1 or 0, 1)
+
+
+	local Chopper = self:GetNW2Bool("Chopper",false)
+	
+	self:SetSoundState("Chopper", Chopper and 1 or 0, 1)
 end
 
 function ENT:Animations()
