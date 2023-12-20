@@ -60,6 +60,9 @@ function ENT:InitializeSounds()
 	
 	self.SoundNames["Startup"] = {"lilly/uf/u2/startup.mp3"}	
 	self.SoundPositions["Startup"] = {800,1e9,Vector(550,0,55),1}
+
+	self.SoundNames["Chopper"] = {"lilly/uf/u3/chopper1.mp3"}	
+	self.SoundPositions["Chopper"] = {800,1e9,Vector(250,0,55),1}
 	
 	--self.SoundNames["DoorsCloseAlarm"] = {loop=0.014, "lilly/uf/u2/doorsareclosed_start.mp3", "lilly/uf/u2/Doorsareclosed_loop.mp3", "lilly/uf/u2/doorsareclosed_end.mp3"}	
 	--self.SoundPositions["DoorsCloseAlarm"] = {800,1e9,Vector(550,0,55),1}
