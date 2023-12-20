@@ -5,7 +5,8 @@ ENT.SoundNames = {}
 ENT.SoundNames["u2_1"]  = "lilly/uf/bogeys/u2/motor_primary.wav"
 ENT.SoundNames["u2_2"]  = "lilly/uf/bogeys/u2/motor_secondary_test.wav"
 --ENT.SoundNames["u2_3"]  = "lilly/uf/u2/overhaul/u2_engine_secondary.mp3"
-ENT.SoundNames["u3_1"] = "lilly/uf/bogeys/u3/motor_primary.wav"
+ENT.SoundNames["u3_1"] = "lilly/uf/bogeys/u2/motor_primary.wav"
+ENT.SoundNames["u3_2"] = "lilly/uf/u3/chopper1.mp3"
 
 
 
@@ -33,8 +34,8 @@ ENT.EngineSNDConfig = {
         {"u2_2" ,40,30,80,1},
     },
     {
-        {"u3_1" ,10,0,42,1}, --initial speed, 
-        {"u3_2" ,38,80,100,1},
+        {"u3_1" ,80,10,80,1}, --initial speed, 
+
     },
 }
 
