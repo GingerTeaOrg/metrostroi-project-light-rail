@@ -2366,7 +2366,7 @@ local types = {Texture = "train",PassTexture = "pass",CabTexture = "cab"}
 function ENT:FindFineSkin()
     if not self.SkinsType then return end
 
-    for id,type in pairs(types) do
+    for id,typ in pairs(types) do
         local fineSkins = {all={},def={}}
         for k,v in pairs(Metrostroi.Skins[typ]) do
             if v.textures and v.typ == self.SkinsType then
