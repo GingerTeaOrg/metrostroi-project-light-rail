@@ -1,6 +1,32 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
+function ENT:CreatePanto(pos, ang, type)
+    local panto = ents.Create("gmod_train_uf_panto")
+
+    panto:SetPos(self:LocalToWorld(pos))
+    panto:SetAngles(self:GetAngles() + ang)
+
+    panto.PantoType = type
+    panto.NoPhysics = self.NoPhysics or true
+    panto:Spawn()
+
+    panto.SpawnPos = pos
+    panto.SpawnAng = ang
+
+    panto:SetNW2Entity("TrainEntity", self)
+    panto.Train = self
+    if self.NoPhysics then
+        panto:SetParent(self)
+    else
+        constraint.Weld(panto, self, 0, 0, 0, true)
+    end
+
+    table.insert(self.TrainEntities, panto)
+    -- panto:Activate()
+    return panto
+
+end
 -----------------------------------DUPLICATOR----------------------------------
 
 function ENT:PreEntityCopy()
