@@ -8,7 +8,9 @@ if not next(UF.BogeySounds) and not next(UF.BogeyTypes) and not(UF.CouplerTypes)
     --add all default calues for all tables
     local DefSoundTab = {
         EngineSNDConfig = {U2 = {{"u2_1" ,80,0,80,1}, {"u2_2" ,40,30,80,1}},U3 = {{"u3_1" ,80,10,80,1}}},
-        SoundNames = {["u2_1"]  = "lilly/uf/bogeys/u2/motor_primary.wav", ["u2_2"]  = "lilly/uf/bogeys/u2/motor_secondary_test.wav",
+        SoundNames = {
+        ["u2_1"]  = "lilly/uf/bogeys/u2/motor_primary.wav", 
+        ["u2_2"]  = "lilly/uf/bogeys/u2/motor_secondary_test.wav",
         ["u3_1"] = "lilly/uf/bogeys/u2/motor_primary.wav",
         ["flangea"]      = "lilly/uf/bogeys/u2/curvesqueal_a.mp3"
         ["flangeb"]      = "lilly/uf/bogeys/u2/curvesqueal_b.mp3"
