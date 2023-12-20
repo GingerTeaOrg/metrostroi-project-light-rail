@@ -249,6 +249,8 @@ function TRAIN_SYSTEM:Think(Train)
     
     self.Train:WriteTrainWire(7,(self.BatteryOn and self.Train:ReadTrainWire(6) > 0) and 1 or 0)
 
+    self.Train:SetNW2Bool("Chopper",self.BatteryOn and self.Traction ~= 0 and self.ReverserState ~= 0)
+
     local values = {[1] = 0.4, [0] = 0.25, [3] = 0.8, [2] = 0.7, [-1] = 0}
     self.Train.SectionB:SetNW2Float("ReverserAnimate", values[self.ReverserLeverStateB] or 0)
     self.Train:SetNW2Float("ReverserAnimate", values[self.ReverserLeverStateA] or 0)
