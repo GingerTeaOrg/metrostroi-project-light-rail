@@ -61,13 +61,9 @@ ENT.Types = {
 }
 
 function ENT:SetParameters()
-    local typ = self.Types[self.BogeyType or "def"]
+    local typ = UF.BogeyTypes[self.BogeyType or "def"]
     self:SetModel(typ and typ[1] or "models/lilly/uf/bogey/duewag_motor.mdl")
-    self.PantLPos = typ and typ[5]
-    self.PantRPos = typ and typ[6]
     self.BogeyOffset = typ and typ[7]
-    self.PantLCPos = typ and typ[8]
-    self.PantRCPos = typ and typ[9]
 end
 function ENT:Initialize()
     self:SetParameters()
@@ -76,7 +72,6 @@ function ENT:Initialize()
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
     end
-    self:SetUseType(SIMPLE_USE)
 
     -- Set proper parameters for the bogey
     if IsValid(self:GetPhysicsObject()) then
@@ -85,17 +80,6 @@ function ENT:Initialize()
 
     -- Store coupling point offset
     self.CouplingPointOffset = Vector(-480,0,0)
-
-    -- Create wire controls
-    if Wire_CreateInputs then
-        self.Inputs = Wire_CreateInputs(self,{
-            "BrakeCylinderPressure",
-            "MotorCommand", "MotorForce", "MotorReversed",
-            "DisableSound" })
-        self.Outputs = Wire_CreateOutputs(self,{
-            "Speed", "BrakeCylinderPressure","Voltage"
-        })
-    end
 
     -- Setup default motor state
     self.Reversed = false

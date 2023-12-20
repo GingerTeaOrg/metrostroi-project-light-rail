@@ -50,7 +50,7 @@ function ENT:ReinitializeSounds()
 
     -- Create sounds
     self.Sounds = {}
-    for k,v in pairs(self.SoundNames) do
+    for k,v in pairs(UF.BogeySounds.SoundNames) do
         --[[local e = self
         if (k == "brake3a") and IsValid(self:GetNW2Entity("TrainWheels")) then
             e = self:GetNW2Entity("TrainWheels")
@@ -62,8 +62,8 @@ function ENT:ReinitializeSounds()
 end
 function ENT:SetSoundState(sound,volume,pitch,name,level )
     if not self.Sounds[sound] then
-        if self.SoundNames[name or sound] and (not wheels or IsValid(self:GetNW2Entity("TrainWheels"))) then
-            self.Sounds[sound] = CreateSound(wheels and self:GetNW2Entity("TrainWheels") or self, Sound(self.SoundNames[name or sound]))
+        if UF.BogeySounds.SoundNames[name or sound] and (not wheels or IsValid(self:GetNW2Entity("TrainWheels"))) then
+            self.Sounds[sound] = CreateSound(wheels and self:GetNW2Entity("TrainWheels") or self, Sound(UF.BogeySounds.SoundNames[name or sound]))
         else
             return
         end
@@ -135,7 +135,7 @@ function ENT:Think()
 
     -- Engine sound
     local motorPower = self:GetMotorPower()*(1+math.max(0,(speed-55)/35)*0.4)
-    if self.MotorSoundType ~= self:GetNWInt("MotorSoundType",1) or self.DisableEngines ~= self:GetNWBool("DisableEngines") then
+    if self.MotorSoundType ~= self:GetNWString("MotorSoundType","u2") or self.DisableEngines ~= self:GetNWBool("DisableEngines") then
         if self.MotorSoundType then
             for _,snd in ipairs(self.EngineSNDConfig[self.MotorSoundType+1]) do
                 
@@ -143,12 +143,12 @@ function ENT:Think()
             end
         end
 
-        self.MotorSoundType = self:GetNWInt("MotorSoundType",1)
+        self.MotorSoundType = self:GetNWString("MotorSoundType","U2")
         self.DisableEngines = self:GetNWBool("DisableEngines")
         
-        self.MotorSoundArr = self.EngineSNDConfig[self.MotorSoundType]
+        self.MotorSoundArr = UF.BogeySounds.EngineSNDConfig[self.MotorSoundType]
     end
-    self.MotorSoundArr = self.EngineSNDConfig[self.MotorSoundType]
+    self.MotorSoundArr = UF.BogeySounds.EngineSNDConfig[self.MotorSoundType]
 
     if not self.DisableEngines and self.MotorSoundArr then
         self.MotorPowerSound = math.Clamp(self.MotorPowerSound + (motorPower - self.MotorPowerSound)*self.DeltaTime*3,-1.5,1.5)

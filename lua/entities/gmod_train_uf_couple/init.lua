@@ -21,7 +21,7 @@ ENT.Types = {
 }
 
 function ENT:SetParameters()
-    local typ = self.Types[self.CoupleType or "def"]
+    local typ = UF.CouplerTypes[self.CoupleType or "def"]
     self:SetModel(typ and typ[1] or "models/lilly/uf/coupler_new.mdl")
     self.CouplingPointOffset = typ and typ[2] or Vector(37.65,0,0)
 end
