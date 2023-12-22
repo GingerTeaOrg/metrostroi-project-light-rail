@@ -1,6 +1,7 @@
 CreateClientConVar("mplr_signal_distance","8192",true,false,"Render Distance for Light Rail Signals")
 CreateClientConVar("mplr_camera_jerk_intensity","7.5",true,true,"How much the camera jerks back and forth in reaction to the train's acceleration.",1,8)
 CreateClientConVar("mplr_enable_signal_sprite_scaling","1",true,true,"Enable or disable distance-based scaling of signal sprites, for visibility. On by default.",0,1)
+CreateClientConVar("mplr_cl_verbose","1",true,true,"Enable verbose console logging clientside.",0,1)
 concommand.Add("mplr_manual", function()--ply, _, args)
     gui.OpenURL("https://lillywho.github.io")
 end)
