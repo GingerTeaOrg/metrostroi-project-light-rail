@@ -303,27 +303,41 @@ function TRAIN_SYSTEM:Camshaft(throttle)
     end
     
     -- Function to determine the number of resistors needed for a given throttle setting and speed
-    local function controlResistors(throttle)
-        local requestedCurrent = totalMaxCurrent / throttle  -- Calculate requested current based on throttle setting
-        
+    local function controlResistors()
+        local requestedCurrent = totalMaxCurrent / math.abs(self.ThrottleState)  -- Calculate requested current based on throttle setting
+
         -- Calculate number of required resistors
-        requiredResistors = math.ceil(requestedCurrent / maxResistorCurrent) -- Calculate adjusted required resistors
-        
-        local speedFactor  
+        local requiredResistors = math.ceil(requestedCurrent / maxResistorCurrent) -- Calculate adjusted required resistors
+
+        if (80 / self.Speed) > 1 then
+            speedFactor = math.ceil(80 / self.Speed)
+        else
+            speedFactor = 0
+        end
+        -- Ensure the number of resistors is within the available range
+        requiredResistors = math.max(0, math.min(numResistors, requiredResistors))
+        requiredResistors = requiredResistors + speedFactor
+        return requiredResistors
+    end
+
+    local function brakeResistors()
+        local requestedCurrent = totalMaxCurrent / math.abs(self.ThrottleState)  -- Calculate requested current based on throttle setting
+
+        -- Calculate number of required resistors
+        local requiredResistors = math.ceil(requestedCurrent / maxResistorCurrent) -- Calculate adjusted required resistors
+
         if (self.Speed / 8) > 1 then
             speedFactor = math.ceil(self.Speed / 8)
         else
             speedFactor = 0
         end
-        
         -- Ensure the number of resistors is within the available range
         requiredResistors = math.max(0, math.min(numResistors, requiredResistors))
-        requiredResistors = requiredResistors + speedFactor
-        --print(requiredResistors)
+        requiredResistors = requiredResistors
         return requiredResistors
     end
     
-    controlResistors(math.abs(self.ThrottleState))
+    controlResistors()
     
     -- Simulate latency
     if simulateLatency() then
@@ -333,6 +347,9 @@ function TRAIN_SYSTEM:Camshaft(throttle)
         engagedResistors = engagedResistors
     end
     self.EngagedResistors = engagedResistors
+
+
+    
     return engagedResistors * UF.convertToSourceForce(-7500)
 end
 
