@@ -136,23 +136,21 @@ function TRAIN_SYSTEM:Think()
 		end
 		
 		-- Check if alarm duration has passed and apply emergency shut-off
-		if CurTime() - self.AlarmTime > 4.5 then
-			if self.KeyBypass == false then
-				if self.TrainHasReset == false then
-					train:SetNW2Bool("DeadmanTripped", true)
-					if train:ReadTrainWire(6) == 1 then
-						train:WriteTrainWire(8, 1)
+		if CurTime() - self.AlarmTime > 4.5 and self.KeyBypass == false and self.TrainHasReset == false and not self.TrainHasReset then
+			train:SetNW2Bool("DeadmanTripped", true)
+			if train:ReadTrainWire(6) == 1 then
+					train:WriteTrainWire(8, 1)
 						--print("Deadman braking")
-					end
-					self.EmergencyShutOff = true
-					self.AlarmSound = true
-				elseif self.TrainHasReset == true then
-					self.EmergencyShutOff = false
-				end
 			end
+			self.EmergencyShutOff = true
+			self.AlarmSound = true
+		else
+			self.EmergencyShutOff = false
+				
+			
 		end
 		-- Check if deadman is tripped and reset conditions
-	end
+	
 	
 	train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
 
