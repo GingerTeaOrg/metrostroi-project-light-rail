@@ -145,9 +145,9 @@ function ENT:Initialize()
 	--self.Wheels = self.FrontBogey.Wheels
 	
 	self.Lights = {
-		[61] = { "light",Vector(-426.5,50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight 1
-		[62] = { "light",Vector(-426.5,-50,42), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight 2
-		[63] = { "light",Vector(-426.5,0,149), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight 3
+		[61] = { "light",Vector(-426.5,40,28), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight 1
+		[62] = { "light",Vector(-426.5,-40,28), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 1.5, texture = "sprites/light_glow02.vmt" }, --headlight 2
+		[63] = { "light",Vector(-426.5,0,111), Angle(0,0,0), Color(226,197,160),     brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt" }, --headlight 3
 		[64] = { "light",Vector(-425.44,-30.9657,25.6195), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light left
 		[65] = { "light",Vector(-425.44,30.9657,25.6195), Angle(0,0,0), Color(255,0,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --tail light right
 		[66] = { "light",Vector(-425.44,-30.9657,31.5), Angle(0,0,0), Color(255,102,0),     brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt" }, --brake light left
