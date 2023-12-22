@@ -151,7 +151,7 @@ function TRAIN_SYSTEM:Think()
 		end
 		-- Check if deadman is tripped and reset conditions
 	
-	
+	end
 	train:SetNW2Bool("DeadmanAlarmSound", self.AlarmSound)
 
 	if train:GetNW2Bool("DeadmanTripped") == true and train.ReverserLeverState == 0 and self.ThrottleState == 0 and speed < 5 then
