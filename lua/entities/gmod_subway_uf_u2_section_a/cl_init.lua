@@ -2486,7 +2486,7 @@ function ENT:Think()
     self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 80) / 100 * 1.5
     self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
     -- self:Animate("Throttle", 0, -45, 45, 3, false, false)
-    local alarm = self:GetNW2Bool("DoorsClosedAlarm", false)
+    local alarm = self:GetNW2Bool("DoorCloseAlarm", false)
     self:SetSoundState("DoorsCloseAlarm", alarm and 80 or 0, 1)
 
     if self:GetNW2Bool("DeadmanAlarmSound", false) == true or
