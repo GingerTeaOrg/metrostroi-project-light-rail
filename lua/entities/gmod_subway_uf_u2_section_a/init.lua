@@ -60,7 +60,7 @@ function ENT:Initialize()
         [3] = 0,
         [4] = 0
     }
-
+    self.AllDoorsAreClosed = true
     self.DoorCloseMomentsCaptured = false
     self.Speed = 0
     self.ThrottleState = 0
@@ -467,11 +467,9 @@ function ENT:HeadlightControl()
         for k, _ in ipairs(self.Lights) do
             self:SetLightPower(k, false)
         end
-
         for k, _ in ipairs(self.SectionB.Lights) do
             self.SectionB:SetLightPower(k, false)
         end
-
         return
     end
 
@@ -482,12 +480,11 @@ function ENT:HeadlightControl()
     self:WriteTrainWire(13, self.DoorSideUnlocked == "Left" and MUMode and 1 or 0)
     self:WriteTrainWire(14, self.DoorSideUnlocked == "Right" and MUMode and 1 or 0)
     self:WriteTrainWire(15, self.DoorsUnlocked and MUMode and 1 or 0)
-    self.Duewag_U2:CheckDoorsAllClosed(not self.DoorsUnlocked)
+    
     self:DoorHandler(self.DoorsUnlocked or self:ReadTrainWire(15) > 0, self:ReadTrainWire(13) > 0 or self.DoorSideUnlocked == "Left", self:ReadTrainWire(14) > 0 or self.DoorSideUnlocked == "Right", false)
     self:WriteTrainWire(33, (headlights and MUMode or self:ReadTrainWire(33) > 0) and 1 or 0)
     self:WriteTrainWire(31, (headlights and self:ReadTrainWire(3) > 0 and MUMode) and 1 or (self:ReadTrainWire(3) > 0 and MUMode and self:ReadTrainWire(33) > 0) and 1 or 0)
     self:WriteTrainWire(32, (headlights and self:ReadTrainWire(4) > 0 and MUMode) and 1 or (self:ReadTrainWire(4) > 0 and MUMode and self:ReadTrainWire(33) > 0) and 1 or 0)
-    print(coupledB and false)
     --------------------------------------------------------------------------------------------------------------------------------------------
     self:SetLightPower(51, self:ReadTrainWire(31) > 0 and not coupledA or self.Panel.Headlights > 0 and not coupledA or false)
     self:SetLightPower(52, self:ReadTrainWire(31) > 0 and not coupledA or self.Panel.Headlights > 0 and not coupledA or false)
@@ -495,9 +492,9 @@ function ENT:HeadlightControl()
     self:SetLightPower(54, self:ReadTrainWire(32) > 0 and not coupledA or self.SectionB.Panel.Headlights > 0 and not coupledA or false or self.SectionB.Panel.Headlights > 0 and not coupledA or coupledA and false)
     self:SetLightPower(55, self:ReadTrainWire(32) > 0 and not coupledA or self.SectionB.Panel.Headlights > 0 and not coupledA or false or self.SectionB.Panel.Headlights > 0 and not coupledA or coupledA and false)
     ---------------------------------------------------------------------------------------------------------------------------------------------
-    self.SectionB:SetLightPower(61, self:ReadTrainWire(31) > 0 and false or self.Panel.Headlights > 0 and false or self.SectionB.Panel.Headlights > 0 or self:ReadTrainWire(32) > 0 or coupledB and false)
-    self.SectionB:SetLightPower(62, self:ReadTrainWire(31) > 0 and false or self.Panel.Headlights > 0 and false or self.SectionB.Panel.Headlights > 0 or self:ReadTrainWire(32) > 0 or coupledB and false)
-    self.SectionB:SetLightPower(63, self:ReadTrainWire(31) > 0 and false or self.Panel.Headlights > 0 and false or self.SectionB.Panel.Headlights > 0 or self:ReadTrainWire(32) > 0 or coupledB and false)
+    self.SectionB:SetLightPower(61, coupledB and false or self:ReadTrainWire(31) > 0 and false or self.Panel.Headlights > 0 and false or self.SectionB.Panel.Headlights > 0 or self:ReadTrainWire(32) > 0 or coupledB and false)
+    self.SectionB:SetLightPower(62, coupledB and false or self:ReadTrainWire(31) > 0 and false or self.Panel.Headlights > 0 and false or self.SectionB.Panel.Headlights > 0 or self:ReadTrainWire(32) > 0 or coupledB and false)
+    self.SectionB:SetLightPower(63, coupledB and false or self:ReadTrainWire(31) > 0 and false or self.Panel.Headlights > 0 and false or self.SectionB.Panel.Headlights > 0 or self:ReadTrainWire(32) > 0 or coupledB and false)
     self.SectionB:SetLightPower(64, coupledB and false or self:ReadTrainWire(31) > 0 and true or self.Panel.Headlights > 0 and not coupledB and true or false)
     self.SectionB:SetLightPower(65, coupledB and false or self:ReadTrainWire(31) > 0 and true or self.Panel.Headlights > 0 and not coupledB and true or false)
     -------------------------------------------------------------------------------------------------------------------------------------------
@@ -527,7 +524,7 @@ function ENT:Think(dT)
     self.DeltaTime = (CurTime() - self.PrevTime)
     self.PrevTime = CurTime()
     self:HeadlightControl()
-
+    
     if self:GetNW2String("Texture", "") == "SVB" then
         self:SetNW2Bool("RetroMode", false)
     end
@@ -858,12 +855,10 @@ function ENT:Think(dT)
         self:SetNW2Float("Door78b", self.DoorStatesLeft[4])
         self:SetNW2Float("DoorSwitch", self.Panel.DoorsLeft > 0 and 1 or 0.5 or self.Panel.DoorsLeft > 0 and 1)
 
-        if self.DoorsPreviouslyUnlocked == true and self.DoorsUnlocked == false and self.LeftDoorsOpen == false and self.RightDoorsOpen == false and self.Duewag_U2.ReverserInsertedA == true then
-            self:SetNW2Bool("DoorCloseAlarm", true)
-        else
-            self:SetNW2Bool("DoorCloseAlarm", false)
-        end
+        self.AllDoorsAreClosed = self.Duewag_U2:CheckDoorsAllClosed(self.DoorsPreviouslyUnlocked) and true or false
+        self:SetNW2Bool("DoorCloseAlarm", (self.DoorsPreviouslyUnlocked and not self.DoorsUnlocked and self.AllDoorsAreClosed and not self.DoorsClosedAlarmAcknowledged and self.Duewag_U2.ReverserInsertedA == true) and true or false)
 
+        print(self.AllDoorsAreClosed)
         if self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > 0 then
             self:ReturnOpenDoors()
             self.RightDoorsOpen = true
@@ -1354,11 +1349,8 @@ function ENT:OnButtonPress(button, ply)
     end
 
     if button == "DoorsUnlockSet" then
-        if self.DoorsUnlocked == false then
-            self.DoorsUnlocked = true
-            self.DepartureConfirmed = false
-        end
-
+        self.DoorsUnlocked = true
+        self.DepartureConfirmed = false
         self.Panel.DoorsUnlockSet = 1
     end
 
@@ -1367,7 +1359,6 @@ function ENT:OnButtonPress(button, ply)
         self.DoorRandomness[2] = -1
         self.DoorRandomness[3] = -1
         self.DoorRandomness[4] = -1
-        self.DoorsPreviouslyUnlocked = true
         self.RandomnessCalculated = false
         self.DoorsUnlocked = false
         self.Door1 = false
@@ -1378,7 +1369,6 @@ function ENT:OnButtonPress(button, ply)
     if button == "DoorsCloseConfirmSet" then
         self.DoorsClosedAlarmAcknowledged = true
         self.DepartureConfirmed = true
-
         if self.DoorsClosed == true then
             self.ArmDoorsClosedAlarm = false
         end
