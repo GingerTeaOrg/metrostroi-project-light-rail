@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/mplr/ruhrbahn/b_1973/headlights"
+	"$surfaceprop" "Glass"
+	"$alphatest" 1
+}
