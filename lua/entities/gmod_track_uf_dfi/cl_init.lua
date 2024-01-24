@@ -110,6 +110,8 @@ end
 
 
 function ENT:ClockFace()
+
+	if not IsValid(self.Hours) and not IsValid(self.Minutes) then return end
 	
 	local Time = self:GetNW2String("Time","0000")
 	local hours = tonumber(string.sub(Time,1,2),10)
@@ -376,6 +378,7 @@ function ENT:Circle(x, y, radius, seg)
 	local cir = {}
 	local segment = 360 / seg
 	local sinCache, cosCache = {}, {}
+	local amberColor = Color(255, 140, 0)
 	
 	for i = 0, seg do
 		local angle = math.rad(i * segment)
@@ -392,7 +395,10 @@ function ENT:Circle(x, y, radius, seg)
 		table.insert(cir, { x = px, y = py, u = u, v = v })
 	end
 	
+	
+	surface.SetDrawColor(amberColor)
 	surface.DrawPoly(cir)
+	--surface.SetDrawColor(amberColor)
 end
 
 
@@ -400,11 +406,10 @@ end
 
 
 
-local amberColor = Color(255, 140, 0)
+
 
 -- Function to draw an LED at the specified position with color
 function ENT:drawLED(x, y)
-	surface.SetDrawColor(amberColor)
 	local scaling = (math.ceil(1200 / self.dist))
 	scaling = math.floor(scaling / 4) * 4
 	LoD = math.Clamp(scaling,3,20)
@@ -429,14 +434,6 @@ function ENT:NewDisplay(msg)
 		end
 		xOffset = 0
 	end
-	
-	local testString = "U1 Ginnheim			6"
-	
-	--[[for row = 1, #self.Grid do
-		for col = 1, #self.Grid[row] do
-			self.Grid[row][col] = 0
-		end
-	end]]
 	
 	local y_coordinate = 0
 	local str1 = ""
@@ -667,9 +664,6 @@ function ENT:drawString(str, startX, startY,orientation,font)
 		end
 	end
 end
-
-
-
 
 
 function ENT:findLongestTable(listOfTables)
