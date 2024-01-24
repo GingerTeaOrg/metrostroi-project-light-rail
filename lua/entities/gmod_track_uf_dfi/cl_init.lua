@@ -460,10 +460,11 @@ function ENT:Draw()
 	--self:drawString("  		Ginnheim", 0,4,"left","SmallThin")
 	--self:drawString("U1														11", 0,4,"left","SmallBold")
 	--self:displaySelftest()
-	self:NewDisplay()
+	self:Mode0()
 	cam.End3D2D()
 	cam.Start3D2D(pos2, ang2, 0.03)
-	-- surface.SetDrawColor(255, 255, 255, 255)
+	self:Mode0()
+	--[[surface.SetDrawColor(255, 255, 255, 255)
 	-- surface.DrawRect(0, 0, 256, 320)
 	
 	draw.Text({
@@ -473,7 +474,7 @@ function ENT:Draw()
 		xalign = TEXT_ALIGN_CENTER,
 		yalign = TEXT_ALIGN_LEFT,
 		color = Color(255, 136, 0)
-	})
+	})]]
 	
 	cam.End3D2D()
 	
@@ -495,26 +496,26 @@ local ledSize = 9.99 -- Size of each LED element
 local circleCache = {}
 
 function ENT:Circle(x, y, radius, seg)
-    local cir = {}
-    local segment = 360 / seg
-    local sinCache, cosCache = {}, {}
-
-    for i = 0, seg do
-        local angle = math.rad(i * segment)
-        local sinVal, cosVal = sinCache[i], cosCache[i]
-
-        if not sinVal then
-            sinVal, cosVal = math.sin(angle), math.cos(angle)
-            sinCache[i], cosCache[i] = sinVal, cosVal
-        end
-
-        local px, py = x + sinVal * radius, y + cosVal * radius
-        local u, v = sinVal * 0.5 + 0.5, cosVal * 0.5 + 0.5
-
-        table.insert(cir, { x = px, y = py, u = u, v = v })
-    end
-
-    surface.DrawPoly(cir)
+	local cir = {}
+	local segment = 360 / seg
+	local sinCache, cosCache = {}, {}
+	
+	for i = 0, seg do
+		local angle = math.rad(i * segment)
+		local sinVal, cosVal = sinCache[i], cosCache[i]
+		
+		if not sinVal then
+			sinVal, cosVal = math.sin(angle), math.cos(angle)
+			sinCache[i], cosCache[i] = sinVal, cosVal
+		end
+		
+		local px, py = x + sinVal * radius, y + cosVal * radius
+		local u, v = sinVal * 0.5 + 0.5, cosVal * 0.5 + 0.5
+		
+		table.insert(cir, { x = px, y = py, u = u, v = v })
+	end
+	
+	surface.DrawPoly(cir)
 end
 
 
@@ -528,69 +529,155 @@ local amberColor = Color(255, 140, 0)
 function ENT:drawLED(x, y)
 	surface.SetDrawColor(amberColor)
 	local scaling = (math.ceil(1200 / self.dist))
-	print(scaling)
 	scaling = math.floor(scaling / 4) * 4
 	LoD = math.Clamp(scaling,3,20)
-	self:Circle(-565 + x, -15 + y, ledSize / 2, LoD)
+	self:Circle(-500 + x, -15 + y, ledSize / 2, 20)
 end
 
-function ENT:NewDisplay(ledX,ledY,msg)
+function ENT:NewDisplay(msg)
 	if self.dist >= 1200 then return end
-	local startX = 0---490
-	local xOffset = 0 --buffer for storing how far along the LED columns we are
-	local rows = matrixHeight --how many rows in total
-	local cols = matrixWidth --how many columns in total
-
 	
-	--the mode functions can tell it where to put what on the grid
 	local startX = ledX or 0
-	local startY = ledY or 0
+	local xOffset = 0
+	local rows = matrixHeight
+	local cols = matrixWidth
+
+	local oldmsg = type(oldmsg) == "table" and oldmsg[1] and oldmsg or {}
+
+	if msg ~= oldmsg then
+		for row = 1, #self.Grid do
+			for col = 1, #self.Grid[row] do
+				self.Grid[row][col] = 0
+			end
+		end
+	end
 	
-	local testString = "U1 Ginnheim 6"
+	local testString = "U1 Ginnheim			6"
 	
-	for row=1,#self.Grid do --make sure that the entire grid is set to zero before we set anything
-		for col=1,#self.Grid[row]do
+	--[[for row = 1, #self.Grid do
+		for col = 1, #self.Grid[row] do
 			self.Grid[row][col] = 0
 		end
+	end]]
+	
+	local y_coordinate = 0
+	local str1 = ""
+	local font = ""
+	local PosX = 0
+	
+	for k,v in ipairs(msg) do --take apart the tab passed to the function
+		y_coordinate = msg[k][1] --the y-coordinate is always the first thing of the table, so no need to loop it over
+		
+		for ky,val in ipairs(v) do
+			if type(val) == "table" then
+				str1 = val[1] --the actual text
+				font = val[2] --what font to print in
+				PosX = val[3] --x coordinate
+			end
+		end
 	end
 	
-	for i = 1, #testString do --for the length of the commanded string, do
-		local char = testString:sub(i, i)--deconstruct the character into the current character we're at
-		local rows = #UF.charMatrixSmallThin[char] --how tall the char is
-		local cols = #UF.charMatrixSmallThin[char][1] --how wide the char is
-		--if the char is a space we don't add on an empty column, but if it isn't, we add one for readability.
-		xOffset = (char == " " and xOffset + #UF.charMatrixSmallThin[char][1]) or xOffset + #UF.charMatrixSmallThin[char][1] + #UF.charMatrixSmallThin["EMPTY"][1]
-		for row = 1, rows do --process the character
-			for col = 1, cols do
-				if tonumber(UF.charMatrixSmallThin[char][row]:sub(col, col)) == 1 then --for every 1 in the string table, we turn on an LED
-					self.Grid[row][col + xOffset] = 1
-				end
-			end
-		end
-		for k,v in ipairs(self.Grid) do
-			for i=1,matrixWidth do
-				local col = i
-				local row = k
-				local ledX = startX + (col + 1) * ledSize
-				local ledY = 0 + (row + 1) * ledSize
-				
-				-- Draw an LED if the matrix element is 1
-				if self.Grid[row][col] == 1 then
-					self:drawLED(ledX, ledY)
+	
+	for i = 1, #str1 do
+		local char = str1:sub(i, i)
+		local charMatrix = 
+			(font == "SmallThin" and UF.charMatrixSmallThin[char]) or
+			(font == "SmallBold" and UF.charMatrixSmallBold[char]) or
+			(font == "Symbols" and UF.charMatrixSymbols[char])
+		
+		local charWidth = #charMatrix[1]
+		local charIsSpace = (char == " ")
+		
+		xOffset = xOffset + charWidth + (charIsSpace and 0 or #UF.charMatrixSmallThin["EMPTY"][1])
+		
+		for row = 1, #charMatrix do
+			local charRow = charMatrix[row]
+			local gridRow = self.Grid[row + y_coordinate]
+			
+			for col = 1, charWidth do
+				if tonumber(charRow:sub(col, col)) == 1 then
+					gridRow[col + PosX + xOffset - charWidth] = 1
+				else
+					gridRow[col + PosX + xOffset - charWidth] = 0
 				end
 			end
 		end
 	end
+	
+	for k, gridRow in ipairs(self.Grid) do
+		for i = 1, matrixWidth do
+			local col = i
+			local row = k
+			local ledX = startX + (col + 1) * ledSize
+			local ledY = 0 + (row + 1) * ledSize
+			
+			if gridRow[col] == 1 then
+				self:drawLED(ledX, ledY)
+			end
+		end
+	end
+
+	oldmsg = msg
 end
 
+
 function ENT:Mode0()
+	--local Text = (math.random(0,1) == 0) and "Auf Zugschild achten!" or "Keine Zugfahrten!"
+	local Text = "Keine Zugfahrten!"
+	local TextWidth = #Text
+	self.TextPosX = 10
 	
+	local msg = {
+		[1] = {6,{Text,"SmallThin",self.TextPosX}}
+	}
+	self:NewDisplay(msg)
 end
 
 function ENT:Mode1()
+	-- Mode 1 simply lists four different trains, so we can definitively define where to put all the different elements
+	-- Format: Element = {"string",x}
+	
+	self.LinePosX = 0
+	self.DestPosX = 9
+	self.TimePosX = 152 -- todo: need to reformat when time is double digit
+	
+	self.Row1 = 0 -- y coordinate for this row
+	self.Row2 = 9 -- y-coordinate for row 2
+	self.Row3 = 18
+	self.Row4 = 27
+	-- FORMAT: {y-coordinate,{string_to_display,font,x-coordinate_of_string},etc}
+	local msg = {
+		[1] = {self.Row1,{self.Line1String,"SmallBold",self.LinePosX},{self.Train1DestinationString,"SmallThin",self.DestPosX},{self.Train1Time,"SmallBold",self.TimePosX}},
+		[2] = {self.Row2,{self.Line2String,"SmallBold",self.LinePosX},{self.Train2DestinationString,"SmallThin",self.DestPosX},{self.Train2Time,"SmallBold",self.TimePosX}},
+		[3] = {self.Row3,{self.Line3String,"SmallBold",self.LinePosX},{self.Train3DestinationString,"SmallThin",self.DestPosX},{self.Train3Time,"SmallBold",self.TimePosX}},
+		[4] = {self.Row4,{self.Line4String,"SmallBold",self.LinePosX},{self.Train4DestinationString,"SmallThin",self.DestPosX},{self.Train4Time,"SmallBold",self.TimePosX}},
+	}
+	
+	self:NewDisplay(msg)
 end
 
 function ENT:Mode2()
+	self.LinePosX = 0
+	
+	local DestWidth = 0 --set up the width register for centering the text
+	
+	local str = self.Train1DestinationString
+	for i=1,#str do
+		local char = str:sub(i, i)
+		DestWidth = DestWidth + #UF.charMatrixSmallThin[char][1] + #UF.charMatrixSmallThin["EMPTY"][1]
+	end
+	
+	
+	local CarCount = self:GetNW2Int("Train1ConsistLength", 1)
+	
+	self.DestPosX = self.Theme == "Essen" and (76 - (DestWidth / 2)) or #UF.charMatrixSmallThin[string.sub(self.Line1String,1,1)][1] + #UF.charMatrixSmallThin[string.sub(self.LineString1,2,2)][1] + 8
+	-- todo implement modular "via" information, listing notable stations along the way: U7 Hausen über Eissporthalle/Festplatz
+	local msg = {
+		[1] = {0,{self.Line1String,"SmallBold",0},{self.Train1DestinationString,"SmallBold",self.DestPosX}},
+		[2] = {19,{string.rep("T",CarCount),"Symbols",0}},
+		[3] = {20,{"R","Symbols",60}} --track symbol
+	}
+	self:NewDisplay(msg)
 end
 -- Function to draw a character on the LED display
 function ENT:drawCharacter(char, startX, startY,font)
@@ -643,6 +730,25 @@ function ENT:drawCharacter(char, startX, startY,font)
 	end
 end
 
+function ENT:CharacterTest()
+	local char = "R"
+	local startX = 0
+	local startY = 0
+	
+	local rows = #UF.charMatrixSymbols[char]
+	local cols = #UF.charMatrixSymbols[char][1]
+	for row = 1, rows do
+		for col = 1, cols do
+			local ledX = startX + (col - 1) * ledSize
+			local ledY = startY + (row - 1) * ledSize
+			
+			-- Draw an LED if the matrix element is 1
+			if tonumber(UF.charMatrixSymbols[char][row]:sub(col, col)) == 1 then
+				self:drawLED(ledX, ledY)
+			end
+		end
+	end
+end
 -- Function to draw a string on the LED display with color and alignment
 function ENT:drawString(str, startX, startY,orientation,font)
 	local xOffset = 0
