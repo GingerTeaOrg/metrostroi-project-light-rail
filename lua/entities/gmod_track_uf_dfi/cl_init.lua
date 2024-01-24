@@ -325,160 +325,37 @@ function ENT:Draw()
 	self:DrawModel()
 	
 	local mode = self:GetNW2Int("Mode", 0)
+
+	local pos = self:LocalToWorld(Vector(-25, 96, 169))
+	local pos2 = self:LocalToWorld(Vector(-12, 106, 169))
+	local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
+	local ang2 = self:LocalToWorldAngles(Angle(0, 180, 96.8))
 	if mode == 2 then
-		
-		local pos = self:LocalToWorld(Vector(-25, 96, 169))
-		local pos2 = self:LocalToWorld(Vector(-10, 106, 169))
-		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
-		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 95.6))
+
 		cam.Start3D2D(pos, ang, 0.03)
-		self:PrintText(-8, 0, self.LineString1, "Lumino_Big")
-		self:PrintText(-5.1, 0, self.Train1DestinationString, "Lumino_Big")
-		--self:PrintText(-5, 6, self:GetNW2String("TrainVia", "über Testplatz"), "Lumino")
-		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
-		self:PrintText(10.3, 12.5, "____", "Lumino")
-		self:PrintText(9.1, 13.1, ".", "Lumino")
+			self:Mode2()
 		cam.End3D2D()
+
 		cam.Start3D2D(pos2, ang2, 0.03)
-		self:PrintText(-8, 0, self.LineString1, "Lumino_Big")
-		self:PrintText(-5.1, 0, self.Train1DestinationString, "Lumino_Big")
-		--self:PrintText(-5, 6, self:GetNW2String("TrainVia", "über Testplatz"), "Lumino")
-		self:PrintText(10, 11.6, string.rep("ó",self:GetNW2Int("Train1ConsistLength", 1)), "Lumino_Cars")
-		self:PrintText(10.3, 12.5, "____", "Lumino")
-		self:PrintText(9.1, 13.1, ":", "Lumino")
-		
+			self:Mode2()
 		cam.End3D2D()
 	elseif mode == 1 then
-		
-		local pos = self:LocalToWorld(Vector(-38.5, 96, 169.2))
-		local pos2 = self:LocalToWorld(Vector(5, 105.99, 169))
-		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
-		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 96))
 		cam.Start3D2D(pos, ang, 0.03)
-		
-		---------------------------------------------------------------------------------
-		self:PrintText(-1.5, 0, self.LineString1, "Lumino_Big")
-		self:PrintText(1, 0, self.Train1DestinationString, "Lumino")
-		if #self.Train1Time == 2 then
-			self:PrintText(25, 0, self:GetNW2String("Train1Time", "10"), "Lumino")
-		elseif #self.Train1Time == 1 then
-			self:PrintText(26, 0, self:GetNW2String("Train1Time", "5"), "Lumino")
-		end
-		---------------------------------------------------------------------
-		if self.Train2Entry == true then
-			self:PrintText(-1.5, 6, self.LineString2, "Lumino_Big")
-			self:PrintText(1, 6, self.Train2DestinationString, "Lumino")
-			if #self.Train2Time == 2 then
-				self:PrintText(25, 6, self.Train2Time, "Lumino")
-			elseif #self.Train2Time == 1 then
-				self:PrintText(26, 6, self.Train2Time, "Lumino")
-			end
-		end
-		----------------------------------------------------------------------
-		if self.Train3Entry == true then
-			self:PrintText(-1.5, 12, self.LineString3, "Lumino_Big")
-			self:PrintText(1, 12, self.Train3DestinationString, "Lumino")
-			if #self.Train3Time == 2 then
-				self:PrintText(25, 12, self.Train3Time, "Lumino")
-			elseif #self.Train3Time == 1 then
-				self:PrintText(26, 12, self.Train3Time, "Lumino")
-			end
-		end
-		-------------------------------------------------------------------------------
-		if self.Train4Entry == true then
-			self:PrintText(-1.5, 18, self.LineString4, "Lumino_Big")
-			self:PrintText(1, 18, self.Train4DestinationString, "Lumino")
-			if #self.Train4Time == 2 then
-				self:PrintText(25, 18, self.Train4Time, "Lumino")
-			elseif #self.Train4Time == 1 then
-				self:PrintText(26, 18, self.Train4Time, "Lumino")
-			end
-		end
-		
+			self:Mode1()
+		cam.End3D2D()
+
+		cam.Start3D2D(pos2, ang2, 0.03)
+			self:Mode1()
+		cam.End3D2D()
+	elseif mode == 0 then
+
+		cam.Start3D2D(pos, ang, 0.03)
+			self:Mode0()
 		cam.End3D2D()
 		cam.Start3D2D(pos2, ang2, 0.03)
-		
-		---------------------------------------------------------------------------------
-		self:PrintText(-1.5, 0, self.LineString1, "Lumino_Big")
-		self:PrintText(1, 0, self.Train1DestinationString, "Lumino")
-		if #self.Train1Time == 2 then
-			self:PrintText(25, 0, self:GetNW2String("Train1Time", "10"), "Lumino")
-		elseif #self.Train1Time == 1 then
-			self:PrintText(26, 0, self:GetNW2String("Train1Time", "5"), "Lumino")
-		end
-		---------------------------------------------------------------------
-		if self.Train2Entry == true then
-			self:PrintText(-1.5, 6, self.LineString2, "Lumino_Big")
-			self:PrintText(1, 6, self.Train2DestinationString, "Lumino")
-			if #self.Train2Time == 2 then
-				self:PrintText(25, 6, self.Train2Time, "Lumino")
-			elseif #self.Train2Time == 1 then
-				self:PrintText(26, 6, self.Train2Time, "Lumino")
-			end
-		end
-		----------------------------------------------------------------------
-		if self.Train3Entry == true then
-			self:PrintText(-1.5, 12, self.LineString3, "Lumino_Big")
-			self:PrintText(1, 12, self.Train3DestinationString, "Lumino")
-			if #self.Train3Time == 2 then
-				self:PrintText(25, 12, self.Train3Time, "Lumino")
-			elseif #self.Train3Time == 1 then
-				self:PrintText(26, 12, self.Train3Time, "Lumino")
-			end
-		end
-		-------------------------------------------------------------------------------
-		if self.Train4Entry == true then
-			self:PrintText(-1.5, 18, self.LineString4, "Lumino_Big")
-			self:PrintText(1, 18, self.Train4DestinationString, "Lumino")
-			if #self.Train4Time == 2 then
-				self:PrintText(25, 18, self.Train4Time, "Lumino")
-			elseif #self.Train4Time == 1 then
-				self:PrintText(26, 18, self.Train4Time, "Lumino")
-			end
-		end
-		
+			self:Mode0()
 		cam.End3D2D()
-		
-		
-	elseif mode == 0 then
-		local pos = self:LocalToWorld(Vector(-25, 96, 169))
-		local pos2 = self:LocalToWorld(Vector(-12, 106, 169))
-		local ang = self:LocalToWorldAngles(Angle(0, 0, 96))
-		local ang2 = self:LocalToWorldAngles(Angle(0, 180, 96.8))
-		cam.Start3D2D(pos, ang, 0.03)
-		-- surface.SetDrawColor(255, 255, 255, 255)
-		-- surface.DrawRect(0, 0, 256, 320)
-		
-		--[[draw.Text({
-		text = "Auf Zugschild achten!",
-		font = "Lumino", -- ..self:GetNW2Int("Style", 1),
-		pos = {204, 110},
-		xalign = TEXT_ALIGN_CENTER,
-		yalign = TEXT_ALIGN_LEFT,
-		color = Color(255, 136, 0)
-	})]]
-	--self:drawString("  		Ginnheim", 0,4,"left","SmallThin")
-	--self:drawString("U1														11", 0,4,"left","SmallBold")
-	--self:displaySelftest()
-	self:Mode0()
-	cam.End3D2D()
-	cam.Start3D2D(pos2, ang2, 0.03)
-	self:Mode0()
-	--[[surface.SetDrawColor(255, 255, 255, 255)
-	-- surface.DrawRect(0, 0, 256, 320)
-	
-	draw.Text({
-		text = "Auf Zugschild achten!",
-		font = "Lumino", -- ..self:GetNW2Int("Style", 1),
-		pos = {204, 110},
-		xalign = TEXT_ALIGN_CENTER,
-		yalign = TEXT_ALIGN_LEFT,
-		color = Color(255, 136, 0)
-	})]]
-	
-	cam.End3D2D()
-	
-end
+	end
 
 end
 
@@ -488,9 +365,9 @@ function ENT:OnRemove()
 end
 
 -- Define the LED matrix parameters
-local matrixWidth = 157 -- Number of LEDs in a row
-local matrixHeight = 34 -- Number of LEDs in a column
-local ledSize = 9.99 -- Size of each LED element
+local matrixWidth = 192 -- Number of LEDs in a row
+local matrixHeight = 40 -- Number of LEDs in a column
+local ledSize = 7.62 -- Size of each LED element
 
 -- Cache for circle points
 local circleCache = {}
@@ -550,6 +427,7 @@ function ENT:NewDisplay(msg)
 				self.Grid[row][col] = 0
 			end
 		end
+		xOffset = 0
 	end
 	
 	local testString = "U1 Ginnheim			6"
@@ -580,7 +458,8 @@ function ENT:NewDisplay(msg)
 	
 	for i = 1, #str1 do
 		local char = str1:sub(i, i)
-		local charMatrix = 
+		if char == "" then char = " " end --safeguard against empty string, treat as space
+		local charMatrix = --set the font selection
 			(font == "SmallThin" and UF.charMatrixSmallThin[char]) or
 			(font == "SmallBold" and UF.charMatrixSmallBold[char]) or
 			(font == "Symbols" and UF.charMatrixSymbols[char])
@@ -623,12 +502,12 @@ end
 
 function ENT:Mode0()
 	--local Text = (math.random(0,1) == 0) and "Auf Zugschild achten!" or "Keine Zugfahrten!"
-	local Text = "Keine Zugfahrten!"
+	local Text = "Auf Zugschild achten!"
 	local TextWidth = #Text
-	self.TextPosX = 10
+	self.TextPosX = 30
 	
 	local msg = {
-		[1] = {6,{Text,"SmallThin",self.TextPosX}}
+		[1] = {15,{Text,"SmallThin",self.TextPosX}}
 	}
 	self:NewDisplay(msg)
 end
@@ -646,12 +525,20 @@ function ENT:Mode1()
 	self.Row3 = 18
 	self.Row4 = 27
 	-- FORMAT: {y-coordinate,{string_to_display,font,x-coordinate_of_string},etc}
-	local msg = {
+	local msg = type(msg) == "table" and msg or {
 		[1] = {self.Row1,{self.Line1String,"SmallBold",self.LinePosX},{self.Train1DestinationString,"SmallThin",self.DestPosX},{self.Train1Time,"SmallBold",self.TimePosX}},
-		[2] = {self.Row2,{self.Line2String,"SmallBold",self.LinePosX},{self.Train2DestinationString,"SmallThin",self.DestPosX},{self.Train2Time,"SmallBold",self.TimePosX}},
-		[3] = {self.Row3,{self.Line3String,"SmallBold",self.LinePosX},{self.Train3DestinationString,"SmallThin",self.DestPosX},{self.Train3Time,"SmallBold",self.TimePosX}},
-		[4] = {self.Row4,{self.Line4String,"SmallBold",self.LinePosX},{self.Train4DestinationString,"SmallThin",self.DestPosX},{self.Train4Time,"SmallBold",self.TimePosX}},
 	}
+
+	local msg2 = {self.Row2,{self.Line2String,"SmallBold",self.LinePosX},{self.Train2DestinationString,"SmallThin",self.DestPosX},{self.Train2Time,"SmallBold",self.TimePosX}}
+
+	local msg3 = {self.Row3,{self.Line3String,"SmallBold",self.LinePosX},{self.Train3DestinationString,"SmallThin",self.DestPosX},{self.Train3Time,"SmallBold",self.TimePosX}}
+
+	local msg4 = {self.Row4,{self.Line4String,"SmallBold",self.LinePosX},{self.Train4DestinationString,"SmallThin",self.DestPosX},{self.Train4Time,"SmallBold",self.TimePosX}}
+
+	if self.Train2Entry then table.insert(msg,2,msg2) else table.remove(msg,2) end
+	if self.Train3Entry then table.insert(msg,3,msg3) else table.remove(msg,3) end
+	if self.Train4Entry then table.insert(msg,4,msg4) else table.remove(msg,4) end
+
 	
 	self:NewDisplay(msg)
 end
