@@ -199,6 +199,7 @@ function ENT:GetPlayerDistance() --get distance to the player so that we can sca
     if not ply then self.DistanceFactor = 1 return end
     if not type(Distance2DSqr) then self.DistanceFactor = 1 return end
     local plyDist = ply:GetPos():Distance2DSqr(self:GetPos()) or 10 --Let's just do a simplified 2D vector. It's not *that* crucial to have the Z axis, too.
+    self.DistanceFactor = plyDist
 end
 
 local debug = GetConVar("metrostroi_drawsignaldebug")
