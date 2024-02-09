@@ -4,22 +4,22 @@ TRAIN_SYSTEM.DontAccelerateSimulation = false
 function TRAIN_SYSTEM:Initialize()
     self.Route = " " -- Route index number
     self.PromptRoute = " "
-    self.RouteChar1 = " "
-    self.RouteChar2 = " "
+    self.RouteChar1 = "0"
+    self.RouteChar2 = "0"
     self.DisplayedRouteChar1 = " "
     self.DisplayedRouteChar2 = " "
 
     self.Course = " " -- Course index number, format is LineLineCourseCourse
-    self.CourseChar1 = " "
-    self.CourseChar2 = " "
-    self.CourseChar3 = " "
-    self.CourseChar4 = " "
-    self.CourseChar5 = " "
+    self.CourseChar1 = "0"
+    self.CourseChar2 = "0"
+    self.CourseChar3 = "0"
+    self.CourseChar4 = "0"
+    self.CourseChar5 = "0"
     self.PromptCourse = " "
-    self.DisplayedCourseChar1 = " "
-    self.DisplayedCourseChar2 = " "
-    self.DisplayedCourseChar3 = " "
-    self.DisplayedCourseChar4 = " "
+    self.DisplayedCourseChar1 = "0"
+    self.DisplayedCourseChar2 = "0"
+    self.DisplayedCourseChar3 = "0"
+    self.DisplayedCourseChar4 = "0"
     self.PreviousCourse = "0"
     self.PreviousCourseNoted = false
 
@@ -44,7 +44,7 @@ function TRAIN_SYSTEM:Initialize()
     self.AnnouncementChar2 = " "
     self.ServiceAnnouncement = " "
 
-    self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines")]
+    self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines", 1)]
 
     self.LineLookupComplete = false
     self.DestinationLookupComplete = false
@@ -54,18 +54,19 @@ function TRAIN_SYSTEM:Initialize()
     self.RBLRegistered = false
     self.RBLSignedOff = true
 
-    self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes")]
+    self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes", 1)]
 
     self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int(
-                                "IBIS:Destinations")]
+                                "IBIS:Destinations", 1)]
     self.ServiceAnnouncements =
-        UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA")]
+        UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA", 1)]
     -- print("Selected Service Announcements:", self.Train:GetNW2Int("IBIS:ServiceA"))
     self.JustBooted = false
     self.PowerOn = 0
     self.IBISBootupComplete = 0
 
     self.ColdBoot = true
+    self.ColdBootComplete = false
     self.FullyBootupMoment = 0
     self.FullyBootupMomentRegistered = false
     self.Debug = 1
@@ -99,6 +100,7 @@ function TRAIN_SYSTEM:Initialize()
     self.KeyTurned = false
 
     self.PowerOnRegistered = false
+    self.PowerOffMoment = 0
 
     self.TriggerNames = {
         "Number1", -- 1
@@ -116,8 +118,10 @@ function TRAIN_SYSTEM:Initialize()
     self.Triggers = {}
     self.State = 0
 
-    self.Menu = 0 -- which menu are we in
+    self.Menu = 4 -- which menu are we in
     self.Announce = false
+
+    self.FirstBoot = true
 
 end
 
@@ -129,147 +133,21 @@ function TRAIN_SYSTEM:Outputs()
 end
 
 function TRAIN_SYSTEM:Trigger(name, time)
-
+    local triggerTime = 0
     if self.State > 0 then
-
-        if name == "Number0" then
-            if self.KeyRegistered == false then
-                self.KeyInput = "0"
+        if name and CurTime() - triggerTime > 1.5 then
+            if not self.KeyRegistered then
+                triggerTime = CurTime()
+                self.KeyInput = name
                 self.KeyRegistered = true
-            else
-                self.KeyInput = nil
             end
-        elseif name == "Number1" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "1"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number2" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "2"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number3" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "3"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number4" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "4"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number5" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "5"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number6" then
-            if self.KeyRegistered == false then
-                self.KeyInput = "6"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number7" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "7"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number8" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "8"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number9" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "9"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Number0" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "0"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Delete" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "Delete"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Enter" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "Enter"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == "Destination" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "Destination"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-        elseif name == "ServiceAnnouncements" then
-
-            if self.KeyRegistered == false then
-                self.KeyInput = "ServiceAnnouncements"
-                self.KeyRegistered = true
-            else
-                self.KeyInput = nil
-            end
-
-        elseif name == nil then
+        else
+            -- Reset KeyInput immediately if the input is nil
             self.KeyInput = nil
             self.KeyRegistered = false
+            triggerTime = 0
         end
-
     end
-
 end
 
 function TRAIN_SYSTEM:TriggerInput(name, value)
@@ -520,368 +398,28 @@ function TRAIN_SYSTEM:IBISScreen(Train)
     return
 end
 
-function TRAIN_SYSTEM:Think()
+function TRAIN_SYSTEM:UpdateState()
+    local batteryOn = self.Train.BatteryOn == true or
+                          self.Train:ReadTrainWire(6) > 0
+    local ibisKey = self.Train:GetNW2Bool("TurnIBISKey", false)
 
-    local Train = self.Train
-    self.KeyInserted = self.Train.Duewag_U2.IBISKeyATurned or self.Train.Duewag_U2.IBISKeyBTurned
-
-    if Train.BatteryOn then self:CANBusRunner() end
-
-
-
-    if self.Menu > 0 then self:ReadDataset() end
-
-    if self.Menu == 0 and self.State > 0 then self.LineLookupComplete = false end -- reset lookup table state if we're not in a menu
-
-    self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes")]
-
-    self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int(
-                                "IBIS:Destinations")]
-    self.ServiceAnnouncements =
-        UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA")]
-    self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines")]
-
-    -- Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
-    self.Route = self.RouteChar1 .. self.RouteChar2
-    -- Make sure that displayed characters are never assigned the -1 value, because -1 symbolises an empty character. If something is -1, display empty.
-    self.DisplayedRouteChar1 =
-        tonumber(self.RouteChar1, 10) and self.RouteChar1 ~= " " and
-            self.RouteChar1 or " "
-    self.DisplayedRouteChar2 =
-        tonumber(self.RouteChar2, 10) and self.RouteChar2 ~= " " and
-            self.RouteChar2 or " "
-
-    self.DisplayedDestinationChar1 = tonumber(self.DestinationChar1, 10) and
-                                         self.DestinationChar1 ~= " " and
-                                         self.DestinationChar1 or " "
-    self.DisplayedDestinationChar2 = tonumber(self.DestinationChar2, 10) and
-                                         self.DestinationChar2 ~= " " and
-                                         self.DestinationChar2 or " "
-    self.DisplayedDestinationChar3 = tonumber(self.DestinationChar3, 10) and
-                                         self.DestinationChar3 ~= " " and
-                                         self.DestinationChar3 or " "
-
-    -- Apply the same principle as before to ensure that the CourseChar variables are valid.
-    self.DisplayedCourseChar1 = tonumber(self.CourseChar1, 10) and
-                                    self.CourseChar1 ~= " " and self.CourseChar1 or
-                                    " "
-    self.DisplayedCourseChar2 = tonumber(self.CourseChar2, 10) and
-                                    self.CourseChar2 ~= " " and self.CourseChar2 or
-                                    " "
-    self.DisplayedCourseChar3 = tonumber(self.CourseChar3, 10) and
-                                    self.CourseChar3 ~= " " and self.CourseChar3 or
-                                    " "
-    self.DisplayedCourseChar4 = tonumber(self.CourseChar4, 10) and
-                                    self.CourseChar4 ~= " " and self.CourseChar4 or
-                                    " "
-    self.Destination = tonumber(
-                           self.DestinationChar1 .. self.DestinationChar2 ..
-                               self.DestinationChar3, 10) or 000
-    self.ServiceAnnouncement = tonumber(self.AnnouncementChar1 ..
-                                            self.AnnouncementChar2, 10) and self.AnnouncementChar1..self.AnnouncementChar2 or " "
-
-    ----print("Course Number:"..self.Train:GetNW2String("IBIS:CourseChar1",nil)..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")..self.Train:GetNW2String("IBIS:CourseChar5"))
-
-    ----print("IBIS loaded")
-    if (self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0) and
-        self.Train:GetNW2Bool("TurnIBISKey", false) == true then
-        self.PowerOn = 1
-        self.Train:SetNW2Bool("IBISPowerOn", true)
-        if self.ColdBoot and self.State < 1 then
-            self.State = self.State + 2
-            self.Menu = 4
-        elseif not self.ColdBoot and self.State < 1 then
-            self.State = self.State + 1
-            self.Menu = 0
-        end
-        ----print("IBIS powered")
-    elseif (self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0) and
-        self.Train:GetNW2Bool("TurnIBISKey", false) == false then
+    -- Function to reset state when device is off
+    local function resetState()
         self.PowerOn = 0
-        self.Train:SetNW2Bool("IBISPowerOn", false)
         self.State = 0
         self.Menu = 0
-        self.Train:SetNW2Bool("IBISBootupComplete", false)
-        self.Train:SetNW2Bool("IBISChime", false)
-    elseif (self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0) and
-        self.Train:GetNW2Bool("TurnIBISKey", false) == false then
-        self.PowerOn = 0
         self.Train:SetNW2Bool("IBISPowerOn", false)
-        self.State = 0
-        self.Menu = 0
         self.Train:SetNW2Bool("IBISBootupComplete", false)
         self.Train:SetNW2Bool("IBISChime", false)
-    elseif (self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0) and
-        self.Train:GetNW2Bool("TurnIBISKey", false) == true then
-        self.PowerOn = 0
-        self.Train:SetNW2Bool("IBISPowerOn", false)
-        self.State = 0
-        self.Menu = 0
-        self.Train:SetNW2Bool("IBISBootupComplete", false)
-        self.Train:SetNW2Bool("IBISChime", false)
-        self.JustBooted = false
-    end
-
-    if self.PowerOn == 1 then -- cold start
-        self.PowerOffMoment = 0
-        if self.PowerOnRegistered == false then -- register timer variable for simulated bootup
-            self.PowerOnMoment = CurTime()
-            self.PowerOnRegistered = true
-            -- print("register",RealTime())
-        end
-        if CurTime() - self.PowerOnMoment > 5 then
-            self.Train:SetNW2Bool("IBISBootupComplete", true) -- register that simulated bootup wait has passed
-            self.Train:SetNW2Bool("IBISChime", true)
-            -- self.ColdBoot = false
-        end
-    elseif self.PowerOn == 1 then -- warm start
-        self.PowerOffMoment = 0
-        if self.PowerOnRegistered == false then -- register timer variable for simulated bootup
-            self.PowerOnMoment = CurTime()
-            self.PowerOnRegistered = true
-            -- print("register",RealTime())
-        end
-        if CurTime() - self.PowerOnMoment > 5 then
-            self.Train:SetNW2Bool("IBISBootupComplete", true) -- register that simulated bootup wait has passed
-            self.Train:SetNW2Bool("IBISChime", true)
-            -- self.ColdBoot = false
-        end
-    elseif self.PowerOn == 0 then
         self.PowerOnRegistered = false -- reset variables if device is off
         self.PowerOnMoment = 0
-        if not self.PowerOffMomentRegistered then -- note when the device was switched off, to simulate the RAM losing data after an amount of time
-            self.PowerOffMomentRegistered = true
+        if not self.PowerOffMomentRegistered then -- note when the device was switched off,
+            self.PowerOffMomentRegistered = true -- to simulate the RAM losing data after an amount of time
             self.PowerOffMoment = CurTime()
         end
-
+        self.JustBooted = false
     end
-
-    if CurTime() - self.PowerOffMoment > 240 then
-        self.ColdBoot = true
-    else
-        self.ColdBoot = false
-    end
-
-    if self.Train:GetNW2Bool("IBISBootupComplete", false) == true then
-        if self.JustBooted == false and self.ColdBoot and not self.CANBus then -- from a cold boot we start right into the prompt, if no data is already present on the CAN bus
-            self.State = 2
-            self.Menu = 4
-            self.JustBooted = true
-        elseif not self.JustBooted and not self.ColdBoot and not self.CANBus then
-            self.State = 1
-            self.Menu = 0
-            self.JustBooted = true
-        end
-    end
-
-    if self.State == 2 and self.Menu == 4 then
-        if self.KeyInput == "Enter" and self.IndexValid == true and
-            self.RBLRegistered == true then
-            self.Menu = 5
-            -- print("Got past RBL and index lookup")
-        elseif self.KeyInput == "Enter" and self.IndexValid == false then
-            self.Menu = 4
-            self.State = 3
-            -- print("Index Number invalid")
-            self.Train:SetNW2Bool("IBISError", true)
-            self.ErrorMoment = CurTime()
-        elseif self.KeyInput == "Enter" and self.RBLRegisterFailed == true and
-            self.IndexValid == true then
-            self.State = 5
-            self.Menu = 4
-            self.Train:SetNW2Bool("IBISError", true)
-            self.ErrorMoment = CurTime()
-        elseif self.KeyInput == "Enter" and self.RBLRegistered == false and
-            self.RBLSignedOff == true then
-            -- print("IBIS logged off RBL")
-            self.CourseChar1 = 0
-            self.CourseChar2 = 0
-            self.CourseChar3 = 0
-            self.CourseChar4 = 0
-            self.RouteChar1 = 0
-            self.RouteChar2 = 0
-            self.DestinationChar1 = 0
-            self.DestinationChar2 = 0
-            self.DestinationChar3 = 0
-            self.State = 1
-            self.Menu = 0
-        end
-    end
-
-    if self.State == 5 and self.Menu == 4 then
-        self.Train:SetNW2Bool("IBISError", false)
-        if CurTime() - self.ErrorMoment > 2 then
-            if self.KeyInput == "Enter" then
-                self.State = 2
-                self.Menu = 4
-            end
-        end
-    end
-
-    if self.State == 2 and self.Menu == 5 and self.Route ~= 0 then
-        if self.KeyInput == "Enter" and self.IndexValid == true then
-            self.State = 1
-            self.Menu = 0
-        elseif self.KeyInput == "Enter" and self.IndexValid == false then
-            self.Menu = 5
-            self.State = 3
-            -- print("Index Number invalid")
-            self.Train:SetNW2Bool("IBISError", true)
-            self.ErrorMoment = CurTime()
-        end
-
-    end
-
-    if self.State == 3 then -- IBIS ran into a missing index number of any sort, bumb the current state to 3
-        self.LineLookupComplete = false
-        if CurTime() - self.ErrorMoment > 5 then
-            if self.KeyInput == "Enter" then
-                self.State = 2
-                self.Train:SetNW2Bool("IBISError", false)
-                self.RBLRegisterFailed = false
-                self.PhonedHome = false
-            end
-        end
-		if self.KeyInput == "Enter" or self.KeyInput == "Delete" then
-			self.State = 1
-		end
-    end
-
-    if self.State == 4 then -- We're in the defect state
-
-        if self.KeyInput == "Enter" then -- just confirm. Some IBIS devices just thought stuff was broken while it wasn't.
-            self.State = 1
-        end
-    end
-    if self.State == 1 and self.Menu == 0 then
-        self.Train:SetNW2Bool("IBISError", false)
-        self.PreviousCourseNoted = false
-        self.ServiceAnnouncement = " "
-        self.AnnouncementChar1 = " "
-        self.AnnouncementChar2 = " "
-        self.Train:SetNW2String("ServiceAnnouncement", "")
-        self.LineLookupComplete = false
-        -- self.PhonedHome = false
-        if self.KeyInput == "7" then
-            self.Menu = 2
-        elseif self.KeyInput == "0" then
-            self.Menu = 1
-        elseif self.KeyInput == "Destination" then
-            self.Menu = 3
-        elseif self.KeyInput == "3" then
-            local indexlength = #self.RouteTable[self.CourseChar1 ..
-                                    self.CourseChar2][self.RouteChar1 ..
-                                    self.RouteChar2]
-            if indexlength > self.CurrentStationInternal then
-                self.CurrentStationInternal = self.CurrentStationInternal + 1
-
-                self.CurrentStation = self.RouteTable[self.CourseChar1 ..
-                                          self.CourseChar2][self.RouteChar1 ..
-                                          self.RouteChar2][self.CurrentStationInternal]
-            end
-            -- print indexlength
-        elseif self.KeyInput == "6" then
-            if self.CurrentStationInternal > 1 then
-                self.CurrentStationInternal = self.CurrentStationInternal - 1
-
-                self.CurrentStation = self.RouteTable[self.CourseChar1 ..
-                                          self.CourseChar2][self.RouteChar1 ..
-                                          self.RouteChar2][self.CurrentStationInternal]
-            end
-        elseif self.KeyInput == "ServiceAnnouncements" then
-            self.Menu = 6
-        elseif self.KeyInput == "9" then
-            self:Play()
-        end
-    elseif self.State == 1 and self.Menu == 1 then
-        self.RBLSignedOff = false
-
-        if self.KeyInput == "Enter" and self.IndexValid == true and
-            self.RBLRegisterFailed == false then
-            self.Menu = 0
-            self.RBLSignedOff = false
-            self.LineLookupComplete = false
-            self.DestinationChar1 = " "
-            self.DestinationChar2 = " "
-            self.DestinationChar3 = " "
-            self.RouteChar1 = " "
-            self.RouteChar2 = " "
-            self.CurrentStation = 0
-            self.CurrentStationInternal = 0
-            self.PhonedHome = false
-        elseif self.KeyInput == "Enter" and self.IndexValid == false then
-            self.Menu = 4
-            self.State = 3
-            -- print("Index Number invalid")
-            self.Train:SetNW2Bool("IBISError", true)
-            self.ErrorMoment = CurTime()
-            self.LineLookupComplete = false
-        elseif self.KeyInput == "Enter" and self.RBLRegisterFailed == true and
-            self.IndexValid == true then
-            self.State = 5
-            self.Menu = 4
-            self.Train:SetNW2Bool("IBISError", true)
-            self.ErrorMoment = CurTime()
-            self.LineLookupComplete = false
-        elseif self.KeyInput == "Enter" and self.RBLRegistered == false and
-            self.RBLSignedOff == true then
-            self.CourseChar1 = "0"
-            self.CourseChar2 = "0"
-            self.CourseChar3 = "0"
-            self.CourseChar4 = "0"
-            self.RouteChar1 = "0"
-            self.RouteChar2 = "0"
-            self.DestinationChar1 = "0"
-            self.DestinationChar2 = "0"
-            self.DestinationChar3 = "0"
-            self.State = 1
-            self.Menu = 0
-            self.CurrentStation = 0
-            self.CurrentStationInternal = 0
-            self.LineLookupComplete = false
-            self.RBLSignedOff = false
-        elseif self.KeyInput == "Delete" and self.Course == "    " then
-            self.Course = self.PreviousCourse
-            self.Menu = 0
-        end
-    elseif self.State == 1 and self.Menu == 2 then
-        if self.KeyInput == "Enter" and self.IndexValid == true then
-            self.State = 1
-            self.Menu = 0
-        elseif self.KeyInput == "Enter" and self.IndexValid == false then
-            self.Menu = 5
-            self.State = 3
-            -- print("Index Number invalid")
-            self.Train:SetNW2Bool("IBISError", true)
-            self.ErrorMoment = CurTime()
-        end
-    elseif self.State == 1 and self.Menu == 3 then
-        if self.KeyInput == "Enter" then self.Menu = 0 end
-    elseif self.State == 1 and self.Menu == 6 then
-        if self.KeyInput == "Enter" then
-            if self.ServiceAnnouncement ~= "00" and self.Menu == 6 and
-                self.IndexValid == true then
-
-                self:AnnQueue(
-                    self.ServiceAnnouncements[self.ServiceAnnouncement])
-
-                print(self.ServiceAnnouncements[self.ServiceAnnouncement])
-                self.Menu = 0
-            elseif self.ServiceAnnouncement == "00" then
-                self.Menu = 0
-                self.ServiceAnnouncement = "  "
-            else
-                self.State = 3
-                self.Train:SetNW2Bool("IBISError", true)
-                self.ErrorMoment = CurTime()
-            end
-        elseif self.KeyInput == "Delete" and self.ServiceAnnouncement == "  " then
-            self.Menu = 0
-        end
-    end
-    -- print(self.State, self.Menu)
-    if self.State == 0 and not self.CANBus and self.PowerOffMomentRegistered and
-        CurTime() - self.PowerOffMoment > 240 then
+    local function completeReset()
         self.LineLookupComplete = false
         self.BootupComplete = false
         self.Course = " " -- Course index number, format is LineLineCourseCourse
@@ -926,6 +464,160 @@ function TRAIN_SYSTEM:Think()
         self.CurrentStationInternal = 0
     end
 
+    self.ColdBoot = (CurTime() - self.PowerOffMoment > 240) -- The last parameters are kept in RAM for a while after the device was powered down. After that, we boot into the complete set-up.
+
+    if self.Menu > 0 then self:ReadDataset() end
+
+    self.PowerOn = (batteryOn and ibisKey) and 1 or 0
+    if batteryOn and ibisKey then
+        self.Train:SetNW2Bool("IBISPowerOn", true)
+        self.PowerOffMoment = 0
+        if not self.PowerOnRegistered then -- register timer variable for simulated bootup
+            self.PowerOnMoment = CurTime()
+            self.PowerOnRegistered = true
+            -- print("register",RealTime())
+        end
+        if CurTime() - self.PowerOnMoment > 5 then
+            self.Train:SetNW2Bool("IBISBootupComplete", true) -- register that simulated bootup wait has passed
+            self.Train:SetNW2Bool("IBISChime", true)
+            if self.ColdBoot and not self.ColdBootCompleted then
+                self.ColdBootCompleted = true
+                self.State = 2
+                self.Menu = 4
+            end
+        end
+    elseif batteryOn and not ibisKey then
+        resetState()
+    end
+
+    if self.State == 1 and self.Menu == 0 then
+        self.Train:SetNW2Bool("IBISError", false)
+        self.ServiceAnnouncement = " "
+        self.AnnouncementChar1 = " "
+        self.AnnouncementChar2 = " "
+        self.Train:SetNW2String("ServiceAnnouncement", "")
+        -- self.PhonedHome = false
+        if self.KeyInput == "7" then
+            self.Menu = 2
+        elseif self.KeyInput == "0" then
+            self.Menu = 1
+        elseif self.KeyInput == "Destination" then
+            self.Menu = 3
+        elseif self.KeyInput == "3" then
+            local indexlength = #self.RouteTable[self.CourseChar1 ..
+                                    self.CourseChar2][self.RouteChar1 ..
+                                    self.RouteChar2]
+            if indexlength > self.CurrentStationInternal then
+                self.CurrentStationInternal = self.CurrentStationInternal + 1
+
+                self.CurrentStation = self.RouteTable[self.CourseChar1 ..
+                                          self.CourseChar2][self.RouteChar1 ..
+                                          self.RouteChar2][self.CurrentStationInternal]
+            end
+            -- print indexlength
+        elseif self.KeyInput == "6" then
+            if self.CurrentStationInternal > 1 then
+                self.CurrentStationInternal = self.CurrentStationInternal - 1
+
+                self.CurrentStation = self.RouteTable[self.CourseChar1 ..
+                                          self.CourseChar2][self.RouteChar1 ..
+                                          self.RouteChar2][self.CurrentStationInternal]
+            end
+        elseif self.KeyInput == "ServiceAnnouncements" then
+            self.Menu = 6
+        elseif self.KeyInput == "9" then
+            self:Play(CurTime())
+        end
+    elseif self.State == 1 and self.Menu == 6 and self.KeyInput == "Enter" then
+        if self.ServiceAnnouncement ~= "00" and self.Menu == 6 then
+            self:AnnQueue(self.ServiceAnnouncements[self.ServiceAnnouncement])
+            print(self.ServiceAnnouncements[self.ServiceAnnouncement])
+            self.Menu = 0
+        elseif self.ServiceAnnouncement == "00" then
+            self.Menu = 0
+            self.ServiceAnnouncement = "  "
+        else
+            self.State = 3
+            self.Train:SetNW2Bool("IBISError", true)
+            self.ErrorMoment = CurTime()
+        end
+    elseif self.State == 1 and self.Menu == 6 and self.KeyInput == "Delete" and self.ServiceAnnouncement == "  " then
+        self.Menu = 0
+    end
+    --print(self.State, self.Menu)
+    if self.State == 0 and not self.CANBus and self.PowerOffMomentRegistered and
+        CurTime() - self.PowerOffMoment > 240 then completeReset() end
+    if self.State == 4 then -- We're in the defect state
+        if self.KeyInput == "Enter" then -- just confirm. Some IBIS devices just thought stuff was broken while it wasn't.
+            self.State = 1
+        end
+    end
+
+end
+
+function TRAIN_SYSTEM:Think()
+    local Train = self.Train
+
+    if not Train.BatteryOn or Train:ReadTrainWire(7) < 1 then return end -- why run anything when the train is off? fss.
+    self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes", 1)]
+    self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int("IBIS:Destinations", 1)]
+    self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA", 1)]
+    self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines", 1)]
+    self:UpdateState()
+    if Train.BatteryOn or Train:ReadTrainWire(7) > 0 then self:CANBusRunner() end
+
+    if self.Train.SkinCategory == "U2h" then
+        self.KeyInserted = self.Train.Duewag_U2.IBISKeyATurned or
+                               self.Train.Duewag_U2.IBISKeyBTurned
+    else
+        self.KeyInserted = false
+    end
+
+    -- Index number abstractions. An unset value is stored as -1, but we don't want the display to print -1. Instead, print a string of nothing.
+    self.Route = self.RouteChar1 .. self.RouteChar2
+    -- Make sure that displayed characters are never assigned the -1 value, because -1 symbolises an empty character. If something is -1, display empty.
+    self.DisplayedRouteChar1 =
+        tonumber(self.RouteChar1, 10) and self.RouteChar1 ~= " " and
+            self.RouteChar1 or " "
+    self.DisplayedRouteChar2 =
+        tonumber(self.RouteChar2, 10) and self.RouteChar2 ~= " " and
+            self.RouteChar2 or " "
+
+    self.DisplayedDestinationChar1 = tonumber(self.DestinationChar1, 10) and
+                                         self.DestinationChar1 ~= " " and
+                                         self.DestinationChar1 or " "
+    self.DisplayedDestinationChar2 = tonumber(self.DestinationChar2, 10) and
+                                         self.DestinationChar2 ~= " " and
+                                         self.DestinationChar2 or " "
+    self.DisplayedDestinationChar3 = tonumber(self.DestinationChar3, 10) and
+                                         self.DestinationChar3 ~= " " and
+                                         self.DestinationChar3 or " "
+
+    -- Apply the same principle as before to ensure that the CourseChar variables are valid.
+    self.DisplayedCourseChar1 = tonumber(self.CourseChar1, 10) and
+                                    self.CourseChar1 ~= " " and self.CourseChar1 or
+                                    " "
+    self.DisplayedCourseChar2 = tonumber(self.CourseChar2, 10) and
+                                    self.CourseChar2 ~= " " and self.CourseChar2 or
+                                    " "
+    self.DisplayedCourseChar3 = tonumber(self.CourseChar3, 10) and
+                                    self.CourseChar3 ~= " " and self.CourseChar3 or
+                                    " "
+    self.DisplayedCourseChar4 = tonumber(self.CourseChar4, 10) and
+                                    self.CourseChar4 ~= " " and self.CourseChar4 or
+                                    " "
+    self.Destination = tonumber(
+                           self.DestinationChar1 .. self.DestinationChar2 ..
+                               self.DestinationChar3, 10) or 000
+    self.ServiceAnnouncement = tonumber(self.AnnouncementChar1 ..
+                                            self.AnnouncementChar2, 10) and
+                                   self.AnnouncementChar1 ..
+                                   self.AnnouncementChar2 or " "
+
+    ----print("Course Number:"..self.Train:GetNW2String("IBIS:CourseChar1",nil)..self.Train:GetNW2String("IBIS:CourseChar2")..self.Train:GetNW2String("IBIS:CourseChar3")..self.Train:GetNW2String("IBIS:CourseChar4")..self.Train:GetNW2String("IBIS:CourseChar5"))
+
+    ----print("IBIS loaded")
+
     ----print(self.Route)
 
     -- math.Clamp(self.Route,0,99)
@@ -934,8 +626,7 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2Int("IBIS:State", self.State)
     Train:SetNW2Int("IBIS:Route", self.Route)
     Train:SetNW2Int("IBIS:Destination", self.Destination)
-    Train:SetNW2String("IBIS:DestinationText",
-                       self.DestinationTable[self.Destination])
+    Train:SetNW2String("IBIS:DestinationText", self.DestinationString)
     Train:SetNW2Int("IBIS:Course", self.Course)
     Train:SetNW2Int("IBIS:MenuState", self.Menu)
     Train:SetNW2Int("IBIS:Menu", self.Menu)
@@ -953,23 +644,10 @@ function TRAIN_SYSTEM:Think()
     Train:SetNW2String("IBIS:DestinationChar3", self.DestinationChar3)
     Train:SetNW2String("IBIS:ServiceAnnouncement", self.ServiceAnnouncement)
 
-    -- if self.KeyInput ~=nil then
     self:InputProcessor(self.KeyInput)
-    -- end
 
     self.Course = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3 ..
                       self.CourseChar4
-
-    -- print(self.Course)
-    if self.KeyInput ~= nil then
-        -- print(self.KeyInput)
-    end
-
-    -- SetGlobal2Int("TrainID"..self.TrainID,self.Course..self.Route..self.TrainID)
-    if self.Train.Duewag_U2.LeadingCab == 1 then
-        self:SyncIBIS()
-    else
-    end
 
     if self.CurrentStation ~= -1 and self.CurrentStation ~= nil and
         self.CurrentStation ~= 0 then
@@ -979,176 +657,103 @@ function TRAIN_SYSTEM:Think()
         self.Train:SetNW2String("CurrentStation", " ")
     end
 
-    -- print(self.CurrentStationInternal)
-    -- print(self.ServiceAnnouncements[1])
-    -- print(self.CurrentStation)
-    -- print(self.RBLSignedOff, "rbl signed off")
-    -- print(self.LineLookupComplete, "line lookup complete")
-    -- print(self.Course)
     if self.RouteChar1 .. self.RouteChar2 == "00" and self.CourseChar1 ..
         self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4 == "0000" then -- forget the current station if we're not on line anymore
         self.CurrentStation = 0
     end
 end
 
-function TRAIN_SYSTEM:RBLPhoneHome(Course)
-    if UF.RegisterTrain(Course, self.Train) == true and self.PhonedHome == false then
-        self.PhonedHome = true
-    end
-    if self.PhonedHome == true then
-        return true
-    else
-        return false
-    end
+function TRAIN_SYSTEM:ResetCharValues()
+    self.CourseChar1 = "0"
+    self.CourseChar2 = "0"
+    self.CourseChar3 = "0"
+    self.CourseChar4 = "0"
+    self.RouteChar1 = "0"
+    self.RouteChar2 = "0"
+    self.DestinationChar1 = "0"
+    self.DestinationChar2 = "0"
+    self.DestinationChar3 = "0"
+    self.State = 1
+    self.Menu = 0
 end
 
 function TRAIN_SYSTEM:ReadDataset()
-    ----print(tonumber(self.CourseChar1..self.CourseChar2,10))
-    ----print(self.LineTable[1])
-    ----print(tonumber(string.sub(self.Course, 1, 2)))
-    -- print(self.LineTable["01"])
-    if self.Menu == 1 and self.State == 1 or self.Menu == 4 and self.State < 3 then
-        if self.CourseChar1 ~= " " and self.CourseChar2 ~= " " and
-            self.CourseChar3 ~= " " and self.CourseChar4 ~= " " then -- reference the Line number with the provided dataset, self.Course contains the line number as part of the first two digits of the variable
-            local line = self.CourseChar1 .. self.CourseChar2
-            if self.LineTable[line] ~= nil then
-                self.IndexValid = true
-                -- print("Line Lookup succeeded", self.CourseChar1..self.CourseChar2..self.CourseChar3..self.CourseChar4)
-                -- print(self:RBLPhoneHome())
-                if self:RBLPhoneHome(self.Course, self.Train) and
-                    self.RBLRegistered == false then
+    --[[ [i!] Explanation for those who don't speak German or who haven't spent too much time with this oddware:
+    "Kurs" is is a two digit number that is appended to the line when entering the identification into the IBIS terminal.
+    It serves as an ID to identify the service within the bunch of services running on the line. You might be asking, why not the wagon number suffices
+    as an identifier. Well, one train firstly consists of multiple cars with multiple numbers so it can't serve as an ID for an entire train, and secondly,
+    the schedules are arranged in circulations. For instance, as a driver in the real world you might be assigned the circulation U79/11. That means you're the eleventh
+    train on the line, sent out neatly interspersed between the other services running the line. As such, the digital dispatching system is also organised so that a simple identifier is
+    appended onto the line number. The route that is entered in the next step is only relevant for actually automatically routing the train along the line's path.
 
-                    self.RBLRegistered = true
-                    self.RBLSignedOff = false
-                    print("IBIS logged onto RBL")
-                end
-                if self.RBLRegistered == true then
+    In this example, the line is made up of two digits, though other models supported three or more depending on local requirements, directly followed by the Kurs: [LLKK]
+    ]]
 
-                    self.RBLRegisterFailed = false
-                    self.RBLSignedOff = false
-                    print("IBIS logged onto RBL", self.CourseChar1 ..
-                              self.CourseChar2 .. self.CourseChar3 ..
-                              self.CourseChar4)
-                end
-                if self:RBLPhoneHome(self.CourseChar1 .. self.CourseChar2 ..
-                                         self.CourseChar3 .. self.CourseChar4,
-                                     self.Train) == false then
-
-                    self.RBLRegisterFailed = true
-                    self.RBLRegistered = false
-
-                end
-            elseif UF.RegisterTrain(self.CourseChar1 .. self.CourseChar2 ..
-                                        self.CourseChar3 .. self.CourseChar4,
-                                    self.Train) == "logoff" and
-                self.RBLRegistered == true and self.KeyInput == "Enter" then
-                self.IndexValid = true
-                self.RBLSignedOff = true
-                self.RBLRegistered = false
-                self.RBLRegisterFailed = false
-                self.LineLookupComplete = true
-                print("RegisterTrain logged off")
-                self.RouteChar1 = "0"
-                self.RouteChar2 = "0"
-            elseif self.LineTable[line] == nil and self.CourseChar1 ..
-                self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4 ~=
-                "0000" then
-                if self.KeyInput == "Enter" then
-                    self.IndexValid = false
-                    print("Index invalid")
-                    print(self.CourseChar1 .. self.CourseChar2 ..
-                              self.CourseChar3 .. self.CourseChar4)
-                end
-            end
-            if self.IndexValid == true and self.State == 2 then
-                self.Menu = self.Menu + 1
+    local line = self.Course:sub(1, 2)
+    if self.KeyInput == "Enter" and (self.Menu == 1 or self.Menu == 4) and self.State < 3 and self.LineTable[line] then
+        if self.State == 2 and UF.RegisterTrain(self.Course, self.Train) then -- state 2 equals cold boot sequence, so switch over to Route prompt
+            self.Menu = 5
+            print("test")
+            return
+        elseif UF.RegisterTrain(self.Course, self.Train) then
+            self.Menu = 0
+            self.IndexValid = true
+            return
+        end
+    elseif (self.Menu == 1 or self.Menu == 4) and self.State < 3 and
+        self.KeyInput == "Enter" then
+        if UF.RegisterTrain(self.Course, self.Train) == "logoff" then
+            self.Menu = 0
+            self.State = 0
+            self.RouteChar1 = "0"
+            self.RouteChar2 = "0"
+            return
+        end
+    elseif (self.Menu == 2 or self.Menu == 5) and self.State < 3 and
+        self.KeyInput == "Enter" and self.RouteChar2 ~= " " then
+        if self.RouteChar1 == " " and tonumber(self.RouteChar2, 10) then
+            self.RouteChar1 = "0"
+        end
+        local Route = self.RouteChar1 .. self.RouteChar2
+        if self.RouteTable[line] then
+            local routeTable = self.RouteTable[line][Route]
+            if routeTable then
+                print(routeTable[#routeTable])
+                local destchars = tostring(routeTable[#routeTable])
+                self.DestinationChar1 = destchars:sub(1, 1)
+                self.DestinationChar2 = destchars:sub(2, 2)
+                self.DestinationChar3 = destchars:sub(3, 3)
+                self.FirstStation = routeTable[1]
+                self.CurrentStation = self.FirstStation
+                self.CurrentStationInternal = 1
+                self.NextStation = self.RouteTable[self.CurrentStationInternal + 1]
+                self.Menu = 0
+                self.State = 1
+            else
+                self.Route = "00"
                 self.IndexValid = false
             end
-
-        end
-        self.LineLookupComplete = true
-
-    elseif self.Menu == 2 and self.State < 3 or self.Menu == 5 and self.State <
-        3 then
-        if self.RouteChar1 ~= " " and self.RouteChar2 ~= " " then
-            local line = self.CourseChar1 .. self.CourseChar2
-            if self.RouteTable[line] then
-                if self.RouteChar2 ~= " " and tonumber(self.RouteChar2, 10) < 10 and
-                    self.RouteChar1 == " " then -- treat a simple input of 1 to 9 as 01 to 09
-                    local AbstractedRoute = "0" .. self.RouteChar2
-                end
-                if not AbstractedRoute and
-                    self.RouteTable[line][self.RouteChar1 .. self.RouteChar2] then
-                    local destchars = self.RouteTable[line][self.RouteChar1 ..
-                                          self.RouteChar2][#self.RouteTable[line][self.RouteChar1 ..
-                                          self.RouteChar2]]
-                    self.DestinationChar1 = string.sub(destchars, 1, 1)
-                    self.DestinationChar2 = string.sub(destchars, 2, 2)
-                    self.DestinationChar3 = string.sub(destchars, 3, 3)
-                    self.FirstStation = self.RouteTable[line][self.RouteChar1 ..
-                                            self.RouteChar2][1]
-                    self.CurrentStation = self.FirstStation
-                    self.CurrentStationInternal = 1
-                    self.NextStation = self.RouteTable
-                    -- print(self.Destination.."Destination index")
-                    self.IndexValid = true
-                elseif AbstractedRoute and
-                    self.RouteTable[line][AbstractedRoute] then
-                    local destchars =
-                        self.RouteTable[line][AbstractedRoute][#self.RouteTable[line][AbstractedRoute]]
-                    self.DestinationChar1 = string.sub(destchars, 1, 1)
-                    self.DestinationChar2 = string.sub(destchars, 2, 2)
-                    self.DestinationChar3 = string.sub(destchars, 3, 3)
-                    self.FirstStation = self.RouteTable[line][self.RouteChar1 ..
-                                            self.RouteChar2][1]
-                    self.CurrentStation = self.FirstStation
-                    self.CurrentStationInternal = 1
-                    self.NextStation = self.RouteTable
-                    -- print(self.Destination.."Destination index")
-                    self.IndexValid = true
-                else
-                    -- self.State = 3
-                    self.Route = "0"
-                    self.IndexValid = false
-                end
-            elseif self.RouteChar1 .. self.RouteChar2 == "00" then
-                self.IndexValid = true
-                self.Route = "0"
-                self.CurrentStation = 0
-                self.CurrentStationInternal = 0
-            end
-        end
-    elseif self.Menu == 1 and self.State < 3 or self.Menu == 4 and self.State <
-        3 then
-        if self.RouteChar1 .. self.RouteChar2 == "00" then
-            self.IndexValid = true
-            self.Route = "0"
+        elseif self.RouteChar1 .. self.RouteChar2 == "00" then
+            self.Route = "00"
             self.CurrentStation = 0
             self.CurrentStationInternal = 0
+            self.IndexValid = true
         end
-    elseif self.Menu == 3 and self.State < 3 then
-
-        if self.Destination ~= "   " then -- reference the destination index number with the dataset
-
-            if self.DestinationTable[self.Destination] then
-                self.Destination = self.Destination
-                self.IndexValid = true
-            elseif self.DestinationChar1 .. self.DestinationChar2 ..
-                self.DestinationChar3 == "000" then
-                self.IndexValid = true
-            else
-                self.IndexValid = false
-            end
-        end
-    elseif self.Menu == 6 and self.State < 3 then
-        if self.ServiceAnnouncements[self.ServiceAnnouncement] then
-            -- self.ServiceAnnouncement = self.ServiceAnnouncement
+    elseif (self.Menu == 1 or self.Menu == 4) and self.State < 3 and self.RouteChar1 .. self.RouteChar2 == "00" then
+        self.CurrentStation = 0
+        self.CurrentStationInternal = 0
+        self.IndexValid = true
+    elseif self.Menu == 3 and self.State < 3 and self.Destination ~= "   " then
+        if self.DestinationTable[self.Destination] or self.DestinationChar1 ..
+            self.DestinationChar2 .. self.DestinationChar3 == "000" then
             self.IndexValid = true
         else
             self.IndexValid = false
         end
+    elseif self.Menu == 6 and self.State < 3 then
+        self.IndexValid = self.ServiceAnnouncements[self.ServiceAnnouncement] ~=
+                              nil
     end
-
 end
 
 if CLIENT then
@@ -1183,58 +788,29 @@ function TRAIN_SYSTEM:AnnQueue(msg)
         Announcer:Queue(msg)
     end
 end
-
-function TRAIN_SYSTEM:Play()
+TRAIN_SYSTEM.lastTrigger = 0
+function TRAIN_SYSTEM:Play(time)
     local message = {}
+    if CurTime() - self.lastTrigger < 1.5 then print("Bailing Play()",lastTrigger) return end
+    self.lastTrigger = time
+    
 
-    local tbl = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int(
-                    "IBIS:Announcements", 1)][self.CurrentStation][self.CourseChar1 ..
-                    self.CourseChar2][self.Route]
-    local station = false
-
-    for k, v in ipairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int(
-                           "IBIS:AnnouncementScript", 1)]) do
-
-        for ke, va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int(
-                                "IBIS:AnnouncementScript", 1)]) do
-            if v == ke then table.insert(message, 1, va) end
+    local line = self.CourseChar1 .. self.CourseChar2
+    local commonFiles = UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:CommonFiles", 1)]
+    local announcementScript = UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript", 1)]
+    for k, v in ipairs(announcementScript) do
+        if v ~= "station" and type(commonFiles[v][1]) == "string" then
+            print(commonFiles[v][1])
+            local temp = {
+                [1] = {[commonFiles[v][1]] = commonFiles[v][2]}
+            }
+            table.Add(message,temp)
+        elseif announcementScript[k] == "station" then
+            temp = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int("IBIS:Announcements", 1)][self.CurrentStation][line][self.Route]
+            table.Add(message,temp)
         end
-
+        if k == #announcementScript then self:AnnQueue(message) return end
     end
-
-    self:AnnQueue(message)
-    if station == false then
-        station = true
-        for key, value in ipairs(tbl) do
-            local stbl = tbl[key]
-            for ky, vl in pairs(stbl) do
-                message = {}
-                local pairTable = {}
-                print(ky, vl)
-                pairTable[ky] = vl
-                table.insert(message, pairTable)
-                self:AnnQueue(message)
-            end
-
-        end
-    end
-    if station == true then
-        message = {}
-        for k, v in ipairs(UF.IBISAnnouncementScript[self.Train:GetNW2Int(
-                               "IBIS:AnnouncementScript", 1)]) do
-            if k ~= 1 and v ~= "station" then
-                for ke, va in pairs(UF.IBISCommonFiles[self.Train:GetNW2Int(
-                                        "IBIS:AnnouncementScript", 1)]) do
-                    if v == ke then
-                        table.insert(message, 1, va)
-                    end
-                end
-            end
-            if next(message) then self:AnnQueue(message) end
-        end
-
-    end
-
 end
 
 if SERVER then
@@ -1320,17 +896,22 @@ if SERVER then
         end
     end
     function TRAIN_SYSTEM:Announcement(Input)
-		--print(self.AnnouncementChar1,self.AnnouncementChar2)
-        if Input == nil or not tonumber(Input,10) and Input ~= "Enter" and Input ~= "Delete" then return end
+        -- print(self.AnnouncementChar1,self.AnnouncementChar2)
+        if Input == nil or not tonumber(Input, 10) and Input ~= "Enter" and
+            Input ~= "Delete" then return end
 
-        if Input ~= nil and tonumber(Input, 10) and self.AnnouncementChar1 == " " and self.AnnouncementChar2 == " " then 
+        if Input ~= nil and tonumber(Input, 10) and self.AnnouncementChar1 ==
+            " " and self.AnnouncementChar2 == " " then
             self.AnnouncementChar2 = Input
-		elseif Input ~= nil and tonumber(Input, 10) and self.AnnouncementChar2 ~= " " and not (tonumber(self.AnnouncementChar1,10) and tonumber(self.AnnouncementChar2,10)) then
-			self.AnnouncementChar1 = self.AnnouncementChar2
-			self.AnnouncementChar2 = Input
+        elseif Input ~= nil and tonumber(Input, 10) and self.AnnouncementChar2 ~=
+            " " and not (tonumber(self.AnnouncementChar1, 10) and
+            tonumber(self.AnnouncementChar2, 10)) then
+            self.AnnouncementChar1 = self.AnnouncementChar2
+            self.AnnouncementChar2 = Input
         end
 
-        if Input == "Delete" and Input ~= nil and (self.AnnouncementChar2 ~= " " or self.AnnouncementChar1 ~= " ") then
+        if Input == "Delete" and Input ~= nil and
+            (self.AnnouncementChar2 ~= " " or self.AnnouncementChar1 ~= " ") then
             self.AnnouncementChar2 = self.AnnouncementChar1
             self.AnnouncementChar1 = " "
         end

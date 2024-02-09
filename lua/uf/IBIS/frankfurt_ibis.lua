@@ -188,8 +188,7 @@ UF.AddIBISDestinations("Frankfurt", {
 
 })
 UF.AddIBISAnnouncementScript("Frankfurt",
-                             { -- The general routine for announcement. Strings are from UF.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
-
+    { -- The general routine for announcement. Strings are from UF.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
     [1] = "next_station",
     [2] = "station"
 })
