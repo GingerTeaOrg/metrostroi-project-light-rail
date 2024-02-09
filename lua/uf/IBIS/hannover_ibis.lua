@@ -95,7 +95,7 @@ UF.AddIBISRoutes("Hannover", { -- Format: [Line] = {[RouteNumber] = {StationNumb
 
 UF.AddIBISAnnouncementScript("Hannover", {[1] = "gong", [2] = "station"})
 
-UF.AddIBISCommonFiles("Hannover", {["gong"] = {["lilly/uf/IBIS/announcements/hannover/common/gong.mp3"] = 1.3}})
+UF.AddIBISCommonFiles("Hannover", {["gong"] = {"lilly/uf/IBIS/announcements/hannover/common/gong.mp3", 1.3}})
 
 UF.AddIBISAnnouncementMetadata("Hannover",
                                { -- format: {[station] = {[line] = {[route] = {[audiofile] = seconds}}}} | Sets the "station" element announcement routine for each station on a basis of line, route

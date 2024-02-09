@@ -1481,9 +1481,9 @@ UF.AddIBISAnnouncementMetadata("Frankfurt",
 
 UF.AddIBISCommonFiles("Frankfurt", {
     ["next_station"] = {
-        ["lilly/uf/IBIS/announcements/ffm/ubahn/common/next_station.mp3"] = 1.2
+        "lilly/uf/IBIS/announcements/ffm/ubahn/common/next_station.mp3", 1.2,
     },
     ["terminus"] = {
-        ["lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3"] = 2
+        "lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3", 2
     }
 })
