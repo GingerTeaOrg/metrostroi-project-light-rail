@@ -25,7 +25,7 @@ local function consumeFromFeeder(inCurrent, inFeeder)
 end
 
 local prevTime
-hook.Add("Think", "UF_ElectricConsumptionThink", function()
+--[[hook.Add("Think", "UF_ElectricConsumptionThink", function()
     -- Change in time
     prevTime = prevTime or CurTime()
     local deltaTime = (CurTime() - prevTime)
@@ -104,7 +104,7 @@ hook.Add("Think", "UF_ElectricConsumptionThink", function()
         UF.Voltages[i] = math.max(0,voltage - UF.Currents[i]*Rfeed)
     end
     --print(Format("%5.1f v %.0f A",UF.Voltage,UF.Current))
-end)
+end)]]
 
 concommand.Add("mplr_electric", function(ply, _, args) -- (%.2f$) UF.GetEnergyCost(UF.TotalkWh),
     local m = Format("[%25s] %010.3f kWh, %.3f kW (%5.1f v, %4.0f A)","<total>",
