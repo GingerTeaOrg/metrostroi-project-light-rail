@@ -2,27 +2,47 @@ Metrostroi.DefineSystem("1973_panel")
 
 function TRAIN_SYSTEM:Initialize()
 
-    self.Train:LoadSystem("WarningAnnouncement","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("Ventilation","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("IgnitionKey","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("UncouplingKey","Relay","Switch", {bass = true})
+
+    self.Train:LoadSystem("ParrallelMotors","Relay","Switch", {bass = true, normally_closed = true})
+
     self.Train:LoadSystem("Deadman","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("PantoUp","Relay","Switch", {bass = true})
+
     self.Train:LoadSystem("DoorsUnlock","Relay","Switch", {bass = true})
     self.Train:LoadSystem("DoorsLock","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("DoorsCloseConfirm","Relay","Switch", {bass = true})
     self.Train:LoadSystem("DoorsSelectRight","Relay","Switch", {bass = true})
     self.Train:LoadSystem("DoorsSelectLeft","Relay","Switch", {bass = true})
     self.Train:LoadSystem("Door1","Relay","Switch",{bass = true})
-    self.Train:LoadSystem("Battery","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("DoorsForceOpen","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("DoorsForceClose","Relay","Switch", {bass = true})
+
+    self.Train:LoadSystem("MirrorLeft","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("MirrorRight","Relay","Switch", {bass = true})
+
+    self.Train:LoadSystem("SwitchLeft","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("SwitchRight","Relay","Switch", {bass = true})
+
+    self.Train:LoadSystem("BreakerOn","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("BreakerOff","Relay","Switch", {bass = true})
+
+    self.Train:LoadSystem("PantographOn","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("PantographOff","Relay","Switch", {bass = true})
+
     self.Train:LoadSystem("Headlights","Relay","Switch", {bass = true})
     self.Train:LoadSystem("WarnBlink","Relay","Switch", {bass = true, normally_closed = false})
     self.Train:LoadSystem("DriverLight","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("BatteryDisable","Relay","Switch", {bass = true})
+
     self.Train:LoadSystem("BlinkerRight","Relay","Switch", {bass = true})
     self.Train:LoadSystem("BlinkerLeft","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("PassengerOverground","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("PassengerUnderground","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("PantographRaise","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("PantographLower","Relay","Switch", {bass = true})
+
+
+    self.Train:LoadSystem("StepsHigh","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("StepsLow","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("StepsLowest","Relay","Switch", {bass = true})
+
+
+
     self.Train:LoadSystem("ReleaseHoldingBrake","Relay","Switch", {bass = true})
     self.Train:LoadSystem("SetHoldingBrake","Relay","Switch", {bass = true})
     self.Train:LoadSystem("Bell","Relay","Switch", {bass = true})
@@ -49,9 +69,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("Parralel", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("Highbeam", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("Blinker", "Relay", {bass = true})
-    self.Train:LoadSystem("ReduceBrake", "Relay", {bass=true})
-    self.Train:LoadSystem("DoorsLeft", "Relay", "Switch", {bass=true})
-    self.Train:LoadSystem("DoorsRight", "Relay", "Switch", {bass=true})
+ 
     self.Train:LoadSystem("Button1a", "Relay", "Switch", {bass=true})
     self.Train:LoadSystem("Button2a", "Relay", "Switch", {bass=true})
     self.Train:LoadSystem("Button3a", "Relay", "Switch", {bass=true})
@@ -61,67 +79,57 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("Button7a", "Relay", "Switch", {bass=true})
     self.Train:LoadSystem("Button8a", "Relay", "Switch", {bass=true})
 
-    self.Button1a = 0
-    self.Button2a = 0
-    self.Button3a = 0
-    self.Button4a = 0
-    self.Button5a = 0
-    self.Button6a = 0
-    self.Button7a = 0
-    self.Button8a = 0
 
+    self.IgnitionKey = 0
+    self.UncouplingKey = 0
 
-    self.ReduceBrake = 0
+    self.ParrallelMotors = 1
 
-    self.Blinker = 0
-    self.Highbeam = 0
+    self.Deadman = 1
+
+    self.AnnouncementPlaying = 0
+
+    self.DoorsUnlock = 0
+    self.DoorsLock = 0
+    self.DoorsSelectRight = 0
+    self.DoorsSelectLeft = 0
+    self.Door1 = 0
+    self.DoorsForceOpen = 0
+    self.DoorsForceClose = 0
+
+    self.MirrorLeft = 0
+    self.MirrorRight = 0
+
+    self.SwitchLeft = 0
+    self.SwitchRight = 0
+
+    self.BreakerOn = 0
+    self.BreakerOff = 0
+
+    self.PantographOn = 0
+    self.PantographOff = 0
+
+    self.Headlights = 0
+    self.WarnBlink = 0
+    self.DriverLight = 0
+
     self.BlinkerLeft = 0
     self.BlinkerRight = 0
-    self.DoorsLock = 0
-    self.WarnBlink = 0
-    self.AnnouncerPlaying = 0
-    self.Number0 = 0
-    self.Number1 = 0
-    self.Number2 = 0
-    self.Number3 = 0
-    self.Number4 = 0
-    self.Number5 = 0
-    self.Number6 = 0
-    self.Number7 = 0
-    self.Number8 = 0
-    self.Number9 = 0
-    self.Enter = 0
-    self.Delete = 0
-    self.Destination = 0
-    self.DateAndTime = 0
-    self.SpecialAnnouncements = 0
-    self.Door1 = 0
+
+    self.StepsHigh = 0
+    self.StepsLow = 0
+    self.StepsLowest = 0
+
     self.Bell = 0
     self.Horn = 0
-    self.WarningAnnouncement = 0
-    self.PantoUp = 0
-    self.DoorsCloseConfirm = 0
-    self.SetHoldingBrake = 0
-    self.ReleaseHoldingBrake = 0
-    self.PassengerOverground = 0
-    self.PassengerUnderground = 0
-    self.PantographRaise = 0
-    self.PantographLower = 0
-    self.DoorsCloseConfirm = 0
-    self.SetPointRight = 0
-    self.SetPointLeft = 0
+
     self.ThrowCoupler = 0
-    self.DoorsUnlock = 0
-    self.DoorCloseSignal = 0
+
+
     
-    self.Parralel = 0
-    self.Headlights = 0
-    
-    self.DoorsLeft = 0
-    self.DoorsRight = 0
 
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return {"BlinkerRight","BlinkerLeft","WarnBlink","Microphone","BellEngage","Horn","WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn","PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination","Delete","Route","DateAndTime","SpecialAnnouncements","Headlights"}
+    return {"IgnitionKey","UncouplingKey","ParrallelMotors","Deadman","AnnouncementPlaying","DoorsUnlock","DoorsLock","DoorsSelectRight","DoorsSelectLeft","Door1","DoorsForceOpen","DoorsForceClose","MirrorLeft","MirrorRight","SwitchLeft","SwitchRight","BreakerOn","BreakerOff","PantographOn","PantographOff","Headlights","WarnBlink","DriverLight","BlinkerLeft","BlinkerRight","StepsHigh","StepsLow","StepsLowest","Bell","Horn","ThrowCoupler"}
 end
