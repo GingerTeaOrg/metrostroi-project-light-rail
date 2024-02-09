@@ -28,6 +28,27 @@ function ENT:CreatePanto(pos, ang, typ)
 
 end
 
+function ENT:CreateSectionB(pos,ang,ent)
+    ang = ang or Angle(0, 0, 0)
+    local SectionB = ents.Create(ent)
+    SectionB.ParentTrain = self
+    self:SetNWEntity("U2b", SectionB)
+    SectionB:SetNWEntity("U2a", self)
+    -- self.SectionB = u2b
+    SectionB:SetPos(self:LocalToWorld(Vector(0, 0, 0)))
+    SectionB:SetAngles(self:GetAngles() + ang)
+    SectionB:Spawn()
+    SectionB:SetOwner(self:GetOwner())
+    local xmin = 5
+    local xmax = 5
+    constraint.AdvBallsocket(SectionB, self.MiddleBogey, 0, 0, Vector(0, 0, 0), Vector(0, 0, 0), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+    table.insert(self.TrainEntities, SectionB)
+    constraint.NoCollide(self.MiddleBogey, SectionB, 0, 0)
+    constraint.NoCollide(self, SectionB, 0, 0)
+
+    return SectionB
+end
+
 function ENT:CreateCustomCoupler(pos, ang, forward, typ, a_b)
     -- Create bogey entity
     local coupler = ents.Create("gmod_train_uf_couple")
@@ -293,7 +314,7 @@ function ENT:Initialize()
     self:LoadSystem("FailSim")
 
 
-    if Wire_CreateInputs then
+    --[[if Wire_CreateInputs then
         -- Initialize wire interface
         self.WireIOSystems = self.WireIOSystems or {"Pneumatic"}
         self.WireIOIgnoreList = self.WireIOIgnoreList
@@ -369,12 +390,12 @@ function ENT:Initialize()
             end
         end
 
-        self.Inputs = WireLib.CreateSpecialInputs(self,inputs,inputTypes)
-        self.Outputs = WireLib.CreateSpecialOutputs(self,outputs,outputTypes)
+        --self.Inputs = WireLib.CreateSpecialInputs(self,inputs,inputTypes)
+        --self.Outputs = WireLib.CreateSpecialOutputs(self,outputs,outputTypes)
     else
         self.WireIOSystems = {}
         self.WireIOIgnoreList = {}
-    end
+    end]]
 
 
 
@@ -1290,6 +1311,7 @@ end)
 -- Turn light on or off
 --------------------------------------------------------------------------------
 function ENT:SetLightPower(index,power,brightness)
+    local prevLightData = prevLightData or {}
     local lightData = self.Lights[index]
     self.GlowingLights = self.GlowingLights or {}
     self.LightBrightness = self.LightBrightness or {}
@@ -1852,19 +1874,7 @@ function ENT:Think()
         -- Wire outputs
         --local triggerOutput = self.TriggerOutput
     end
-    for _,name in pairs(self.WireIOSystems) do
-        local system = self.Systems[name]
-        if system and system.OutputsList then
-            for _,name in pairs(system.OutputsList) do
-                local varname = (system.Name or "")..name
-                if type(system[name]) ==  "boolean" then
-                    self.TriggerOutput(self,varname,system[name] and 1 or 0)
-                else
-                    self.TriggerOutput(self,varname,tonumber(system[name]) or 0)
-                end
-            end
-        end
-    end
+
     --[[ for k,v in pairs(self.TrainWireTurbostroi) do
         self:WriteTrainWire(k,v)
     end
