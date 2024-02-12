@@ -858,7 +858,7 @@ function ENT:Think(dT)
         self.AllDoorsAreClosed = self.Duewag_U2:CheckDoorsAllClosed(self.DoorsPreviouslyUnlocked) and true or false
         self:SetNW2Bool("DoorCloseAlarm", (self.DoorsPreviouslyUnlocked and not self.DoorsUnlocked and self.AllDoorsAreClosed and not self.DoorsClosedAlarmAcknowledged and self.Duewag_U2.ReverserInsertedA == true) and true or false)
 
-        print(self.AllDoorsAreClosed)
+        --print(self.AllDoorsAreClosed)
         if self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > 0 then
             self:ReturnOpenDoors()
             self.RightDoorsOpen = true
@@ -1453,7 +1453,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number0Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number0", RealTime())
+            self.IBIS:Trigger("0", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1476,7 +1476,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number1Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number1", RealTime())
+            self.IBIS:Trigger("1", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1487,7 +1487,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number2Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number2", RealTime())
+            self.IBIS:Trigger("2", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1498,7 +1498,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number3Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number3", RealTime())
+            self.IBIS:Trigger("3", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1509,7 +1509,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number4Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number4", RealTime())
+            self.IBIS:Trigger("4", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1520,7 +1520,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number5Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number5", RealTime())
+            self.IBIS:Trigger("5", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1531,7 +1531,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number6Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number6", RealTime())
+            self.IBIS:Trigger("6", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1542,7 +1542,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number7Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number7", RealTime())
+            self.IBIS:Trigger("7", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1553,7 +1553,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number8Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number8", RealTime())
+            self.IBIS:Trigger("8", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
@@ -1564,7 +1564,7 @@ function ENT:OnButtonPress(button, ply)
     if button == "Number9Set" then
         if self.IBISKeyRegistered == false then
             self.IBISKeyRegistered = true
-            self.IBIS:Trigger("Number9", RealTime())
+            self.IBIS:Trigger("9", RealTime())
             self:SetNW2Bool("IBISKeyBeep", true)
         else
             self.IBIS:Trigger(nil)
