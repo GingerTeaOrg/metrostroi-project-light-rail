@@ -392,6 +392,24 @@ ENT.Spawner = {
 			end
 		end
 	},
+		{
+		"IBISData8",
+		"IBIS Common Files",
+		"List",
+		function(ent)
+			local Announcer = {}
+			for k, v in pairs(UF.IBISCommonFiles or {}) do Announcer[k] = v.name end
+			return Announcer
+		end,
+		nil,
+		function(ent, val, rot, i, wagnum, rclk)
+			if UF.IBISCommonFiles and val == 1 then
+				ent:SetNW2Int("IBIS:CommonFiles", 1)
+			else
+				ent:SetNW2Int("IBIS:CommonFiles", val)
+			end
+		end
+	},
 	{
 		"U2Signs",
 		"Rollsign Texture",
