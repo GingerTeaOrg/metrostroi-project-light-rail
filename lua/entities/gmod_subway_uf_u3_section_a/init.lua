@@ -52,9 +52,9 @@ function ENT:Initialize()
     self.DoorLockSignalMoment = 0
     self.DoorsOpen = false
     -- Create bogeys
-    self.FrontBogey = self:CreateCustomBogey(Vector(345, 0, 10), Angle(0, 180, 0),
+    self.FrontBogey = self:CreateBogeyUF(Vector(345, 0, 10), Angle(0, 180, 0),
                                          true, "duewag_motor", "a")
-    self.MiddleBogey = self:CreateCustomBogey(Vector(0, 0, 11.5), Angle(0, 0, 0),
+    self.MiddleBogey = self:CreateBogeyUF(Vector(0, 0, 11.5), Angle(0, 0, 0),
                                           false, "u3joint", "a")
     self:SetNWEntity("FrontBogey", self.FrontBogey)
 
@@ -69,7 +69,7 @@ function ENT:Initialize()
 
     -- Create U3 Section B
     self.SectionB = self:CreateSectionB(Vector(-780, 0, -12))
-    self.RearBogey = self:CreateCustomBogey(Vector(-345, 0, 10), Angle(0, 180, 0),
+    self.RearBogey = self:CreateBogeyUF(Vector(-345, 0, 10), Angle(0, 180, 0),
                                         false, "duewag_motor", "b")
 
     self.RearCouple = self:CreateCustomCoupler(Vector(-465, 0, 12),
