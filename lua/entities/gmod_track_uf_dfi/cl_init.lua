@@ -136,6 +136,8 @@ function ENT:Initialize()
 	local ang = self:GetAngles()
 	
 	local pos = self:GetPos()
+
+	self.LEDMaterial = CreateMaterial("LED","UnlitGeneric",{["$basetexture"] = "color/white",})
 	
 	self.Hours = ents.CreateClientProp("models/lilly/uf/stations/dfi_hands_hours.mdl")
 	self.Minutes = ents.CreateClientProp("models/lilly/uf/stations/dfi_hands_minutes.mdl")
@@ -352,7 +354,9 @@ function ENT:Draw()
 	elseif mode == 0 then
 
 		cam.Start3D2D(pos, ang, 0.03)
+
 			self:Mode0()
+
 		cam.End3D2D()
 		cam.Start3D2D(pos2, ang2, 0.03)
 			self:Mode0()
@@ -362,6 +366,7 @@ function ENT:Draw()
 end
 
 function ENT:OnRemove()
+	if not IsValid(self.Hours) then return end
 	self.Hours:Remove()
 	self.Minutes:Remove()
 end
@@ -375,49 +380,48 @@ local ledSize = 7.62 -- Size of each LED element
 local circleCache = {}
 
 function ENT:Circle(x, y, radius, seg)
-	local cir = {}
-	local segment = 360 / seg
-	local sinCache, cosCache = {}, {}
-	local amberColor = Color(255, 140, 0)
-	
-	for i = 0, seg do
-		local angle = math.rad(i * segment)
-		local sinVal, cosVal = sinCache[i], cosCache[i]
-		
-		if not sinVal then
-			sinVal, cosVal = math.sin(angle), math.cos(angle)
-			sinCache[i], cosCache[i] = sinVal, cosVal
-		end
-		
-		local px, py = x + sinVal * radius, y + cosVal * radius
-		local u, v = sinVal * 0.5 + 0.5, cosVal * 0.5 + 0.5
-		
-		table.insert(cir, { x = px, y = py, u = u, v = v })
-	end
-	
-	
-	surface.SetDrawColor(amberColor)
-	surface.DrawPoly(cir)
-	--surface.SetDrawColor(amberColor)
+    local cir = {}
+    local segment = 360 / seg
+    local sinCache, cosCache = {}, {}
+
+    for i = 0, seg do
+        local angle = math.rad(i * segment)
+        local sinVal, cosVal = sinCache[i], cosCache[i]
+
+        if not sinVal then
+            sinVal, cosVal = math.sin(angle), math.cos(angle)
+            sinCache[i], cosCache[i] = sinVal, cosVal
+        end
+
+        local px, py = x + sinVal * radius, y + cosVal * radius
+        local u, v = sinVal * 0.5 + 0.5, cosVal * 0.5 + 0.5
+
+        table.insert(cir, { x = px, y = py, u = u, v = v })
+    end
+
+    return cir
 end
 
-
-
-
-
-
-
-
--- Function to draw an LED at the specified position with color
 function ENT:drawLED(x, y)
-	local scaling = (math.ceil(1200 / self.dist))
-	scaling = math.floor(scaling / 4) * 4
-	LoD = math.Clamp(scaling,3,20)
-	self:Circle(-500 + x, -15 + y, ledSize / 2, 20)
+    local scaling = (math.ceil(1200 / self.dist))
+    scaling = math.floor(scaling / 4) * 4
+    local LoD = math.Clamp(scaling,3,20)
+    local amberColor = Color(255, 140, 0)
+	
+    --render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+    --render.PushFilterMin(TEXFILTER.ANISOTROPIC)
+    surface.SetDrawColor(amberColor)
+	render.SetMaterial(self.LEDMaterial)
+    local cir = self:Circle(-500 + x, -15 + y, ledSize / 2, LoD)
+    surface.DrawPoly(cir)
+
+    --render.PopFilterMag()
+    --render.PopFilterMin()
 end
+
 
 function ENT:NewDisplay(msg)
-	if self.dist >= 1200 then return end
+	if self.dist >= 3200 then return end
 	
 	local startX = ledX or 0
 	local xOffset = 0
@@ -542,7 +546,7 @@ end
 
 function ENT:Mode2()
 	self.LinePosX = 0
-	
+	if not self.Line1String then return end
 	local DestWidth = 0 --set up the width register for centering the text
 	
 	local str = self.Train1DestinationString
