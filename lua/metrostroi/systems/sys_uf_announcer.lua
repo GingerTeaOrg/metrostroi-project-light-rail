@@ -84,17 +84,9 @@ if SERVER then
             self.Playing = false -- we're not playing anything anymore
         end
 
-        while #self.Schedule > 0 and
-            (not self.AnnounceTimer or CurTime() - self.AnnounceTimer > 0) do
-            self:dumpTable(self.Schedule, 5)
+        while #self.Schedule > 0 and (not self.AnnounceTimer or CurTime() - self.AnnounceTimer > 0) do
             local tbl = table.remove(self.Schedule, 1)
-            self:dumpTable(tbl, 5)
-            if type(tbl) == "number" then
-                if tbl == -1 then
-                else
-                    self.AnnounceTimer = CurTime() + tbl
-                end
-            elseif type(tbl) == "table" then
+            if type(tbl) == "table" then
                 for k, v in pairs(tbl) do
                     self:WriteMessage(k)
                     self.AnnounceTimer = CurTime() + v
