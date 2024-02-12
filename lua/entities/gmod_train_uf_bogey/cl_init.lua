@@ -143,7 +143,7 @@ function ENT:Think()
             end
         end
 
-        self.MotorSoundType = self:GetNWString("MotorSoundType","U2")
+        self.MotorSoundType = self:GetNWInt("MotorSoundType",0)
         self.DisableEngines = self:GetNWBool("DisableEngines")
         
         self.MotorSoundArr = UF.BogeySounds.EngineSNDConfig[self.MotorSoundType]
