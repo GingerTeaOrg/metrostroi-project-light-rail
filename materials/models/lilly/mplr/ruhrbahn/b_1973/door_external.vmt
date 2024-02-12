@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/mplr/ruhrbahn/b_1973/door_external"
+	"$surfaceprop" "Metal"
+	"$alphatest" 1
+}

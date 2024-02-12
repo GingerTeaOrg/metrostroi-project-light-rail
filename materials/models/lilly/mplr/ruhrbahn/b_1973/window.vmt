@@ -4,6 +4,6 @@
 	//"$translucent" 1
 	"$surfaceprop" "Glass"
 	"$model"	1
-	"$alphatest" 1
+	"$translucent" 1
 	"$envmapmask" "models/lilly/uf/u2/u2h/windows-env"
 }

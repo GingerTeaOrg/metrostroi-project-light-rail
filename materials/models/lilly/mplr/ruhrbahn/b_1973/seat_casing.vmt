@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/mplr/ruhrbahn/b_1973/seat_casing"
+	"$surfaceprop" "Metal_Box"
+	"$alphatest" 1
+}

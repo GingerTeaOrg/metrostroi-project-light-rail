@@ -2,4 +2,7 @@
 {
 	"$basetexture" "models/lilly/mplr/ruhrbahn/b_1973/body"
 	"$alphatest" 1
+	$surfaceprop metal
+	$envmap			env_cubemap
+	$envmapmask		"models/lilly/mplr/ruhrbahn/b_1973/body_env"
 }
