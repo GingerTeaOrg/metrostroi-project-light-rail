@@ -9,6 +9,10 @@ ENT.Types = {
         "models/lilly/uf/panto_diamond.mdl",
         Vector(0,0.0,-7),Angle(0,0,0),
     },
+    ["einholm"] = {
+        "models/lilly/uf/panto_einholm.mdl",
+        Vector(0,0.0,0),Angle(0,0,0),
+    },
 }
 
 
@@ -42,7 +46,7 @@ function ENT:Initialize()
     self.CheckTimeout = 0
     self.NoPhysics = false
     self.PantoType = {}
-    self:SetModelScale(0.85,1)
+    --self:SetModelScale(0.85,1)
     self.SoundPlayed = false
 end
 
@@ -93,8 +97,7 @@ function ENT:CheckContact(pos,dir)
 
     if IsValid(traceEnt) and traceEnt:GetClass() == "player" and UF.Voltage > 40 then --if the player hits the bounding box, unalive them
         local pPos = traceEnt:GetPos()
-        util.BlastDamage(traceEnt,traceEnt,pPos,64,3.0*self.Voltage)
-        
+        util.BlastDamage(traceEnt,traceEnt,pPos,64,3.0*UF.Voltage)
         local effectdata = EffectData()
         effectdata:SetOrigin(pPos + Vector(0,0,-16+math.random()*(40+0)))
         util.Effect("cball_explode",effectdata,true,true)
