@@ -31,13 +31,14 @@ function TRAIN_SYSTEM:TriggerInput(name,value)
     if name == "Charge" then self.Charging = value end
 end
 function TRAIN_SYSTEM:Think(dT)
+    if not self.Train.CircuitOn then return end
     -- Calculate discharge
-    self.Current = 0--self.Train.KVC.Value*90*(self.Train.PowerSupply.XT3_1 > 0 and 3 or -1 + 4*self.Train:ReadTrainWire(27))*50*self.Train.Panel["V1"]
+    self.Current = 0 --theoretically possible to calculate, but would necessitate electrical schematics to calculate the bottom line electrical consumption of all LV devices
     --print(self.Train.Panel["V1"])
-    self.Charge = math.min(self.Capacity,self.Charge + self.Current * dT)
+    self.Charge = math.min(self.Capacity,self.Charge + self.Charging * dT)
 
     -- Calculate battery voltage
-    if self.Train.BatteryOn == 1 then
+    if self.Train.CircuitOn > 0 then
         self.Voltage = 24*(self.Charge/self.Capacity)
     else
         self.Voltage = 24*(self.Charge/self.Capacity) + (self.Charging > 0 and 24 or 0)
