@@ -76,7 +76,7 @@ function ENT:Initialize()
                                                Angle(0, 180, 0), false, "u2",
                                                "b")
     self.Panto =
-        self:CreatePanto(Vector(35, 0, 128), Angle(0, 90, 0), "diamond")
+        self:CreatePanto(Vector(38, 0, 128), Angle(0, 180, 0), "einholm")
     self.PantoUp = false
 
     self.ReverserInsert = false
@@ -913,6 +913,7 @@ function ENT:OnButtonPress(button, ply)
         self.Panel.PantographRaise = 1
         if self.Duewag_U3.BatteryOn == true then
             self.PantoUp = true
+            self:SetNW2Bool("PantoUp",true)
             if self:ReadTrainWire(6) > 0 then
                 self:WriteTrainWire(17, 0)
             end
@@ -921,6 +922,7 @@ function ENT:OnButtonPress(button, ply)
     end
     if button == "PantographLowerSet" then
         if self.Duewag_U3.BatteryOn == true then
+            self:SetNW2Bool("PantoUp",false)
             self.PantoUp = false
             if self:ReadTrainWire(6) > 0 then
                 self:WriteTrainWire(17, 0)
