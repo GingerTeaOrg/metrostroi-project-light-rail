@@ -3,6 +3,7 @@ Metrostroi.DefineSystem("1973_panel")
 function TRAIN_SYSTEM:Initialize()
 
     self.Train:LoadSystem("IgnitionKey","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("IgnitionKeyInserted","Relay","Switch", {bass = true})
     self.Train:LoadSystem("UncouplingKey","Relay","Switch", {bass = true})
 
     self.Train:LoadSystem("ParrallelMotors","Relay","Switch", {bass = true, normally_closed = true})
@@ -30,7 +31,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("PantographOff","Relay","Switch", {bass = true})
 
     self.Train:LoadSystem("Headlights","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("WarnBlink","Relay","Switch", {bass = true, normally_closed = false})
+    self.Train:LoadSystem("HazardBlink","Relay","Switch", {bass = true, normally_closed = false})
     self.Train:LoadSystem("DriverLight","Relay","Switch", {bass = true})
 
     self.Train:LoadSystem("BlinkerRight","Relay","Switch", {bass = true})
@@ -79,13 +80,15 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("Button7a", "Relay", "Switch", {bass=true})
     self.Train:LoadSystem("Button8a", "Relay", "Switch", {bass=true})
 
+    self.HazardBlink = 0
 
     self.IgnitionKey = 0
+    self.IgnitionKeyInserted = 0
     self.UncouplingKey = 0
 
     self.ParrallelMotors = 1
 
-    self.Deadman = 1
+    self.Deadman = 0
 
     self.AnnouncementPlaying = 0
 

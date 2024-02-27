@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "gmod_subway_base"
+ENT.Base = "gmod_subway_uf_base"
 ENT.PrintName = "Duewag B-Wagen 1973 Series"
 ENT.Author = "LillyWho"
 ENT.Contact = ""
@@ -10,11 +10,11 @@ ENT.Category = "Metrostroi: Project Light Rail"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-ENT.SkinsType = "B1970"
+ENT.SkinsType = "B1973"
 
 ENT.DontAccelerateSimulation = true
-
-function ENT:PassengerCapacity() return 81 end
+ENT.RenderGroup = 9
+function ENT:PassengerCapacity() return 108 end
 
 function ENT:GetStandingArea()
 	return Vector(350, -20, 25), Vector(60, 20, 25) -- TWEAK: NEEDS TESTING INGAME
@@ -47,16 +47,15 @@ function ENT:InitializeSounds()
 end
 
 ENT.Cameras = {
-	{Vector(400, -55, 90), Angle(0, -170, 0), "Train.UF_U2.OutTheWindowRight"},
-	{Vector(400, 55, 90), Angle(0, 170, 0), "Train.UF_U2.OutTheWindowLeft"},
-	{Vector(300, 6, 90), Angle(0, 180 + 5, 0), "Train.UF_U2.PassengerStanding"},
-	{Vector(70.5 + 10, 6, 90), Angle(0, 0, 0), "Train.UF_U2.PassengerStanding2"},
+	{Vector(500, -50, 90), Angle(0, -170, 0), "Train.UF_U2.OutTheWindowRight"},
+	{Vector(500, 50, 90), Angle(0, 170, 0), "Train.UF_U2.OutTheWindowLeft"},
+	{Vector(300, 6, 100), Angle(0, 180 + 5, 0), "Train.UF_U2.PassengerStanding"},
+	{Vector(70.5 + 10, 6, 100), Angle(0, 0, 0), "Train.UF_U2.PassengerStanding2"},
 	{Vector(490.5, 0, 100), Angle(0, 180, 0), "Train.Common.RouteNumber"},
-	{Vector(388, -30, 80), Angle(0, -90, 0), "Train.UF_U2.RouteList"},
-	{Vector(450, 0, 70), Angle(80, 0, 0), "Train.Common.CouplerCamera"},
+	{Vector(480, -5, 100), Angle(0, -180, 0), "Train.UF.RouteList"},
+	{Vector(530, 0, 70), Angle(80, 0, 0), "Train.Common.CouplerCamera"},
 	{Vector(350, 60, 5), Angle(10, -80, 0), "Train.UF_U2.Bogey"},
-	{Vector(413, -11, 62), Angle(35, -46, 0), "Train.UF_U2.IBIS"},
-	{Vector(413, -25, 58), Angle(10, 50, 0), "Train.UF_U2.IBISKey"},
+	{Vector(505, -7, 80), Angle(35, 0, 0), "Train.UF.IBIS"},
 	{Vector(250, 6, 200), Angle(0, 180, 0), "Train.UF_U2.Panto"}
 }
 
@@ -75,12 +74,14 @@ end
 ENT.MirrorCams = {Vector(441, 72, 15), Angle(1, 180, 0), 15, Vector(441, -72, 15), Angle(1, 180, 0), 15}
 
 function ENT:InitializeSystems()
-	--self:LoadSystem("Duewag_U2")
 	self:LoadSystem("DeadmanUF", "Duewag_Deadman")
-	self:LoadSystem("IBIS")
-	self:LoadSystem("Announcer", "uf_announcer")
-	self:LoadSystem("Duewag_Battery")
+	self:LoadSystem("Battery","Duewag_Battery")
 	self:LoadSystem("Panel", "1973_panel")
+	self:LoadSystem("CoreSys","duewag_b_1973")
+	
+	--self:LoadSystem("IBIS")
+	--self:LoadSystem("Announcer", "uf_announcer")
+	
 
 	-- self:LoadSystem("duewag_electric")
 end
@@ -89,13 +90,12 @@ ENT.SubwayTrain = {Type = "B", Name = "B-Wagen Series 1973", WagType = 0, Manufa
 
 ENT.AnnouncerPositions = {{Vector(293, 44, 102)}, {Vector(293, -44, 102)}}
 
-
 ENT.NumberRanges = {{5001, 5011},{5012, 5016},{5031, 5032},{5012, 5016},{5141, 5145}}
 
 ENT.Spawner = {
-	model = {"models/lilly/mplr/ruhrbahn/b_1970/section-a.mdl"},
-	head = "gm_subway_uf_bwagen1973_section_a",
-	interim = "gm_subway_uf_bwagen1973_section_a",
+	model = {"models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl"},
+	head = "gmod_subway_mplr_bwagen1973_section_a",
+	interim = "gmod_subway_mplr_bwagen1973_section_a",
 	Metrostroi.Skins.GetTable("Texture", "Spawner.Texture", false, "train"),
 	Metrostroi.Skins.GetTable("Texture", "Spawner.Texture", false, "cab"),
 
