@@ -2838,9 +2838,9 @@ function ENT:ScrollTracker()
     self.lastUpdateTime = curTime
 
     if self:GetNW2Bool("Rollsign+", false) then
-        self.ScrollModifier = self.ScrollModifier + 0.005 * FrameTime()
+        self.ScrollModifier = self.ScrollModifier + 0.005 + FrameTime() * 0.001
     elseif self:GetNW2Bool("Rollsign-", false) then
-        self.ScrollModifier = self.ScrollModifier - 0.005 * FrameTime()
+        self.ScrollModifier = self.ScrollModifier - 0.005 + FrameTime() * 0.001
     end
     self.ScrollModifier = math.Clamp(self.ScrollModifier,0,1)
     --print(self.ScrollModifier)
