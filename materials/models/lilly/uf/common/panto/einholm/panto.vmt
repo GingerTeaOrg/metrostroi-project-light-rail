@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/uf/common/panto/einholm/panto"
+	"$surfaceprop" "Metal"
+}
