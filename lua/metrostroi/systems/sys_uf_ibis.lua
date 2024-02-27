@@ -800,7 +800,6 @@ function TRAIN_SYSTEM:Play(time)
     local announcementScript = UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript", 1)]
     for k, v in ipairs(announcementScript) do
         if v ~= "station" and type(commonFiles[v][1]) == "string" then
-            print(commonFiles[v][1])
             local temp = {
                 [1] = {[commonFiles[v][1]] = commonFiles[v][2]}
             }
