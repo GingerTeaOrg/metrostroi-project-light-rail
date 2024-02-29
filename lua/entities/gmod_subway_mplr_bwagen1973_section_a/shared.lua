@@ -56,7 +56,7 @@ ENT.Cameras = {
 	{Vector(530, 0, 70), Angle(80, 0, 0), "Train.Common.CouplerCamera"},
 	{Vector(350, 60, 5), Angle(10, -80, 0), "Train.UF_U2.Bogey"},
 	{Vector(505, -7, 80), Angle(35, 0, 0), "Train.UF.IBIS"},
-	{Vector(250, 6, 200), Angle(0, 180, 0), "Train.UF_U2.Panto"}
+	{Vector(250, 6, 200), Angle(0, 180, 0), "Train.UF.Panto"}
 }
 
 local function GetDoorPosition(i, k)

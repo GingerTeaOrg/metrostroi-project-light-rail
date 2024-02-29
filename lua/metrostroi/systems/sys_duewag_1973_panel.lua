@@ -134,5 +134,5 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return {"IgnitionKey","UncouplingKey","ParrallelMotors","Deadman","AnnouncementPlaying","DoorsUnlock","DoorsLock","DoorsSelectRight","DoorsSelectLeft","Door1","DoorsForceOpen","DoorsForceClose","MirrorLeft","MirrorRight","SwitchLeft","SwitchRight","BreakerOn","BreakerOff","PantographOn","PantographOff","Headlights","WarnBlink","DriverLight","BlinkerLeft","BlinkerRight","StepsHigh","StepsLow","StepsLowest","Bell","Horn","ThrowCoupler"}
+    return {"IgnitionKey","IgnitionKeyInserted","UncouplingKey","ParrallelMotors","Deadman","AnnouncementPlaying","DoorsUnlock","DoorsLock","DoorsSelectRight","DoorsSelectLeft","Door1","DoorsForceOpen","DoorsForceClose","MirrorLeft","MirrorRight","SwitchLeft","SwitchRight","BreakerOn","BreakerOff","PantographOn","PantographOff","Headlights","WarnBlink","DriverLight","BlinkerLeft","BlinkerRight","StepsHigh","StepsLow","StepsLowest","Bell","Horn","ThrowCoupler"}
 end

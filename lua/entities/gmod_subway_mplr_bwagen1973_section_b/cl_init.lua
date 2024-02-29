@@ -175,7 +175,11 @@ ENT.ClientProps["step_tray4"] = {
 	ang = Angle(0, 0, 0),
 	hideseat = 0.2
 }
-
+ENT.ClientProps["key_ignition"] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/key.mdl",
+	pos = Vector(0, 0, 0),
+	ang = Angle(0, 180, 0),
+}
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
 

@@ -11,12 +11,6 @@ ENT.ClientProps["empty_button"] = {
 	pos = Vector(0, 0, 0),
 	ang = Angle(0, 0, 0),
 }
-ENT.ClientProps["IgnitionKey"] = {
-    model = "models/lilly/uf/u2/cab/key.mdl",
-    pos = Vector(00.3, 0, 0),
-    ang = Angle(0, 15, 0),
-    scale = 1
-}
 ENT.ClientProps["headlights_lit"] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/headlights_lit.mdl",
 	pos = Vector(0, 0, 0),
@@ -176,6 +170,11 @@ ENT.ClientProps["step_tray2"] = {
 	pos = Vector(184, 0, 0),
 	ang = Angle(0, 00, 0),
 	hideseat = 0.2
+}
+ENT.ClientProps["key_ignition"] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/key.mdl",
+	pos = Vector(0, 0, 0),
+	ang = Angle(0, 00, 0),
 }
 ENT.ClientProps["step_tray3"] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/step_large.mdl",
@@ -777,7 +776,7 @@ ENT.ButtonMapMPLR["dashboard"] = {
 }
 
 ENT.ButtonMapMPLR["LineRollsign"] = {
-    pos = Vector(511, -12, 115),
+    pos = Vector(511.25, -12, 115),
     ang = Angle(0, -90,-90),
     width = 9,
     height = 9,
@@ -818,6 +817,13 @@ ENT.ButtonMapMPLR["DestinationRollsign"] = {
     height = 9,
     scale = 1,
 }
+ENT.ButtonMapMPLR["DestinationRollsignFront"] = {
+    pos = Vector(511.25, 20.5, 115),
+    ang = Angle(0, -90,-90),
+    width = 33,
+    height = 9,
+    scale = 1,
+}
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
 
@@ -846,7 +852,8 @@ function ENT:Initialize()
 	}
 
     self.HeadlightsLit = false
-    self:ShowHide("headlights_lit",self.Headlights_Lit)
+    self:ShowHide("headlights_lit",self.HeadlightsLit)
+    self:ShowHide("key_ignition",self.IgnitionKeyInserted)
 
     self.ScrollModifier1 = 0
     self.ScrollModifier2 = 0
@@ -854,20 +861,19 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-    --self:Animations()
+    self:Animations()
     self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
 
     self.BatteryOn = self:GetNW2Bool("BatteryOn", false)
 
-	self:Animate("throttle", self:GetNW2Int("ThrottleLever",0.5) * 0.01, 0, 100, 50, 9, false)
-    self:Animate("reverser", self.Reverser[self:GetNW2Int("ReverserLever",1)], 0, 100, 50, 9, false)
+	
     self.Reverser = {
 		[0] = 0,
 		[1] = 0.25,
 		[2] = 0.4,
-		[3] = 0.625,
+		[3] = 0.6,
 		[4] = 0.75,
 		[5] = 0.78,
 		[6] = 1
@@ -876,22 +882,22 @@ end
 
 function ENT:Animations()
     self.Speed = self:GetNW2Int("Speed",0)
-    self.KeyInserted = self:GetNW2Bool("MainKeyInserted",false)
-    self.KeyTurned = self:GetNW2Bool("MainKeyTurned",false)
-    self:Animate("Mirror_L", self:GetNW2Float("Mirror_L", 0), 0, 100, 17, 1, 0)
-    self:Animate("Mirror_R", self:GetNW2Float("Mirror_R", 0), 0, 100, 17, 1, 0)
+    self.KeyInserted = self:GetNW2Bool("IgnitionKeyIn",false)
+    self.KeyTurned = self:GetNW2Bool("IgnitionTurned",false)
+    --self:Animate("Mirror_L", self:GetNW2Float("Mirror_L", 0), 0, 100, 17, 1, 0)
+    --self:Animate("Mirror_R", self:GetNW2Float("Mirror_R", 0), 0, 100, 17, 1, 0)
     self:Animate("drivers_door", self:GetNW2Float("DriversDoorState", 0), 0, 100, 1, 1, 0)
-    self:Animate("reverser", self:GetNW2Float("ReverserAnimate"), 0, 100, 50, 9, false)
-	self:Animate("throttle", self:GetNW2Float("ThrottleAnimate"), 0, 100, 50, 9, false)
+    self:Animate("throttle", self:GetNW2Int("ThrottleLever",0.5) * 0.01, 0, 100, 50, 9, false)
+    self:Animate("reverser", self.Reverser[self:GetNW2Int("ReverserLever",1)], 0, 100, 50, 9, false)
     self.CabWindowL = self:GetNW2Float("CabWindowL", 0)
 	self.CabWindowR = self:GetNW2Float("CabWindowR", 0)
-	self:Animate("window_cab_r", self:GetNW2Float("CabWindowR", 0), 0, 100, 50, 9, false)
-	self:Animate("window_cab_l", self:GetNW2Float("CabWindowL", 0), 0, 100, 50, 9, false)
+	--self:Animate("window_cab_r", self:GetNW2Float("CabWindowR", 0), 0, 100, 50, 9, false)
+	--self:Animate("window_cab_l", self:GetNW2Float("CabWindowL", 0), 0, 100, 50, 9, false)
 
-    self:ShowHide("Mainkey", self.KeyInserted)
-    self:Animate("MainKey", self.KeyTurned == true and 0 or 1, 0, 100, 800, 0, 0)
+    self:ShowHide("key_ignition", self.KeyInserted)
+    self:Animate("key_ignition", self.KeyTurned and 1 or 0, 0, 100, 800, 0, 0)
 
-    self:Animate("Door_fr2", Door12a, 0, 100, 100, 10, 0)
+    --[[self:Animate("Door_fr2", Door12a, 0, 100, 100, 10, 0)
 	self:Animate("Door_fr1", Door12a, 0, 100, 100, 10, 0)
 
 	self:Animate("Door_rr2", Door34a, 0, 100, 100, 10, 0)
@@ -901,19 +907,19 @@ function ENT:Animations()
 	self:Animate("Door_fl1", Door78b, 0, 100, 100, 10, 0)
 
 	self:Animate("Door_rl2", Door56b, 0, 100, 100, 10, 0)
-	self:Animate("Door_rl1", Door56b, 0, 100, 100, 10, 0)
+	self:Animate("Door_rl1", Door56b, 0, 100, 100, 10, 0)]]
 
-    self:ShowHide("headlights_on", self:GetNW2Bool("Headlights",false), 0)
+    --self:ShowHide("headlights_on", self:GetNW2Bool("Headlights",false), 0)
 
-    self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 100) / 100
-	self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
+    --self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 100) / 100
+	--self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
 
-    self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound", false) == true and 1 or 0, 1)
+    --self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound", false) == true and 1 or 0, 1)
 
-    self.VoltAnim = self:GetNW2Float("BatteryCharge", 0) / 45
-    self:Animate("Voltage", self.VoltAnim, 0, 100, 1, 0, false)
-	self.AmpAnim = self:GetNW2Float("Amps", 0) / 0.5 * 100
-	self:Animate("Amps", self.AmpAnim, 0, 100, 1, 0, false)
+    --self.VoltAnim = self:GetNW2Float("BatteryCharge", 0) / 45
+    --self:Animate("Voltage", self.VoltAnim, 0, 100, 1, 0, false)
+	--self.AmpAnim = self:GetNW2Float("Amps", 0) / 0.5 * 100
+	--self:Animate("Amps", self.AmpAnim, 0, 100, 1, 0, false)
 end
 
 
@@ -921,12 +927,19 @@ function ENT:Draw() self.BaseClass.Draw(self) end
 
 function ENT:DrawPost()
 	local mat = Material("models/lilly/mplr/rollsigns/b_1973/lines_def.png","noclamp")
+    local mat2 = Material("models/lilly/mplr/rollsigns/b_1973/flank_def.png","noclamp")
+    local mat3 = Material("models/lilly/mplr/rollsigns/b_1973/internal_def.png","noclamp")
 	self:DrawOnPanel("LineRollsign", function(...)
 		surface.SetDrawColor(color_white)
 		surface.SetMaterial(mat)
 		surface.DrawTexturedRectUV(1,1.8, 7.5, 7.6 , 0, self.ScrollModifier1 + .04, -1, self.ScrollModifier1 + 0.00)
 	end)
-    local mat2 = Material("models/lilly/mplr/rollsigns/b_1973/flank_def.png","noclamp")
+    self:DrawOnPanel("DestinationRollsignFront", function(...)
+		surface.SetDrawColor(color_white)
+		surface.SetMaterial(mat2)
+		surface.DrawTexturedRectUV(1,1.8, 31, 7.6 , 0, self.ScrollModifier1, -.7, self.ScrollModifier1 - 1)
+	end)
+
 	self:DrawOnPanel("LineRollsignR", function(...)
 		surface.SetDrawColor(color_white)
 		surface.SetMaterial(mat2)
@@ -937,7 +950,7 @@ function ENT:DrawPost()
 		surface.SetMaterial(mat2)
 		surface.DrawTexturedRectUV(1,0, 26.5, 7.6 , 0, self.ScrollModifier1 + .01, -1, self.ScrollModifier1 - 0.85)
 	end)
-    local mat3 = Material("models/lilly/mplr/rollsigns/b_1973/internal_def.png","noclamp")
+
     self:DrawOnPanel("InfoRollsignR", function(...)
 		surface.SetDrawColor(color_white)
 		surface.SetMaterial(mat3)

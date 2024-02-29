@@ -12,8 +12,11 @@ function TRAIN_SYSTEM:Initialize()
 
     self.CircuitOn = 0
     self.IgnitionKeyA = false
+    self.IgnitionKeyAIn = false
     self.UncoupleKeyA = false
     self.IgnitionKeyB = false
+    self.IgnitionKeyBIn = false
+
     self.UncoupleKeyB = false
     self.ReverserA = 0 -- -1 = RH, 0 = 0, 1 = *, 2 = VH, 3 = A, 4 = Nf
     self.ReverserB = 0
@@ -21,15 +24,12 @@ function TRAIN_SYSTEM:Initialize()
     self.ThrottleRateA = 0
     self.ThrottleStateB = 0
     self.ThrottleRateB = 0
-    self.Traction = 0
-    self.SetNW2Int = self.Train.SetNW2Int
-    self.SetNW2Bool = self.Train.SetNW2Bool
-    self.SetNW2Float = self.Train.SetNW2Float
-    self.SetNW2String = self.Train.SetNW2String
+
+
     self.CircuitBreakerOn = false
     self.PreviousCircuitBreaker = false
     self.PantographRaised = false
-    self.StopRequest = 0
+
     self.MirrorLeft = false
     self.MirrorRight = false
     self.WiperState = 0
@@ -111,7 +111,6 @@ function TRAIN_SYSTEM:Initialize()
         ["A"] = false,
         ["B"] = false
     }
-    self.StopRequest = false
 
     self.BatteryState = false
     self.PreviousBatteryState = false
@@ -125,16 +124,18 @@ function TRAIN_SYSTEM:Think(dT)
     if IsValid(self.Train.SectionB) and not self.SetSectionBNW2Int then
         self:NW2()
     end
-    if IsValid(self.Train) and self.Train.Battery then
+    if self.Train.Battery then
+        print("arooooo")
         self.Train.Battery = self.Battery
+        self.WriteTrainWire = self.Train.WriteTrainWire
         self.ReadTrainWire = self.Train.ReadTrainWire
         self.SetLightPower = self.Train.SetLightPower
         self.SetLightPowerB = self.Train.SectionB.SetLightPower
     end
-    self.FrontCoupler = IsValid(self.Train.FrontCouple) and self.Train.FrontCouple or nil
-    self.RearCoupler = IsValid(self.Train.FrontCouple) and self.Train.RearCouple or nil
-    self.Lights = IsValid(self.Train) and self.Train.Lights or nil
-    self.Panto = IsValid(self.Train.Panto) and self.Train.Panto or nil
+    self.FrontCoupler = self.Train.FrontCouple or nil
+    self.RearCoupler = self.Train.RearCouple or nil
+    self.Lights = self.Train and self.Train.Lights or nil
+    self.Panto = self.Train.Panto or nil
     self.Panel = self.Train.Panel
     self.PanelB = self.Train.SectionB.Panel
     self:ReverserParameters()
@@ -148,21 +149,43 @@ function TRAIN_SYSTEM:Think(dT)
     self:ChargeBattery()
     self:BatteryOffForceLightsDark()
     self:StopRequestLoop()
+    self:Traction()
+    self:ReverserSystem()
+
+    self.Speed = math.abs(self.Train:GetVelocity():Dot(self.Train:GetAngles():Forward()) * 0.06858)
 end
 
 --==============================================================================================
-function TRAIN_SYSTEM:IgnitionKeyOnA()
-    if self.ReverserStateA == 1 then
-        self.IgnitionKeyA = true
+function TRAIN_SYSTEM:IgnitionKeyInOutA()
+    local t = self.Train
+    if self.IgnitionKeyAIn and not self.IgnitionKeyA then
+        self.IgnitionKeyAIn = false
+    elseif not self.IgnitionKeyAIn then
+        self.IgnitionKeyAIn = true
     end
+    t:SetNW2Bool("IgnitionKeyIn",self.IgnitionKeyAIn)
+    self.Panel.IgnitionKeyInserted = self.IgnitionKeyAIn and 1 or 0
+end
+function TRAIN_SYSTEM:IgnitionKeyOnA()
+    local t = self.Train
+    self.IgnitionKeyA = true
+    t:SetNW2Bool("IgnitionTurned",self.IgnitionKeyA)
 end
 
 function TRAIN_SYSTEM:IgnitionKeyOffA()
-    if self.ReverserStateA == 1 then
-        self.IgnitionKeyA = false
-    end
+    local t = self.Train
+    self.IgnitionKeyA = false
+    t:SetNW2Bool("IgnitionTurned",self.IgnitionKeyA)
 end
-
+function TRAIN_SYSTEM:IgnitionKeyInOutB()
+    if self.IgnitionKeyBIn and not self.IgnitionKeyB then
+        self.IgnitionKeyBIn = false
+    elseif not self.IgnitionKeyBIn then
+        self.IgnitionKeyBIn = true
+    end
+    self:SetSectionBNW2Bool("IgnitionKeyIn",self.IgnitionKeyBIn)
+    self.PanelB.IgnitionKeyInserted = self.IgnitionKeyBIn and 1 or 0
+end
 function TRAIN_SYSTEM:Coupled()
     self.CoupledSections["A"] = IsValid(self.FrontCoupler.CoupledEnt)
     self.CoupledSections["B"] = IsValid(self.RearCoupler.CoupledEnt)
@@ -172,7 +195,7 @@ function TRAIN_SYSTEM:AllReversersInConsistZero()
     local reversers = 0
     local checkList = {}
     for _, v in pairs(self.Train.WagonList) do
-        if v.CoreSys.ReverserState ~= 0 and not checkList[k] then
+        if v.CoreSys.ReverserStateA ~= 0 or v.CoreSys.ReverserStateB ~= 0 and not checkList[k] then
             reversers = reversers + 1
             checkList[v] = true
         end
@@ -428,7 +451,7 @@ function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
             end
         end
     end
-    self:NW2Bool("DoorChime",(self.ArmDoorsClosedAlarm = true and self.DoorsClosed = false))
+    self:NW2Bool("DoorChime",(self.ArmDoorsClosedAlarm and self.DoorsClosed))
     if self.DoorsClosed and self.ArmDoorsClosedAlarm then self.ArmDoorsClosedAlarm = true end
 -------------------------------------------------------------------------------------
 --    ↑ checking whether doors are open anywhere | ↓ Actually controlling the doors
@@ -750,4 +773,20 @@ function TRAIN_SYSTEM:NW2()
     self.SetNW2Float = self.Train.SetNW2Float
     self.SetNW2String = self.Train.SetNW2String
     self.SetNW2Bool = self.Train.SetNW2Bool
+end
+
+function TRAIN_SYSTEM:Traction()
+    local t = self.Train
+    if self.ReverserStateA ~= 0 and self.ReverserStateA ~= 1 and not self.ConflictingHeads and self.IgnitionKeyA then
+        t:WriteTrainWire(1,self.ThrottleStateA * .001)
+    elseif self.ReverserStateB ~= 0 and self.ReverserStateB ~= 1 and not self.ConflictingHeads and self.IgnitionKeyB then
+        t:WriteTrainWire(1,self.ThrottleStateB * .001)
+    end
+end
+
+function TRAIN_SYSTEM:ReverserSystem()
+    local t = self.Train
+
+    t:WriteTrainWire(3,self.ReverserA >= 2 and 1 or 0)
+    t:WriteTrainWire(4,self.ReverserB == -1 and 1 or 0)
 end

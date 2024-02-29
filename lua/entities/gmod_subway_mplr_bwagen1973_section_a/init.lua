@@ -5,6 +5,8 @@ include("shared.lua")
 ENT.BogeyDistance = 1100
 
 ENT.SyncTable = {
+	"IgnitionKey",
+	"IgnitionKeyInserted",
 	"ReduceBrake",
 	"Highbeam",
 	"SetHoldingBrake",
@@ -99,7 +101,7 @@ function ENT:Initialize()
 	self.Blinker = "Off"
 	
 	self.TrainWireCrossConnections = {
-		[3] = 4, -- Reverser F<->B
+		[4] = 3, -- Reverser F<->B
 		[21] = 20, -- blinker
 		[13] = 14,
 		[31] = 32
@@ -219,9 +221,6 @@ function ENT:Initialize()
 		{ID = "Button6b", Pos = Vector(152.116, 50, 49.5253), Radius = 16},
 		{ID = "Button5b", Pos = Vector(84.6012, 50, 49.5253), Radius = 16}
 	}
-	
-	
-	self.CircuitOn = 0
 end
 
 function ENT:Think(dT)
@@ -231,20 +230,20 @@ function ENT:Think(dT)
 	self.PrevTime = CurTime()
 	self.FrontCoupler = self.FrontCouple
 	self.RearCoupler = self.RearCouple
-	self:CoupledUncoupled()
-	local Panel = self.Panel
-	local sys = self.CoreSys
-	
-	
-	
+	self:Traction()
+
 end
 
 function ENT:OnButtonPress(button)
+	local sys = self.CoreSys
 	if button == "IgnitionKeyOn" then
-		self.CoreSys:IgnitionKeyOnA()
+		sys:IgnitionKeyOnA()
 	end
 	if button == "IgnitionKeyOff" then
-		self.CoreSys:IgnitionKeyOffA()
+		sys:IgnitionKeyOffA()
+	end
+	if button == "IgnitionKeyToggle" then
+		sys:IgnitionKeyInOutA()
 	end
 	if button == "ReverserUpSet" then
 		self.CoreSys:ReverserUpA()
@@ -307,4 +306,27 @@ function ENT:TrainSpawnerUpdate()
 	self.RearCouple.CoupleType = "b"
 	self.FrontCouple:SetParameters()
 	self.RearCouple:SetParameters()
+end
+
+function ENT:Traction()
+	local fb = self.FrontBogey
+	local mb = self.MiddleBogey
+	local rb = self.RearBogey
+	local speed = self.CoreSys.Speed
+	local traction = self:ReadTrainWire(1)
+	local braking = traction < 0.01
+	if not IsValid(self.FrontBogey) and not IsValid(self.RearBogey) then return end
+	
+	fb.MotorForce = traction > 0 and 1689174.29 or -1844848.08
+	rb.MotorForce = traction > 0 and 1689174.29 or -1844848.08
+
+	fb.MotorPower = (speed > 8 or not braking) and math.abs(traction) or 0
+	rb.MotorPower = (speed > 8 or not braking) and math.abs(traction) or 0
+
+	rb.Reversed = self:ReadTrainWire(3) > 0 and true or self:ReadTrainWire(4) > 0 and false
+	fb.Reversed = self:ReadTrainWire(3) > 0 and true or self:ReadTrainWire(4) > 0 and false
+
+	fb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
+	mb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
+	rb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
 end
