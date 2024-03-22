@@ -41,7 +41,17 @@ function ENT:CreateSectionB(pos,ang,ent)
     SectionB:SetOwner(self:GetOwner())
     local xmin = 5
     local xmax = 5
+    --get original weights
+    local PhysA = self:GetPhysicsObject()
+    local WeightA = PhysA:GetMass()
+    local PhysB = SectionB:GetPhysicsObject()
+    local WeightB = PhysB:GetMass()
+    --set weights to maximum, in order to make the joint extra mellow
+    PhysA:SetMass(50000)
+    PhysB:SetMass(50000)
     constraint.AdvBallsocket(SectionB, self.MiddleBogey, 0, 0, Vector(0, 0, 0), Vector(0, 0, 0), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+    PhysA:SetMass(WeightA)
+    PhysB:SetMass(WeightB)
     table.insert(self.TrainEntities, SectionB)
     constraint.NoCollide(self.MiddleBogey, SectionB, 0, 0)
     constraint.NoCollide(self, SectionB, 0, 0)
@@ -168,13 +178,29 @@ function ENT:CreateBogeyUF(pos, ang, forward, typ, a_b)
         bogey:SetParent(self)
     else
         if a_b == "a" then
-            constraint.Axis(bogey, self, 0, 0, Vector(0, 0, 0), Vector(0, 0, 0),
-                            0, 0, 0, 1, Vector(0, 0, 1), false)
+            local BogeyPhys = bogey:GetPhysicsObject()
+            local BogeyWeight = BogeyPhys:GetMass()
+            local TrainPhys = self:GetPhysicsObject()
+            local TrainWeight = TrainPhys:GetMass()
+
+            TrainPhys:SetMass(50000)
+            BogeyPhys:SetMass(50000)
+            constraint.AdvBallsocket(bogey, self, 0, 0, Vector(0, 0, 0), Vector(0, 0, 0), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+            TrainPhys:SetMass(TrainWeight)
+            BogeyPhys:SetMass(BogeyWeight)
             constraint.NoCollide(bogey, self)
             constraint.NoCollide(bogey, self.SectionB)
         elseif a_b == "b" then
-            constraint.Axis(bogey, self.SectionB, 0, 0, Vector(0, 0, 0),
-                            Vector(0, 0, 0), 0, 0, 0, 1, Vector(0, 0, 1), false)
+            local BogeyPhys = bogey:GetPhysicsObject()
+            local BogeyWeight = BogeyPhys:GetMass()
+            local TrainPhys = self.SectionB:GetPhysicsObject()
+            local TrainWeight = TrainPhys:GetMass()
+
+            TrainPhys:SetMass(50000)
+            BogeyPhys:SetMass(50000)
+            constraint.AdvBallsocket(bogey, self.SectionB, 0, 0, Vector(0, 0, 0), Vector(0, 0, 0), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+            TrainPhys:SetMass(TrainWeight)
+            BogeyPhys:SetMass(BogeyWeight)
             constraint.NoCollide(bogey, self)
             constraint.NoCollide(bogey, self.SectionB)
         end
@@ -475,6 +501,10 @@ function ENT:Initialize()
     -- Initialize train systems
     self:PostInitializeSystems()
     for k,v in pairs(self.CustomSpawnerUpdates) do if k ~= "BaseClass" then v(self) end end
+
+    if self.DriverSeat then
+        self:SetNW2Vector("DriversSeatPos",self:WorldToLocal(self.DriverSeat:GetPos()))
+    end
 end
 function ENT:GetWagonNumber()
     return self.WagonNumber or self:EntIndex()
@@ -1249,6 +1279,8 @@ function ENT:CreateSeatEntity(seat_info)
     seat:SetNW2Entity("TrainEntity", self)
     seat_info.entity = seat
 
+    
+
     -- Constrain seat to this object
     -- constraint.NoCollide(self,seat,0,0)
     seat:SetParent(self)
@@ -1275,6 +1307,9 @@ function ENT:CreateSeat(typ,offset,angle,model)
     -- If needed, create an entity for this seat
     if (typ == "driver") or (typ == "instructor") or (typ == "passenger") then
         return self:CreateSeatEntity(seat_info)
+    end
+    if typ == "driver" then
+        self:SetNW2Vector("DriversSeatPos",offset)
     end
 end
 
