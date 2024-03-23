@@ -77,6 +77,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem("DeadmanUF", "Duewag_Deadman")
 	self:LoadSystem("Battery","Duewag_Battery")
 	self:LoadSystem("Panel", "1973_panel")
+	self:LoadSystem("Chopper")
 	self:LoadSystem("CoreSys","duewag_b_1973")
 	
 	--self:LoadSystem("IBIS")
