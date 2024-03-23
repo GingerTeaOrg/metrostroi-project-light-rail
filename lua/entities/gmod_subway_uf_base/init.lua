@@ -501,10 +501,6 @@ function ENT:Initialize()
     -- Initialize train systems
     self:PostInitializeSystems()
     for k,v in pairs(self.CustomSpawnerUpdates) do if k ~= "BaseClass" then v(self) end end
-
-    if self.DriverSeat then
-        self:SetNW2Vector("DriversSeatPos",self:WorldToLocal(self.DriverSeat:GetPos()))
-    end
 end
 function ENT:GetWagonNumber()
     return self.WagonNumber or self:EntIndex()
@@ -1303,14 +1299,15 @@ function ENT:CreateSeat(typ,offset,angle,model)
         angle = angle or Angle(0,0,0),
     }
     table.insert(self.Seats,seat_info)
-
+    if typ == "driver" then
+        print(offset)
+        self:SetNW2Vector("DriversSeatPos",offset)
+    end
     -- If needed, create an entity for this seat
     if (typ == "driver") or (typ == "instructor") or (typ == "passenger") then
         return self:CreateSeatEntity(seat_info)
     end
-    if typ == "driver" then
-        self:SetNW2Vector("DriversSeatPos",offset)
-    end
+    
 end
 
 -- Returns if KV/reverser wrench is present in cabin
@@ -1854,19 +1851,23 @@ function ENT:Think()
         end
     else
         -- Output all variable values
-        for sys_name,system in pairs(self.Systems) do
-            if system.OutputsList and (not system.DontAccelerateSimulation) then
-                for _,name in pairs(system.OutputsList) do
-                    local value = (system[name] or 0)
-                    --if typ(value) == "boolean" then value = value and 1 or 0 end
-                    if not self.DataCache[sys_name] then self.DataCache[sys_name] = {} end
-                    if self.DataCache[sys_name][name] ~= value then
-                        self:TriggerTurbostroiInput(sys_name,name,value)
-                        self.DataCache[sys_name][name] = value
+        for sys_name, system in pairs(self.Systems) do
+            if system.OutputsList and not system.DontAccelerateSimulation then
+                local dataCacheSys = self.DataCache[sys_name] or {}
+        
+                for _, name in pairs(system.OutputsList) do
+                    local value = system[name] or 0
+            
+                    if dataCacheSys[name] ~= value then
+                        self:TriggerTurbostroiInput(sys_name, name, value)
+                        dataCacheSys[name] = value
                     end
                 end
+        
+                self.DataCache[sys_name] = dataCacheSys
             end
         end
+
         -- Run iterations on systems simulation
         local iterationsCount = 1
         if (not self.Schedule) or (iterationsCount ~= self.Schedule.IterationsCount) then
