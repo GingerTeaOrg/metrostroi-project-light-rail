@@ -36,6 +36,18 @@ end
 UF.BogeyTypes = UF.BogeyTypes or {} -- bogey models and params
 UF.BogeySounds = UF.BogeySounds or {} -- bogey sounds
 UF.CouplerTypes = UF.CouplerTypes or {} -- coupler models and params
+local directory = "models/uf"
+local directory2 = "models/mplr"
+local files, _ = file.Find(directory .. "/*.mdl", "GAME") -- Find all .mdl files in the directory
+local files2, _ = file.Find(directory2 .. "/*.mdl", "GAME") -- Find all .mdl files in the directory
+for _, filename in ipairs(files) do
+    local modelPath = directory .. "/" .. filename
+    util.PrecacheModel(modelPath)
+end
+for _, filename in ipairs(files2) do
+    local modelPath = directory .. "/" .. filename
+    util.PrecacheModel(modelPath)
+end
 
 util.PrecacheModel("models/lilly/uf/stations/dfi_hands_hours.mdl")
 util.PrecacheModel("models/lilly/uf/stations/dfi_hands_minutes.mdl")
