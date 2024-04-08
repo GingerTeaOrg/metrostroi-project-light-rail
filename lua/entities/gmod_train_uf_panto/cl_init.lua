@@ -20,13 +20,13 @@ function ENT:Think()
     self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
-    
+    local offset = self:GetNW2Int("AnimOffset",0)
     if self.PantoRaised == true then
         if not self.PantoMomentRegistered then
             self.PantoMomentRegistered = true
             self.PantoMoment = CurTime()
         end
-        if self.SoundPlayed == false and CurTime() - self.PantoMoment > ((self.PantoHeight.z / 117 * 100) / 100) * 1.5 then --calculate the current percentage of the panto pased on the maximum extension. Extending the panto to full takes 1.5sec, calculate how long it takes at every height.
+        if self.SoundPlayed == false and CurTime() - self.PantoMoment > ((self.PantoHeight.z / 117 * 100) / 100) * (1.5 + offset) then --calculate the current percentage of the panto pased on the maximum extension. Extending the panto to full takes 1.5sec, calculate how long it takes at every height.
             self.SoundPlayed = true
             
             self:PlayOnceFromPos("plonk","lilly/uf/common/panto_applied.mp3",2,1,0,2,self:GetPos() + Vector(0,0,self.PantoHeight.z))
