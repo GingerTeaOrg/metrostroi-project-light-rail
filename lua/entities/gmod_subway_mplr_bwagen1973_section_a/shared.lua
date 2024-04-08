@@ -24,9 +24,9 @@ function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 
     self.SoundNames["bell"] = {loop = 0.01, "lilly/uf/u2/Bell_start.mp3", "lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}
-	self.SoundPositions["bell"] = {1100, 1e9, Vector(386, -20, 8), 0.7}
+	self.SoundPositions["bell"] = {1100, 1e9, Vector(480, -20, 8), 0.7}
 	self.SoundNames["bell_in"] = {loop = 0.01, "lilly/uf/u2/insidecab/Bell_start.mp3", "lilly/uf/u2/insidecab/Bell_loop.mp3", "lilly/uf/u2/insidecab/Bell_end.mp3"}
-	self.SoundPositions["bell_in"] = {800, 1e9, Vector(386, -20, 50), 1}
+	self.SoundPositions["bell_in"] = {800, 1e9, Vector(480, -20, 50), 1}
 
 	self.SoundNames["IBIS_beep"] = {"lilly/uf/IBIS/beep.mp3"}
 	self.SoundPositions["IBIS_beep"] = {1100, 1e9, Vector(412, -12, 55), 5}
