@@ -38,14 +38,15 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("BlinkerLeft","Relay","Switch", {bass = true})
 
 
-    self.Train:LoadSystem("StepsHigh","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("StepsHigh","Relay","Switch", {bass = true, normally_closed = true})
     self.Train:LoadSystem("StepsLow","Relay","Switch", {bass = true})
     self.Train:LoadSystem("StepsLowest","Relay","Switch", {bass = true})
 
-
-
-    self.Train:LoadSystem("ReleaseHoldingBrake","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("SetHoldingBrake","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("WiperConstantSet","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("WiperIntervalSet","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("WindowWasherSet","Relay","Switch", {bass = true})
+    self.Train:LoadSystem("EmergencyBrakeDisableSet","Relay","Switch", {bass = true})
+    
     self.Train:LoadSystem("Bell","Relay","Switch", {bass = true})
     self.Train:LoadSystem("Horn","Relay","Switch", {bass = true})
     self.Train:LoadSystem("ThrowCoupler","Relay","Switch", {bass = true})
@@ -64,12 +65,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("Destination","Relay","Switch", {bass = true})
     self.Train:LoadSystem("SpecialAnnouncements","Relay","Switch", {bass = true})
     self.Train:LoadSystem("DateAndTime","Relay","Switch", {bass = true})
-    self.Train:LoadSystem("SetPointLeft", "Relay", "Switch", {bass = true})
-    self.Train:LoadSystem("SetPointRight", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("AnnouncerPlaying", "Relay", {bass = true})
-    self.Train:LoadSystem("Parralel", "Relay", "Switch", {bass = true})
-    self.Train:LoadSystem("Highbeam", "Relay", "Switch", {bass = true})
-    self.Train:LoadSystem("Blinker", "Relay", {bass = true})
  
     self.Train:LoadSystem("Button1a", "Relay", "Switch", {bass=true})
     self.Train:LoadSystem("Button2a", "Relay", "Switch", {bass=true})
@@ -113,13 +109,13 @@ function TRAIN_SYSTEM:Initialize()
     self.PantographOff = 0
 
     self.Headlights = 0
-    self.WarnBlink = 0
+    self.HazardBlink = 0
     self.DriverLight = 0
 
     self.BlinkerLeft = 0
     self.BlinkerRight = 0
 
-    self.StepsHigh = 0
+    self.StepsHigh = 1
     self.StepsLow = 0
     self.StepsLowest = 0
 
@@ -128,7 +124,13 @@ function TRAIN_SYSTEM:Initialize()
 
     self.ThrowCoupler = 0
 
+    self.WiperConstant = 0
 
+    self.WiperIntervalSet = 0
+
+    self.WindowWasherSet = 0
+
+    self.EmergencyBrakeDisable = 0
     
 
 end
