@@ -25,14 +25,14 @@ ENT.Types = {
         Vector(4.3, 63, 0)
     },
     ["b_motor"] = {
-        "models/lilly/uf/bogey/duewag_motor.mdl", Vector(0, 0.0, -10), Angle(0, 0, 0),
+        "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl", Vector(0, 0.0, -1.5), Angle(0, 0, 0),
         "models/lilly/mplr/b_wheelset.mdl", Vector(0, -61, -14),
-        Vector(0, 61, -14), nil, Vector(4.3, -63, 0), Vector(4.3, 63, 0)
+        Vector(0, 61, -15), nil, Vector(4.3, -63, 0), Vector(4.3, 63, 0)
     },
     ["b_joint"] = {
-        "models/lilly/uf/bogey/duewag_motor.mdl", Vector(0, 0.0, -10), Angle(0, 0, 0),
-        "models/lilly/mplr/b_wheelset.mdl", Vector(0, -61, -14),
-        Vector(0, 61, -14), nil, Vector(4.3, -63, 0), Vector(4.3, 63, 0)
+        "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl", Vector(0, 0.0, -1.5), Angle(0, 0, 0),
+        "models/lilly/mplr/b_wheelset.mdl", Vector(0, -61, -28),
+        Vector(0, 61, -15), nil, Vector(4.3, -63, 0), Vector(4.3, 63, 0)
     },
     ["u3joint"] = {
         "models/lilly/uf/u3/jointbogey.mdl", Vector(0, 0.0, 0), Angle(0, 0, 0),
@@ -50,15 +50,15 @@ ENT.Types = {
         Vector(4.3, -63, -3.3), Vector(4.3, 63, -3.3)
     },
     ["def"] = {
-        "models/lilly/uf/bogey/duewag_motor.mdl", Vector(0, 0.0, 0),
-        Angle(0, 0, 0), nil, Vector(0, -61, -14), Vector(0, 61, -14), nil,
+        "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl", Vector(0, 0.0, 0),
+        Angle(0, 0, 0), nil, Vector(0, -61, -28), Vector(0, 61, -14), nil,
         Vector(4.3, -63, -3.3), Vector(4.3, 63, -3.3)
     }
 }
 
 function ENT:SetParameters()
     local typ = UF.BogeyTypes[self.BogeyType or "def"]
-    self:SetModel(typ and typ[1] or "models/lilly/uf/bogey/duewag_motor.mdl")
+    self:SetModel(typ and typ[1] or "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl")
     self.BogeyOffset = typ and typ[7]
 end
 function ENT:Initialize()
