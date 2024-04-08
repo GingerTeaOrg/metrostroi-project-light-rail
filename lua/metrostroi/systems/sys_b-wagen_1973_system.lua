@@ -144,7 +144,7 @@ function TRAIN_SYSTEM:IgnitionKeyInOutA()
     local consist = t.WagonList
     
     for j = 1, #consist do
-        if j = t then continue end
+        if j == t then continue end
         if consist[j].CoreSys.IgnitionKeyA or consist[j].CoreSys.IgnitionKeyB then 
             t:GetDriverPly():PrintMessage(HUD_PRINTTALK,"You left your ignition key in another cab. Go fetch it!") return 
         else
