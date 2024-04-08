@@ -7,6 +7,21 @@ ENT.Instructions    = ""
 ENT.Category        = "Metrostroi: Project Light Rail"
 ENT.Spawnable       = true
 ENT.AdminSpawnable  = false
+
+
+ENT.Types = {
+    ["diamond"] = {
+        "models/lilly/uf/panto_diamond.mdl",
+        Vector(0,0.0,-7),Angle(0,0,0),-2,
+    },
+    ["einholm"] = {
+        "models/lilly/uf/panto_einholm.mdl",
+        Vector(0,0.0,0),Angle(0,0,0),0
+    },
+}
+
+
+
 function ENT:SetBASSPos(snd,tbl)
 	if tbl then
 		snd:SetPos(self:LocalToWorld(Vector(0,0,tbl[3])),self:GetAngles():Forward())

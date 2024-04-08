@@ -4,16 +4,7 @@ include("shared.lua")
 
 util.AddNetworkString("uf_contact")
 
-ENT.Types = {
-    ["diamond"] = {
-        "models/lilly/uf/panto_diamond.mdl",
-        Vector(0,0.0,-7),Angle(0,0,0),
-    },
-    ["einholm"] = {
-        "models/lilly/uf/panto_einholm.mdl",
-        Vector(0,0.0,0),Angle(0,0,0),
-    },
-}
+
 
 
 function ENT:SetParameters()
@@ -57,6 +48,8 @@ end
 
 function ENT:Think()
     self.BaseClass.Think(self)
+
+    self:SetNW2Int("AnimOffset",self.Types[4])
     local testvector = Vector(0,0,100)
 
     -- Update timing
