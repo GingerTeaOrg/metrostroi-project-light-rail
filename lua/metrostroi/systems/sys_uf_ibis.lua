@@ -541,10 +541,11 @@ function TRAIN_SYSTEM:UpdateState()
             self.Train:SetNW2Bool("IBISError", true)
             self.ErrorMoment = CurTime()
         end
-    elseif self.State == 1 and self.Menu == 6 and self.KeyInput == "Delete" and self.ServiceAnnouncement == "  " then
+    elseif self.State == 1 and self.Menu == 6 and self.KeyInput == "Delete" and
+        self.ServiceAnnouncement == "  " then
         self.Menu = 0
     end
-    --print(self.State, self.Menu)
+    -- print(self.State, self.Menu)
     if self.State == 0 and not self.CANBus and self.PowerOffMomentRegistered and
         CurTime() - self.PowerOffMoment > 240 then completeReset() end
     if self.State == 4 then -- We're in the defect state
@@ -560,8 +561,10 @@ function TRAIN_SYSTEM:Think()
 
     if not Train.BatteryOn or Train:ReadTrainWire(7) < 1 then return end -- why run anything when the train is off? fss.
     self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes", 1)]
-    self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int("IBIS:Destinations", 1)]
-    self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA", 1)]
+    self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int(
+                                "IBIS:Destinations", 1)]
+    self.ServiceAnnouncements =
+        UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA", 1)]
     self.LineTable = UF.IBISLines[self.Train:GetNW2Int("IBIS:Lines", 1)]
     self:UpdateState()
     if Train.BatteryOn or Train:ReadTrainWire(7) > 0 then self:CANBusRunner() end
@@ -690,7 +693,8 @@ function TRAIN_SYSTEM:ReadDataset()
     ]]
 
     local line = self.Course:sub(1, 2)
-    if self.KeyInput == "Enter" and (self.Menu == 1 or self.Menu == 4) and self.State < 3 and self.LineTable[line] then
+    if self.KeyInput == "Enter" and (self.Menu == 1 or self.Menu == 4) and
+        self.State < 3 and self.LineTable[line] then
         if self.State == 2 and UF.RegisterTrain(self.Course, self.Train) then -- state 2 equals cold boot sequence, so switch over to Route prompt
             self.Menu = 5
             print("test")
@@ -726,7 +730,8 @@ function TRAIN_SYSTEM:ReadDataset()
                 self.FirstStation = routeTable[1]
                 self.CurrentStation = self.FirstStation
                 self.CurrentStationInternal = 1
-                self.NextStation = self.RouteTable[self.CurrentStationInternal + 1]
+                self.NextStation = self.RouteTable[self.CurrentStationInternal +
+                                       1]
                 self.Menu = 0
                 self.State = 1
             else
@@ -739,7 +744,8 @@ function TRAIN_SYSTEM:ReadDataset()
             self.CurrentStationInternal = 0
             self.IndexValid = true
         end
-    elseif (self.Menu == 1 or self.Menu == 4) and self.State < 3 and self.RouteChar1 .. self.RouteChar2 == "00" then
+    elseif (self.Menu == 1 or self.Menu == 4) and self.State < 3 and
+        self.RouteChar1 .. self.RouteChar2 == "00" then
         self.CurrentStation = 0
         self.CurrentStationInternal = 0
         self.IndexValid = true
@@ -791,24 +797,30 @@ end
 TRAIN_SYSTEM.lastTrigger = 0
 function TRAIN_SYSTEM:Play(time)
     local message = {}
-    if CurTime() - self.lastTrigger < 1.5 then print("Bailing Play()",lastTrigger) return end
+    if CurTime() - self.lastTrigger < 1.5 then
+        print("Bailing Play()", lastTrigger)
+        return
+    end
     self.lastTrigger = time
-    
 
     local line = self.CourseChar1 .. self.CourseChar2
-    local commonFiles = UF.IBISCommonFiles[self.Train:GetNW2Int("IBIS:CommonFiles", 1)]
-    local announcementScript = UF.IBISAnnouncementScript[self.Train:GetNW2Int("IBIS:AnnouncementScript", 1)]
+    local commonFiles = UF.IBISCommonFiles[self.Train:GetNW2Int(
+                            "IBIS:CommonFiles", 1)]
+    local announcementScript = UF.IBISAnnouncementScript[self.Train:GetNW2Int(
+                                   "IBIS:AnnouncementScript", 1)]
     for k, v in ipairs(announcementScript) do
         if v ~= "station" and type(commonFiles[v][1]) == "string" then
-            local temp = {
-                [1] = {[commonFiles[v][1]] = commonFiles[v][2]}
-            }
-            table.Add(message,temp)
+            local temp = {[1] = {[commonFiles[v][1]] = commonFiles[v][2]}}
+            table.Add(message, temp)
         elseif announcementScript[k] == "station" then
-            temp = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int("IBIS:Announcements", 1)][self.CurrentStation][line][self.Route]
-            table.Add(message,temp)
+            temp = UF.IBISAnnouncementMetadata[self.Train:GetNW2Int(
+                       "IBIS:Announcements", 1)][self.CurrentStation][line][self.Route]
+            table.Add(message, temp)
         end
-        if k == #announcementScript then self:AnnQueue(message) return end
+        if k == #announcementScript then
+            self:AnnQueue(message)
+            return
+        end
     end
 end
 
