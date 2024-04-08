@@ -1030,12 +1030,13 @@ function ENT:Think()
 
     local seatPos = self:GetNW2Vector("DriversSeatPos",Vector(0,0,0))
 
-    local seatBackward = seatPos.x < 0 and true or false
-    
+    local seatBackward = seatPos.x > 0 and self:GetClass() == "gmod_subway_mplr_bwagen1973_section_a" and true or seatPos.x < 0 and true or false
+
+    --print(seatPos,self)
     if (GetConVar("metrostroi_disablecamaccel"):GetInt() == 0) and not seatBackward then
-        self.HeadAcceleration = (self:Animate("accel",((self:GetNW2Float("Accel",0)+1)/2),0,1, 4, 1)*C_CameraJerk:GetInt())--30-15)
+        self.HeadAcceleration = (self:Animate("accel",((self:GetNW2Float("Accel",0)+1)/2),0,1, 4, 1)*C_CameraJerk:GetInt())
     elseif (GetConVar("metrostroi_disablecamaccel"):GetInt() == 0) and seatBackward then
-        self.HeadAcceleration = (self:Animate("accel",((self:GetNW2Float("Accel",0)+1)/2),0,1, 4, 1)*(C_CameraJerk:GetInt()*-1))--30-15)
+        self.HeadAcceleration = (self:Animate("accel",((self:GetNW2Float("Accel",0)+1*-1)/2),0,1, 4, 1)*C_CameraJerk:GetInt())
     else
         self.HeadAcceleration = 0
     end
