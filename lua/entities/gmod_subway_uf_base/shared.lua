@@ -83,47 +83,7 @@ end
 --------------------------------------------------------------------------------
 -- Sound functions
 --------------------------------------------------------------------------------
---[[
-function ENT:SetSoundState(sound,volume,pitch,timeout,range)
-	--if not self.Sounds[sound] then return end
-	--if sound == "ring" then sound = "zombie_loop" end
-	if not self.Sounds[sound] then
-		if self.SoundNames and self.SoundNames[sound] then
-			local name = self.SoundNames[sound]
-			if self.SoundPositions[sound] then
-				local ent_nwID
-				if self.SoundPositions[sound] == "cabin" then ent_nwID = "seat_driver" end
 
-				local ent = self:GetNW2Entity(ent_nwID)
-				if IsValid(ent) then
-					self.Sounds[sound] = CreateSound(ent, Sound(name))
-				else
-					return
-				end
-			else
-				self.Sounds[sound] = CreateSound(self, Sound(name))
-			end
-		else
-			return
-		end
-	end
-	local default_range = 0.80
-	if (volume <= 0) or (pitch <= 0) then
-		self.Sounds[sound]:SetSoundLevel(100*(range or default_range))
-		self.Sounds[sound]:Stop()
-		return
-	end
-
-	if soundid == "switch" then default_range = 0.50 end
-	local pch = math.floor(math.max(0,math.min(255,100*pitch)) + math.random())
-	self.Sounds[sound]:SetSoundLevel(100*(range or default_range))
-	local vol = math.max(0,math.min(255,2.55*volume)) + (0.001/2.55) + (0.001/2.55)*math.random()
-	self.Sounds[sound]:PlayEx(vol,pch+1)
-	self.Sounds[sound]:ChangeVolume(vol,timeout or 0)
-	self.Sounds[sound]:ChangePitch(pch+1,timeout or 0)
-	self.Sounds[sound]:SetSoundLevel(100*(range or default_range))
-end
-]]
 local function PauseBASS(snd)
 	snd:Pause()
 	snd:SetTime(0)
