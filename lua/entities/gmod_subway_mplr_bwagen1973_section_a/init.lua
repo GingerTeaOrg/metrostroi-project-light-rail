@@ -7,44 +7,38 @@ ENT.BogeyDistance = 1100
 ENT.SyncTable = {
 	"IgnitionKey",
 	"IgnitionKeyInserted",
-	"ReduceBrake",
-	"Highbeam",
-	"SetHoldingBrake",
-	"DoorsLock",
+	"UncouplingKey",
+	"ParrallelMotors",
+	"Deadman",
 	"DoorsUnlock",
-	"PantographRaise",
-	"PantographLower",
-	"Headlights",
-	"WarnBlink",
-	"Microphone",
-	"BellEngage",
-	"Horn",
-	"WarningAnnouncement",
-	"PantoUp",
-	"DoorsCloseConfirm",
-	"ReleaseHoldingBrake",
-	"PassengerOverground",
-	"PassengerUnderground",
-	"SetPointRight",
-	"SetPointLeft",
-	"ThrowCoupler",
+	"DoorsLock",
+	"DoorsSelectRight",
+	"DoorsSelectLeft",
 	"Door1",
-	"UnlockDoors",
-	"DoorCloseSignal",
-	"Number1",
-	"Number2",
-	"Number3",
-	"Number4",
-	"Number6",
-	"Number7",
-	"Number8",
-	"Number9",
-	"Number0",
-	"Destination",
-	"Delete",
-	"Route",
-	"DateAndTime",
-	"SpecialAnnouncements"
+	"DoorsForceOpen",
+	"DoorsForceClose",
+	"MirrorLeft",
+	"MirrorRight",
+	"SwitchLeft",
+	"SwitchRight",
+	"BreakerOn",
+	"BreakerOff",
+	"PantographOn",
+	"PantographOff",
+	"Headlights",
+	"HazardBlink",
+	"DriverLight",
+	"BlinkerRight",
+	"BlinkerLeft",
+	"StepsHigh",
+	"StepsLow",
+	"StepsLowest",
+	"Bell",
+	"Horn",
+	"WiperConstantSet",
+	"WiperIntervalSet",
+	"WindowWasherSet",
+	"EmergencyBrakeDisable"
 }
 
 function ENT:Initialize()
@@ -79,8 +73,8 @@ function ENT:Initialize()
 	self.Door1 = false
 	
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector(380, 0, 15), Angle(0, 0, 0), true, "b_motor","a")
-	self.MiddleBogey = self:CreateBogeyUF(Vector(0, 0, 15), Angle(0, 0, 0), false, "b_joint","a")
+	self.FrontBogey = self:CreateBogeyUF(Vector(390, 0, 4), Angle(0, 0, 0), true, "b_motor","a")
+	self.MiddleBogey = self:CreateBogeyUF(Vector(0, 0, 4), Angle(0, 0, 0), false, "b_joint","a")
 	
 	
 	-- Create couples
@@ -89,7 +83,7 @@ function ENT:Initialize()
 	self.SectionB = self:CreateSectionB(Vector(-780, 0, 0),Angle(0,0,0),"gmod_subway_mplr_bwagen1973_section_b")
 	self.RearCouple = self:CreateCustomCoupler(Vector(-475, 0, 30), Angle(0, 0, 0), true, "b", "b")
 	self.RearCoupler = self.RearCouple
-	self.RearBogey = self:CreateBogeyUF(Vector(-380, 0, 15), Angle(0, 0, 0), true, "b_motor","b")
+	self.RearBogey = self:CreateBogeyUF(Vector(-390, 0, 4), Angle(0, 0, 0), true, "b_motor","b")
 	self.Panto = self:CreatePanto(Vector(36.5, 0, 135), Angle(0, 180, 0), "einholm")
 	self.PantoUp = false
 
@@ -137,11 +131,11 @@ function ENT:Initialize()
 		[KEY_A] = "ThrottleUp",
 		[KEY_D] = "ThrottleDown",
 		[KEY_F] = "ReduceBrake",
-		[KEY_H] = "BellEngageSet",
+		[KEY_H] = "BellSet",
 		[KEY_SPACE] = "DeadmanSet",
 		[KEY_W] = "ReverserUpSet",
 		[KEY_S] = "ReverserDownSet",
-		[KEY_P] = "PantographRaiseSet",
+		[KEY_P] = "PantographOnSet",
 		[KEY_O] = "DoorsUnlockSet",
 		[KEY_I] = "DoorsLockSet",
 		[KEY_K] = "DoorsCloseConfirmSet",
@@ -169,7 +163,7 @@ function ENT:Initialize()
 			[KEY_A] = "ThrottleUpFast",
 			[KEY_D] = "ThrottleDownFast",
 			[KEY_S] = "ThrottleZero",
-			[KEY_H] = "Horn",
+			[KEY_H] = "HornSet",
 			[KEY_V] = "DriverLightToggle",
 			[KEY_COMMA] = "WarnBlinkToggle",
 			[KEY_B] = "BatteryDisableSet",
@@ -185,7 +179,7 @@ function ENT:Initialize()
 			[KEY_7] = "Throttle70-Pct",
 			[KEY_8] = "Throttle80-Pct",
 			[KEY_9] = "Throttle90-Pct",
-			[KEY_P] = "PantographLowerSet",
+			[KEY_P] = "PantographOffSet",
 			[KEY_MINUS] = "RemoveIBISKey",
 		},
 		[KEY_LALT] = {
@@ -231,7 +225,6 @@ function ENT:Think(dT)
 	self.FrontCoupler = self.FrontCouple
 	self.RearCoupler = self.RearCouple
 	self:Traction()
-
 end
 
 function ENT:OnButtonPress(button)
@@ -269,19 +262,43 @@ function ENT:OnButtonPress(button)
 	if button == "BatteryDisableSet" then
 		self.CoreSys:BatteryOff()
 	end
-	if button == "PantographRaiseSet" then
-		self.PantoUp = true
-		self:SetNW2Bool("PantoUp",true)
-		print("bap")
+	if button == "PantographOnSet" then
+		self.Panel.PantographOn = 1
 	end
-	if button == "PantographLowerSet" then
-		self.PantoUp = false
-		self:SetNW2Bool("PantoUp",false)
+	if button == "PantographOffSet" then
+		self.Panel.PantographOff = 1
+	end
+	if button == "StepsHighToggle" then
+		sys:StepsParameters("high")
+	end
+	if button == "StepsLowToggle" then
+		sys:StepsParameters("low")
+	end
+	if button == "StepsLowestToggle" then
+		sys:StepsParameters("lowest")
+	end
+	if button == "BellSet" then
+		self.Panel.Bell = 1
+	end
+	if button == "HornSet" then
+		self.Panel.Horn = 1
 	end
 end
 function ENT:OnButtonRelease(button)
 	if button == "ThrottleUp" or button == "ThrottleDown" or button == "ThrottleUpFast" or button == "ThrottleDownFast" then
 		self.CoreSys.ThrottleRateA = 0
+	end
+	if button == "PantographOnSet" then
+		self.Panel.PantographOn = 0
+	end
+	if button == "PantographOffSet" then
+		self.Panel.PantographOff = 0
+	end
+	if button == "BellSet" then
+		self.Panel.Bell = 0
+	end
+	if button == "HornSet" then
+		self.Panel.Horn = 0
 	end
 end
 
@@ -309,19 +326,25 @@ function ENT:TrainSpawnerUpdate()
 end
 
 function ENT:Traction()
+	if not IsValid(self.FrontBogey) and not IsValid(self.RearBogey) then return end
 	local fb = self.FrontBogey
 	local mb = self.MiddleBogey
 	local rb = self.RearBogey
+	local fbV = self.FrontBogey.MotorPower
+	local rbV = self.RearBogey.MotorPower
+	local fbN = self.FrontBogey.MotorForce
+	local rbN = self.RearBogey.MotorForce
 	local speed = self.CoreSys.Speed
 	local traction = self:ReadTrainWire(1)
-	local braking = traction < 0.01
-	if not IsValid(self.FrontBogey) and not IsValid(self.RearBogey) then return end
-	
-	fb.MotorForce = traction > 0 and 1689174.29 or -1844848.08
-	rb.MotorForce = traction > 0 and 1689174.29 or -1844848.08
+	local braking = traction < 1
 
-	fb.MotorPower = (speed > 8 or not braking) and math.abs(traction) or 0
-	rb.MotorPower = (speed > 8 or not braking) and math.abs(traction) or 0
+	local chopper = self.Chopper.ChopperOutput
+	
+	self.FrontBogey.MotorForce = traction > 0 and 126688.07175 or -138363.606
+	self.RearBogey.MotorForce = traction > 0 and 126688.07175 or -138363.606
+
+	self.FrontBogey.MotorPower = (speed > 8 or not braking) and math.abs(chopper) or 0
+	self.FrontBogey.MotorPower = (speed > 8 or not braking) and math.abs(chopper) or 0
 
 	rb.Reversed = self:ReadTrainWire(3) > 0 and true or self:ReadTrainWire(4) > 0 and false
 	fb.Reversed = self:ReadTrainWire(3) > 0 and true or self:ReadTrainWire(4) > 0 and false
@@ -329,4 +352,5 @@ function ENT:Traction()
 	fb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
 	mb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
 	rb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
+	--print(chopper)
 end
