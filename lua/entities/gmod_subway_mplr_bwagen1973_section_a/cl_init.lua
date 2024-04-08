@@ -8,7 +8,17 @@ ENT.AutoAnimNames = {}
 
 ENT.ClientProps["empty_button"] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
-	pos = Vector(0, 0, 0),
+	pos = Vector(-.1, .11, .06),
+	ang = Angle(0, 0, 0),
+}
+ENT.ClientProps["empty_button2"] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
+	pos = Vector(-.1, -7, .06),
+	ang = Angle(0, 0, 0),
+}
+ENT.ClientProps["empty_button3"] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
+	pos = Vector(-.1, -6, .06),
 	ang = Angle(0, 0, 0),
 }
 ENT.ClientProps["headlights_lit"] = {
@@ -360,12 +370,12 @@ ENT.ButtonMapMPLR["dashboard"] = {
 		{
             ID = "WiperConstantSet",
             x = 70,
-            y = 25,
+            y = 24,
             radius = 10,
             tooltip = "Wipers to full service",
             model = {
                 model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_wiper_constant.mdl",
-                z = 3,
+                z = -1.8,
                 ang = 90,
                 anim = true,
                 var = "WiperConstant",
@@ -384,12 +394,12 @@ ENT.ButtonMapMPLR["dashboard"] = {
 		{
             ID = "WiperIntervalSet",
             x = 55,
-            y = 25,
+            y = 24,
             radius = 10,
             tooltip = "Wipers to interval",
             model = {
                 model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_wiper_interval.mdl",
-                z = 3,
+                z = -1.8,
                 ang = 90,
                 anim = true,
                 var = "WiperInterval",
@@ -660,7 +670,7 @@ ENT.ButtonMapMPLR["dashboard"] = {
                 z = 0,
                 ang = 90,
                 anim = true,
-                var = "DoorLeft",
+                var = "DoorsSelectLeft",
                 speed = 15,
                 vmin = 0,
                 vmax = 1,
@@ -684,7 +694,7 @@ ENT.ButtonMapMPLR["dashboard"] = {
                 z = 0,
                 ang = 90,
                 anim = true,
-                var = "DoorRight",
+                var = "DoorsSelectRight",
                 speed = 15,
                 vmin = 0,
                 vmax = 1,
@@ -758,9 +768,203 @@ ENT.ButtonMapMPLR["dashboard"] = {
                 ang = 90,
                 anim = true,
                 var = "StepsHigh",
+                speed = 20,
+                vmin = 0,
+                vmax = 100,
+                getfunc = function(ent) return ent:GetNW2Bool("StepsHigh") and 1 or 0 end,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+        {
+            ID = "SwitchLeftToggle",
+            x = 320,
+            y = 62,
+            radius = 10,
+            tooltip = "Override next point to left",
+            model = {
+                model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_switching_left.mdl",
+                z = 0,
+                ang = 90,
+                anim = true,
+                var = "SwitchLeft",
                 speed = 15,
                 vmin = 0,
                 vmax = 100,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+        {
+            ID = "SwitchRightToggle",
+            x = 335,
+            y = 62,
+            radius = 10,
+            tooltip = "Override next point to right",
+            model = {
+                model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_switching_right.mdl",
+                z = -4,
+                ang = 90,
+                anim = true,
+                var = "SwitchRight",
+                speed = 15,
+                vmin = 0,
+                vmax = 100,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+        {
+            ID = "BlinkerLeftToggle",
+            x = 350,
+            y = 62,
+            radius = 10,
+            tooltip = "Set the indicators to left turn",
+            model = {
+                model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_blinker_left.mdl",
+                z = 0,
+                ang = 90,
+                anim = true,
+                var = "BlinkerLeft",
+                speed = 15,
+                vmin = 0,
+                vmax = 100,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+        {
+            ID = "BlinkerRightToggle",
+            x = 365,
+            y = 62,
+            radius = 10,
+            tooltip = "Set the indicators to right turn",
+            model = {
+                model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_blinker_right.mdl",
+                z = 0,
+                ang = 90,
+                anim = true,
+                var = "BlinkerRight",
+                speed = 15,
+                vmin = 0,
+                vmax = 100,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+        -----------------------------------------------------------
+        {
+            ID = "LightsOnSet",
+            x = 320,
+            y = 25,
+            radius = 10,
+            tooltip = "Lights On",
+            model = {
+                model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_lights_on.mdl",
+                z = 3,
+                ang = 90,
+                anim = true,
+                var = "LightsOn",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+        {
+            ID = "LightsOffSet",
+            x = 335,
+            y = 25,
+            radius = 10,
+            tooltip = "Lights Off",
+            model = {
+                model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_lights_off.mdl",
+                z = 3,
+                ang = 90,
+                anim = true,
+                var = "LightsOff",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+        {
+            ID = "HazardBlinkToggle",
+            x = 350,
+            y = 25,
+            radius = 10,
+            tooltip = "Hazard Lights",
+            model = {
+                model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_hazards.mdl",
+                z = 3,
+                ang = 90,
+                anim = true,
+                var = "HazardBlink",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
+                sndvol = 20,
+                snd = function(val)
+                    return val and "button_on" or "button_off"
+                end,
+                sndmin = 80,
+                sndmax = 1e3 / 3,
+                sndang = Angle(-90, 0, 0)
+            }
+        },
+        {
+            ID = "ApplySpringLoadedBrakeToggle",
+            x = 365,
+            y = 25,
+            radius = 10,
+            tooltip = "Manually apply spring-loaded brake",
+            model = {
+                model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_funny.mdl",
+                z = 3,
+                ang = 90,
+                anim = true,
+                var = "SpringLoadedBrake",
+                speed = 15,
+                vmin = 0,
+                vmax = 1,
                 sndvol = 20,
                 snd = function(val)
                     return val and "button_on" or "button_off"
@@ -848,7 +1052,7 @@ function ENT:Initialize()
 		[3] = 0.625,
 		[4] = 0.75,
 		[5] = 0.78,
-		[6] = 0.9
+		[6] = 1
 	}
 
     self.HeadlightsLit = false
@@ -862,6 +1066,7 @@ end
 function ENT:Think()
 	self.BaseClass.Think(self)
     self:Animations()
+    self:SoundsFunc()
     self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = (CurTime() - self.PrevTime)
 	self.PrevTime = CurTime()
@@ -869,15 +1074,6 @@ function ENT:Think()
     self.BatteryOn = self:GetNW2Bool("BatteryOn", false)
 
 	
-    self.Reverser = {
-		[0] = 0,
-		[1] = 0.25,
-		[2] = 0.4,
-		[3] = 0.6,
-		[4] = 0.75,
-		[5] = 0.78,
-		[6] = 1
-	}
 end
 
 function ENT:Animations()
@@ -961,6 +1157,12 @@ function ENT:DrawPost()
 		surface.SetMaterial(mat3)
 		surface.DrawTexturedRectUV(0,0, 41, 11 , 0, self.ScrollModifier1 + .1, -1, self.ScrollModifier1 - .85)
 	end)
+end
+
+function ENT:SoundsFunc()
+    print(self:GetNW2Bool("Bell",false))
+    self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
+    self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
 end
 
 function ENT:OnPlay(soundid, location, range, pitch)
