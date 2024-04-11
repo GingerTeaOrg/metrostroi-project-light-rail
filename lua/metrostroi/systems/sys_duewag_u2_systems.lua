@@ -176,7 +176,7 @@ function TRAIN_SYSTEM:Think(Train)
     self.Train:SetNW2Bool("ReverserInsertedB", self.ReverserInsertedB)
     self.Train:TriggerInput("DriversWrenchPresent", (self.ReverserInsertedA or self.ReverserInsertedB) and 1 or 0)
     self.EmergencyBrake = self.Train:GetNW2Bool("EmergencyBrake", false)
-    self.Train:SetNW2Float("BlinkerStatus", self.Train.Panel.BlinkerLeft > 0 and 1 or (self.Train.Panel.BlinkerRight > 0 and self.Train.Panel.BlinkerLeft < 1) and 0 or (self.Train.Panel.BlinkerLeft < 1 and self.Train.Panel.BlinkerRight < 1) or 0.5)
+    self.Train:SetNW2Float("BlinkerStatus", self.Train.Panel.BlinkerLeft > 0 and 1 or (self.Train.Panel.BlinkerRight > 0 and self.Train.Panel.BlinkerLeft < 1) and 0 or 0.5)
     self.ReverserState = (self.ReverserLeverStateA == -1 or self.ReverserLeverStateB == 3) and -1 or (self.ReverserLeverStateA == 3 or self.ReverserLeverStateB == -1) and 1
     self.Train:WriteTrainWire(12, (self.Train.DeadmanUF.IsPressed > 0 and self.Train:ReadTrainWire(6) > 0 and (self.ReverserLeverStateA ~= 0 or self.ReverserLeverStateB ~= 0)) and 1 or 0)
     self.Train:WriteTrainWire(6, (self.VZ == true and self.Train:ReadTrainWire(6) < 1) and 1 or (self.ReverserLeverStateA == 2 or self.ReverserLeverStateB == 2) and 1 or 0)
@@ -312,7 +312,7 @@ function TRAIN_SYSTEM:U2Engine()
     end
     
     self.Train:SetNW2Bool("CamshaftMoved", self.CamshaftMoved)
-    self.Train:SetNW2Float("Amps", self.Amps)
+    self.Train:SetNWFloat("Amps", self.Amps)
 end
 
 function TRAIN_SYSTEM:MUHandler()
@@ -446,4 +446,39 @@ function TRAIN_SYSTEM:CheckDoorsAllClosed(enable)
         end
     end
     return true 
+end
+
+function TRAIN_SYSTEM:Blink(enable, left, right)
+    local t = self.Train
+    local sectionB = t.SectionB
+    local tailblink = IsValid(t.RearCouple.CoupledEnt) and self:ReadTrainWire(6) > 0
+    if t.BatteryOn == true or t:ReadTrainWire(6) > 0 then
+        if not enable then
+            t.BlinkerOn = false
+            t.LastTriggerTime = CurTime()
+        elseif CurTime() - t.LastTriggerTime > 0.4 then
+            t.BlinkerOn = not t.BlinkerOn
+            t.LastTriggerTime = CurTime()
+        end
+        
+        t:SetLightPower(58, t.BlinkerOn and left)
+        t:SetLightPower(48, t.BlinkerOn and left)
+        t:SetLightPower(59, t.BlinkerOn and right)
+        t:SetLightPower(49, t.BlinkerOn and right)
+        t:SetLightPower(38, t.BlinkerOn and right or left and t.BlinkerOn)
+        t:SetLightPower(56, t.BlinkerOn and left and right)
+        t:SetLightPower(57, t.BlinkerOn and left and right)
+        
+        sectionB:SetLightPower(148,t.BlinkerOn and left)
+        sectionB:SetLightPower(158,t.BlinkerOn and left)
+        sectionB:SetLightPower(159,t.BlinkerOn and right)
+        sectionB:SetLightPower(149,t.BlinkerOn and right)
+
+        sectionB:SetLightPower(66,t.BlinkerOn and left and right)
+        sectionB:SetLightPower(67,t.BlinkerOn and left and right)
+        t:SetLightPower(48, t.BlinkerOn and left)
+        t:SetLightPower(58, t.BlinkerOn and left)
+        t:SetLightPower(59, t.BlinkerOn and right)
+        t:SetNW2Bool("BlinkerTick", t.BlinkerOn) -- one tick sound for the blinker relay
+    end
 end
