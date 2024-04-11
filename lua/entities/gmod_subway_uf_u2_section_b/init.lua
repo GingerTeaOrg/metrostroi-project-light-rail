@@ -1392,3 +1392,34 @@ function ENT:IRIS(enable)
 		end
 	end
 end
+
+function ENT:Traction()
+    if not IsValid(self.FrontBogey) and not IsValid(self.MiddleBogey) and not IsValid(self.RearBogey) then return end
+    local resistors = self.CoreSys:Camshaft()
+    local throttle = self.CoreSys.ThrottleState
+    local MU = not (self.CoreSys.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.CoreSys.ReverserLeverStateA == -1 or self.CoreSys.ReverserLeverStateB == 3) or self:ReadTrainWire(6) > 0
+    local coupledA = IsValid(self.FrontCouple.CoupledEnt)
+    local coupledB = IsValid(self.RearCouple.CoupledEnt)
+    local throttleWire = self:ReadTrainWire(1)
+    local deadmanTripped = self.DeadmanUF.DeadmanTripped or MU and self:ReadTrainWire(8)
+
+    local parralel = self.Panel.Parralel > 0
+    self.BrakesOn = MU and throttleWire < 0 or throttle < 0
+    local reverser = self.CoreSys.ReverserState
+    
+    -- are the motors set to parralel or series?
+    throttle = not parralel and throttle / 2 or throttle
+    throttleWire = not parralel and throttleWire / 2 or throttleWire
+
+    self.RearBogey.MotorForce = not MU and throttle < 0 and 69101.57 - resistors * (self.CoreSys.ThrottleState * 0.01) or not MU and 63571.428571429 - resistors * (throttle * 0.01) or MU and throttleWire > 0 and 63571.428571429 - resistors * (throttleWire * 0.01) or not self.DepartureConfirmed and self.Speed < 8 and 0 or deadmanTripped and -69101.57
+    self.FrontBogey.MotorForce = not MU and throttle < 0 and 69101.57 - resistors * (self.CoreSys.ThrottleState * 0.01) or not MU and 63571.428571429 - resistors * (throttle * 0.01) or MU and throttleWire > 0 and 63571.428571429 - resistors * (throttleWire * 0.01) or not self.DepartureConfirmed and self.Speed < 8 and 0 or deadmanTripped and -69101.57
+
+    self.RearBogey.MotorPower = not MU and throttle * 0.01 or throttleWire * 0.01 or not self.DepartureConfirmed and self.Speed < 8 and 0
+    self.FrontBogey.MotorPower = not MU and throttle * 0.01 or throttleWire * 0.01 or not self.DepartureConfirmed and self.Speed < 8 and 0
+    self.FrontBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
+    self.MiddleBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
+    self.RearBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
+    self.FrontBogey.Reversed = reverser < 0 or MU and self:ReadTrainWire(4) > 0
+    self.RearBogey.Reversed = reverser < 0 or MU and self:ReadTrainWire(4) > 0
+
+end

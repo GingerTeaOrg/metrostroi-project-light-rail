@@ -15,7 +15,7 @@ ENT.SkinsType = "U3"
 ENT.DontAccelerateSimulation = true
 
 ENT.SubwayTrain = {Type = "U3", Name = "U3", WagType = 0, Manufacturer = "Duewag"}
-
+ENT.NumberRanges = {{451, 477}}
 ENT.Spawner = {
 	model = {"models/lilly/uf/u3/u3_a.mdl", "models/lilly/uf/u3/u3_b.mdl"},
 	head = "gmod_subway_uf_u3_section_a",

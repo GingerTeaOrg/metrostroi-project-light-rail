@@ -2434,11 +2434,11 @@ function ENT:Think()
 
     self:ShowHide("reverser", self:GetNW2Bool("ReverserInsertedA", false))
 
-    local Door12a = math.Clamp(self:GetNW2Float("Door12a"), 0, 1)
-    local Door34a = math.Clamp(self:GetNW2Float("Door34a"), 0, 1)
+    local Door12a = math.Clamp(self:GetNWFloat("Door12a"), 0, 1)
+    local Door34a = math.Clamp(self:GetNWFloat("Door34a"), 0, 1)
 
-    local Door56b = self:GetNW2Float("Door56b")
-    local Door78b = self:GetNW2Float("Door78b")
+    local Door56b = self:GetNWFloat("Door56b")
+    local Door78b = self:GetNWFloat("Door78b")
 
     self:Animate("Door_fr2", Door12a, 0, 100, 100, 10, 0)
     self:Animate("Door_fr1", Door12a, 0, 100, 100, 10, 0)
@@ -2496,10 +2496,10 @@ function ENT:Think()
         self:SetSoundState("Deadman", 0, 1)
     end
 
-    self.VoltAnim = self:GetNW2Float("BatteryCharge", 0) / 46
+    self.VoltAnim = self:GetNWFloat("BatteryCharge", 0) / 46
 
     self:Animate("Voltage", self.VoltAnim, 0, 100, 1, 0, false)
-    self.AmpAnim = self:GetNW2Float("Amps", 0) / 0.5 * 100
+    self.AmpAnim = self:GetNWFloat("Amps", 0) / 0.5 * 100
     self:Animate("Amps", self.AmpAnim, 0, 100, 1, 0, false)
     ----print(self.AmpAnim)
     if self:GetNW2Bool("Cablight", false) == true then
@@ -2776,14 +2776,8 @@ end
 UF.GenerateClientProps()
 
 function ENT:U2SoundEngine()
-
-    if self.Speed > 30 then
-        self:SetSoundState("Cruise", self.Speed / 80 + 0.2, 1, 1, 1)
-    elseif self.Speed < 30 and self.Speed > 10 then
-        self:SetSoundState("Cruise", self.Speed / 80, 1, 1, 1)
-    elseif self.Speed < 10 then
-        self:SetSoundState("Cruise", 0, 1, 1, 1)
-    end
+    self:SetSoundState("Cruise", Lerp(self.Speed,0,1), 1, 1, 1)
+    self:SetSoundState("rumb1", Lerp(self.Speed,0,1), 1, 1, 1)
 end
 
 function ENT:SetSoundState2(sound, volume, pitch, name, level)

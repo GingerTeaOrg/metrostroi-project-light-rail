@@ -1542,17 +1542,12 @@ function ENT:Think()
 end
 
 function ENT:SoundRoutine()
-    if self:GetNW2Bool("Bell", false) == true then
-        self:SetSoundState("bell", 1, 1)
-        self:SetSoundState("bell_in", 1, 1)
-    else
-        self:SetSoundState("bell", 0, 1)
-        self:SetSoundState("bell_in", 0, 1)
-    end
+    self:SetSoundState("bell", self:GetNW2Bool("Bell", false) and 1 or 0, 1)
+    self:SetSoundState("bell_in", self:GetNW2Bool("Bell", false) and 1 or 0, 1)
+
 
     if self:GetNW2Bool("WarningAnnouncement") == true then
         self:PlayOnce("WarningAnnouncement", "cabin", 1, 1)
-
     end
     self:SetSoundState("Deadman", self.ParentTrain:GetNW2Bool(
                            "DeadmanAlarmSound", false) and 1 or 0, 1)
@@ -1588,40 +1583,36 @@ function ENT:Animations()
         self:ShowHide("headlights_on", false)
     end
 
+    local pBSOn = self:GetPackedBool("FlickBatterySwitchOn", false)
+    local pBSOff = self:GetPackedBool("FlickBatterySwitchOff", false)
+    self.BatterySwitch = pBSOn and 1 or pBSOff and 0 or 0.5
+    
 
-    if self:GetPackedBool("FlickBatterySwitchOn", false) == true then
-        self.BatterySwitch = 1
-    elseif self:GetPackedBool("FlickBatterySwitchOff", false) == true then
-        self.BatterySwitch = 0
-    else
-        self.BatterySwitch = 0.5
-    end
-
-    self:Animate("Mirror", self:GetNW2Float("Mirror", 0), 0, 100, 17, 1, 0)
-    self:Animate("Mirror_vintage", self:GetNW2Float("Mirror", 0), 0, 100, 17, 1,
-                 0)
+    local mirror = self:GetNW2Float("Mirror", 0)
+    self:Animate("Mirror", mirror, 0, 100, 17, 1, 0)
+    self:Animate("Mirror_vintage", mirror, 0, 100, 17, 1,0)
 
     self:ShowHide("RetroEquipment",
                   self.ParentTrain:GetNW2Bool("RetroMode", false))
 
-    self:Animate("Door_fr2", self.ParentTrain:GetNW2Float("Door12b"), 0, 100,
+    self:Animate("Door_fr2", self.ParentTrain:GetNWFloat("Door12b"), 0, 100,
                  50, 0, 0)
-    self:Animate("Door_fr1", self.ParentTrain:GetNW2Float("Door12b"), 0, 100,
-                 50, 0, 0)
-
-    self:Animate("Door_rr2", self.ParentTrain:GetNW2Float("Door34b"), 0, 100,
-                 50, 0, 0)
-    self:Animate("Door_rr1", self.ParentTrain:GetNW2Float("Door34b"), 0, 100,
+    self:Animate("Door_fr1", self.ParentTrain:GetNWFloat("Door12b"), 0, 100,
                  50, 0, 0)
 
-    self:Animate("Door_fl2", self.ParentTrain:GetNW2Float("Door78a"), 0, 100,
+    self:Animate("Door_rr2", self.ParentTrain:GetNWFloat("Door34b"), 0, 100,
                  50, 0, 0)
-    self:Animate("Door_fl1", self.ParentTrain:GetNW2Float("Door78a"), 0, 100,
+    self:Animate("Door_rr1", self.ParentTrain:GetNWFloat("Door34b"), 0, 100,
                  50, 0, 0)
 
-    self:Animate("Door_rl2", self.ParentTrain:GetNW2Float("Door56a"), 0, 100,
+    self:Animate("Door_fl2", self.ParentTrain:GetNWFloat("Door78a"), 0, 100,
                  50, 0, 0)
-    self:Animate("Door_rl1", self.ParentTrain:GetNW2Float("Door56a"), 0, 100,
+    self:Animate("Door_fl1", self.ParentTrain:GetNWFloat("Door78a"), 0, 100,
+                 50, 0, 0)
+
+    self:Animate("Door_rl2", self.ParentTrain:GetNWFloat("Door56a"), 0, 100,
+                 50, 0, 0)
+    self:Animate("Door_rl1", self.ParentTrain:GetNWFloat("Door56a"), 0, 100,
                  50, 0, 0)
     if self.ParentTrain:GetNW2Bool("RetroMode", false) == false then
         self:ShowHide("Mirror_vintage", false)

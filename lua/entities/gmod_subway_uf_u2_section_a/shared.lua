@@ -241,7 +241,7 @@ ENT.Cameras = {
 ENT.MirrorCams = {Vector(441, 72, 15), Angle(1, 180, 0), 15, Vector(441, -72, 15), Angle(1, 180, 0), 18}
 
 function ENT:InitializeSystems()
-	self:LoadSystem("Duewag_U2")
+	self:LoadSystem("CoreSys","Duewag_U2")
 	self:LoadSystem("DeadmanUF", "Duewag_Deadman")
 	self:LoadSystem("IBIS")
 	self:LoadSystem("Announcer", "uf_announcer")
