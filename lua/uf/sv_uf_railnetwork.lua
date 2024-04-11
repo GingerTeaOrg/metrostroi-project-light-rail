@@ -1,48 +1,20 @@
-UF.PZBSections = {}
 
-UF.SignalBlocks = {}
+
+
 
 UF.SwitchEntitiesByName = {}
 
-function UF.CreatePZB()
-    if next(UF.PZBSections) then return end
-    ent = ents.FindByClass("gmod_track_uf_signal")
-    for k, v in ipairs(ent) do
-        if i then
-            i = i + 1
-        else
-            i = 1
-        end
-        if i <= #ent then
-            local DistantPos = v.DistantSignalEnt.TrackPosition.x
-            local MyPos = v.TrackPosition.x
-
-            local MyLength = {["StartX"] = MyPos, ["EndX"] = DistantPos}
-            table.insert(UF.PZBSections, MyLength)
-        end
-    end
-end
-
-function UF.SavePZB() end
-
+UF.ActiveRoutes = {}
 UF.SignalBlocks = {}
-function UF.UpdateSignalBlocks()
-    for k, v in pairs(Metrostroi.SignalEntitiesByName) do
-        UF.SignalBlocks[v] = {
-            Metrostroi.SignalEntitiesByName[v.DistantSignal],
-            Metrostroi.SignalEntitiesByName[v.RoutedDistantSignal]
-        }
-    end
-end
+
 
 function UF.CheckOccupation()
-
+    
     local DistantPos = self.DistantSignalEnt.TrackPosition.x
     local MyPos = self.TrackPosition
     for train, _ in pairs(Metrostroi.TrainPositions) do
         local TrainPos = Metrostroi.TrainPositions[train][1].x
         if MyPos.forward then
-            if self.Name == "Tbf/A1" then print(MyPos.x, TrainPos) end
             if MyPos.x < TrainPos and DistantPos > TrainPos then
                 return true
             end
@@ -56,7 +28,7 @@ function UF.CheckOccupation()
 end
 
 hook.Add("Initialize", "UF_MapInitialize", function()
-    if not Metrostroi then return end
+    if not Metrostroi then assert(Metrostroi,"ERROR METROSTROI IS NOT INSTALLED / LOADED") return end
     timer.Simple(6, UF.Load)
 end)
 
@@ -66,13 +38,13 @@ function UF.UpdateStations()
     for _, platform in pairs(platforms) do
         local station = Metrostroi.Stations[platform.StationIndex] or {}
         Metrostroi.Stations[platform.StationIndex] = station
-
+        
         -- Position
         local dir = platform.PlatformEnd - platform.PlatformStart
         local pos1 = Metrostroi.GetPositionOnTrack(platform.PlatformStart,
-                                                   dir:Angle())[1]
+        dir:Angle())[1]
         local pos2 = Metrostroi.GetPositionOnTrack(platform.PlatformEnd,
-                                                   dir:Angle())[1]
+        dir:Angle())[1]
         if pos1 and pos2 then
             -- Add platform to station
             local platform_data = {
@@ -85,22 +57,22 @@ function UF.UpdateStations()
             }
             if station[platform.PlatformIndex] then
                 print(Format(
-                          "MPLR: Error, station %03d has two platforms %d with same index!",
-                          platform.StationIndex, platform.PlatformIndex))
+                "MPLR: Error, station %03d has two platforms %d with same index!",
+                platform.StationIndex, platform.PlatformIndex))
             else
                 station[platform.PlatformIndex] = platform_data
             end
-
+            
             -- Print information
             print(Format("\t[%03d][%d] %.3f-%.3f km (%.1f m) on path %d",
-                         platform.StationIndex, platform.PlatformIndex,
-                         pos1.x * 1e-3, pos2.x * 1e-3, platform_data.length,
-                         platform_data.node_start.path.id))
+            platform.StationIndex, platform.PlatformIndex,
+            pos1.x * 1e-3, pos2.x * 1e-3, platform_data.length,
+            platform_data.node_start.path.id))
         else
             print(Format(
-                      "MPLR: Error, station %03d platform %d, cant find pos! \n\tStart%s \n\tEnd:%s",
-                      platform.StationIndex, platform.PlatformIndex,
-                      platform.PlatformStart, platform.PlatformEnd))
+            "MPLR: Error, station %03d platform %d, cant find pos! \n\tStart%s \n\tEnd:%s",
+            platform.StationIndex, platform.PlatformIndex,
+            platform.PlatformStart, platform.PlatformEnd))
         end
     end
 end
@@ -121,27 +93,27 @@ function UF.UpdateSignalEntities()
     end
     Metrostroi.OldUpdateTime = CurTime()
     local options = {z_pad = 256}
-
+    
     UF.UpdateSignalNames()
-
+    
     Metrostroi.SignalEntitiesForNode = {}
     Metrostroi.SignalEntityPositions = {}
-
+    
     local count = 0
     local repeater = 0
     local entities = ents.FindByClass("gmod_track_uf_signal*")
     print("MPLR: PreInitialize signals")
     for k, v in pairs(entities) do
         local pos = Metrostroi.GetPositionOnTrack(v:GetPos(), v:GetAngles() -
-                                                      Angle(0, 90, 0), options)[1]
+        Angle(0, 90, 0), options)[1]
         local pos2 = Metrostroi.GetPositionOnTrack(
-                         v:LocalToWorld(Vector(0, 10, 0)),
-                         v:GetAngles() - Angle(0, 90, 0), options)
+        v:LocalToWorld(Vector(0, 10, 0)),
+        v:GetAngles() - Angle(0, 90, 0), options)
         if pos then -- FIXME make it select proper path
-
+            
             Metrostroi.SignalEntitiesForNode[pos.node1] = Metrostroi.SignalEntitiesForNode[pos.node1] or {}
             table.insert(Metrostroi.SignalEntitiesForNode[pos.node1], v)
-
+            
             -- A signal belongs only to a single track
             Metrostroi.SignalEntityPositions[v] = pos
             v.TrackPosition = pos
@@ -151,22 +123,22 @@ function UF.UpdateSignalEntities()
                 v.TrackDir = (pos2[1].x - v.TrackX) < 0
             else
                 print(Format(
-                          "MPLR: Signal %s, second position not found, system can't detect direction of the signal!",
-                          v.Name))
+                "MPLR: Signal %s, second position not found, system can't detect direction of the signal!",
+                v.Name))
                 v.TrackDir = true
             end
         else
             if v.NextSignal ~= "" then
                 print(Format(
-                          "MPLR: Signal %s, position not found, system can't detect the track occupation!",
-                          v.Name))
+                "MPLR: Signal %s, position not found, system can't detect the track occupation!",
+                v.Name))
             end
         end
         -- if not v.Routes[1] then ErrorNoHalt(Format("MPLR: Signal %s don't have first route!",v.Name)) end
         count = count + 1
     end
     print(Format("MPLR: Total signals: %u (normal: %u, repeaters: %u)", count,
-                 count - repeater, repeater))
+    count - repeater, repeater))
 end
 
 function UF.UpdateSignalNames()
@@ -181,10 +153,10 @@ function UF.UpdateSignalNames()
         if v.Name then
             if Metrostroi.SignalEntitiesByName[v.Name] then --
                 print(Format(
-                          "MPLR: Signal with this name %s already exists! Check signal names!\nInfo:\n\tFirst signal:  %s\n\tPos:    %s\n\tSecond signal: %s\n\tPos:    %s",
-                          v.Name, Metrostroi.SignalEntitiesByName[v.Name],
-                          Metrostroi.SignalEntitiesByName[v.Name]:GetPos(), v,
-                          v:GetPos()))
+                "MPLR: Signal with this name %s already exists! Check signal names!\nInfo:\n\tFirst signal:  %s\n\tPos:    %s\n\tSecond signal: %s\n\tPos:    %s",
+                v.Name, Metrostroi.SignalEntitiesByName[v.Name],
+                Metrostroi.SignalEntitiesByName[v.Name]:GetPos(), v,
+                v:GetPos()))
             else
                 Metrostroi.SignalEntitiesByName[v.Name] = v
             end
@@ -197,7 +169,7 @@ function UF.CheckForSignal(node, min_x, max_x)
     if node and node.signals then
         for _, signal in pairs(node.signals) do
             if signal.type == "light" and signal.TrackX >= min_x and
-                signal.TrackX <= max_x then
+            signal.TrackX <= max_x then
                 -- Found a light signal within the specified range
                 return true, signal
             end
@@ -223,7 +195,7 @@ function UF.ScanTrack(itype, node, func, x, dir, checked)
     -- Try to use entire node length by default
     local min_x = node.x
     local max_x = min_x + node.length
-
+    
     -- Get range of node which can be actually sensed
     local isolateForward = false -- Should scanning continue forward along track
     local isolateBackward = false -- Should scanning continue backward along track
@@ -233,7 +205,7 @@ function UF.ScanTrack(itype, node, func, x, dir, checked)
             if IsValid(v) then
                 if light then
                     isolating = ((v.TrackDir == dir) or
-                                    (not v.PassOcc or v.TrackX == x))
+                    (not v.PassOcc or v.TrackX == x))
                 end
                 if switch then isolating = v.IsolateSwitches end
                 -- if itype == "ars" then isolating = true end
@@ -264,7 +236,7 @@ function UF.ScanTrack(itype, node, func, x, dir, checked)
             end
         end
     end
-
+    
     -- Show the scanned path
     if GetConVar("metrostroi_drawdebug"):GetInt() == 1 then
         local T = CurTime()
@@ -274,7 +246,7 @@ function UF.ScanTrack(itype, node, func, x, dir, checked)
             end
         end)
     end
-
+    
     -- Call function for the determined portion of the node
     local results = {func(node, min_x, max_x)}
     if results[1] ~= nil then return unpack(results) end
@@ -311,7 +283,7 @@ function UF.Save(name)
         file.CreateDir("project_light_rail_data")
     end
     name = name or game.GetMap()
-
+    
     -- Format signs, signal, switch data
     local signs = {}
     local signals_ents = ents.FindByClass("gmod_track_uf_signal*")
@@ -327,6 +299,7 @@ function UF.Save(name)
                 Name1 = v.Name1,
                 Name2 = v.Name2,
                 Name = v.Name,
+                ActiveRoute = 1,
                 Routes = v.Routes
             })
         end
@@ -359,7 +332,7 @@ function UF.Save(name)
     local data = util.TableToJSON(signs, true)
     file.Write(string.format("project_light_rail_data/signs_%s.txt", name), data)
     print(Format("Saved to project_light_rail_data/signs_%s.txt", name))
-
+    
 end
 
 function UF.Load(name, keep_signs)
@@ -368,18 +341,18 @@ function UF.Load(name, keep_signs)
         return
     end
     name = name or game.GetMap()
-
+    
     -- loadTracks(name)
-
+    
     -- Initialize stations list
     UF.UpdateStations()
     -- Print info
     -- UF.PrintStatistics()
-
+    
     -- Ignore updates to prevent created/removed switches from constantly updating table of positions
     Metrostroi.IgnoreEntityUpdates = true
     UF.LoadSignalling(name, keep_signs)
-
+    
     timer.Simple(0.05, function()
         -- No more ignoring updates
         Metrostroi.IgnoreEntityUpdates = false
@@ -399,7 +372,7 @@ end
 
 local function printTable(table, indent)
     if not indent then indent = 0 end
-
+    
     for key, value in pairs(table) do
         if type(value) == "table" then
             print(string.rep("  ", indent) .. key .. "=")
@@ -427,7 +400,7 @@ local function getFile(path, name, id)
         return
     elseif not data then
         print(Format("MPLR: Parse error in %s %s definition JSON", id,
-                     Format(path, name)))
+        Format(path, name)))
         return
     end
     return data
@@ -444,58 +417,45 @@ local function findKeyInNestedTable(table, keyToFind)
     end
 end
 
-UF.ActiveRoutes = {}
-UF.SignalBlocks = {}
 
-function UF.ConstructDefaultSignalBlocks() -- those signals that do not need dynamic routing, just make static signal blocks ¯\_(ツ)_/¯
+
+function UF.ConstructDefaultSignalBlocks() -- those signals that do not need dynamic routing, just make static signal blocks ¯\_(ツ)_/¯ actually no let's just construct the default state
     print("MPLR: Loading default Signal blocks")
+    UF.SignalBlocks = {}
     for k, v in pairs(Metrostroi.SignalEntitiesByName) do
-        if #v.Routes == 1 then
-            print("Constructing default signal blocks: " .. k, v)
-            -- UF.SignalBlocks[k] = v.Routes[1].DistantSignal
-            table.insert(UF.SignalBlocks,
-                         {[k] = v.Routes[1].DistantSignal, Occupied = false})
-            UF.ActiveRoutes[k] = 1
-            print(k, UF.ActiveRoutes[k])
-            -- continue
-        elseif #v.Routes > 1 then
-            print(k, v)
-            if not UF.ActiveRoutes[k] then
-                table.insert(UF.SignalBlocks, {
-                    [k] = v.Routes[1].DistantSignal,
-                    Occupied = false
-                })
-                UF.ActiveRoutes[k] = 1
-                print(k, UF.ActiveRoutes[k])
-            end
-        end
+        print("Constructing default signal blocks: " .. k, v.Routes[1].NextSignal)
+        table.insert(UF.SignalBlocks,{[k] = v.Routes[1].NextSignal, Occupied = false})
+        UF.ActiveRoutes[k] = 1
+        print(k, UF.ActiveRoutes[k])
     end
 end
 
 function UF.OpenRoute(signal, route, ent)
-    print("Route Change requested on signal:", signal, "to route", route,
-          "by entity:", ent)
+    if not next(UF.SignalBlocks) then return end
+    --print("Route Change requested on signal:", signal, "to route", route,"by entity:", ent)
     if UF.ActiveRoutes[signal] == route then
         print("Requested route already active, bailing out")
         return
     end
-
-    UF.ActiveRoutes[signal] = route -- we're changing the currently active route on this signal, write that down, squire!
-    for k, v in ipairs(UF.SignalBlocks) do
-        local CurrentBlock = UF.SignalBlocks[k] -- target the iteration's signal block
-        local function GetSignals()
-            for ky, _ in pairs(CurrentBlock) do -- check the iteration's signal block
-                if type(ky) == "string" then -- filter out the occupation boolean
-                    return ky -- return the guff
-                end
+    
+    local CurrentSignalEnt = Metrostroi.SignalEntitiesByName[signal] -- target the signal's entity for operations
+    local RoutesTable = CurrentSignalEnt.Routes -- a little shortcut to the routes table, for readability
+    local CurrentBlock
+    local function checkSignal(v)
+            for key,_ in pairs(v) do
+                print(key,signal)
+                return (key == signal)
             end
-        end
+            return false
+    end
+    for _, v in ipairs(UF.SignalBlocks) do
 
-        local CurrentSignal = GetSignals()
-        if CurrentSignal ~= signal then continue end -- if the iteration buffer isn't addressing our current signal, bail and look for it elsewhere
-        local CurrentSignalEnt = Metrostroi.SignalEntitiesByName[CurrentSignal] -- target the signal's entity for operations
-        local RoutesTable = CurrentSignalEnt.Routes -- a little shortcut to the routes table, for readability
-        CurrentBlock[signal] = RoutesTable[route].DistantSignal
+        CurrentBlock = v        
+        if checkSignal(v) then
+            v[signal] = RoutesTable[route].NextSignal --look up what the next signal of the route is and set it
+            UF.ActiveRoutes[signal] = route -- we're changing the currently active route on this signal, write that down, squire!
+            print(Format("Opened Route %s on Signal %s to Signal %s",route,signal,RoutesTable[route].NextSignal))
+        end
     end
 end
 
@@ -507,30 +467,30 @@ function UF.UpdateSignalBlockOccupation()
                 if type(ky) == "string" then return ky, val end
             end
         end
-
+        
         -- print(CurrentBlock)
         local CurrentSignal, DistantSignal = GetSignals()
         local CurrentSignalEnt, DistantSignalEnt =
-            Metrostroi.SignalEntitiesByName[CurrentSignal],
-            Metrostroi.SignalEntitiesByName[DistantSignal]
+        Metrostroi.SignalEntitiesByName[CurrentSignal],
+        Metrostroi.SignalEntitiesByName[DistantSignal]
         if not DistantSignalEnt then continue end
         local CurrentPos = CurrentSignalEnt.TrackPosition
         local DistantPos = DistantSignalEnt.TrackPosition
         if not next(Metrostroi.TrainPositions) then
             CurrentBlock.Occupied = false
+            return
         end
-        if not next(Metrostroi.TrainPositions) then return end
         for ky, val in pairs(Metrostroi.TrainPositions) do
             local TrainPos = Metrostroi.TrainPositions[ky]
             for k2, v2 in pairs(TrainPos) do
                 if v2.path == CurrentSignalEnt.Node.path then
                     local x1, x2 = v2.x, v2.x
                     if ((x1 >= CurrentPos.x) and (x1 <= DistantPos.x)) or
-                        ((x2 >= CurrentPos.x) and (x2 <= DistantPos.x)) or
-                        ((x1 <= CurrentPos.x) and (x2 >= DistantPos.x)) then
+                    ((x2 >= CurrentPos.x) and (x2 <= DistantPos.x)) or
+                    ((x1 <= CurrentPos.x) and (x2 >= DistantPos.x)) then
                         if CurrentBlock.Occupied == false then
                             print(CurrentSignal, "Changing to occupied",
-                                  CurrentPos.x, DistantPos.x)
+                            CurrentPos.x, DistantPos.x)
                         end
                         CurrentBlock.Occupied = true
                     else
@@ -542,35 +502,19 @@ function UF.UpdateSignalBlockOccupation()
     end
 end
 
-function UF.SignalController()
-    for k, v in pairs(UF.SignalBlocks) do
-        local CurrentBlock = UF.SignalBlocks[k]
-        local function GetSignals()
-            for ky, val in pairs(CurrentBlock) do
-                if type(ky) == "string" then return ky, val end
-            end
-        end
-        local CurrentSignal, DistantSignal = GetSignals()
-        local CurrentSignalEnt, DistantSignalEnt =
-            Metrostroi.SignalEntitiesByName[CurrentSignal],
-            Metrostroi.SignalEntitiesByName[DistantSignal]
-        CurrentBlock.Occupied = CurrentSignalEnt.Occupied
-    end
-end
-
 function UF.LoadSignalling(name, keep)
     if keep then return end
     local signs = getFile("project_light_rail_data/signs_%s", name, "Signal")
-
+    
     if not signs then return end
-
+    
     local signals_ents = ents.FindByClass("gmod_track_uf_signal")
     for k, v in pairs(signals_ents) do SafeRemoveEntity(v) end
     local switch_ents = ents.FindByClass("gmod_track_uf_switch")
     for k, v in pairs(switch_ents) do SafeRemoveEntity(v) end
     local signs_ents = ents.FindByClass("gmod_track_uf_signs")
     for k, v in pairs(signs_ents) do SafeRemoveEntity(v) end
-
+    
     -- Create new entities (add a delay so the old entities clean up)
     print("MPLR: Loading signs, signals, switches...")
     for k, v in pairs(signs) do
@@ -590,7 +534,7 @@ function UF.LoadSignalling(name, keep)
                 ent.Name1 = v.Name1
                 ent.Name2 = v.Name2
                 ent.Name = v.Name
-                -- ent.DistantSignal = v.DistantSignal
+                ent.ActiveRoute = v.ActiveRoute
                 ent.Routes = v.Routes, ent:Spawn()
                 ent:SendUpdate()
             elseif v.Class == "gmod_track_uf_signs" then
@@ -602,7 +546,7 @@ function UF.LoadSignalling(name, keep)
             end
         end
     end
-
+    
 end
 
 function UF.IsTrackOccupied(src_node, x, dir, t, maximum_x)
@@ -610,8 +554,8 @@ function UF.IsTrackOccupied(src_node, x, dir, t, maximum_x)
     UF.ScanTrack(t or "light", src_node, function(node, min_x, max_x)
         -- If there are no trains in node, keep scanning
         if (not Metrostroi.TrainsForNode[node]) or
-            (#Metrostroi.TrainsForNode[node] == 0) then return end
-
+        (#Metrostroi.TrainsForNode[node] == 0) then return end
+        
         -- For every train in node, for every path it rests on, check if it's in range
         -- print("SCAN TRACK",node.id,min_x,max_x)
         for k, v in pairs(Metrostroi.TrainsForNode[node]) do
@@ -627,15 +571,15 @@ function UF.IsTrackOccupied(src_node, x, dir, t, maximum_x)
                     -- print(x1,x2)
                     local x1, x2 = v2.x, v2.x
                     if ((x1 >= min_x) and (x1 <= max_x)) or
-                        ((x2 >= min_x) and (x2 <= max_x)) or
-                        ((x1 <= min_x) and (x2 >= max_x)) then
+                    ((x2 >= min_x) and (x2 <= max_x)) or
+                    ((x1 <= min_x) and (x2 >= max_x)) then
                         table.insert(Trains, v) -- return true,v
                     end
                 end
             end
         end
     end, x, dir, nil, maximum_x)
-
+    
     return #Trains > 0, Trains[#Trains], Trains[1]
 end
 
@@ -655,9 +599,9 @@ function UF.ScanTrack(itype, node, func, x, dir, checked, maximum_x)
     checked[node] = true
     -- Try to use entire node length by default, but also allow for manual scan length
     local min_x = node.x
-
+    
     local max_x = maximum_x or min_x + node.length
-
+    
     -- Get range of node which can be actually sensed
     local isolateForward = false -- Should scanning continue forward along track
     local isolateBackward = false -- Should scanning continue backward along track
@@ -697,7 +641,7 @@ function UF.ScanTrack(itype, node, func, x, dir, checked, maximum_x)
             end
         end
     end
-
+    
     -- Show the scanned path
     --[[if GetConVar("metrostroi_drawdebug"):GetInt() == 1 then
     local T = CurTime()
@@ -708,35 +652,35 @@ function UF.ScanTrack(itype, node, func, x, dir, checked, maximum_x)
     end)
 end]]
 
-    -- Call function for the determined portion of the node
-    local results = {func(node, min_x, max_x)}
-    if results[1] ~= nil then return unpack(results) end
-    -- First check all the branches, whose positions fall within min_x..max_x
-    if node.branches and not ars then
-        for k, v in pairs(node.branches) do
-            if (v[1] >= min_x) and (v[1] <= max_x) then
-                -- FIXME: somehow define direction and X!
-                local results = {
-                    UF.ScanTrack(itype, v[2], func, v[1], true, checked)
-                }
-                if results[1] ~= nil then return unpack(results) end
-            end
+-- Call function for the determined portion of the node
+local results = {func(node, min_x, max_x)}
+if results[1] ~= nil then return unpack(results) end
+-- First check all the branches, whose positions fall within min_x..max_x
+if node.branches and not ars then
+    for k, v in pairs(node.branches) do
+        if (v[1] >= min_x) and (v[1] <= max_x) then
+            -- FIXME: somehow define direction and X!
+            local results = {
+                UF.ScanTrack(itype, v[2], func, v[1], true, checked)
+            }
+            if results[1] ~= nil then return unpack(results) end
         end
     end
-    -- If not isolated, continue scanning forward from the front end of node
-    if (dir or switch) and (not isolateForward) then
-        local results = {
-            UF.ScanTrack(itype, node.next, func, max_x, true, checked)
-        }
-        if results[1] ~= nil then return unpack(results) end
-    end
-    -- If not isolated, continue scanning backward from the rear end of node
-    if (not dir or switch) and (not isolateBackward) then
-        local results = {
-            UF.ScanTrack(itype, node.prev, func, min_x, false, checked)
-        }
-        if results[1] ~= nil then return unpack(results) end
-    end
+end
+-- If not isolated, continue scanning forward from the front end of node
+if (dir or switch) and (not isolateForward) then
+    local results = {
+        UF.ScanTrack(itype, node.next, func, max_x, true, checked)
+    }
+    if results[1] ~= nil then return unpack(results) end
+end
+-- If not isolated, continue scanning backward from the rear end of node
+if (not dir or switch) and (not isolateBackward) then
+    local results = {
+        UF.ScanTrack(itype, node.prev, func, min_x, false, checked)
+    }
+    if results[1] ~= nil then return unpack(results) end
+end
 end
 
 function UF.PrintStatistics() end
@@ -745,11 +689,11 @@ function UF.UpdateSwitchEntities()
     if Metrostroi.IgnoreEntityUpdates then return end
     Metrostroi.SwitchesForNode = {}
     Metrostroi.SwitchesByName = {}
-
+    
     local entities = ents.FindByClass("gmod_track_uf_switch")
     for k, v in pairs(entities) do
         local pos = Metrostroi.GetPositionOnTrack(v:GetPos(), v:GetAngles() -
-                                                      Angle(0, 90, 0))[1]
+        Angle(0, 90, 0))[1]
         if pos then
             if not v.Name or v.Name == "" then
                 -- pos.path.id.."/"..pos.node1.id
@@ -759,14 +703,14 @@ function UF.UpdateSwitchEntities()
                 Metrostroi.SwitchesByName[pos.path.id][pos.node1.id] = v
             end
             Metrostroi.SwitchesForNode[pos.node1] =
-                Metrostroi.SwitchesForNode[pos.node1] or {}
+            Metrostroi.SwitchesForNode[pos.node1] or {}
             table.insert(Metrostroi.SwitchesForNode[pos.node1], v)
             v.TrackPosition = pos -- FIXME: check that one switch belongs to one track
         end
         if v.Name and v.Name ~= "" then
             Metrostroi.SwitchesByName[v.Name] = v
         end
-
+        
     end
 end
 
@@ -777,7 +721,7 @@ function UF.GetTravelTime(src, dest)
     -- Determine direction of travel
     -- assert(src.path == dest.path)
     local direction = src.x < dest.x
-
+    
     -- Accumulate travel time
     local travel_time = 0
     local travel_dist = 0
@@ -790,43 +734,43 @@ function UF.GetTravelTime(src, dest)
             local ars_speed
             -- local ars_joint = Metrostroi.GetARSJoint(node,node.x+0.01,path or true)
             --[[if ars_joint then
-                --[[if oldx and oldx ~= ars_joint.TrackPosition.x then
-                    print(Format("\t\t\t%.2f:\t%s->%s",(ars_joint.TrackPosition.x - oldx)/18.8,oldars.Name,ars_joint.Name))
-                end
-                oldx = ars_joint.TrackPosition.x
-                oldars = ars_joint
-                --print(ars_joint.Name)
-                local ARSLimit = ars_joint:GetMaxARS()
-                --print(ARSLimit)
-                if ARSLimit >= 4  then
-                    ars_speed = ARSLimit*10
-                end
-                --print(ars_speed)
-            end]]
-            -- if ars_speed then travel_speed = ars_speed end
-            -- print(Format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
-
-            -- Assume 70% of travel speed
-            local speed = travel_speed * 0.7
-
-            -- Add to travel time
-            travel_dist = travel_dist + node.length
-            travel_time = travel_time + (node.length / (speed / 3.6))
-            node = node.next
-            if not node then break end
-            if src.path == dest.path and node.branches and
-                node.branches[1][2].path == src.path then
-                scan(node, src.x > node.branches[1][2].x)
-            end
-            if src.path == dest.path and node.branches and node.branches[2] and
-                node.branches[2][2].path == src.path then
-                scan(node, src.x > node.branches[1][1].x)
-            end
-            assert(iter < 10000, "OH SHI~")
-            iter = iter + 1
+            --[[if oldx and oldx ~= ars_joint.TrackPosition.x then
+            print(Format("\t\t\t%.2f:\t%s->%s",(ars_joint.TrackPosition.x - oldx)/18.8,oldars.Name,ars_joint.Name))
         end
+        oldx = ars_joint.TrackPosition.x
+        oldars = ars_joint
+        --print(ars_joint.Name)
+        local ARSLimit = ars_joint:GetMaxARS()
+        --print(ARSLimit)
+        if ARSLimit >= 4  then
+            ars_speed = ARSLimit*10
+        end
+        --print(ars_speed)
+    end]]
+    -- if ars_speed then travel_speed = ars_speed end
+    -- print(Format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
+    
+    -- Assume 70% of travel speed
+    local speed = travel_speed * 0.7
+    
+    -- Add to travel time
+    travel_dist = travel_dist + node.length
+    travel_time = travel_time + (node.length / (speed / 3.6))
+    node = node.next
+    if not node then break end
+    if src.path == dest.path and node.branches and
+    node.branches[1][2].path == src.path then
+        scan(node, src.x > node.branches[1][2].x)
     end
-    scan(src)
+    if src.path == dest.path and node.branches and node.branches[2] and
+    node.branches[2][2].path == src.path then
+        scan(node, src.x > node.branches[1][1].x)
+    end
+    assert(iter < 10000, "OH SHI~")
+    iter = iter + 1
+end
+end
+scan(src)
 
-    return travel_time, travel_dist
+return travel_time, travel_dist
 end
