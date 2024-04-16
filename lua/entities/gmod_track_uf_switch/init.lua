@@ -5,7 +5,7 @@ function ENT:Initialize()
 	self:SetModel("models/metrostroi/signals/box.mdl")
 	Metrostroi.DropToFloor(self)
 	
-	self.ID = self.ID or 000
+	self.ID = self:GetInternalVariable("SwitchID") or self.ID or 000
 	-- Initial state of the switch
 	self.AlternateTrack = false
 	self.AlreadyLocked = false
@@ -14,27 +14,16 @@ function ENT:Initialize()
 	self.SignalCaller = {}
 	self.LastSignalTime = 0
 
-	self.OpenDoorEqualsSwitchState = self.OpenDoorEqualsSwitchState or GetInternalVariable("OpenDoorEqualsSwitchState")
+	--self.OpenDoorEqualsSwitchState = self.OpenDoorEqualsSwitchState or self:GetInternalVariable("OpenDoorEqualsSwitchState")
 
-	self.Left = "alt"
-	self.Right = self.Left == "main" and "alt" or self.Left == "alt" and "main"
+	self.Left = self:GetInternalVariable("PositionCorrespondance") or "alt"
 
 	self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos())[1]
+	self.TrackPosition = self.TrackPosition.x
 
-	-- Find rotating parts which belong to this switch
-	local list = ents.FindInSphere(self:GetPos(),500)
 	self.TrackSwitches = {}
-	for k,v in pairs(list) do
-		if (v:GetClass() == "prop_door_rotating") and (string.find(v:GetName(),"switch")) then
-			table.insert(self.TrackSwitches,v)
-
-			timer.Simple(0.05,function()
-				debugoverlay.Line(v:GetPos(),self:GetPos(),10,Color(255,255,0),true)
-			end)
-		end
-	end
-
-	if not next(self.TrackSwitches) then print(tostring(self)..",".."NO PROP_DOOR_ROTATING FOUND") end
+	table.insert(self.TrackSwitches,self:GetInternalVariable("Blade1"))
+	table.insert(self.TrackSwitches,self:GetInternalVariable("Blade2"))
 
 	UF.UpdateSignalEntities()
 end
@@ -43,93 +32,50 @@ function ENT:OnRemove()
 	UF.UpdateSignalEntities()
 end
 
-function ENT:SendSignal(index,train)
-	
-	for _,v in pairs(self.SignalCaller) do --insert the train that called the command into a table in order to maintain a precedence of sorts
-		if v == train then
-			break
-		else
-			table.insert(self.SignalCaller,train)
-		end
+function ENT:Occupied()
+	local pos = self.TrackPosition
+	local trackOccupied = Metrostroi.IsTrackOccupied(pos.node1,pos.x,pos.forward,"switch")
+	if pos then
+		self.InhibitSwitching = trackOccupied
 	end
-
-	if train ~= self.SignalCaller[1] then return false end --first come, first serve. Only get your command heeded when you're top of the list
-
-	-- Switch to alternate track
-	if index == "alt" then self.AlternateTrack = true end
-	-- Switch to main track
-	if index == "main" then self.AlternateTrack = false end
-	
-	-- Remember this signal
-	self.LastSignal = index
-	self.LastSignalTime = CurTime()
-	self.LastSignalCaller = self.SignalCaller[1]
-
 end
-
-function ENT:IsTrainInRange(train)
-	local pos = self.TrackPosition --the switch coordinates on the node system
-	if not self.SignalCaller[1] then return end
-	local SwitchVector = Vector(pos.x,pos.y,pos.z) --Get the x y z coordinates and express them as a vector
-	local Train = Metrostroi.GetPositionOnTrack(self.SignalCaller[1]:GetPos())[1] --same for the train
-	local TrainVector = Vector(Train.x,Train.y,Train.z)
-
-	if SwitchVector:Distance(TrainVector) <= 10 then
-		return true
-	end
-
-	return false
-
-end
-
-function ENT:GetSignal()
-	if self.InhibitSwitching and self.AlternateTrack then return 1 end
-	if self.AlternateTrack then return 3 end
-	return 0
-end
-
 function ENT:Think()
 
 	if not self.TrackSwitches then return end
-	-- Reset
-	self.InhibitSwitching = false
-	self.TrackPosition = Metrostroi.GetPositionOnTrack(self:GetPos())[1]
-	-- Check if local section of track is occupied or no
-	local pos = self.TrackPosition
-	if pos then
-		local trackOccupied = Metrostroi.IsTrackOccupied(pos.node1,pos.x,pos.forward,"switch")
-		if trackOccupied then -- Prevent track switches from working when there's a train on segment
-			self.InhibitSwitching = true
-		end
-	end
-
-	-- Force door state state
-	if self.AlternateTrack and self.OpenDoorEqualsSwitchState == "Open" then
-		for k,v in pairs(self.TrackSwitches) do v:Fire("Open","","0") end --todo use GetInternalVariable to determine what prop_door_rotating state counts as diverting track and what as main track
-	elseif self.AlternateTrack and self.OpenDoorEqualsSwitchState == "Closed" then
-		for k,v in pairs(self.TrackSwitches) do v:Fire("Close","","0") end
-	elseif not self.AlternateTrack and self.OpenDoorEqualsSwitchState == "Open" then
-		for k,v in pairs(self.TrackSwitches) do v:Fire("Close","","0") end
-	elseif not self.AlternateTrack and self.OpenDoorEqualsSwitchState == "Closed" then
-		for k,v in pairs(self.TrackSwitches) do v:Fire("Open","","0") end
-	end
-	
-	-- Force signal
-	if self.LockedSignal then
-		self:SendSignal(self.LockedSignal)
-	end
-	
-	-- Return switch to original position
-	if (self.InhibitSwitching == false) and (self.AlternateTrack == true) and
-	   (CurTime() - self.LastSignalTime > 20.0) then
-		self:SendSignal("main")
-	end
-
-	if self:IsTrainInRange(self.LastSignalCaller) == false then
-		table.remove(self.SignalCaller,1) --at the end of it all, remove the train from the list
-	end
-	
+	self:Occupied()
+	self:Switching()
 	-- Process logic
 	self:NextThink(CurTime() + 1.0)
 	return true
+end
+function ENT:Switching()
+	if self.Left == "alt" and self.AlternateTrack then
+		for k,v in ipairs(self.TrackSwitches) do
+			v:Fire("Open","",0,self,self)
+		end
+	elseif self.Left == "main" and self.AlternateTrack then
+		for k,v in ipairs(self.TrackSwitches) do
+			v:Fire("Close","",0,self,self)
+		end
+	elseif self.Left == "main" and not self.AlternateTrack then
+		for k,v in ipairs(self.TrackSwitches) do
+			v:Fire("Close","",0,self,self)
+		end
+	elseif self.Left == "alt" and not self.AlternateTrack then
+		for k,v in ipairs(self.TrackSwitches) do
+			v:Fire("Close","",0,self,self)
+		end
+	end
+end
+function ENT:TriggerSwitch(direction,ent)
+	if self.InhibitSwitching then return false end
+	if direction == "Left" and self.Left == "alt" then
+		self.AlternateTrack = true
+	elseif direction == "Left" and self.Left == "main" then
+		self.AlternateTrack = false
+	elseif direction == "Right" and self.Left == "alt" then
+		self.AlternateTrack = false
+	elseif direction == "Right" and self.Left == "main" then
+		self.AlternateTrack = false
+	end
 end

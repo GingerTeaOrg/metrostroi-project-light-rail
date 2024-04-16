@@ -20,22 +20,6 @@
 	ParentDisplay(target_destination) : "Entity that this display should be subordinate to"
 	ThemeName(string) : "Theme" : "Frankfurt" : "Set the display's city theme which alters its behaviour. Essen,Frankfurt,Duesseldorf,Hannover"
 ]
-
-@PointClass base(Parentname, Targetname, Angles) studio("models/mus/ussr_clock_model/base.mdl") = gmod_track_uf_signal_controller :
-	"Hammer-to-lua signs"
-[
-	 // Outputs
-	output LenseEnabled(string) : "Fires when lense enabled"
-	output LenseDisabled(string) : "Fires when lense disabled"
-
-	// Inputs
-	input Open(void) : "Set state to open"
-	input Close(void) : "Set state to close"
-	input SetKGU(integer) : "Set KGU state"
-	input SetEmergencySignals(integer) : "Set emergency signal mode"
-	input SetIS(integer) : "Set Invation signal state"
-	input SetState(integer) : "Set state of signal"
-]
 @PointClass base(Targetname, Origin ) studioprop("models/lilly/uf/signage/point_contact.mdl") = gmod_track_uf_switch : "Trackside Switch"
 [
 	DefaultPosition(Choices) : "Default Position" : "Set switch to main/alt by default" : "main" =
@@ -43,6 +27,27 @@
 		"main" : "Main"
 		"alt" : "Alt"
 	]
-
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
+	Blade1(target_destination) : "Blade 1"
+	Blade2(target_destination) : "Blade 2"
+]
+@PointClass base(Targetname, Origin ) studioprop("models/lilly/uf/signage/point_contact.mdl") = gmod_track_uf_switch_contact : "Trackside Switch Trigger"
+[
+	DefaultPosition(Choices) : "Default Position" : "Set switch to main/alt by default" : "main" =
+	[
+		"main" : "Main"
+		"alt" : "Alt"
+	]
+	PositionCorrespondance(Choices) : "Position" : "Select whether open or closed corresponds to left" : "main" =
+	[
+		"main" : "Main"
+		"alt" : "Alt"
+	]
+	Invisible(choices) : "Invisible" : 0 =
+	[
+    		0 : "No"
+    		1 : "Yes"
+	]
+	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
+	SwitchEnt(target_destination) : "Entity to associate with"
 ]
