@@ -13,7 +13,7 @@ function ENT:Think()
     local target = self.TargetEnt
     local trace = util.TraceHull({
         start = self:GetPos(),
-        endpos = start + Vector(0,0,30),
+        endpos = start + Vector(0,0,100),
         filter = self,
         mins = Vector( -10, -10, -10 ),
 	    maxs = Vector( 10, 10, 10 ),

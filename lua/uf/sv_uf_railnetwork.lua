@@ -2,7 +2,7 @@
 
 
 
-UF.SwitchEntitiesByName = {}
+UF.SwitchEntitiesByID = {}
 
 UF.ActiveRoutes = {}
 UF.SignalBlocks = {}
@@ -139,6 +139,10 @@ function UF.UpdateSignalEntities()
     end
     print(Format("MPLR: Total signals: %u (normal: %u, repeaters: %u)", count,
     count - repeater, repeater))
+    local entities = ents.FindByClass("gmod_track_uf_switch")
+    for k,v in pairs(entities) do
+        UF.SwitchEntitiesByID[v.ID] = v
+    end
 end
 
 function UF.UpdateSignalNames()
@@ -480,25 +484,8 @@ function UF.UpdateSignalBlockOccupation()
             CurrentBlock.Occupied = false
             return
         end
-        for ky, val in pairs(Metrostroi.TrainPositions) do
-            local TrainPos = Metrostroi.TrainPositions[ky]
-            for k2, v2 in pairs(TrainPos) do
-                if v2.path == CurrentSignalEnt.Node.path then
-                    local x1, x2 = v2.x, v2.x
-                    if ((x1 >= CurrentPos.x) and (x1 <= DistantPos.x)) or
-                    ((x2 >= CurrentPos.x) and (x2 <= DistantPos.x)) or
-                    ((x1 <= CurrentPos.x) and (x2 >= DistantPos.x)) then
-                        if CurrentBlock.Occupied == false then
-                            print(CurrentSignal, "Changing to occupied",
-                            CurrentPos.x, DistantPos.x)
-                        end
-                        CurrentBlock.Occupied = true
-                    else
-                        CurrentBlock.Occupied = false
-                    end
-                end
-            end
-        end
+        print(CurrentPos.forward)
+        CurrentBlock.Occupied = UF.IsTrackOccupied(CurrentPos.node1,CurrentPos.x,CurrentPos.x < DistantPos.x,"light",DistantPos.x)
     end
 end
 
