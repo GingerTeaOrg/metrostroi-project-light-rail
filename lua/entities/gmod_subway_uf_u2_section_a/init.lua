@@ -2010,7 +2010,7 @@ function ENT:Traction()
     self.FrontBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
     self.MiddleBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
     self.RearBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
-    self.FrontBogey.Reversed = reverser < 0 or MU and self:ReadTrainWire(4) > 0
-    self.RearBogey.Reversed = reverser < 0 or MU and self:ReadTrainWire(4) > 0
+    self.FrontBogey.Reversed = (MU and self:ReadTrainWire(4) > 0) or (reverser < 0)
+    self.RearBogey.Reversed = (MU and self:ReadTrainWire(4) > 0) or (reverser < 0)
 
 end

@@ -181,6 +181,9 @@ function ENT:ReturnOpenDoors()
 	if self.DoorStatesRight[1] < 0.8 and self.DoorStatesRight[2] < 0.8 and self.DoorStatesRight[3] < 0.8 and self.DoorStatesRight[4] < 0.8 then
 		self.RightDoorPositions = {}
 	end
+	if self.DoorStatesLeft[1] < 0.8 and self.DoorStatesLeft[2] < 0.8 and self.DoorStatesLeft[3] < 0.8 and self.DoorStatesLeft[4] < 0.8 then
+		self.LeftDoorPositions = {}
+	end
 	for k,v in ipairs(self.DoorStatesRight) do
 		
 		if v > 0.8 and k < 3 then

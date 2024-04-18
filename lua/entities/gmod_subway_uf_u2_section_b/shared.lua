@@ -16,6 +16,7 @@ ENT.DontAccelerateSimulation = true
 function ENT:InitializeSystems()
 	self:LoadSystem("Panel","U2_panel")
 	self:LoadSystem("IBIS","IBIS_secondary")
+	self:LoadSystem("CoreSys","U2b")
 end
 
 function ENT:GetStandingArea()

@@ -315,7 +315,7 @@ function ENT:OnButtonPress(button, ply)
 	if button == "PantographRaiseSet" then
 		self.Panel.PantographRaise = 1
 
-		if self.ParentTrain.Duewag_U2.BatteryOn == true then
+		if self.ParentTrain.CoreSys.BatteryOn == true then
 			self.ParentTrain.PantoUp = true
 		end
 	end
@@ -363,33 +363,33 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	//--THROTTLE CODE -- Initial Concept credit Toth Peter
-	if self.ParentTrain.Duewag_U2.ThrottleRateB == 0 then
+	if self.ParentTrain.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleUp" then
-			self.ParentTrain.Duewag_U2.ThrottleRateB = 3
+			self.ParentTrain.CoreSys.ThrottleRateB = 3
 		end
 
 		if button == "ThrottleDown" then
-			self.ParentTrain.Duewag_U2.ThrottleRateB = -3
+			self.ParentTrain.CoreSys.ThrottleRateB = -3
 		end
 	end
 
-	if self.ParentTrain.Duewag_U2.ThrottleRateB == 0 then
+	if self.ParentTrain.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleUpFast" then
-			self.ParentTrain.Duewag_U2.ThrottleRateB = 10
+			self.ParentTrain.CoreSys.ThrottleRateB = 10
 		end
 
 		if button == "ThrottleDownFast" then
-			self.ParentTrain.Duewag_U2.ThrottleRateB = -10
+			self.ParentTrain.CoreSys.ThrottleRateB = -10
 		end
 	end
 
-	if self.ParentTrain.Duewag_U2.ThrottleRateB == 0 then
+	if self.ParentTrain.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleUpReallyFast" then
-			self.ParentTrain.Duewag_U2.ThrottleRateB = 20
+			self.ParentTrain.CoreSys.ThrottleRateB = 20
 		end
 
 		if button == "ThrottleDownReallyFast" then
-			self.ParentTrain.Duewag_U2.ThrottleRateB = -20
+			self.ParentTrain.CoreSys.ThrottleRateB = -20
 		end
 	end
 
@@ -398,9 +398,9 @@ function ENT:OnButtonPress(button, ply)
 		self.Panel.Door1 = 1
 	end
 
-	if self.ParentTrain.Duewag_U2.ThrottleRateB == 0 then
+	if self.ParentTrain.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleZero" then
-			self.ParentTrain.Duewag_U2.ThrottleStateB = 0
+			self.ParentTrain.CoreSys.ThrottleStateB = 0
 		end
 
 		if self:GetNW2Bool("EmergencyBrake", false) == true then
@@ -409,87 +409,87 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "Throttle10Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 10
+		self.ParentTrain.CoreSys.ThrottleStateB = 10
 	end
 
 	if button == "Throttle20Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 20
+		self.ParentTrain.CoreSys.ThrottleStateB = 20
 	end
 
 	if button == "Throttle30Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 30
+		self.ParentTrain.CoreSys.ThrottleStateB = 30
 	end
 
 	if button == "Throttle40Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 40
+		self.ParentTrain.CoreSys.ThrottleStateB = 40
 	end
 
 	if button == "Throttle50Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 50
+		self.ParentTrain.CoreSys.ThrottleStateB = 50
 	end
 
 	if button == "Throttle60Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 60
+		self.ParentTrain.CoreSys.ThrottleStateB = 60
 	end
 
 	if button == "Throttle70Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 70
+		self.ParentTrain.CoreSys.ThrottleStateB = 70
 	end
 
 	if button == "Throttle80Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 80
+		self.ParentTrain.CoreSys.ThrottleStateB = 80
 	end
 
 	if button == "Throttle90Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = 90
+		self.ParentTrain.CoreSys.ThrottleStateB = 90
 	end
 
 	if button == "Throttle10-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -10
+		self.ParentTrain.CoreSys.ThrottleStateB = -10
 	end
 
 	if button == "Throttle20-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -20
+		self.ParentTrain.CoreSys.ThrottleStateB = -20
 	end
 
 	if button == "Throttle30-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -30
+		self.ParentTrain.CoreSys.ThrottleStateB = -30
 	end
 
 	if button == "Throttle40-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -40
+		self.ParentTrain.CoreSys.ThrottleStateB = -40
 	end
 
 	if button == "Throttle50-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -50
+		self.ParentTrain.CoreSys.ThrottleStateB = -50
 	end
 
 	if button == "Throttle60-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -60
+		self.ParentTrain.CoreSys.ThrottleStateB = -60
 	end
 
 	if button == "Throttle70-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -70
+		self.ParentTrain.CoreSys.ThrottleStateB = -70
 	end
 
 	if button == "Throttle80-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -80
+		self.ParentTrain.CoreSys.ThrottleStateB = -80
 	end
 
 	if button == "Throttle90-Pct" then
-		self.ParentTrain.Duewag_U2.ThrottleStateB = -90
+		self.ParentTrain.CoreSys.ThrottleStateB = -90
 	end
 
 	if button == "PantographRaiseSet" then
 		self.Panel.PantographRaise = 1
 
-		if self.ParentTrain.Duewag_U2.BatteryOn == true then
+		if self.ParentTrain.CoreSys.BatteryOn == true then
 			self.PantoUp = true
 		end
 	end
 
 	if button == "PantographLowerSet" then
-		if self.ParentTrain.Duewag_U2.BatteryOn == true then
+		if self.ParentTrain.CoreSys.BatteryOn == true then
 			self.PantoUp = false
 		end
 	end
@@ -541,37 +541,37 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "ReverserUpSet" then
-		if !self.ParentTrain.Duewag_U2.ThrottleEngaged then
-			if self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
-				self.ParentTrain.Duewag_U2.ReverserLeverStateB = self.ParentTrain.Duewag_U2.ReverserLeverStateB + 1
-				self.ParentTrain.Duewag_U2.ReverserLeverStateB = math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
+		if !self.ParentTrain.CoreSys.ThrottleEngaged then
+			if self.ParentTrain.CoreSys.ReverserInsertedB == true then
+				self.ParentTrain.CoreSys.ReverserLeverStateB = self.ParentTrain.CoreSys.ReverserLeverStateB + 1
+				self.ParentTrain.CoreSys.ReverserLeverStateB = math.Clamp(self.ParentTrain.CoreSys.ReverserLeverStateB, -1, 3)
 				//self.ParentTrain.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-				//PrintMessage(HUD_PRINTTALK,self.ParentTrain.Duewag_U2.ReverserLeverStateB)
+				//PrintMessage(HUD_PRINTTALK,self.ParentTrain.CoreSys.ReverserLeverStateB)
 			end
 		end
 	end
 
 	if button == "ReverserDownSet" then
-		if !self.ParentTrain.Duewag_U2.ThrottleEngaged && self.ParentTrain.Duewag_U2.ReverserInsertedB == true then
+		if !self.ParentTrain.CoreSys.ThrottleEngaged && self.ParentTrain.CoreSys.ReverserInsertedB == true then
 			//self.ReverserLeverState = self.ReverserLeverState - 1
-			math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
+			math.Clamp(self.ParentTrain.CoreSys.ReverserLeverStateB, -1, 3)
 			//self.ParentTrain.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-			self.ParentTrain.Duewag_U2.ReverserLeverStateB = self.ParentTrain.Duewag_U2.ReverserLeverStateB - 1
-			self.ParentTrain.Duewag_U2.ReverserLeverStateB = math.Clamp(self.ParentTrain.Duewag_U2.ReverserLeverStateB, -1, 3)
-			//PrintMessage(HUD_PRINTTALK,self.ParentTrain.Duewag_U2.ReverserLeverStateB)
+			self.ParentTrain.CoreSys.ReverserLeverStateB = self.ParentTrain.CoreSys.ReverserLeverStateB - 1
+			self.ParentTrain.CoreSys.ReverserLeverStateB = math.Clamp(self.ParentTrain.CoreSys.ReverserLeverStateB, -1, 3)
+			//PrintMessage(HUD_PRINTTALK,self.ParentTrain.CoreSys.ReverserLeverStateB)
 		end
 	end
 
-	if self.ParentTrain.Duewag_U2.ReverserLeverStateB == 0 && self.ParentTrain.Duewag_U2.ReverserLeverStateA == 0 then
+	if self.ParentTrain.CoreSys.ReverserLeverStateB == 0 && self.ParentTrain.CoreSys.ReverserLeverStateA == 0 then
 		if button == "ReverserInsert" then
-			if self.ParentTrain.Duewag_U2.ReverserInsertedB && !self.ParentTrain.Duewag_U2.ReverserInsertedA then
-				self.ParentTrain.Duewag_U2.ReverserInsertedA = false
-				self.ParentTrain.Duewag_U2.ReverserInsertedB = false
-			elseif !self.ParentTrain.Duewag_U2.ReverserInsertedB && !self.ParentTrain.Duewag_U2.ReverserInsertedA then
-				self.ParentTrain.Duewag_U2.ReverserInsertedB = true
-			elseif !self.ParentTrain.Duewag_U2.ReverserInsertedB && self.ParentTrain.Duewag_U2.ReverserInsertedA then
-				self.ParentTrain.Duewag_U2.ReverserInsertedA = false
-				self.ParentTrain.Duewag_U2.ReverserInsertedB = true
+			if self.ParentTrain.CoreSys.ReverserInsertedB && !self.ParentTrain.CoreSys.ReverserInsertedA then
+				self.ParentTrain.CoreSys.ReverserInsertedA = false
+				self.ParentTrain.CoreSys.ReverserInsertedB = false
+			elseif !self.ParentTrain.CoreSys.ReverserInsertedB && !self.ParentTrain.CoreSys.ReverserInsertedA then
+				self.ParentTrain.CoreSys.ReverserInsertedB = true
+			elseif !self.ParentTrain.CoreSys.ReverserInsertedB && self.ParentTrain.CoreSys.ReverserInsertedA then
+				self.ParentTrain.CoreSys.ReverserInsertedA = false
+				self.ParentTrain.CoreSys.ReverserInsertedB = true
 			end
 		end
 	end
@@ -579,7 +579,7 @@ function ENT:OnButtonPress(button, ply)
 	if button == "BatteryToggle" then
 		self:SetPackedBool("FlickBatterySwitchOn", true)
 
-		if self.ParentTrain.BatteryOn == false && self.ParentTrain.Duewag_U2.ReverserLeverStateB == 1 then
+		if self.ParentTrain.BatteryOn == false && self.ParentTrain.CoreSys.ReverserLeverStateB == 1 then
 			self.ParentTrain.BatteryOn = true
 			self.ParentTrain.Duewag_Battery:TriggerInput("Charge", 1.3)
 			self.ParentTrain:SetNW2Bool("BatteryOn", true)
@@ -588,7 +588,7 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "BatteryDisableToggle" then
-		if self.ParentTrain.BatteryOn == true && self.ParentTrain.Duewag_U2.ReverserLeverStateB == 1 then
+		if self.ParentTrain.BatteryOn == true && self.ParentTrain.CoreSys.ReverserLeverStateB == 1 then
 			self.ParentTrain.BatteryOn = false
 			self.ParentTrain.Duewag_Battery:TriggerInput("Charge", 0)
 			self.ParentTrain:SetNW2Bool("BatteryOn", false)
@@ -649,7 +649,7 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "ThrowCouplerSet" then
-		if self:ReadTrainWire(5) > 1 && self.ParentTrain.Duewag_U2.Speed < 2 then
+		if self:ReadTrainWire(5) > 1 && self.ParentTrain.CoreSys.Speed < 2 then
 			self.FrontCouple:Decouple()
 		end
 
@@ -670,7 +670,7 @@ function ENT:OnButtonPress(button, ply)
 		else
 			self.Panel.Headlights = 0
 		end
-		//--print(self.ParentTrain.Duewag_U2.HeadlightsSwitch)
+		//--print(self.ParentTrain.CoreSys.HeadlightsSwitch)
 	end
 
 	if button == "DoorsSelectLeftToggle" then
@@ -798,7 +798,7 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "SetHoldingBrakeSet" then
-		self.ParentTrain.Duewag_U2.ManualRetainerBrake = true
+		self.ParentTrain.CoreSys.ManualRetainerBrake = true
 		self.Panel.SetHoldingBrake = 1
 	end
 
@@ -807,7 +807,7 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "ReleaseHoldingBrakeSet" then
-		self.ParentTrain.Duewag_U2.ManualRetainerBrake = false
+		self.ParentTrain.CoreSys.ManualRetainerBrake = false
 	end
 
 	if button == "PassengerLightsToggle" then
@@ -1040,20 +1040,20 @@ end
 
 function ENT:OnButtonRelease(button, ply)
 	if button == "CycleIBISKey" then
-		if self.ParentTrain.Duewag_U2.IBISKeyA == false && self.ParentTrain.Duewag_U2.IBISKeyATurned == false then
-			self.ParentTrain.Duewag_U2.IBISKeyA = true
-		elseif self.ParentTrain.Duewag_U2IBISKeyA == true && self.ParentTrain.Duewag_U2.IBISKeyATurned == false then
-			self.ParentTrain.Duewag_U2.IBISKeyA = true
-			self.ParentTrain.Duewag_U2.IBISKeyATurned = true
-		elseif self.ParentTrain.Duewag_U2IBISKeyA == true && self.ParentTrain.Duewag_U2.IBISKeyATurned == true then
-			self.ParentTrain.Duewag_U2.IBISKeyA = true
-			self.ParentTrain.Duewag_U2.IBISKeyATurned = false
+		if self.ParentTrain.CoreSys.IBISKeyA == false && self.ParentTrain.CoreSys.IBISKeyATurned == false then
+			self.ParentTrain.CoreSys.IBISKeyA = true
+		elseif self.ParentTrain.Duewag_U2IBISKeyA == true && self.ParentTrain.CoreSys.IBISKeyATurned == false then
+			self.ParentTrain.CoreSys.IBISKeyA = true
+			self.ParentTrain.CoreSys.IBISKeyATurned = true
+		elseif self.ParentTrain.Duewag_U2IBISKeyA == true && self.ParentTrain.CoreSys.IBISKeyATurned == true then
+			self.ParentTrain.CoreSys.IBISKeyA = true
+			self.ParentTrain.CoreSys.IBISKeyATurned = false
 		end
 	end
 
 	if button == "RemoveIBISKey" then
-		if self.ParentTrain.Duewag_U2.IBISKeyA == true then
-			self.ParentTrain.Duewag_U2.IBISKeyA = false
+		if self.ParentTrain.CoreSys.IBISKeyA == true then
+			self.ParentTrain.CoreSys.IBISKeyA = false
 		end
 	end
 
@@ -1107,12 +1107,12 @@ function ENT:OnButtonRelease(button, ply)
 
 	if button == "EmergencyBrakeSet" then end
 
-	if (button == "ThrottleUp" && self.ParentTrain.Duewag_U2.ThrottleRateB > 0) || (button == "ThrottleDown" && self.ParentTrain.Duewag_U2.ThrottleRateB < 0) then
-		self.ParentTrain.Duewag_U2.ThrottleRateB = 0
+	if (button == "ThrottleUp" && self.ParentTrain.CoreSys.ThrottleRateB > 0) || (button == "ThrottleDown" && self.ParentTrain.CoreSys.ThrottleRateB < 0) then
+		self.ParentTrain.CoreSys.ThrottleRateB = 0
 	end
 
-	if (button == "ThrottleUpFast" && self.ParentTrain.Duewag_U2.ThrottleRateB > 0) || (button == "ThrottleDownFast" && self.ParentTrain.Duewag_U2.ThrottleRateB < 0) then
-		self.ParentTrain.Duewag_U2.ThrottleRateB = 0
+	if (button == "ThrottleUpFast" && self.ParentTrain.CoreSys.ThrottleRateB > 0) || (button == "ThrottleDownFast" && self.ParentTrain.CoreSys.ThrottleRateB < 0) then
+		self.ParentTrain.CoreSys.ThrottleRateB = 0
 	end
 
 	if button == "Rollsign+" then
