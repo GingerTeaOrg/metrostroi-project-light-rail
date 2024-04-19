@@ -484,12 +484,6 @@ end
 function ENT:GetDirtLevel()
     return self:GetNW2Float("DirtLevel",0.25)
 end
-hook.Remove("Think","mplr_collect_garbage",function()
-    if Metrostroi.CollectGarbage then
-        collectgarbage("collect")
-        Metrostroi.CollectGarbage = false
-    end
-end)
 hook.Add("EntityRemoved","mplr_bass_disable",function(ent)
     if ent.BASSSounds then
         for k,v in pairs(ent.BASSSounds) do
@@ -598,10 +592,10 @@ hook.Add("PostDrawTranslucentRenderables", "mplr_base_draw", function(_,isDD)
             if not inSeat then
                 local timeleft = (math.max(0,(MPLR and MPLR~=true) and 3-(RealTime()-MPLR) or 3-(RealTime()-ent.RenderBlock)))+0.99
                 cam.Start3D2D(ent:LocalToWorld(Vector(0,-150,100)),ent:LocalToWorldAngles(Angle(0,90,90)),1.5)
-                    draw.SimpleText("Wait, train will be available across "..string.NiceTime(timeleft))
+                    draw.SimpleText("Please wait, the train will synchronise in "..string.NiceTime(timeleft))
                 cam.End3D2D()
                 cam.Start3D2D(ent:LocalToWorld(Vector(0,150,100)),ent:LocalToWorldAngles(Angle(0,-90,90)),1.5)
-                    draw.SimpleText("Wait, train will be available across "..string.NiceTime(timeleft))
+                    draw.SimpleText("Please wait, the train will synchronise in "..string.NiceTime(timeleft))
                 cam.End3D2D()
             end
             continue
