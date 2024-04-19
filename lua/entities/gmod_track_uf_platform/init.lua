@@ -147,12 +147,12 @@ function ENT:GetDoorState()
 end
 
 
-function ENT:CheckDoorRandomness()
+function ENT:CheckDoorRandomness(v)
     local train = v
-    local randomness = train.DoorRandomness
+    local randomness = train.DoorRandomness or train.CoreSys.DoorRandomness
     
     for _, value in pairs(randomness) do
-        if value ~= -1 then
+        if value ~= 3 then
             return false
         end
     end
@@ -170,7 +170,10 @@ function ENT:Think()
     self:SetNW2Int("WindowStart",self.WindowStart)
     self:SetNW2Int("WindowEnd",self.WindowEnd)
     self:SetNW2Int("PassengersLeft",self.PassengersLeft)
-    
+    local function lerp(start, finish, t)
+        return start + (finish - start) * t
+    end
+
     
     
     
@@ -184,6 +187,7 @@ function ENT:Think()
     local BoardTime = 8+7
     for k,v in pairs(ents.FindByClass("gmod_subway_*")) do
         if v.Base ~= "gmod_subway_uf_base" then continue end
+        
         if not IsValid(v) or v:GetPos():Distance(self:GetPos()) > self.PlatformStart:Distance(self.PlatformEnd) then continue end
         
         local platform_distance = ((self.PlatformStart-v:GetPos()) - ((self.PlatformStart-v:GetPos()):Dot(self.PlatformNorm))*self.PlatformNorm):Length()
@@ -196,6 +200,17 @@ function ENT:Think()
         local left_side         = train_start > train_end
         if self.InvertSides then left_side = not left_side end
         
+        local function override(HowMany)
+            for i=1,HowMany do
+                v.CoreSys.DoorRandomness[i] = 3
+            end
+        end
+        
+        local doorCount = v.CoreSys and #v.CoreSys.DoorRandomness or 0
+        local pop = self:PopulationCount()
+        if v.DoorRandomness and self:CheckDoorRandomness(v) and v.CoreSys.DoorsUnlocked then
+            override(math.random(lerp(1,doorCount,pop),doorCount))
+        end
         
         local doors_open        = left_side and v.LeftDoorsOpen or not left_side and v.RightDoorsOpen
         if (train_start < 0) and (train_end < 0) then doors_open = false end
@@ -209,30 +224,7 @@ function ENT:Think()
             TrainArrivedDist = train_start
             CurrentTrain = v
         end
-        
-        
-        -- We can't have a ton of passengers standing there and just not board. At least open some random doors if the train script hasn't
-        local function isTableAllZeroes(tbl)
-            for _, v in pairs(tbl) do
-                if v ~= 0 then
-                    return false
-                end
-            end
-            return true
-        end
-        
-        local function override(HowMany)
-            for i=1,HowMany do
-                v.DoorRandomness[i] = i
-            end
-        end
-        
-        
-        if v.DoorRandomness and isTableAllZeroes(v.DoorRandomness) and v.DoorsUnlocked then
-            override(math.random(1,4))
-        end
-        
-        
+
         passengers_can_board = doors_open
         
         
@@ -328,6 +320,7 @@ function ENT:Think()
             -- Keep list of door positions
             if left_side then
                 for k, vec in pairs(v.LeftDoorPositions) do
+                    if type(vec) ~= "Vector" then continue end
                     table.insert(boardingDoorList, v:LocalToWorld(vec))
                 end
             else
