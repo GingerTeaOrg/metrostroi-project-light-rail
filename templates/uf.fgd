@@ -49,5 +49,7 @@
     		1 : "Yes"
 	]
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
-	SwitchEnt(target_destination) : "Entity to associate with"
+	SwitchEnt(target_name_or_class) : "Entity to associate with"
+	PairedControllerLeft(target_name_or_class) : "Entity to associate with on left position"
+	PairedControllerRight(target_name_or_class) : "Entity to associate with on right position"
 ]
