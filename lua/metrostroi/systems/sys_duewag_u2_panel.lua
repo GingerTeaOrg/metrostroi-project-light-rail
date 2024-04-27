@@ -47,7 +47,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("SetPointLeft", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("SetPointRight", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("AnnouncerPlaying", "Relay", {bass = true})
-    self.Train:LoadSystem("Parralel", "Relay", "Switch", {bass = true})
+    self.Train:LoadSystem("Parralel", "Relay", "Switch", {bass = true, normally_closed = true})
     self.Train:LoadSystem("Highbeam", "Relay", "Switch", {bass = true})
     self.Train:LoadSystem("Blinker", "Relay", {bass = true})
     self.Train:LoadSystem("ReduceBrake", "Relay", {bass=true})
@@ -117,7 +117,7 @@ function TRAIN_SYSTEM:Initialize()
     self.DoorsUnlock = 0
     self.DoorCloseSignal = 0
     
-    self.Parralel = 0
+    self.Parralel = 1
     self.Headlights = 0
     
     self.DoorsLeft = 0
