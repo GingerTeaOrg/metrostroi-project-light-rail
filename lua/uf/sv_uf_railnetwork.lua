@@ -484,7 +484,7 @@ function UF.UpdateSignalBlockOccupation()
             CurrentBlock.Occupied = false
             return
         end
-        print(CurrentPos.forward)
+
         CurrentBlock.Occupied = UF.IsTrackOccupied(CurrentPos.node1,CurrentPos.x,CurrentPos.x < DistantPos.x,"light",DistantPos.x)
     end
 end
@@ -497,8 +497,8 @@ function UF.LoadSignalling(name, keep)
     
     local signals_ents = ents.FindByClass("gmod_track_uf_signal")
     for k, v in pairs(signals_ents) do SafeRemoveEntity(v) end
-    local switch_ents = ents.FindByClass("gmod_track_uf_switch")
-    for k, v in pairs(switch_ents) do SafeRemoveEntity(v) end
+    --[[local switch_ents = ents.FindByClass("gmod_track_uf_switch")
+    for k, v in pairs(switch_ents) do SafeRemoveEntity(v) end]]
     local signs_ents = ents.FindByClass("gmod_track_uf_signs")
     for k, v in pairs(signs_ents) do SafeRemoveEntity(v) end
     
