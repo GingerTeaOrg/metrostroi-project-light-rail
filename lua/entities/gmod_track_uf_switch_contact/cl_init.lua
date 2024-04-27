@@ -1,8 +1,16 @@
 function ENT:Initialize()
-    --[[if not self:GetNW2Bool("Invisible",false) then
+    if not self:GetNW2Bool("Invisible",false) then
         self.Sign = ents.CreateClientProp("models/lilly/uf/signage/point_contact.mdl")
     end
     if IsValid(self.Sign) then
-        self.Sign:SetPos(self:GetPos() + Vector(0,-10,10)
-    end]]
+        self.Sign:SetPos(self:GetPos() + Vector(0,-10,10))
+    end
+end
+
+function ENT:Draw()
+    self.Sign:DrawModel()
+end
+
+function ENT:Think()
+    print(self.Sign)
 end
