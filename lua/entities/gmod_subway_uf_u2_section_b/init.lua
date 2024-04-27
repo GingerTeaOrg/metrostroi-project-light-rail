@@ -25,11 +25,7 @@ function ENT:Initialize()
 	self:SetModel("models/lilly/uf/u2/u2hb.mdl")
 	self.BaseClass.Initialize(self)
 	self:SetPos(self:GetPos() + Vector(0, 0, 0))
-	self.Bogeys = {}
-	// Create bogeys
-	//table.insert(self.Bogeys,self.FrontBogey)	
-	//self.RearBogey = self:CreateBogeyUF(Vector( -300,0,0),Angle(0,180,0),true,"duewag_motor")
-	self.ParentTrain = self:GetNWEntity("U2a")
+
 	self.CabEnabled = false
 	self.BatteryOn = false
 	self.BlinkerLeft = false
@@ -118,7 +114,7 @@ function ENT:Initialize()
 		},
 	}
 
-	self.RearCouple = self.ParentTrain.RearCouple
+	self.RearCouple = self.SectionA.RearCouple
 	undo.Create(self.ClassName)
 	undo.AddEntity(self)
 	undo.SetPlayer(self:GetOwner())
@@ -252,7 +248,7 @@ function ENT:Initialize()
 	self.BrakePressure = 0
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
 	self.DriverSeat:SetColor(Color(0, 0, 0, 0))
-	self:SetNW2String("Texture", self.ParentTrain:GetNW2String("Texture") .. "_b")
+	self:SetNW2String("Texture", self.SectionA:GetNW2String("Texture") .. "_b")
 	self:TrainSpawnerUpdate()
 	self.U2SectionA = self:GetNW2Entity("U2a")
 
@@ -300,23 +296,12 @@ function ENT:Initialize()
 	}
 end
 
-// LOCAL FUNCTIONS FOR GETTING OUR OWN ENTITY SPAWNS
-function ENT:UnitLink()
-	return {"BogeyPower", "BogeyBrakeCylinderPressure", "TrainWire1", "TrainWire2", "TrainWire3", "TrainWire4", "TrainWire5"}
-end
-
-function ENT:TriggerUnitLink(name, value)
-	if self[name] then
-		self[name] = value
-	end
-end
-
 function ENT:OnButtonPress(button, ply)
 	if button == "PantographRaiseSet" then
 		self.Panel.PantographRaise = 1
 
-		if self.ParentTrain.CoreSys.BatteryOn == true then
-			self.ParentTrain.PantoUp = true
+		if self.SectionA.CoreSys.BatteryOn == true then
+			self.SectionA.PantoUp = true
 		end
 	end
 
@@ -363,33 +348,33 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	//--THROTTLE CODE -- Initial Concept credit Toth Peter
-	if self.ParentTrain.CoreSys.ThrottleRateB == 0 then
+	if self.SectionA.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleUp" then
-			self.ParentTrain.CoreSys.ThrottleRateB = 3
+			self.SectionA.CoreSys.ThrottleRateB = 3
 		end
 
 		if button == "ThrottleDown" then
-			self.ParentTrain.CoreSys.ThrottleRateB = -3
+			self.SectionA.CoreSys.ThrottleRateB = -3
 		end
 	end
 
-	if self.ParentTrain.CoreSys.ThrottleRateB == 0 then
+	if self.SectionA.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleUpFast" then
-			self.ParentTrain.CoreSys.ThrottleRateB = 10
+			self.SectionA.CoreSys.ThrottleRateB = 10
 		end
 
 		if button == "ThrottleDownFast" then
-			self.ParentTrain.CoreSys.ThrottleRateB = -10
+			self.SectionA.CoreSys.ThrottleRateB = -10
 		end
 	end
 
-	if self.ParentTrain.CoreSys.ThrottleRateB == 0 then
+	if self.SectionA.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleUpReallyFast" then
-			self.ParentTrain.CoreSys.ThrottleRateB = 20
+			self.SectionA.CoreSys.ThrottleRateB = 20
 		end
 
 		if button == "ThrottleDownReallyFast" then
-			self.ParentTrain.CoreSys.ThrottleRateB = -20
+			self.SectionA.CoreSys.ThrottleRateB = -20
 		end
 	end
 
@@ -398,9 +383,9 @@ function ENT:OnButtonPress(button, ply)
 		self.Panel.Door1 = 1
 	end
 
-	if self.ParentTrain.CoreSys.ThrottleRateB == 0 then
+	if self.SectionA.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleZero" then
-			self.ParentTrain.CoreSys.ThrottleStateB = 0
+			self.SectionA.CoreSys.ThrottleStateB = 0
 		end
 
 		if self:GetNW2Bool("EmergencyBrake", false) == true then
@@ -409,87 +394,87 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "Throttle10Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 10
+		self.SectionA.CoreSys.ThrottleStateB = 10
 	end
 
 	if button == "Throttle20Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 20
+		self.SectionA.CoreSys.ThrottleStateB = 20
 	end
 
 	if button == "Throttle30Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 30
+		self.SectionA.CoreSys.ThrottleStateB = 30
 	end
 
 	if button == "Throttle40Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 40
+		self.SectionA.CoreSys.ThrottleStateB = 40
 	end
 
 	if button == "Throttle50Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 50
+		self.SectionA.CoreSys.ThrottleStateB = 50
 	end
 
 	if button == "Throttle60Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 60
+		self.SectionA.CoreSys.ThrottleStateB = 60
 	end
 
 	if button == "Throttle70Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 70
+		self.SectionA.CoreSys.ThrottleStateB = 70
 	end
 
 	if button == "Throttle80Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 80
+		self.SectionA.CoreSys.ThrottleStateB = 80
 	end
 
 	if button == "Throttle90Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = 90
+		self.SectionA.CoreSys.ThrottleStateB = 90
 	end
 
 	if button == "Throttle10-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -10
+		self.SectionA.CoreSys.ThrottleStateB = -10
 	end
 
 	if button == "Throttle20-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -20
+		self.SectionA.CoreSys.ThrottleStateB = -20
 	end
 
 	if button == "Throttle30-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -30
+		self.SectionA.CoreSys.ThrottleStateB = -30
 	end
 
 	if button == "Throttle40-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -40
+		self.SectionA.CoreSys.ThrottleStateB = -40
 	end
 
 	if button == "Throttle50-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -50
+		self.SectionA.CoreSys.ThrottleStateB = -50
 	end
 
 	if button == "Throttle60-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -60
+		self.SectionA.CoreSys.ThrottleStateB = -60
 	end
 
 	if button == "Throttle70-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -70
+		self.SectionA.CoreSys.ThrottleStateB = -70
 	end
 
 	if button == "Throttle80-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -80
+		self.SectionA.CoreSys.ThrottleStateB = -80
 	end
 
 	if button == "Throttle90-Pct" then
-		self.ParentTrain.CoreSys.ThrottleStateB = -90
+		self.SectionA.CoreSys.ThrottleStateB = -90
 	end
 
 	if button == "PantographRaiseSet" then
 		self.Panel.PantographRaise = 1
 
-		if self.ParentTrain.CoreSys.BatteryOn == true then
+		if self.SectionA.CoreSys.BatteryOn == true then
 			self.PantoUp = true
 		end
 	end
 
 	if button == "PantographLowerSet" then
-		if self.ParentTrain.CoreSys.BatteryOn == true then
+		if self.SectionA.CoreSys.BatteryOn == true then
 			self.PantoUp = false
 		end
 	end
@@ -541,37 +526,37 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "ReverserUpSet" then
-		if !self.ParentTrain.CoreSys.ThrottleEngaged then
-			if self.ParentTrain.CoreSys.ReverserInsertedB == true then
-				self.ParentTrain.CoreSys.ReverserLeverStateB = self.ParentTrain.CoreSys.ReverserLeverStateB + 1
-				self.ParentTrain.CoreSys.ReverserLeverStateB = math.Clamp(self.ParentTrain.CoreSys.ReverserLeverStateB, -1, 3)
-				//self.ParentTrain.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-				//PrintMessage(HUD_PRINTTALK,self.ParentTrain.CoreSys.ReverserLeverStateB)
+		if !self.SectionA.CoreSys.ThrottleEngaged then
+			if self.SectionA.CoreSys.ReverserInsertedB == true then
+				self.SectionA.CoreSys.ReverserLeverStateB = self.SectionA.CoreSys.ReverserLeverStateB + 1
+				self.SectionA.CoreSys.ReverserLeverStateB = math.Clamp(self.SectionA.CoreSys.ReverserLeverStateB, -1, 3)
+				//self.SectionA.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
+				//PrintMessage(HUD_PRINTTALK,self.SectionA.CoreSys.ReverserLeverStateB)
 			end
 		end
 	end
 
 	if button == "ReverserDownSet" then
-		if !self.ParentTrain.CoreSys.ThrottleEngaged && self.ParentTrain.CoreSys.ReverserInsertedB == true then
+		if !self.SectionA.CoreSys.ThrottleEngaged && self.SectionA.CoreSys.ReverserInsertedB == true then
 			//self.ReverserLeverState = self.ReverserLeverState - 1
-			math.Clamp(self.ParentTrain.CoreSys.ReverserLeverStateB, -1, 3)
-			//self.ParentTrain.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-			self.ParentTrain.CoreSys.ReverserLeverStateB = self.ParentTrain.CoreSys.ReverserLeverStateB - 1
-			self.ParentTrain.CoreSys.ReverserLeverStateB = math.Clamp(self.ParentTrain.CoreSys.ReverserLeverStateB, -1, 3)
-			//PrintMessage(HUD_PRINTTALK,self.ParentTrain.CoreSys.ReverserLeverStateB)
+			math.Clamp(self.SectionA.CoreSys.ReverserLeverStateB, -1, 3)
+			//self.SectionA.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
+			self.SectionA.CoreSys.ReverserLeverStateB = self.SectionA.CoreSys.ReverserLeverStateB - 1
+			self.SectionA.CoreSys.ReverserLeverStateB = math.Clamp(self.SectionA.CoreSys.ReverserLeverStateB, -1, 3)
+			//PrintMessage(HUD_PRINTTALK,self.SectionA.CoreSys.ReverserLeverStateB)
 		end
 	end
 
-	if self.ParentTrain.CoreSys.ReverserLeverStateB == 0 && self.ParentTrain.CoreSys.ReverserLeverStateA == 0 then
+	if self.SectionA.CoreSys.ReverserLeverStateB == 0 && self.SectionA.CoreSys.ReverserLeverStateA == 0 then
 		if button == "ReverserInsert" then
-			if self.ParentTrain.CoreSys.ReverserInsertedB && !self.ParentTrain.CoreSys.ReverserInsertedA then
-				self.ParentTrain.CoreSys.ReverserInsertedA = false
-				self.ParentTrain.CoreSys.ReverserInsertedB = false
-			elseif !self.ParentTrain.CoreSys.ReverserInsertedB && !self.ParentTrain.CoreSys.ReverserInsertedA then
-				self.ParentTrain.CoreSys.ReverserInsertedB = true
-			elseif !self.ParentTrain.CoreSys.ReverserInsertedB && self.ParentTrain.CoreSys.ReverserInsertedA then
-				self.ParentTrain.CoreSys.ReverserInsertedA = false
-				self.ParentTrain.CoreSys.ReverserInsertedB = true
+			if self.SectionA.CoreSys.ReverserInsertedB && !self.SectionA.CoreSys.ReverserInsertedA then
+				self.SectionA.CoreSys.ReverserInsertedA = false
+				self.SectionA.CoreSys.ReverserInsertedB = false
+			elseif !self.SectionA.CoreSys.ReverserInsertedB && !self.SectionA.CoreSys.ReverserInsertedA then
+				self.SectionA.CoreSys.ReverserInsertedB = true
+			elseif !self.SectionA.CoreSys.ReverserInsertedB && self.SectionA.CoreSys.ReverserInsertedA then
+				self.SectionA.CoreSys.ReverserInsertedA = false
+				self.SectionA.CoreSys.ReverserInsertedB = true
 			end
 		end
 	end
@@ -579,19 +564,19 @@ function ENT:OnButtonPress(button, ply)
 	if button == "BatteryToggle" then
 		self:SetPackedBool("FlickBatterySwitchOn", true)
 
-		if self.ParentTrain.BatteryOn == false && self.ParentTrain.CoreSys.ReverserLeverStateB == 1 then
-			self.ParentTrain.BatteryOn = true
-			self.ParentTrain.Duewag_Battery:TriggerInput("Charge", 1.3)
-			self.ParentTrain:SetNW2Bool("BatteryOn", true)
+		if self.SectionA.BatteryOn == false && self.SectionA.CoreSys.ReverserLeverStateB == 1 then
+			self.SectionA.BatteryOn = true
+			self.SectionA.Duewag_Battery:TriggerInput("Charge", 1.3)
+			self.SectionA:SetNW2Bool("BatteryOn", true)
 			//PrintMessage(HUD_PRINTTALK, "Battery switch is ON")
 		end
 	end
 
 	if button == "BatteryDisableToggle" then
-		if self.ParentTrain.BatteryOn == true && self.ParentTrain.CoreSys.ReverserLeverStateB == 1 then
-			self.ParentTrain.BatteryOn = false
-			self.ParentTrain.Duewag_Battery:TriggerInput("Charge", 0)
-			self.ParentTrain:SetNW2Bool("BatteryOn", false)
+		if self.SectionA.BatteryOn == true && self.SectionA.CoreSys.ReverserLeverStateB == 1 then
+			self.SectionA.BatteryOn = false
+			self.SectionA.Duewag_Battery:TriggerInput("Charge", 0)
+			self.SectionA:SetNW2Bool("BatteryOn", false)
 			//PrintMessage(HUD_PRINTTALK, "Battery switch is off")
 			//self:SetNW2Bool("BatteryToggleIsTouched",true)
 		end
@@ -600,10 +585,10 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "DeadmanSet" then
-		self.ParentTrain.DeadmanUF.IsPressedB = true
+		self.SectionA.DeadmanUF.IsPressedB = true
 
-		if self.ParentTrain:ReadTrainWire(6) > 0 then
-			self.ParentTrain:WriteTrainWire(12, 1)
+		if self.SectionA:ReadTrainWire(6) > 0 then
+			self.SectionA:WriteTrainWire(12, 1)
 		end
 		//----print("DeadmanPressedYes")
 	end
@@ -649,7 +634,7 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "ThrowCouplerSet" then
-		if self:ReadTrainWire(5) > 1 && self.ParentTrain.CoreSys.Speed < 2 then
+		if self:ReadTrainWire(5) > 1 && self.SectionA.CoreSys.Speed < 2 then
 			self.FrontCouple:Decouple()
 		end
 
@@ -670,14 +655,14 @@ function ENT:OnButtonPress(button, ply)
 		else
 			self.Panel.Headlights = 0
 		end
-		//--print(self.ParentTrain.CoreSys.HeadlightsSwitch)
+		//--print(self.SectionA.CoreSys.HeadlightsSwitch)
 	end
 
 	if button == "DoorsSelectLeftToggle" then
-		if self.ParentTrain.DoorSideUnlocked == "None" then
-			self.ParentTrain.DoorSideUnlocked = "Right"
-		elseif self.ParentTrain.DoorSideUnlocked == "Left" then
-			self.ParentTrain.DoorSideUnlocked = "None"
+		if self.SectionA.DoorSideUnlocked == "None" then
+			self.SectionA.DoorSideUnlocked = "Right"
+		elseif self.SectionA.DoorSideUnlocked == "Left" then
+			self.SectionA.DoorSideUnlocked = "None"
 		end
 
 		if self.Panel.DoorsLeft < 1 && self.Panel.DoorsRight > 0 then
@@ -690,10 +675,10 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "DoorsSelectRightToggle" then
-		if self.ParentTrain.DoorSideUnlocked == "None" then
-			self.ParentTrain.DoorSideUnlocked = "Left"
-		elseif self.ParentTrain.DoorSideUnlocked == "Right" then
-			self.ParentTrain.DoorSideUnlocked = "None"
+		if self.SectionA.DoorSideUnlocked == "None" then
+			self.SectionA.DoorSideUnlocked = "Left"
+		elseif self.SectionA.DoorSideUnlocked == "Right" then
+			self.SectionA.DoorSideUnlocked = "None"
 		end
 
 		if self.Panel.DoorsLeft > 0 && self.Panel.DoorsRight < 1 then
@@ -706,9 +691,9 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "Button5a" then
-		if self.ParentTrain.DoorSideUnlocked == "Right" then
-			if self.ParentTrain.DoorRandomness[3] == 0 then
-				self.ParentTrain.DoorRandomness[3] = 3
+		if self.SectionA.DoorSideUnlocked == "Right" then
+			if self.SectionA.DoorRandomness[3] == 0 then
+				self.SectionA.DoorRandomness[3] = 3
 			end
 		end
 
@@ -716,9 +701,9 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "Button6a" then
-		if self.ParentTrain.DoorSideUnlocked == "Right" then
-			if self.ParentTrain.DoorRandomness[3] == 0 then
-				self.ParentTrain.DoorRandomness[3] = 3
+		if self.SectionA.DoorSideUnlocked == "Right" then
+			if self.SectionA.DoorRandomness[3] == 0 then
+				self.SectionA.DoorRandomness[3] = 3
 			end
 		end
 
@@ -726,9 +711,9 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "Button7a" then
-		if self.ParentTrain.DoorSideUnlocked == "Right" then
-			if self.ParentTrain.DoorRandomness[4] == 0 then
-				self.ParentTrain.DoorRandomness[4] = 3
+		if self.SectionA.DoorSideUnlocked == "Right" then
+			if self.SectionA.DoorRandomness[4] == 0 then
+				self.SectionA.DoorRandomness[4] = 3
 			end
 		end
 
@@ -736,9 +721,9 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "Button8a" then
-		if self.ParentTrain.DoorSideUnlocked == "Right" then
-			if self.ParentTrain.DoorRandomness[4] == 0 then
-				self.ParentTrain.DoorRandomness[4] = 3
+		if self.SectionA.DoorSideUnlocked == "Right" then
+			if self.SectionA.DoorRandomness[4] == 0 then
+				self.SectionA.DoorRandomness[4] = 3
 			end
 		end
 
@@ -747,58 +732,58 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "Button8b" then
-		if self.ParentTrain.DoorSideUnlocked == "Left" then
+		if self.SectionA.DoorSideUnlocked == "Left" then
 			self.DoorRandomness[4] = 3
 		end
 	end
 
 	if button == "Button7b" then
-		if self.ParentTrain.DoorSideUnlocked == "Left" then
-			self.ParentTrain.DoorRandomness[4] = 3
+		if self.SectionA.DoorSideUnlocked == "Left" then
+			self.SectionA.DoorRandomness[4] = 3
 		end
 	end
 
 	if button == "Button6b" then
-		if self.ParentTrain.DoorSideUnlocked == "Left" then
-			self.ParentTrain.DoorRandomness[3] = 3
+		if self.SectionA.DoorSideUnlocked == "Left" then
+			self.SectionA.DoorRandomness[3] = 3
 		end
 	end
 
 	if button == "Button5b" then
-		if self.ParentTrain.DoorSideUnlocked == "Left" then
-			self.ParentTrain.DoorRandomness[3] = 3
+		if self.SectionA.DoorSideUnlocked == "Left" then
+			self.SectionA.DoorRandomness[3] = 3
 		end
 	end
 
 	if button == "DoorsUnlockSet" then
-		self.ParentTrain.DoorsUnlocked = true
-		self.ParentTrain.DepartureConfirmed = false
+		self.SectionA.DoorsUnlocked = true
+		self.SectionA.DepartureConfirmed = false
 		self.Panel.DoorsUnlockSet = 1
 	end
 
 	if button == "DoorsLockSet" then
-		self.ParentTrain.DoorRandomness[1] = -1
-		self.ParentTrain.DoorRandomness[2] = -1
-		self.ParentTrain.DoorRandomness[3] = -1
-		self.ParentTrain.DoorRandomness[4] = -1
-		self.ParentTrain.DoorsPreviouslyUnlocked = true
-		self.ParentTrain.RandomnessCalculated = false
-		self.ParentTrain.DoorsUnlocked = false
-		self.ParentTrain.Door1 = false
+		self.SectionA.DoorRandomness[1] = -1
+		self.SectionA.DoorRandomness[2] = -1
+		self.SectionA.DoorRandomness[3] = -1
+		self.SectionA.DoorRandomness[4] = -1
+		self.SectionA.DoorsPreviouslyUnlocked = true
+		self.SectionA.RandomnessCalculated = false
+		self.SectionA.DoorsUnlocked = false
+		self.SectionA.Door1 = false
 		self.Panel.DoorsLock = 1
 	end
 
 	if button == "DoorsCloseConfirmSet" then
-		self.ParentTrain.DoorsClosedAlarmAcknowledged = true
-		self.ParentTrain.DepartureConfirmed = true
+		self.SectionA.DoorsClosedAlarmAcknowledged = true
+		self.SectionA.DepartureConfirmed = true
 
-		if self.ParentTrain.DoorsClosed == true then
-			self.ParentTrain.ArmDoorsClosedAlarm = false
+		if self.SectionA.DoorsClosed == true then
+			self.SectionA.ArmDoorsClosedAlarm = false
 		end
 	end
 
 	if button == "SetHoldingBrakeSet" then
-		self.ParentTrain.CoreSys.ManualRetainerBrake = true
+		self.SectionA.CoreSys.ManualRetainerBrake = true
 		self.Panel.SetHoldingBrake = 1
 	end
 
@@ -807,7 +792,7 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "ReleaseHoldingBrakeSet" then
-		self.ParentTrain.CoreSys.ManualRetainerBrake = false
+		self.SectionA.CoreSys.ManualRetainerBrake = false
 	end
 
 	if button == "PassengerLightsToggle" then
@@ -1040,20 +1025,20 @@ end
 
 function ENT:OnButtonRelease(button, ply)
 	if button == "CycleIBISKey" then
-		if self.ParentTrain.CoreSys.IBISKeyA == false && self.ParentTrain.CoreSys.IBISKeyATurned == false then
-			self.ParentTrain.CoreSys.IBISKeyA = true
-		elseif self.ParentTrain.Duewag_U2IBISKeyA == true && self.ParentTrain.CoreSys.IBISKeyATurned == false then
-			self.ParentTrain.CoreSys.IBISKeyA = true
-			self.ParentTrain.CoreSys.IBISKeyATurned = true
-		elseif self.ParentTrain.Duewag_U2IBISKeyA == true && self.ParentTrain.CoreSys.IBISKeyATurned == true then
-			self.ParentTrain.CoreSys.IBISKeyA = true
-			self.ParentTrain.CoreSys.IBISKeyATurned = false
+		if self.SectionA.CoreSys.IBISKeyA == false && self.SectionA.CoreSys.IBISKeyATurned == false then
+			self.SectionA.CoreSys.IBISKeyA = true
+		elseif self.SectionA.Duewag_U2IBISKeyA == true && self.SectionA.CoreSys.IBISKeyATurned == false then
+			self.SectionA.CoreSys.IBISKeyA = true
+			self.SectionA.CoreSys.IBISKeyATurned = true
+		elseif self.SectionA.Duewag_U2IBISKeyA == true && self.SectionA.CoreSys.IBISKeyATurned == true then
+			self.SectionA.CoreSys.IBISKeyA = true
+			self.SectionA.CoreSys.IBISKeyATurned = false
 		end
 	end
 
 	if button == "RemoveIBISKey" then
-		if self.ParentTrain.CoreSys.IBISKeyA == true then
-			self.ParentTrain.CoreSys.IBISKeyA = false
+		if self.SectionA.CoreSys.IBISKeyA == true then
+			self.SectionA.CoreSys.IBISKeyA = false
 		end
 	end
 
@@ -1107,12 +1092,12 @@ function ENT:OnButtonRelease(button, ply)
 
 	if button == "EmergencyBrakeSet" then end
 
-	if (button == "ThrottleUp" && self.ParentTrain.CoreSys.ThrottleRateB > 0) || (button == "ThrottleDown" && self.ParentTrain.CoreSys.ThrottleRateB < 0) then
-		self.ParentTrain.CoreSys.ThrottleRateB = 0
+	if (button == "ThrottleUp" && self.SectionA.CoreSys.ThrottleRateB > 0) || (button == "ThrottleDown" && self.SectionA.CoreSys.ThrottleRateB < 0) then
+		self.SectionA.CoreSys.ThrottleRateB = 0
 	end
 
-	if (button == "ThrottleUpFast" && self.ParentTrain.CoreSys.ThrottleRateB > 0) || (button == "ThrottleDownFast" && self.ParentTrain.CoreSys.ThrottleRateB < 0) then
-		self.ParentTrain.CoreSys.ThrottleRateB = 0
+	if (button == "ThrottleUpFast" && self.SectionA.CoreSys.ThrottleRateB > 0) || (button == "ThrottleDownFast" && self.SectionA.CoreSys.ThrottleRateB < 0) then
+		self.SectionA.CoreSys.ThrottleRateB = 0
 	end
 
 	if button == "Rollsign+" then
@@ -1134,10 +1119,10 @@ function ENT:OnButtonRelease(button, ply)
 	end
 
 	if button == "DeadmanSet" then
-		self.ParentTrain.DeadmanUF.IsPressedB = false
+		self.SectionA.DeadmanUF.IsPressedB = false
 
-		if self.ParentTrain:ReadTrainWire(6) > 0 then
-			self.ParentTrain:WriteTrainWire(12, 0)
+		if self.SectionA:ReadTrainWire(6) > 0 then
+			self.SectionA:WriteTrainWire(12, 0)
 		end
 		//----print("DeadmanPressedNo")
 	end
@@ -1296,16 +1281,16 @@ function ENT:OnButtonRelease(button, ply)
 end
 
 function ENT:TrainSpawnerUpdate()
-	self:SetNW2String("Texture", self.ParentTrain:GetNW2String("Texture") .. "_b")
+	self:SetNW2String("Texture", self.SectionA:GetNW2String("Texture") .. "_b")
 	self:UpdateTextures()
 end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-	self.Speed = self.ParentTrain.Speed
+	self.Speed = self.SectionA.Speed
 	self:SetNW2Int("Speed", self.Speed)
 
-	if self.ParentTrain:GetNW2Bool("RetroMode", false) == true then
+	if self.SectionA:GetNW2Bool("RetroMode", false) == true then
 		self:SetModel("models/lilly/uf/u2/u2_vintage_b.mdl")
 	end
 
@@ -1391,35 +1376,4 @@ function ENT:IRIS(enable)
 			return nil
 		end
 	end
-end
-
-function ENT:Traction()
-    if not IsValid(self.FrontBogey) and not IsValid(self.MiddleBogey) and not IsValid(self.RearBogey) then return end
-    local resistors = self.CoreSys:Camshaft()
-    local throttle = self.CoreSys.ThrottleState
-    local MU = not (self.CoreSys.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.CoreSys.ReverserLeverStateA == -1 or self.CoreSys.ReverserLeverStateB == 3) or self:ReadTrainWire(6) > 0
-    local coupledA = IsValid(self.FrontCouple.CoupledEnt)
-    local coupledB = IsValid(self.RearCouple.CoupledEnt)
-    local throttleWire = self:ReadTrainWire(1)
-    local deadmanTripped = self.DeadmanUF.DeadmanTripped or MU and self:ReadTrainWire(8)
-
-    local parralel = self.Panel.Parralel > 0
-    self.BrakesOn = MU and throttleWire < 0 or throttle < 0
-    local reverser = self.CoreSys.ReverserState
-    
-    -- are the motors set to parralel or series?
-    throttle = not parralel and throttle / 2 or throttle
-    throttleWire = not parralel and throttleWire / 2 or throttleWire
-
-    self.RearBogey.MotorForce = not MU and throttle < 0 and 69101.57 - resistors * (self.CoreSys.ThrottleState * 0.01) or not MU and 63571.428571429 - resistors * (throttle * 0.01) or MU and throttleWire > 0 and 63571.428571429 - resistors * (throttleWire * 0.01) or not self.DepartureConfirmed and self.Speed < 8 and 0 or deadmanTripped and -69101.57
-    self.FrontBogey.MotorForce = not MU and throttle < 0 and 69101.57 - resistors * (self.CoreSys.ThrottleState * 0.01) or not MU and 63571.428571429 - resistors * (throttle * 0.01) or MU and throttleWire > 0 and 63571.428571429 - resistors * (throttleWire * 0.01) or not self.DepartureConfirmed and self.Speed < 8 and 0 or deadmanTripped and -69101.57
-
-    self.RearBogey.MotorPower = not MU and throttle * 0.01 or throttleWire * 0.01 or not self.DepartureConfirmed and self.Speed < 8 and 0
-    self.FrontBogey.MotorPower = not MU and throttle * 0.01 or throttleWire * 0.01 or not self.DepartureConfirmed and self.Speed < 8 and 0
-    self.FrontBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
-    self.MiddleBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
-    self.RearBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
-    self.FrontBogey.Reversed = reverser < 0 or MU and self:ReadTrainWire(4) > 0
-    self.RearBogey.Reversed = reverser < 0 or MU and self:ReadTrainWire(4) > 0
-
 end
