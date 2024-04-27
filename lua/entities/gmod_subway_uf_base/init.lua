@@ -28,12 +28,13 @@ function ENT:CreatePanto(pos, ang, typ)
 
 end
 
-function ENT:CreateSectionB(pos,ang,ent)
+function ENT:CreateSectionB(pos,ang,ent,sectionA)
     ang = ang or Angle(0, 0, 0)
     local SectionB = ents.Create(ent)
     SectionB.ParentTrain = self
-    self:SetNWEntity("SectionB", SectionB)
-    SectionB:SetNWEntity("SectionA", self)
+    SectionB.SectionA = sectionA
+    self:SetNW2Entity("SectionB", SectionB)
+    SectionB:SetNW2Entity("SectionA", self)
     -- self.SectionB = u2b
     SectionB:SetPos(self:LocalToWorld(Vector(0, 0, 0)))
     SectionB:SetAngles(self:GetAngles() + ang)
