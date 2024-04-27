@@ -1160,7 +1160,7 @@ function ENT:DrawPost()
 end
 
 function ENT:SoundsFunc()
-    print(self:GetNW2Bool("Bell",false))
+    --print(self:GetNW2Bool("Bell",false))
     self:SetSoundState("bell",self:GetNW2Bool("Bell",false) and 1 or 0,1)
     self:SetSoundState("bell_in",self:GetNW2Bool("Bell",false) and 1 or 0,1)
 end
