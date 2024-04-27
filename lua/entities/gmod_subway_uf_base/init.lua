@@ -28,11 +28,12 @@ function ENT:CreatePanto(pos, ang, typ)
 
 end
 
-function ENT:CreateSectionB(pos,ang,ent,sectionA)
+function ENT:CreateSectionB(pos,ang,ent,sectionA,sectionC)
     ang = ang or Angle(0, 0, 0)
     local SectionB = ents.Create(ent)
     SectionB.ParentTrain = self
     SectionB.SectionA = sectionA
+    if IsValid(sectionC) then SectionB.SectionC = sectionC end
     self:SetNW2Entity("SectionB", SectionB)
     SectionB:SetNW2Entity("SectionA", self)
     -- self.SectionB = u2b
