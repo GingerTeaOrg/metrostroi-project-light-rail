@@ -430,9 +430,9 @@ function TRAIN_SYSTEM:MUHandler()
         if self.Train:ReadTrainWire(6) > 0 then
             self.Train:WriteTrainWire(17, 1)
         end
-        self.Train:SetNW2Bool("PantoUp", true)
+        --self.Train:SetNW2Bool("PantoUp", true)
     elseif self.Train.PantoUp == false then
-        self.Train:SetNW2Bool("PantoUp", false)
+        --self.Train:SetNW2Bool("PantoUp", false)
         
         if self.Train:ReadTrainWire(6) > 0 then
             self.Train:WriteTrainWire(17, 0)
