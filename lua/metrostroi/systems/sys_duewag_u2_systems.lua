@@ -79,6 +79,34 @@ function TRAIN_SYSTEM:Initialize()
     self.IBISKeyATurned = false
     self.IBISKeyB = false
     self.IBISKeyBTurned = false
+    
+    
+    self.DoorStatesRight = {
+        [1] = 0,
+        [2] = 0,
+        [3] = 0,
+        [4] = 0,
+    }
+    
+    self.DoorStatesLeft = {
+        [1] = 0, 
+        [2] = 0, 
+        [3] = 0, 
+        [4] = 0, 
+    }
+    
+    self.DoorOpenMoments = {
+        [1] = 0,
+        [2] = 0,
+        [3] = 0,
+        [4] = 0,
+    }
+    self.DoorRandomness = {
+        [1] = 0,
+        [2] = 0,
+        [3] = 0,
+        [4] = 0,
+    }
 end
 
 if CLIENT then return end
@@ -177,7 +205,7 @@ function TRAIN_SYSTEM:Think(Train)
     self.Train:TriggerInput("DriversWrenchPresent", (self.ReverserInsertedA or self.ReverserInsertedB) and 1 or 0)
     self.EmergencyBrake = self.Train:GetNW2Bool("EmergencyBrake", false)
     self.Train:SetNW2Float("BlinkerStatus", self.Train.Panel.BlinkerLeft > 0 and 1 or (self.Train.Panel.BlinkerRight > 0 and self.Train.Panel.BlinkerLeft < 1) and 0 or 0.5)
-    self.ReverserState = (self.ReverserLeverStateA == -1 or self.ReverserLeverStateB == 3) and -1 or (self.ReverserLeverStateA == 3 or self.ReverserLeverStateB == -1) and 1
+    self.ReverserState = (self.ReverserLeverStateA == -1 or self.ReverserLeverStateB == 3) and -1 or 0 or (self.ReverserLeverStateA == 3 or self.ReverserLeverStateB == -1) and 1
     self.Train:WriteTrainWire(12, (self.Train.DeadmanUF.IsPressed > 0 and self.Train:ReadTrainWire(6) > 0 and (self.ReverserLeverStateA ~= 0 or self.ReverserLeverStateB ~= 0)) and 1 or 0)
     self.Train:WriteTrainWire(6, (self.VZ == true and self.Train:ReadTrainWire(6) < 1) and 1 or (self.ReverserLeverStateA == 2 or self.ReverserLeverStateB == 2) and 1 or 0)
     self.TractionConditionFulfilled = (self.Train:ReadTrainWire(12) > 0 and self.Train:ReadTrainWire(6) > 0) and true or (self.VE and self.Train.DeadmanUF.IsPressed > 0) and true or false
@@ -419,7 +447,179 @@ function TRAIN_SYSTEM:MUHandler()
     -- print(self.Train:GetNW2Bool("PantoUp"))
     -- print(self.Train:GetNW2Bool("Fans"))
 end
+-- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
+function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
+    local WagonList = self.Train.WagonList
+    local irStatus = self:IRIS(true)
+    local t = self.Train
+    local previousUnlock = false
+    for i = 1, #WagonList do
+        local DoorStatesPerCar = right and WagonList[i].CoreSys.DoorStatesRight or left and WagonList[i].CoreSys.DoorStatesLeft or {}
+        -- Exempt the door1 button, because that's not a passenger transfer. That's for special drivers' issues. 
+        -- The doors right by the cab can be unlocked without having to unblock all doors and risk passengers.
 
+        self.DoorsClosed = (DoorStatesPerCar[1] == 0 and DoorStatesPerCar[2] == 0 and DoorStatesPerCar[3] == 0 and
+                               DoorStatesPerCar[4] == 0)
+    end
+    self.ArmDoorsClosedAlarm = self.DoorsClosed and previousUnlock and not door1
+    previousUnlock = not self.DoorsClosed
+    t:SetNW2Bool("DoorChime", (self.ArmDoorsClosedAlarm and self.DoorsClosed))
+    -------------------------------------------------------------------------------------
+    --    ↑ checking whether doors are open anywhere | ↓ Actually controlling the doors
+    --------------------------------------------------------------------------------------
+    if self.ReverserStateA ~= 0 and not self.ConflictingHeads then
+        self.DoorStatesRight[1] = right and door1 and math.Clamp(self.DoorStatesRight[1] + 0.2 * dT,0,1) or self.DoorStatesRight[1]
+        self.DoorStatesLeft[4] = left and door1 and math.Clamp(self.DoorStatesLeft[4] + 0.2 * dT,0,1) or self.DoorStatesLeft[4]
+    elseif self.ReverserStateB ~= 0 and not self.ConflictingHeads then
+        self.DoorStatesRight[4] = right and door1 and math.Clamp(self.DoorStatesRight[4] + 0.2 * dT,0,1) or self.DoorStatesRight[4]
+        self.DoorStatesLeft[1] = left and door1 and math.Clamp(self.DoorStatesLeft[1] + 0.2 * dT,0,1) or self.DoorStatesLeft[1]
+    end
+    --------------------------------------------------------
+    local IRGates = self:IRIS(unlock)
+    if unlock then
+        self.DoorsPreviouslyUnlocked = true
+        self.DoorLockSignalMoment = 0
+        -- randomise door closing for more realistic behaviour. People are sometimes going to block the doors for a bit, or the relays don't respond in sync.
+        if not self.DoorCloseMomentsCaptured then
+            self.DoorCloseMoments[1] = math.random(1, 4)
+            self.DoorCloseMoments[2] = math.random(1, 4)
+            self.DoorCloseMoments[3] = math.random(1, 4)
+            self.DoorCloseMoments[4] = math.random(1, 4)
+            self.DoorCloseMomentsCaptured = true
+        end
+
+        if right then
+            -- pick doors to be unlocked
+            if not self.RandomnessCalulated then
+                for i, v in ipairs(self.DoorRandomness) do
+                    if i <= 6 and v < 0 then
+                        -- we recycle the door randomness value as a general signal for requesting a door to open, and if a stop request originated from that door, always open it
+                        self.DoorRandomness[i] =
+                            self.StopRequestRight[i] and 3 or math.random(0, 4)
+                        -- print(self.DoorRandomness[i], "doorrandom", i)
+                        self.RandomnessCalculated = true
+                        break
+                    end
+                end
+            end
+
+            -- increment the door states
+            for i, v in ipairs(self.DoorRandomness) do
+                if v == 3 and self.DoorStatesRight[i] < 1 and not IRGates[i] then
+                    self.DoorStatesRight[i] = self.DoorStatesRight[i] + 0.2 * dT
+                end
+                math.Clamp(self.DoorStatesRight[i], 0, 1)
+            end
+        elseif left then
+            -- pick a random door to be unlocked
+            if self.RandomnessCalulated ~= true then
+                for i, v in ipairs(self.DoorRandomness) do
+                    if i <= 4 and v < 0 then
+                        -- the carriage does not seem to differentiate between a stop request done on the left or right side, just at what position the door is,
+                        -- so just invert the stop request index in order to account for the fact we're counting A to B as 1 to 6, and B to A as 1 to 6 for door n°
+                        self.DoorRandomness[i] = math.random(0, 4)
+                        self.RandomnessCalculated = true
+                        break
+                    end
+                end
+            end
+
+            for i, v in ipairs(self.DoorRandomness) do
+                if v == 3 and self.DoorStatesLeft[i] < 1 and not IRGates[i+4] then
+                    math.Clamp(self.DoorStatesLeft[i], 0, 1)
+                    self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.2 * dT
+                    math.Clamp(self.DoorStatesLeft[i], 0, 1)
+                end
+            end
+        end
+    elseif not unlock then
+        if self.DoorLockSignalMoment == 0 then
+            self.DoorLockSignalMoment = CurTime()
+        end
+        self.DoorCloseMomentsCaptured = false -- reset the flag for the randomness of closing the doors
+
+        if right then
+            for i, v in ipairs(self.DoorStatesRight) do
+                if CurTime() > self.DoorLockSignalMoment +
+                    self.DoorCloseMoments[i] and not irStatus[i] and v > 0 then
+                    self.DoorStatesRight[i] =
+                        self.DoorStatesRight[i] - 0.20 * dT
+                    self.DoorStatesRight[i] = math.Clamp(
+                                                  self.DoorStatesRight[i], 0, 1)
+                end
+            end
+        elseif left then
+            for i, v in ipairs(self.DoorStatesLeft) do
+                if CurTime() > self.DoorLockSignalMoment +
+                    self.DoorCloseMoments[i] and not irStatus[i] and v > 0 then
+                    self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.20 * dT
+                    self.DoorStatesLeft[i] =
+                        math.Clamp(self.DoorStatesLeft[i], 0, 1)
+                end
+            end
+        end
+    elseif idleunlock then
+        -- If the Reverser is set to *, the doors automatically close again after five seconds
+        if right then
+            local opened
+            -- Iterate through each door with random behavior
+            for i, v in ipairs(self.DoorRandomness) do
+                if v == 3 and self.DoorStatesRight[i] < 1 then
+                    if self.DoorOpenMoments[i] == 0 then
+                        self.DoorStatesRight[i] =
+                            self.DoorStatesRight[i] + 0.2 * dT
+                        self.DoorStatesRight[i] = math.Clamp(
+                                                      self.DoorStatesRight[i],
+                                                      0, 1)
+                    end
+                elseif self.DoorStatesRight[i] > 0 and self.DoorOpenMoments[i] <
+                    CurTime() - 5 then
+                    -- If five seconds have passed, close the door
+                    if not irStatus[i] then
+                        self.DoorStatesRight[i] =
+                            self.DoorStatesRight[i] - 0.2 * dT
+                        self.DoorStatesRight[i] = math.Clamp(
+                                                      self.DoorStatesRight[i],
+                                                      0, 1)
+                    end
+                end
+
+                if self.DoorStatesRight[i] == 1 and not opened then
+                    self.DoorOpenMoments[i] = CurTime() -- Record the moment the door opened
+                    opened = true
+                elseif self.DoorStatesRight[i] == 0 then
+                    self.DoorOpenMoments[i] = 0
+                    opened = false
+                end
+            end
+        elseif left then
+            local opened
+            -- Similar logic for the left doors
+            for i, v in ipairs(self.DoorRandomness) do
+                if v == 3 and self.DoorStatesLeft[i] < 1 then
+                    if self.DoorStatesLeft[i] == 1 then
+                        self.DoorOpenMoments[i] = CurTime()
+                    elseif self.DoorOpenMoments[i] == 0 then
+                        self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.1
+                        self.DoorStatesLeft[i] = math.Clamp(
+                                                     self.DoorStatesLeft[i], 0,
+                                                     1)
+                    end
+                elseif self.DoorStatesLeft[i] > 0 and CurTime() -
+                    self.DoorOpenMoments[i] > 5 and not irStatus[i] then
+                    self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.1
+                    self.DoorStatesLeft[i] =
+                        math.Clamp(self.DoorStatesLeft[i], 0, 1)
+                end
+            end
+
+            if self.DoorStatesLeft[i] == 1 and not opened then
+                self.DoorOpenMoments[i] = CurTime()
+                opened = true
+            end
+        end
+    end
+end
 function TRAIN_SYSTEM:CheckDoorsAllClosed(enable)
     if not enable then return nil end
     for k, v in pairs(self.Train.WagonList) do
@@ -473,7 +673,7 @@ function TRAIN_SYSTEM:Blink(enable, left, right)
         sectionB:SetLightPower(158,t.BlinkerOn and left)
         sectionB:SetLightPower(159,t.BlinkerOn and right)
         sectionB:SetLightPower(149,t.BlinkerOn and right)
-
+        
         sectionB:SetLightPower(66,t.BlinkerOn and left and right)
         sectionB:SetLightPower(67,t.BlinkerOn and left and right)
         t:SetLightPower(48, t.BlinkerOn and left)
