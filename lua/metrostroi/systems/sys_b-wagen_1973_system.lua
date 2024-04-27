@@ -36,7 +36,7 @@ function TRAIN_SYSTEM:Initialize()
 
     self.DoorUnlockStates = {["None"] = 0, ["Left"] = 1, ["Right"] = 2}
 
-    self.DoorUnlockState = 0
+    self.DoorUnlockState = false
     self.DoorStatesRight = {
         [1] = 0,
         [2] = 0,
@@ -76,7 +76,14 @@ function TRAIN_SYSTEM:Initialize()
         [5] = false,
         [6] = false
     }
-
+    self.DoorRandomness = {
+        [1] = 0,
+        [2] = 0,
+        [3] = 0,
+        [4] = 0,
+        [5] = 0,
+        [6] = 0,
+    }
     self.StepSetting = 1
     self.BlinkerStates = {
         ["Off"] = 0,
@@ -101,6 +108,7 @@ end
 
 -- ==============================================================================================
 function TRAIN_SYSTEM:Think(dT)
+
     self.SectionB = self.Train.SectionB
     if IsValid(self.Train.SectionB) and not self.SetSectionBNW2Int then
         self:NW2()
@@ -177,9 +185,10 @@ function TRAIN_SYSTEM:IgnitionKeyInOutB()
     local consist = t.WagonList
     
     for j = 1, #consist do
-        if j = t then continue end
-        if consist[j].CoreSys.IgnitionKeyA or consist[j].CoreSys.IgnitionKeyB then 
-            t:GetDriver:PrintMessage(HUD_PRINTTALK,"You left your ignition key in another cab. Go fetch it!") 
+        if j == t then continue end
+        if consist[j].CoreSys.IgnitionKeyA or consist[j].CoreSys.IgnitionKeyB then
+            local driver = t:GetDriver()
+            driver:PrintMessage(HUD_PRINTTALK,"You left your ignition key in another cab. Go fetch it!") 
             return 
         else
             consist[j].CoreSys.IgnitionKeyAIn = false
@@ -817,10 +826,11 @@ function TRAIN_SYSTEM:PantoFunction()
 end
 
 function TRAIN_SYSTEM:BellHorn()
+    if true then return end
     local p = self.Train.Panel
     local t = self.Train
-    local b = self.Train.Duewag_Battery
-    -- print(self.Train.Battery)
+    local b = t.Battery
+    print(self.Train.Duewag_Battery)
     if b.Voltage < 5 then return end
     t:SetNW2Bool("Bell", p.Bell > 0)
     t:SetNW2Bool("Horn", p.Horn > 0)
