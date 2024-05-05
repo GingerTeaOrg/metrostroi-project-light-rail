@@ -1,7 +1,3 @@
-
-
-
-
 UF.SwitchEntitiesByID = {}
 
 UF.ActiveRoutes = {}
@@ -141,7 +137,9 @@ function UF.UpdateSignalEntities()
     count - repeater, repeater))
     local entities = ents.FindByClass("gmod_track_uf_switch")
     for k,v in pairs(entities) do
-        UF.SwitchEntitiesByID[v.ID] = v
+        if v.ID then
+            UF.SwitchEntitiesByID[v.ID] = v
+        end
     end
 end
 
@@ -169,11 +167,10 @@ function UF.UpdateSignalNames()
 end
 
 function UF.CheckForSignal(node, min_x, max_x)
-    -- Check if the current node contains a signal (or any other conditions you need)
+    -- Check if the current node contains a signal
     if node and node.signals then
         for _, signal in pairs(node.signals) do
-            if signal.type == "light" and signal.TrackX >= min_x and
-            signal.TrackX <= max_x then
+            if signal.type == "light" and signal.TrackX >= min_x and signal.TrackX <= max_x then
                 -- Found a light signal within the specified range
                 return true, signal
             end
@@ -242,7 +239,7 @@ function UF.ScanTrack(itype, node, func, x, dir, checked)
     end
     
     -- Show the scanned path
-    if GetConVar("metrostroi_drawdebug"):GetInt() == 1 then
+    if GetConVar("mplr_drawdebug"):GetInt() == 1 then
         local T = CurTime()
         timer.Simple(0.05 + math.random()*0.05,function()
             if node.next then
@@ -255,7 +252,7 @@ function UF.ScanTrack(itype, node, func, x, dir, checked)
     local results = {func(node, min_x, max_x)}
     if results[1] ~= nil then return unpack(results) end
     -- First check all the branches, whose positions fall within min_x..max_x
-    if node.branches and not ars then
+    if node.branches then
         for k, v in pairs(node.branches) do
             if (v[1] >= min_x) and (v[1] <= max_x) then
                 -- FIXME: somehow define direction and X!
@@ -281,6 +278,110 @@ function UF.ScanTrack(itype, node, func, x, dir, checked)
         if results[1] ~= nil then return unpack(results) end
     end
 end
+
+local finalEntList = {}
+local EntTrackPos = {}
+local entList = ents.GetAll()
+
+function UF.ScanTrackForEntity(entityClass, currentNode, position, direction, checkedNodes, searchForVal, key, val, partialMatch)
+    if not currentNode then return end
+    if not next(entList) then entList = ents.GetAll() end
+    --get applicable entities, either with containing a variable and value, or not
+    for _,ent in ipairs(entList) do 
+        if ent:GetClass() == entityClass and searchForVal and ent[key] == val then
+            for k,v in ipairs(finalEntList) do
+                if not finalEntList[ent] then
+                    table.insert(finalEntList,ent)
+                    continue
+                end
+            end
+        elseif ent:GetClass() == entityClass and searchForVal and partialMatch and string.match(ent[key],"^"..val) == val then
+            for k,v in ipairs(finalEntList) do
+                if not finalEntList[ent] then
+                    table.insert(finalEntList,ent)
+                    continue
+                end
+            end
+        elseif ent:GetClass() == entityClass then
+            for k,v in ipairs(finalEntList) do
+                if not finalEntList[ent] then
+                    table.insert(finalEntList,ent)
+                    continue
+                end
+            end
+        end
+    end
+    --give applicable entities track coordinates
+    for k,v in ipairs(finalEntList) do
+        if not EntTrackPos[v] then
+            EntTrackPos[v] = Metrostroi.GetPositionOnTrack(v:GetPos(), v:GetAngles())[1]
+        end
+    end
+
+
+    -- If the current node is nil or has already been checked, return
+    if checkedNodes then
+        if checkedNodes[currentNode] then
+            return
+        end
+    end
+
+    -- Mark the current node as checked
+    if currentNode then
+        checkedNodes[currentNode] = true
+    end
+    -- Determine the scanning direction (forward or backward)
+    local forwardScan = direction
+
+    -- Initialize the scanning range
+    local minPosition = currentNode.x
+    local maxPosition = minPosition + currentNode.length
+
+    local results = {}
+
+    if forwardScan then --we're scanning forwards along the node
+        for k,v in pairs(EntTrackPos) do --iterate over all entities that we have put into the filtered table
+            if v.x >= currentNode.x then
+                table.insert(results,k) --add the entity to our output table
+            else
+                EntTrackPos[k] = nil --entity doesn't match, so clear it out of the table
+            end
+        end
+    else
+        for k,v in pairs(EntTrackPos) do --same as before but backwards
+            if v.x <= currentNode.x then
+                table.insert(results,k)
+            else
+                EntTrackPos[k] = nil
+            end
+        end
+    end
+    
+    if results[1] ~= nil then
+        return unpack(results)
+    end
+
+    -- Recursively scan the branches of the current node
+    if currentNode.branches then
+        for _, branch in pairs(currentNode.branches) do
+            local branchPosition, branchNode = branch[1], branch[2]
+            if forwardScan and branchPosition >= minPosition and branchPosition <= maxPosition then
+                local branchResults = {UF.ScanTrackForEntity(entityClass, branchNode, branchPosition, true, checkedNodes)}
+                if branchResults[1] ~= nil then
+                    return unpack(branchResults)
+                end
+            end
+        end
+    end
+
+    -- Continue scanning forward or backward based on the direction
+    if forwardScan then
+        return UF.ScanTrackForEntity(entityClass, currentNode.next, maxPosition, true, checkedNodes)
+    else
+        return UF.ScanTrackForEntity(entityClass, currentNode.prev, minPosition, false, checkedNodes)
+    end
+end
+
 
 function UF.Save(name)
     if not file.Exists("project_light_rail_data", "DATA") then
@@ -569,105 +670,20 @@ function UF.IsTrackOccupied(src_node, x, dir, t, maximum_x)
     
     return #Trains > 0, Trains[#Trains], Trains[1]
 end
-
---------------------------------------------------------------------------------
--- Scans an isolated track segment and for every useable segment calls func
---------------------------------------------------------------------------------
-local check_table = {}
-function UF.ScanTrack(itype, node, func, x, dir, checked, maximum_x)
-    local light, switch = itype == "light", itype == "switch"
-    -- Check if this node was already scanned
-    if not node then return end
-    if not checked then
-        for k, v in pairs(check_table) do check_table[k] = nil end
-        checked = check_table
+local nodes = {}
+function UF.WriteToNodeTable(node_start,node_end,forwards,k_v)
+    if not node_start then return end
+    nodeTab = node_start
+    for k,v in pairs(k_v) do
+        print(k,v)
+        node_start[k] = v
     end
-    if checked[node] then return end
-    checked[node] = true
-    -- Try to use entire node length by default, but also allow for manual scan length
-    local min_x = node.x
-    
-    local max_x = maximum_x or min_x + node.length
-    
-    -- Get range of node which can be actually sensed
-    local isolateForward = false -- Should scanning continue forward along track
-    local isolateBackward = false -- Should scanning continue backward along track
-    if Metrostroi.SignalEntitiesForNode[node] then
-        for k, v in pairs(Metrostroi.SignalEntitiesForNode[node]) do
-            local isolating = false
-            if IsValid(v) then
-                if light then
-                    isolating = ((v.TrackDir == dir) or (v.TrackX == x))
-                end
-                if switch then isolating = v.IsolateSwitches end
-                -- if itype == "ars" then isolating = true end
-            end
-            if isolating then
-                -- If scanning forward, and there's a joint IN FRONT of current X
-                if dir and (v.TrackX > x) then
-                    max_x = math.min(max_x, v.TrackX)
-                    isolateForward = true
-                end
-                -- If scanning forward, and there's a joint in current X
-                -- This is triggered when traffic light searches for next light from its own X (then
-                --  scan direction is defined by dir)
-                if dir and (v.TrackX == x) then
-                    min_x = math.max(min_x, v.TrackX)
-                    isolateBackward = true
-                end
-                -- if scanning backward, and there's a joint BEHIND current X
-                if (not dir) and (v.TrackX < x) then
-                    min_x = math.max(min_x, v.TrackX)
-                    isolateBackward = true
-                end
-                -- If scanning backward starting from current X, use dir for guiding scan
-                if (not dir) and (v.TrackX == x) then
-                    max_x = math.min(max_x, v.TrackX)
-                    isolateForward = true
-                end
-            end
-        end
+    if node_start == node_end then return true end
+    if forwards then
+        UF.WriteToNodeTable(node_start.next,node_end,forwards,k_v)
+    else
+        UF.WriteToNodeTable(node_start.prev,node_end,forwards,k_v)
     end
-    
-    -- Show the scanned path
-    --[[if GetConVar("metrostroi_drawdebug"):GetInt() == 1 then
-    local T = CurTime()
-    timer.Simple(0.05 + math.random()*0.05,function()
-        if node.next then
-            debugoverlay.Line(node.pos,node.next.pos,3,Color((T*1234)%255,(T*12345)%255,(T*12346)%255),true)
-        end
-    end)
-end]]
-
--- Call function for the determined portion of the node
-local results = {func(node, min_x, max_x)}
-if results[1] ~= nil then return unpack(results) end
--- First check all the branches, whose positions fall within min_x..max_x
-if node.branches and not ars then
-    for k, v in pairs(node.branches) do
-        if (v[1] >= min_x) and (v[1] <= max_x) then
-            -- FIXME: somehow define direction and X!
-            local results = {
-                UF.ScanTrack(itype, v[2], func, v[1], true, checked)
-            }
-            if results[1] ~= nil then return unpack(results) end
-        end
-    end
-end
--- If not isolated, continue scanning forward from the front end of node
-if (dir or switch) and (not isolateForward) then
-    local results = {
-        UF.ScanTrack(itype, node.next, func, max_x, true, checked)
-    }
-    if results[1] ~= nil then return unpack(results) end
-end
--- If not isolated, continue scanning backward from the rear end of node
-if (not dir or switch) and (not isolateBackward) then
-    local results = {
-        UF.ScanTrack(itype, node.prev, func, min_x, false, checked)
-    }
-    if results[1] ~= nil then return unpack(results) end
-end
 end
 
 function UF.PrintStatistics() end
@@ -714,50 +730,33 @@ function UF.GetTravelTime(src, dest)
     local travel_dist = 0
     local travel_speed = 60
     local iter = 0
-    function scan(node, path)
+
+    local function scan(node, path)
         local oldx
         local oldars
         while (node) and (node ~= dest) do
-            local ars_speed
-            -- local ars_joint = Metrostroi.GetARSJoint(node,node.x+0.01,path or true)
-            --[[if ars_joint then
-            --[[if oldx and oldx ~= ars_joint.TrackPosition.x then
-            print(Format("\t\t\t%.2f:\t%s->%s",(ars_joint.TrackPosition.x - oldx)/18.8,oldars.Name,ars_joint.Name))
-        end
-        oldx = ars_joint.TrackPosition.x
-        oldars = ars_joint
-        --print(ars_joint.Name)
-        local ARSLimit = ars_joint:GetMaxARS()
-        --print(ARSLimit)
-        if ARSLimit >= 4  then
-            ars_speed = ARSLimit*10
-        end
-        --print(ars_speed)
-    end]]
-    -- if ars_speed then travel_speed = ars_speed end
-    -- print(Format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
-    
-    -- Assume 70% of travel speed
-    local speed = travel_speed * 0.7
-    
-    -- Add to travel time
-    travel_dist = travel_dist + node.length
-    travel_time = travel_time + (node.length / (speed / 3.6))
-    node = node.next
-    if not node then break end
-    if src.path == dest.path and node.branches and
-    node.branches[1][2].path == src.path then
-        scan(node, src.x > node.branches[1][2].x)
-    end
-    if src.path == dest.path and node.branches and node.branches[2] and
-    node.branches[2][2].path == src.path then
-        scan(node, src.x > node.branches[1][1].x)
-    end
-    assert(iter < 10000, "OH SHI~")
-    iter = iter + 1
-end
-end
-scan(src)
 
-return travel_time, travel_dist
+            -- print(Format("[%03d] %.2f m   V = %02d km/h",node.id,node.length,ars_speed or 0))
+    
+            -- Assume 70% of travel speed
+            local speed = travel_speed * 0.7
+    
+            -- Add to travel time
+            travel_dist = travel_dist + node.length
+            travel_time = travel_time + (node.length / (speed / 3.6))
+            node = node.next
+            if not node then break end
+            if src.path == dest.path and node.branches and node.branches[1][2].path == src.path then
+                scan(node, src.x > node.branches[1][2].x)
+            end
+            iter = iter + 1
+            assert(iter < 10000, "OH SHI~")
+        end
+    end
+
+    if src.path == dest.path and src.branches and src.branches[2] and src.branches[2][2].path == dest.path then
+        scan(src, src.x > src.branches[1][1].x)
+    end
+
+    return travel_time, travel_dist
 end
