@@ -15,7 +15,7 @@ UF.Currents = UF.Currents or {}
 UF.Current = 0
 UF.PeopleOnRails = 0
 UF.VoltageRestoreTimer = 0
-
+CreateConVar("mplr_drawdebug", "0", FCVAR_NOTIFY, "Enable or disable track debugging")
 local function consumeFromFeeder(inCurrent, inFeeder)
     if inFeeder then
         UF.Currents[inFeeder] = UF.Currents[inFeeder] + inCurrent*0.4
