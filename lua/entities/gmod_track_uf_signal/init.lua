@@ -91,6 +91,41 @@ function ENT:SendUpdate(ply)
     end
 end
 
+function ENT:SetSpeedLimitSection()
+	local speedVar = self.Type
+	local forward = self.Forward
+	local k_v = {}
+	local speedSpeedSectorLimit = UF.ScanTrackForEntity("gmod_track_uf_signal", self.Node, self.TrackPosition.x, self.Forward, nil, true, "Type", "speed", true)
+	local function recursiveNodes(node,nextNode)
+		for k,v in pairs(k_v) do
+			node[k] = v
+		end
+		if forward and nextNode then
+			recursiveNodes(nextNode,nextNode.next)
+		elseif not nextNode then
+			for k,v in pairs(k_v) do
+				node[k] = v
+			end
+		elseif not forward and nextNode then
+			recursiveNodes(nextNode,nextNode.prev)
+		end
+	end
+	if forward and not self.Type ~= "speed_clear" then
+		k_v = {speed_forward = string.sub(speedVar, #speedVar - 2, #speedVar)}
+	elseif not forward and not self.Type ~= "speed_clear" then
+		k_v = {speed_backward = string.sub(speedVar, #speedVar - 2, #speedVar)}
+	elseif forward then
+		k_v = {speed_forward = nil}
+	else
+		k_v = {speed_backward = nil}
+	end
+	if not self.NextSign then
+		recursiveNodes(self.Node,self.Node.next)
+	else
+		UF.WriteToNodeTable(self.Node, self.NextSign.Node, forward, k_v)
+	end
+end
+
 --On receive update request, we send update
 net.Receive(
     "mplr-signal",
