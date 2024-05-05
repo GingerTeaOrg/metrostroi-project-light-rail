@@ -5,7 +5,7 @@ function ENT:Initialize()
 	self:SetModel("models/metrostroi/signals/box.mdl")
 	Metrostroi.DropToFloor(self)
 
-	self.ID = self:GetInternalVariable("SwitchID") or self.ID or 000
+	self.ID = self.VMF.ID
 	-- Initial state of the switch
 	self.AlternateTrack = false
 	self.AlreadyLocked = false
