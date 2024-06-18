@@ -23,7 +23,7 @@ end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 
-	self.SoundNames["bell"] = {loop = 0.01, "lilly/uf/u2/Bell_start.mp3", "lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}
+    self.SoundNames["bell"] = {loop = 0.01, "lilly/uf/u2/Bell_start.mp3", "lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}
 	self.SoundPositions["bell"] = {1100, 1e9, Vector(480, -20, 8), 0.7}
 	self.SoundNames["bell_in"] = {loop = 0.01, "lilly/uf/u2/insidecab/Bell_start.mp3", "lilly/uf/u2/insidecab/Bell_loop.mp3", "lilly/uf/u2/insidecab/Bell_end.mp3"}
 	self.SoundPositions["bell_in"] = {800, 1e9, Vector(480, -20, 50), 1}
@@ -43,8 +43,7 @@ function ENT:InitializeSounds()
 	self.SoundNames["button_off"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
 	self.SoundPositions["button_off"] = {1100, 1e9, Vector(405, 36, 55), 1}
 
-	self.SoundNames["key_insert"] = {"lilly/uf/common/key-1.wav"}
-	self.SoundPositions["key_insert"] = {1100, 1e9, Vector(480, 36, 70), 1}
+
 end
 
 ENT.Cameras = {
@@ -63,7 +62,7 @@ ENT.Cameras = {
 local function GetDoorPosition(i, k)
 
 	-- math.random
-	return Vector(450, 0, 5)
+	return Vector(450, 0,5)
 end
 ENT.LeftDoorPositions = {}
 ENT.RightDoorPositions = {}
@@ -76,14 +75,14 @@ ENT.MirrorCams = {Vector(441, 72, 15), Angle(1, 180, 0), 15, Vector(441, -72, 15
 
 function ENT:InitializeSystems()
 	self:LoadSystem("DeadmanUF", "Duewag_Deadman")
-	self:LoadSystem("Duewag_Battery")
+	self:LoadSystem("Battery","Duewag_Battery")
 	self:LoadSystem("Panel", "1973_panel")
 	self:LoadSystem("Chopper")
-	self:LoadSystem("CoreSys", "duewag_b_1973")
-	self:LoadSystem("INDUSI", "mplr_INDUSI_scanner")
-
-	self:LoadSystem("IBIS")
-	self:LoadSystem("Announcer", "uf_announcer")
+	self:LoadSystem("CoreSys","duewag_b_1973")
+	
+	--self:LoadSystem("IBIS")
+	--self:LoadSystem("Announcer", "uf_announcer")
+	
 
 	-- self:LoadSystem("duewag_electric")
 end
@@ -92,10 +91,10 @@ ENT.SubwayTrain = {Type = "B", Name = "B-Wagen Series 1973", WagType = 0, Manufa
 
 ENT.AnnouncerPositions = {{Vector(293, 44, 102)}, {Vector(293, -44, 102)}}
 
-ENT.NumberRanges = {{5001, 5011}, {5012, 5016}, {5031, 5032}, {5012, 5016}, {5141, 5145}}
+ENT.NumberRanges = {{5001, 5011},{5012, 5016},{5031, 5032},{5012, 5016},{5141, 5145}}
 
 ENT.Spawner = {
-	model = {"models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl", "models/lilly/mplr/ruhrbahn/b_1973/section_b.mdl"},
+	model = {"models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl"},
 	head = "gmod_subway_mplr_bwagen1973_section_a",
 	interim = "gmod_subway_mplr_bwagen1973_section_a",
 	Metrostroi.Skins.GetTable("Texture", "Spawner.Texture", false, "train"),

@@ -668,7 +668,7 @@ function UF.IsTrackOccupied(src_node, x, dir, t, maximum_x)
         end
     end, x, dir, nil, maximum_x)
     
-    return #Trains > 0, Trains[#Trains], Trains[1], Trains
+    return #Trains > 0, Trains[#Trains], Trains[1]
 end
 local nodes = {}
 function UF.WriteToNodeTable(node_start,node_end,forwards,k_v)

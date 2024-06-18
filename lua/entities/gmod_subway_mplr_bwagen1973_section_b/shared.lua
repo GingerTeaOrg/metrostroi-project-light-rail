@@ -23,7 +23,7 @@ end
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds(self)
 
-	self.SoundNames["bell"] = {loop = 0.01, "lilly/uf/u2/Bell_start.mp3", "lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}
+    self.SoundNames["bell"] = {loop = 0.01, "lilly/uf/u2/Bell_start.mp3", "lilly/uf/u2/Bell_loop.mp3", "lilly/uf/u2/Bell_end.mp3"}
 	self.SoundPositions["bell"] = {1100, 1e9, Vector(386, -20, 8), 0.7}
 	self.SoundNames["bell_in"] = {loop = 0.01, "lilly/uf/u2/insidecab/Bell_start.mp3", "lilly/uf/u2/insidecab/Bell_loop.mp3", "lilly/uf/u2/insidecab/Bell_end.mp3"}
 	self.SoundPositions["bell_in"] = {800, 1e9, Vector(386, -20, 50), 1}
@@ -42,6 +42,7 @@ function ENT:InitializeSounds()
 
 	self.SoundNames["button_off"] = {"lilly/uf/u2/insidecab/buttonclick.mp3"}
 	self.SoundPositions["button_off"] = {1100, 1e9, Vector(405, 36, 55), 1}
+
 
 end
 
@@ -62,7 +63,7 @@ ENT.Cameras = {
 local function GetDoorPosition(i, k)
 
 	-- math.random
-	return Vector(450, 0, 5)
+	return Vector(450, 0,5)
 end
 ENT.LeftDoorPositions = {}
 ENT.RightDoorPositions = {}
@@ -74,10 +75,11 @@ end
 ENT.MirrorCams = {Vector(441, 72, 15), Angle(1, 180, 0), 15, Vector(441, -72, 15), Angle(1, 180, 0), 15}
 
 function ENT:InitializeSystems()
-	-- self:LoadSystem("DeadmanUF", "Duewag_Deadman")
-	-- self:LoadSystem("IBIS")
-	-- self:LoadSystem("Announcer", "uf_announcer")
-	-- self:LoadSystem("Duewag_Battery")
+	--self:LoadSystem("Duewag_U2")
+	self:LoadSystem("DeadmanUF", "Duewag_Deadman")
+	--self:LoadSystem("IBIS")
+	--self:LoadSystem("Announcer", "uf_announcer")
+	self:LoadSystem("Duewag_Battery")
 	self:LoadSystem("Panel", "1973_panel")
 
 	-- self:LoadSystem("duewag_electric")

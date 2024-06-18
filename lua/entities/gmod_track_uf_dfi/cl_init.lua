@@ -29,7 +29,7 @@ end
 
 function ENT:Initialize()
 	self.DFI1 = self:CreateRT("RT1", 4096, 1024)
-	-- self.DFI2 = self:CreateRT("RT2", 4096, 1024)
+	self.DFI2 = self:CreateRT("RT2", 4096, 1024)
 	--[[render.PushRenderTarget(self.DFI1, 0, 0, 1024, 128)
 	render.Clear(0, 0, 0, 0)
 	render.PopRenderTarget()
@@ -7324,13 +7324,6 @@ function ENT:SubstituteAbbreviation(Input)
 end
 
 function ENT:RenderDisplay()
-	if not self.DrawTimer then
-		render.PushRenderTarget(self.DFI1, 0, 0, 512, 128)
-		render.Clear(0, 0, 0, 0)
-		render.PopRenderTarget()
-	end
-	if self.DrawTimer and CurTime() - self.DrawTimer < 0.1 then return end
-	self.DrawTimer = CurTime()
 	render.PushRenderTarget(self.DFI1)
 	render.Clear(0, 0, 0, 0)
 	render.OverrideAlphaWriteEnable(true, true)
@@ -7341,7 +7334,16 @@ function ENT:RenderDisplay()
 	cam.End2D()
 	render.OverrideAlphaWriteEnable(false) -- Disable alpha channel writing
 	render.PopRenderTarget()
-
+	render.PushRenderTarget(self.DFI2)
+	render.Clear(0, 0, 0, 0)
+	render.OverrideAlphaWriteEnable(true, true)
+	cam.Start2D()
+	self:Mode0()
+	self:Mode1()
+	self:Mode2()
+	cam.End2D()
+	render.OverrideAlphaWriteEnable(false) -- Disable alpha channel writing
+	render.PopRenderTarget()
 	local mat = self:GetMaterials()[3] -- Replace [1] with the index of the material you want
 	local mat2 = self:GetMaterials()[4]
 	-- Create a Material object for the material
@@ -7350,7 +7352,7 @@ function ENT:RenderDisplay()
 
 	-- Modify the texture of the material to be the render target
 	matObj:SetTexture("$basetexture", self.DFI1)
-	matObj2:SetTexture("$basetexture", self.DFI1)
+	matObj2:SetTexture("$basetexture", self.DFI2)
 end
 
 function ENT:Draw()

@@ -24,10 +24,11 @@ function ENT:Initialize()
 	self.FrontCouple = self.SectionC.FrontCouple
 	self.RearCouple = self.SectionC.RearCouple
 
-	-- self.FrontStepR = self:CreateFoldingSteps("front_r")
-	-- self.RearStepR = self:CreateFoldingSteps("front_r_back")
-	-- self.FrontStepL = self:CreateFoldingSteps("front_l")
-	-- self.RearStepL = self:CreateFoldingSteps("front_l_back")
+	--self.FrontStepR = self:CreateFoldingSteps("front_r")
+	--self.RearStepR = self:CreateFoldingSteps("front_r_back")
+	--self.FrontStepL = self:CreateFoldingSteps("front_l")
+	--self.RearStepL = self:CreateFoldingSteps("front_l_back")
+
 
 	self.ReverserInserted = false
 
@@ -140,24 +141,24 @@ function ENT:Think()
 	self.Speed = math.abs(-self:GetVelocity():Dot(self:GetAngles():Forward()) * 0.06858)
 	self:SetNW2Int("Speed", self.Speed * 100)
 
-	if self.SectionC.CoreSys.ReverserLeverState == 0 then
+	if self.SectionC.Duewag_Pt.ReverserLeverState == 0 then
 		self:SetNW2Float("ReverserAnim", 0.25)
-	elseif self.SectionC.CoreSys.ReverserLeverState == 1 then
+	elseif self.SectionC.Duewag_Pt.ReverserLeverState == 1 then
 		self:SetNW2Float("ReverserAnim", 0.35)
-	elseif self.SectionC.CoreSys.ReverserLeverState == 2 then
+	elseif self.SectionC.Duewag_Pt.ReverserLeverState == 2 then
 		self:SetNW2Float("ReverserAnim", 0.45)
-	elseif self.SectionC.CoreSys.ReverserLeverState == 3 then
+	elseif self.SectionC.Duewag_Pt.ReverserLeverState == 3 then
 		self:SetNW2Float("ReverserAnim", 0.55)
-	elseif self.SectionC.CoreSys.ReverserLeverState == -1 then
+	elseif self.SectionC.Duewag_Pt.ReverserLeverState == -1 then
 		self:SetNW2Float("ReverserAnim", 0)
 	end
 	self.Anims = {}
-	self.FrontStepR:SetPoseParameter("position", self:Animate("FrontStepR", 0, 0, 100, 1, 10, false))
+	self.FrontStepR:SetPoseParameter("position",self:Animate("FrontStepR",0,0,100,1,10,false))
 	self.FrontStepR:Activate()
 	local Phys = self.FrontStepR:GetPhysicsObject()
 	Phys:EnableCollisions()
 
-	-- print(self.SectionC.CoreSys.ReverserLeverState)
+	-- print(self.SectionC.Duewag_Pt.ReverserLeverState)
 
 end
 
@@ -165,37 +166,37 @@ function ENT:OnButtonRelease(button, ply) end
 
 function ENT:OnButtonPress(button, ply)
 
-	if self.SectionC.CoreSys.ReverserInsertedA then end
+	if self.SectionC.Duewag_Pt.ReverserInsertedA then end
 
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
-	if self.SectionC.CoreSys.ThrottleRate == 0 then
-		if button == "ThrottleUp" then self.SectionC.CoreSys.ThrottleRate = 3 end
-		if button == "ThrottleDown" then self.SectionC.CoreSys.ThrottleRate = -3 end
+	if self.SectionC.Duewag_Pt.ThrottleRate == 0 then
+		if button == "ThrottleUp" then self.SectionC.Duewag_Pt.ThrottleRate = 3 end
+		if button == "ThrottleDown" then self.SectionC.Duewag_Pt.ThrottleRate = -3 end
 	end
 
-	if self.SectionC.CoreSys.ThrottleRate == 0 then
-		if button == "ThrottleUpFast" then self.SectionC.CoreSys.ThrottleRate = 8 end
-		if button == "ThrottleDownFast" then self.SectionC.CoreSys.ThrottleRate = -8 end
-
-	end
-
-	if self.SectionC.CoreSys.ThrottleRate == 0 then
-		if button == "ThrottleUpReallyFast" then self.SectionC.CoreSys.ThrottleRate = 10 end
-		if button == "ThrottleDownReallyFast" then self.SectionC.CoreSys.ThrottleRate = -10 end
+	if self.SectionC.Duewag_Pt.ThrottleRate == 0 then
+		if button == "ThrottleUpFast" then self.SectionC.Duewag_Pt.ThrottleRate = 8 end
+		if button == "ThrottleDownFast" then self.SectionC.Duewag_Pt.ThrottleRate = -8 end
 
 	end
 
-	if self.SectionC.CoreSys.ReverserLeverState == 0 then
+	if self.SectionC.Duewag_Pt.ThrottleRate == 0 then
+		if button == "ThrottleUpReallyFast" then self.SectionC.Duewag_Pt.ThrottleRate = 10 end
+		if button == "ThrottleDownReallyFast" then self.SectionC.Duewag_Pt.ThrottleRate = -10 end
+
+	end
+
+	if self.SectionC.Duewag_Pt.ReverserLeverState == 0 then
 		if button == "ReverserInsert" then
 			if self.ReverserInserted == false then
 				self.ReverserInserted = true
-				self.CoreSys.ReverserInserted = true
+				self.Duewag_Pt.ReverserInserted = true
 				self:SetNW2Bool("ReverserInserted", true)
 				-- PrintMessage(HUD_PRINTTALK, "Reverser is in")
 
 			elseif self.ReverserInserted == true then
 				self.ReverserInserted = false
-				self.CoreSys.ReverserInserted = false
+				self.Duewag_Pt.ReverserInserted = false
 				self:SetNW2Bool("ReverserInserted", false)
 				-- PrintMessage(HUD_PRINTTALK, "Reverser is out")
 			end
@@ -203,23 +204,23 @@ function ENT:OnButtonPress(button, ply)
 	end
 
 	if button == "ReverserUpSet" then
-		if not self.SectionC.CoreSys.ThrottleEngaged == true then
-			if self.SectionC.CoreSys.ReverserInserted == true then
-				self.SectionC.CoreSys.ReverserLeverState = self.SectionC.CoreSys.ReverserLeverState + 1
-				self.SectionC.CoreSys.ReverserLeverState = math.Clamp(self.SectionC.CoreSys.ReverserLeverState, -1, 3)
-				-- self.CoreSys:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-				-- PrintMessage(HUD_PRINTTALK,self.CoreSys.ReverserLeverState)
+		if not self.SectionC.Duewag_Pt.ThrottleEngaged == true then
+			if self.SectionC.Duewag_Pt.ReverserInserted == true then
+				self.SectionC.Duewag_Pt.ReverserLeverState = self.SectionC.Duewag_Pt.ReverserLeverState + 1
+				self.SectionC.Duewag_Pt.ReverserLeverState = math.Clamp(self.SectionC.Duewag_Pt.ReverserLeverState, -1, 3)
+				-- self.Duewag_Pt:TriggerInput("ReverserLeverState",self.ReverserLeverState)
+				-- PrintMessage(HUD_PRINTTALK,self.Duewag_Pt.ReverserLeverState)
 			end
 		end
 	end
 	if button == "ReverserDownSet" then
-		if not self.SectionC.CoreSys.ThrottleEngaged == true and self.SectionC.CoreSys.ReverserInserted == true then
+		if not self.SectionC.Duewag_Pt.ThrottleEngaged == true and self.SectionC.Duewag_Pt.ReverserInserted == true then
 			-- self.ReverserLeverState = self.ReverserLeverState - 1
-			math.Clamp(self.SectionC.CoreSys.ReverserLeverState, -1, 3)
-			-- self.CoreSys:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-			self.SectionC.CoreSys.ReverserLeverState = self.SectionC.CoreSys.ReverserLeverState - 1
-			self.SectionC.CoreSys.ReverserLeverState = math.Clamp(self.SectionC.CoreSys.ReverserLeverState, -1, 3)
-			-- PrintMessage(HUD_PRINTTALK,self.CoreSys.ReverserLeverState)
+			math.Clamp(self.SectionC.Duewag_Pt.ReverserLeverState, -1, 3)
+			-- self.Duewag_Pt:TriggerInput("ReverserLeverState",self.ReverserLeverState)
+			self.SectionC.Duewag_Pt.ReverserLeverState = self.SectionC.Duewag_Pt.ReverserLeverState - 1
+			self.SectionC.Duewag_Pt.ReverserLeverState = math.Clamp(self.SectionC.Duewag_Pt.ReverserLeverState, -1, 3)
+			-- PrintMessage(HUD_PRINTTALK,self.Duewag_Pt.ReverserLeverState)
 		end
 	end
 
@@ -353,25 +354,25 @@ function ENT:CreateFoldingSteps(pos)
 		step:SetModel("models/lilly/uf/pt/step_r.mdl")
 
 		step:Spawn()
-		step.SpawnPos = self:LocalToWorld(Vector(0, 0, 0))
-		step:SetPos(self:LocalToWorld(Vector(237, 0, 0)))
-		step.SpawnAng = Angle(0, 0, 0)
+		step.SpawnPos = self:LocalToWorld(Vector(0,0,0))
+		step:SetPos(self:LocalToWorld(Vector(237,0,0)))
+		step.SpawnAng = Angle(0,0,0)
 		step:SetAngles(self:GetAngles())
 		constraint.Weld(step, self, 0, 0, 0, true, false)
 		table.insert(self.TrainEntities, step)
-		-- step:SetParent(self)
+		--step:SetParent(self)
 		return step
 	elseif pos == "front_r_back" then
 		local step = ents.Create("prop_physics")
 		step:SetModel("models/lilly/uf/pt/step_r_back.mdl")
-		step.SpawnPos = self:LocalToWorld(Vector(0, 0, 0))
-		step:SetPos(self:LocalToWorld(Vector(0, 0, 0)))
-		step.SpawnAng = Angle(0, 0, 0)
+		step.SpawnPos = self:LocalToWorld(Vector(0,0,0))
+		step:SetPos(self:LocalToWorld(Vector(0,0,0)))
+		step.SpawnAng = Angle(0,0,0)
 		step:SetAngles(self:GetAngles())
 		step:Spawn()
 		constraint.Weld(step, self, 0, 0, 0, true, false)
 		table.insert(self.TrainEntities, step)
-		-- step:SetParent(self)
+		--step:SetParent(self)
 		return step
 	elseif pos == "front_l" then
 		local step = ents.Create("prop_physics")
@@ -379,63 +380,72 @@ function ENT:CreateFoldingSteps(pos)
 		step.SpawnPos = self:LocalToWorld(Vector(667, 0, 0))
 		step:SetPos(self:LocalToWorld(Vector(430, 0, 0)))
 		step.SpawnAng = Angle(0, 180, 0)
-		step:SetAngles(self:GetAngles() + self:LocalToWorldAngles(Angle(0, 0, 180)))
+		step:SetAngles(self:GetAngles() + self:LocalToWorldAngles(Angle(0,0,180)))
 		step:Spawn()
 		constraint.Weld(step, self, 0, 0, 0, true, false)
 		table.insert(self.TrainEntities, step)
-		-- step:SetParent(self)
+		--step:SetParent(self)
 		return step
 	elseif pos == "front_l_back" then
 		local step = ents.Create("prop_physics")
 		step:SetModel("models/lilly/uf/pt/step_r_back.mdl")
 		step.SpawnPos = self:LocalToWorld(Vector(431.5, 0, 0))
 		step:SetPos(self:LocalToWorld(Vector(194, 0, 0)))
-		step:SetAngles(self:GetAngles() + self:LocalToWorldAngles(Angle(0, 0, 180)))
+		step:SetAngles(self:GetAngles() + self:LocalToWorldAngles(Angle(0,0,180)))
 		step.SpawnAng = Angle(0, 180, 0)
 		step:Spawn()
 		constraint.Weld(step, self, 0, 0, 0, true, false)
 		table.insert(self.TrainEntities, step)
-		-- step:SetParent(self)
+		--step:SetParent(self)
 		return step
 	end
 end
+
 
 --------------------------------------------------------------------------------
 -- Animation function
 --------------------------------------------------------------------------------
 function ENT:Animate(clientProp, value, min, max, speed, damping, stickyness)
-	local id = clientProp
-	if not self.Anims[id] then
-		self.Anims[id] = {}
-		self.Anims[id].val = value
-		self.Anims[id].V = 0.0
-	end
+    local id = clientProp
+    if not self.Anims[id] then
+        self.Anims[id] = {}
+        self.Anims[id].val = value
+        self.Anims[id].V = 0.0
+    end
 
-	if damping == false then
-		local dX = speed * self.DeltaTime
-		if value > self.Anims[id].val then self.Anims[id].val = self.Anims[id].val + dX end
-		if value < self.Anims[id].val then self.Anims[id].val = self.Anims[id].val - dX end
-		if math.abs(value - self.Anims[id].val) < dX then self.Anims[id].val = value end
-	else
-		-- Prepare speed limiting
-		local delta = math.abs(value - self.Anims[id].val)
-		local max_speed = 1.5 * delta / self.DeltaTime
-		local max_accel = 0.5 / self.DeltaTime
+    if damping == false then
+        local dX = speed * self.DeltaTime
+        if value > self.Anims[id].val then
+            self.Anims[id].val = self.Anims[id].val + dX
+        end
+        if value < self.Anims[id].val then
+            self.Anims[id].val = self.Anims[id].val - dX
+        end
+        if math.abs(value - self.Anims[id].val) < dX then
+            self.Anims[id].val = value
+        end
+    else
+        -- Prepare speed limiting
+        local delta = math.abs(value - self.Anims[id].val)
+        local max_speed = 1.5*delta / self.DeltaTime
+        local max_accel = 0.5 / self.DeltaTime
 
-		-- Simulate
-		local dX2dT = (speed or 128) * (value - self.Anims[id].val) - self.Anims[id].V * (damping or 8.0)
-		if dX2dT > max_accel then dX2dT = max_accel end
-		if dX2dT < -max_accel then dX2dT = -max_accel end
+        -- Simulate
+        local dX2dT = (speed or 128)*(value - self.Anims[id].val) - self.Anims[id].V * (damping or 8.0)
+        if dX2dT >  max_accel then dX2dT =  max_accel end
+        if dX2dT < -max_accel then dX2dT = -max_accel end
 
-		self.Anims[id].V = self.Anims[id].V + dX2dT * self.DeltaTime
-		if self.Anims[id].V > max_speed then self.Anims[id].V = max_speed end
-		if self.Anims[id].V < -max_speed then self.Anims[id].V = -max_speed end
+        self.Anims[id].V = self.Anims[id].V + dX2dT * self.DeltaTime
+        if self.Anims[id].V >  max_speed then self.Anims[id].V =  max_speed end
+        if self.Anims[id].V < -max_speed then self.Anims[id].V = -max_speed end
 
-		self.Anims[id].val = math.max(0, math.min(1, self.Anims[id].val + self.Anims[id].V * self.DeltaTime))
+        self.Anims[id].val = math.max(0,math.min(1,self.Anims[id].val + self.Anims[id].V * self.DeltaTime))
 
-		-- Check if value got stuck
-		if (math.abs(dX2dT) < 0.001) and stickyness and (self.DeltaTime > 0) then self.Anims[id].stuck = true end
-	end
-
-	return min + (max - min) * self.Anims[id].val
+        -- Check if value got stuck
+        if (math.abs(dX2dT) < 0.001) and stickyness and (self.DeltaTime > 0) then
+            self.Anims[id].stuck = true
+        end
+    end
+    
+    return min + (max-min)*self.Anims[id].val
 end
