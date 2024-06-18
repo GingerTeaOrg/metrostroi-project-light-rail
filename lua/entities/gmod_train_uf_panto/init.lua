@@ -36,7 +36,6 @@ function ENT:Initialize()
     self.VotageDropByTouch = 0
     self.CheckTimeout = 0
     self.NoPhysics = false
-    self.PantoType = {}
     --self:SetModelScale(0.85,1)
     self.SoundPlayed = false
 end
@@ -49,23 +48,17 @@ end
 function ENT:Think()
     self.BaseClass.Think(self)
 
-    self:SetNW2Int("AnimOffset",self.Types[4])
-    local testvector = Vector(0,0,100)
-
+    self:SetNW2Int("AnimOffset",self.Types["diamond"][4])
     -- Update timing
     self.PrevTime = self.PrevTime or CurTime()
     self.DeltaTime = (CurTime() - self.PrevTime)
     self.PrevTime = CurTime()
-    
-    local endscan = self:GetPos() + Vector(0,0,135)
 
     if self.Train.PantoUp == true then
         
 
         self:CheckVoltage(self.DeltaTime)
     end
-    --print(self:GetUp())
-    self.Debug = false
 end
 
 
@@ -79,13 +72,13 @@ function ENT:CheckContact(pos,dir)
         maxs = Vector(26,26,4),
     })
     
-    if not result.Hit then self:SetNW2Vector("PantoHeight",Vector(0,0,117)) return end --if nothing touches the panto, it can spring to maximum freely
+    if not result.Hit then self:SetNWFloat("PantoHeight",117) return end --if nothing touches the panto, it can spring to maximum freely
     self:SetNW2Bool("HitWire",result.Hit)
     local PhysObj = self:GetPhysicsObject()
     local pantoheight = PhysObj:WorldToLocalVector(result.HitPos+Vector(0,0,math.abs(pos.z))) - PhysObj:WorldToLocalVector(pos+Vector(0,0,math.abs(pos.z)))
     --print(pantoheight.z)
     --print("traceorigin",PhysObj:WorldToLocalVector(pos),"hitpos",PhysObj:WorldToLocalVector(result.HitPos),"calculated height diff",pantoheight.z)
-    self:SetNW2Vector("PantoHeight",pantoheight)
+    self:SetNWFloat("PantoHeight",pantoheight.z)
     local traceEnt = result.Entity
 
     if IsValid(traceEnt) and traceEnt:GetClass() == "player" and UF.Voltage > 40 then --if the player hits the bounding box, unalive them

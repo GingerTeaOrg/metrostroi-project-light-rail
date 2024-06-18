@@ -47,20 +47,19 @@ ENT.SyncTable = {
 
 function ENT:Initialize()
 	self:SetModel("models/lilly/mplr/ruhrbahn/b_1973/section_b.mdl")
-    self.BaseClass.Initialize(self)
-    
+	self.BaseClass.Initialize(self)
 
-	self.DriverSeat = self:CreateSeat("driver", Vector(-484, -3, 55),Angle(0,180,0))
+	self.DriverSeat = self:CreateSeat("driver", Vector(-484, -3, 55), Angle(0, 180, 0))
 
-	--self.InstructorsSeat = self:CreateSeat("instructor", Vector(395, -20, 10), Angle(0, 90, 0), "models/vehicles/prisoner_pod_inner.mdl")
+	-- self.InstructorsSeat = self:CreateSeat("instructor", Vector(395, -20, 10), Angle(0, 90, 0), "models/vehicles/prisoner_pod_inner.mdl")
 
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
 	self.DriverSeat:SetColor(Color(0, 0, 0, 0))
-	--self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
-	--self.InstructorsSeat:SetColor(Color(0, 0, 0, 0))
+	-- self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
+	-- self.InstructorsSeat:SetColor(Color(0, 0, 0, 0))
 
 	self.DoorStatesRight = {[1] = 0, [2] = 0, [3] = 0, [4] = 0, [5] = 0, [6] = 0}
-	self.DoorStatesLeft =  {[1] = 0, [2] = 0, [3] = 0, [4] = 0, [5] = 0, [6] = 0}
+	self.DoorStatesLeft = {[1] = 0, [2] = 0, [3] = 0, [4] = 0, [5] = 0, [6] = 0}
 	self.DoorsUnlocked = false
 	self.DoorsPreviouslyUnlocked = false
 
@@ -80,29 +79,29 @@ function ENT:Initialize()
 
 	self.Blinker = "Off"
 
-		-- Lights sheen
+	-- Lights sheen
 	self.Lights = {
-		[50] = {"light", Vector(406, 39, 98), Angle(90, 0, 0), Color(227, 197, 160), brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt"}, -- cab light
-		[60] = {"light", Vector(406, -39, 98), Angle(90, 0, 0), Color(227, 197, 160), brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt"}, -- cab light
-		[51] = {"light", Vector(425.464, 40, 28), Angle(0, 0, 0), Color(216, 161, 92), brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt"}, -- headlight left
-		[52] = {"light", Vector(425.464, -40, 28), Angle(0, 0, 0), Color(216, 161, 92), brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt"}, -- headlight right
-		[53] = {"light", Vector(425.464, 0, 111), Angle(0, 0, 0), Color(226, 197, 160), brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt"}, -- headlight top
-		[54] = {"light", Vector(425.464, 31.5, 24.55), Angle(0, 0, 0), Color(255, 0, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- tail light left
-		[55] = {"light", Vector(425.464, -31.5, 24.55), Angle(0, 0, 0), Color(255, 0, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- tail light right
-		[56] = {"light", Vector(426, 31.2, 31), Angle(0, 0, 0), Color(255, 102, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- brake lights
-		[57] = {"light", Vector(426, -31.2, 31), Angle(0, 0, 0), Color(255, 102, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- brake lights
-		[58] = {"light", Vector(327, 52, 74), Angle(0, 0, 0), Color(255, 100, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- indicator top left
-		[59] = {"light", Vector(327, -52, 74), Angle(0, 0, 0), Color(255, 102, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- indicator top right
-		[48] = {"light", Vector(327, 52, 68), Angle(0, 0, 0), Color(255, 100, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- indicator bottom left
-		[49] = {"light", Vector(327, -52, 68), Angle(0, 0, 0), Color(255, 102, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- indicator bottom right
-		[30] = {"light", Vector(397, 49, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front left 1
-		[31] = {"light", Vector(326.738, 49, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front left 2
-		[32] = {"light", Vector(151.5, 49, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front left 3
-		[33] = {"light", Vector(83.7, 49, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front left 4
-		[34] = {"light", Vector(396.884, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 1
-		[35] = {"light", Vector(326.89, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 2
-		[36] = {"light", Vector(152.116, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 3
-		[37] = {"light", Vector(85, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 4
+		[1] = {"light", Vector(-530, 30, 43), Angle(0, 0, 0), Color(216, 161, 92), brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt"}, -- headlight left
+		[2] = {"light", Vector(-530, -30, 43), Angle(0, 0, 0), Color(216, 161, 92), brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt"}, -- headlight right
+		[3] = {"light", Vector(-515, 0, 130), Angle(0, 0, 0), Color(226, 197, 160), brightness = 0.9, scale = 0.45, texture = "sprites/light_glow02.vmt"}, -- headlight top
+		[4] = {"light", Vector(-525, 20.9, 41), Angle(0, 0, 0), Color(255, 0, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- tail light left
+		[5] = {"light", Vector(-525, -20.9, 41), Angle(0, 0, 0), Color(255, 0, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- tail light right
+		[6] = {"light", Vector(-525, 20.9, 46), Angle(0, 0, 0), Color(255, 102, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- brake lights
+		[7] = {"light", Vector(-525, -20.9, 46), Angle(0, 0, 0), Color(255, 102, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- brake lights
+		[8] = {"light", Vector(-487, 46, 79), Angle(0, 0, 0), Color(255, 100, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- indicator top left
+		[9] = {"light", Vector(-487, -46, 79), Angle(0, 0, 0), Color(255, 102, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- indicator top right
+		[10] = {"light", Vector(-487, 46, 74), Angle(0, 0, 0), Color(255, 100, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- indicator bottom left
+		[11] = {"light", Vector(-487, -46, 74), Angle(0, 0, 0), Color(255, 102, 0), brightness = 0.9, scale = 0.1, texture = "sprites/light_glow02.vmt"}, -- indicator bottom right
+		[12] = {"light", Vector(-397, 49, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front left 1
+		[13] = {"light", Vector(-326.738, 49, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front left 2
+		[14] = {"light", Vector(-151.5, 49, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front left 3
+		[15] = {"light", Vector(-83.7, 49, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front left 4
+		[16] = {"light", Vector(-396.884, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 1
+		[17] = {"light", Vector(-326.89, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 2
+		[18] = {"light", Vector(-152.116, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 3
+		[19] = {"light", Vector(-85, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 4
+		[20] = {"light", Vector(-406, 39, 98), Angle(90, 0, 0), Color(227, 197, 160), brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt"}, -- cab light
+		[21] = {"light", Vector(-406, -39, 98), Angle(90, 0, 0), Color(227, 197, 160), brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt"} -- cab light
 	}
 
 	self.InteractionZones = {
@@ -116,8 +115,6 @@ function ENT:Initialize()
 		{ID = "Button5b", Pos = Vector(84.6012, 50, 49.5253), Radius = 16}
 	}
 
-
-
 end
 
 function ENT:Think(dT)
@@ -127,13 +124,11 @@ function ENT:Think(dT)
 	self.PrevTime = CurTime()
 	self.FrontCoupler = self.FrontCouple
 	self.RearCoupler = self.RearCouple
-	
+
 	local Panel = self.Panel
 
-
+	if self.SectionA.IBIS then self.IBIS = self.SectionA.IBIS end
 
 end
 
-function ENT:TrainSpawnerUpdate()
-	self:UpdateTextures()
-end
+function ENT:TrainSpawnerUpdate() self:UpdateTextures() end

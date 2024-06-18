@@ -5,8 +5,8 @@
 local bogeyOffset = 31
 local TRACK_GAUGE = 56 			--Distance between rails
 local TRACK_WIDTH = 2.2 		--Width of a single rail
-local TRACK_HEIGHT = 10 		--Height of a single rail
-local TRACK_CLEARANCE = 150		--Vertical space above the rails that will always be clear of world, also used as rough estimation of train height
+local TRACK_HEIGHT = 8 		--Height of a single rail
+local TRACK_CLEARANCE = 160		--Vertical space above the rails that will always be clear of world, also used as rough estimation of train height
 
 --------------------------------------------------------------------------------
 
@@ -73,12 +73,12 @@ end
 -- Only needs a rough forward vector, ent:GetAngles():Forward() suffices
 local function getTrackData(pos,forward)
 	--Trace down
-	--debugoverlay.Cross(pos,5,10,Color(255,0,255),true)
+	debugoverlay.Cross(pos,5,10,Color(255,0,255),true)
 	local tr = traceWorldOnly(pos,Vector(0,0,-500))
 	if !tr or !tr.Hit then return false end
 	
 	
-	--debugoverlay.Line(tr.StartPos,tr.HitPos,10,Color(0,255,0),true)
+	debugoverlay.Line(tr.StartPos,tr.HitPos,10,Color(0,255,0),true)
 	local updir = tr.HitNormal
 	local floor = tr.HitPos + updir * (TRACK_HEIGHT * 0.9)
 	local right = forward:Cross(updir)
@@ -88,14 +88,14 @@ local function getTrackData(pos,forward)
 	if not tr or not tr.Hit then return false end
 	
 	
-	--debugoverlay.Line(tr.StartPos,tr.HitPos,10,Color(0,255,0),true)
+	debugoverlay.Line(tr.StartPos,tr.HitPos,10,Color(0,255,0),true)
 	
 	local trackforward = tr.HitNormal:Cross(updir)
 	local trackright = trackforward:Cross(updir)
 	
 	debugoverlay.Axis(floor,trackforward:Angle(),10,5,true)
 	
-	--debugoverlay.Line(pos,pos+trackforward*30,10,Color(255,0,0),true)
+	debugoverlay.Line(pos,pos+trackforward*30,10,Color(255,0,0),true)
 	
 	--Trace right with proper right
 	local tr1 = traceWorldOnly(floor,trackright*TRACK_GAUGE)

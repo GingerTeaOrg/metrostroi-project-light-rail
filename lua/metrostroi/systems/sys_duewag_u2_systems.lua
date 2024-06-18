@@ -79,7 +79,15 @@ function TRAIN_SYSTEM:Initialize()
     self.IBISKeyATurned = false
     self.IBISKeyB = false
     self.IBISKeyBTurned = false
+    self.ibisKeyRequired = true
     
+    self.CurrentResistors = 0
+    self.PreviousResistors = 0
+    self.switchingMomentRegistered = false
+    self.SwitchingMoment = 0
+
+    self.CurrentTraction = 0
+    self.PreviousTraction = 0
     
     self.DoorStatesRight = {
         [1] = 0,
@@ -240,7 +248,7 @@ function TRAIN_SYSTEM:Think(Train)
     end
 end
 
-function TRAIN_SYSTEM:Camshaft(throttle)
+function TRAIN_SYSTEM:Camshaft()
     -- Constants
     local maxMotorCurrent = 250 -- Maximum current per motor
     local totalMotors = 2 -- Total number of motors
@@ -248,29 +256,33 @@ function TRAIN_SYSTEM:Camshaft(throttle)
     local powerSupplyVoltage = UF.Voltage -- Power supply voltage
     local numResistors = 20 -- Total number of resistors
     local maxResistorCurrent = 12.5 -- Maximum current per resistor
-    local acceleration = 1.1 -- Acceleration (m/s²)
-    local deceleration = 1.2 -- Deceleration (m/s²)
     local latency = 2 -- Latency (seconds)
-    local switching_moment = 0
     local engagedResistors = 0
     local switchingMomentRegistered = false
     local requiredResistors = 20
+
+    local prevTraction = 0
+    local currTraction = 0
     
+    self.PrevResistors = self.EngagedResistors
+
     -- Function to simulate latency
     local function simulateLatency()
-        if switchingMomentRegistered == false then
-            switchingMomentRegistered = true
-            switching_moment = CurTime()
+        if self.switchingMomentRegistered == false then
+            self.switchingMomentRegistered = true
+            self.SwitchingMoment = CurTime()
         end
         
-        if CurTime() - switching_moment > latency then return true end
+        if CurTime() - self.SwitchingMoment > latency then self.switchingMomentRegistered = false return true end
         
         return false
     end
     
     -- Function to determine the number of resistors needed for a given throttle setting and speed
     local function controlResistors()
+        if self.ThrottleState == 0 then return 20 end
         local requestedCurrent = totalMaxCurrent / math.abs(self.ThrottleState) -- Calculate requested current based on throttle setting
+        
         -- Calculate number of required resistors
         local requiredResistors = math.ceil(requestedCurrent / maxResistorCurrent) -- Calculate adjusted required resistors
         
@@ -283,60 +295,45 @@ function TRAIN_SYSTEM:Camshaft(throttle)
         -- Ensure the number of resistors is within the available range
         requiredResistors = math.max(0, math.min(numResistors, requiredResistors))
         requiredResistors = requiredResistors + speedFactor
-        
+
         return requiredResistors
     end
-    
-    local function brakeResistors()
-        local requestedCurrent = totalMaxCurrent / math.abs(self.ThrottleState) -- Calculate requested current based on throttle setting
-        -- Calculate number of required resistors
-        local requiredResistors = math.ceil(requestedCurrent / maxResistorCurrent) -- Calculate adjusted required resistors
-        
-        if (self.Speed / 8) > 1 then
-            speedFactor = math.ceil(self.Speed / 8)
-        else
-            speedFactor = 0
-        end
-        
-        -- Ensure the number of resistors is within the available range
-        requiredResistors = math.max(0, math.min(numResistors, requiredResistors))
-        requiredResistors = requiredResistors
-        
-        return requiredResistors
-    end
-    
-    controlResistors()
     
     -- Simulate latency
-    if simulateLatency() then
-        -- Calculate the number of resistors based on throttle and speed
-        engagedResistors = controlResistors()
-    else
-        engagedResistors = engagedResistors
+    if self.Traction ~= self.PreviousTraction then 
+        if simulateLatency() then
+            -- Calculate the number of resistors based on throttle and speed
+            self.EngagedResistors = controlResistors()
+            self.PreviousTraction = self.Traction
+        end
     end
     
     self.EngagedResistors = engagedResistors
-    
-    return engagedResistors * UF.convertToSourceForce(-7500)
+    self.CurrentResistors = self.EngagedResistors
+
+    return self.EngagedResistors * UF.convertToSourceForce(-7500)
 end
 
 function TRAIN_SYSTEM:U2Engine()
     -- 250A per motor, 2x250A, 600V, 20 resistors, 12.5A per resistor
     local prevResistors
     -- camshaft only moves when you're actually in gear
+    local prevGear = prevGear or false
     local inGear = (self.ThrottleLeverStateA ~= 0 and self.ThrottleLeverStateA ~= 1) or (self.ThrottleLeverStateB ~= 0 and self.ThrottleLeverStateB ~= 1) or (self.Train:ReadTrainWire(3) > 0 or self.Train:ReadTrainWire(4) > 0)
-    
-    if prevResistors ~= self.EngagedResistors and inGear then
+    local isMoving = self.Speed > 3
+    local isTractionApplied = self.Traction ~= 0
+
+    if prevResistors ~= self.EngagedResistors and inGear and isMoving and isTractionApplied then
         self.CamshaftMoved = true
         prevResistors = self.EngagedResistors
-    elseif prevResistors == self.EngagedResistors then
+    elseif prevResistors == self.EngagedResistors and inGear then
         self.CamshaftMoved = false
     end
-    
+    -- ampmetre fakery for until we've got a real electrical sim
     if math.abs(self.Train.FrontBogey.Acceleration) > 0 then
-        self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration, 1)
+        self.Amps = 250000 / 600 * self.Traction * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration, 1)
     elseif self.Train.FrontBogey.Acceleration < 0 then
-        self.Amps = 300000 / 600 * self.Percentage * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration * -1, 1)
+        self.Amps = 250000 / 600 * self.Traction * 0.0000001 * math.Round(self.Train.FrontBogey.Acceleration * -1, 1)
     end
     
     self.Train:SetNW2Bool("CamshaftMoved", self.CamshaftMoved)
@@ -344,56 +341,44 @@ function TRAIN_SYSTEM:U2Engine()
 end
 
 function TRAIN_SYSTEM:MUHandler()
+    
+    local VEStates = { 
+        [-1] = true,
+        [3] = true,
+    }
+    
+    self.VZ = self.VZ or self.Train:ReadTrainWire(6) > 0 and (self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 0) or self.Train:ReadTrainWire(6) > 1
+    self.VE = self.VE or not self.VZ or (VEStates[self.ReverserLeverStateA] or VEStates[self.ReverserLeverStateB])
     ---------------------------------------------------------------------------------------------------------
-    if self.ReverserLeverStateA == -1 and self.ReverserLeverStateB == 0 then
-        self.ReverserState = -1
-        self.VE = true
-        self.VZ = false
-    elseif self.ReverserLeverStateA == 1 and self.ReverserLeverStateB == 0 then
-        self.ReverserState = 0
-        self.BatteryStartUnlock = true
-        self.VE = false
-        self.VZ = false
-    elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 1 then
-        -- self.Train:WriteTrainWire(6,0)
-        self.ReverserState = 0
-        self.BatteryStartUnlock = true
-        self.VE = false
-        self.VZ = false
-    elseif self.ReverserLeverStateA == 2 and self.ReverserLeverStateB == 0 then
-        self.VZ = true
-        self.VE = false
-        self.ReverserState = 1
-    elseif self.ReverserLeverStateA == 3 and self.ReverserLeverStateB == 0 then
-        -- We're at position 3 of the reverser forwards, that means we don't talk to coupled units.
-        self.VZ = false
-        self.VE = true
-        self.ReverserState = 1
-    elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == -1 then
-        self.ReverserState = 1
-        self.VE = true
-        self.VZ = false
-    elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 0 then
-        self.ReverserState = 0
-        self.BatteryStartUnlock = false
-        self.VE = self.VE or false
-        self.VZ = self.VZ or false
-    elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 2 then
-        self.VZ = true
-        self.VE = false
-        self.ReverserState = 1
-        self.BatteryStartUnlock = false
-    elseif self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 3 then
-        -- We're at position 3 of the reverser forwards, that means we don't talk to coupled units.
-        self.VZ = false
-        self.VE = true
-        self.ReverserState = -1
-        self.BatteryStartUnlock = false
+    if self.ReverserLeverStateB == 0 then
+        if self.ReverserLeverStateA == -1 then
+            self.ReverserState = -1
+        elseif self.ReverserLeverStateA == 1 or self.ReverserLeverStateA == 0 then
+            self.ReverserState = 0
+            self.BatteryStartUnlock = true
+        elseif self.ReverserLeverStateA == 2 or self.ReverserLeverStateA == 3 then
+            self.ReverserState = 1
+        end
+    elseif self.ReverserLeverStateA == 0 then
+        if self.ReverserLeverStateB == 1 then
+            self.ReverserState = 0
+            self.BatteryStartUnlock = true
+        elseif self.ReverserLeverStateB == -1 or self.ReverserLeverStateB == 2 then
+            self.ReverserState = 1
+            self.BatteryStartUnlock = false
+        elseif self.ReverserLeverStateB == 3 then
+            self.ReverserState = -1
+            self.BatteryStartUnlock = false
+        elseif self.ReverserLeverStateB == 0 then
+            self.ReverserState = 0
+            self.BatteryStartUnlock = false
+        end
     end
+    
     
     self.Train:WriteTrainWire(3, self.ReverserLeverStateA == 2 and self.ReverserInsertedA and 1 or self.ReverserLeverStateB == 2 and self.ReverserInsertedB and 0 or 0)
     self.Train:WriteTrainWire(4, self.ReverserLeverStateA == 2 and self.ReverserInsertedA and 0 or self.ReverserLeverStateB == 2 and self.ReverserInsertedB and 1 or 0)
-    self.Train:WriteTrainWire(6, self.VZ and (self.ReverserLeverStateA == 2 or self.ReverserLeverStateB == 2) and 1 or 0)
+    self.Train:WriteTrainWire(6, (self.ReverserLeverStateA == 2 or self.ReverserLeverStateB == 2) and 1 or 0)
     
     ---------------------------------------------------------------------------------------
     -- if the emergency brake is pulled high
@@ -457,9 +442,9 @@ function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
         local DoorStatesPerCar = right and WagonList[i].CoreSys.DoorStatesRight or left and WagonList[i].CoreSys.DoorStatesLeft or {}
         -- Exempt the door1 button, because that's not a passenger transfer. That's for special drivers' issues. 
         -- The doors right by the cab can be unlocked without having to unblock all doors and risk passengers.
-
+        
         self.DoorsClosed = (DoorStatesPerCar[1] == 0 and DoorStatesPerCar[2] == 0 and DoorStatesPerCar[3] == 0 and
-                               DoorStatesPerCar[4] == 0)
+        DoorStatesPerCar[4] == 0)
     end
     self.ArmDoorsClosedAlarm = self.DoorsClosed and previousUnlock and not door1
     previousUnlock = not self.DoorsClosed
@@ -487,7 +472,7 @@ function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
             self.DoorCloseMoments[4] = math.random(1, 4)
             self.DoorCloseMomentsCaptured = true
         end
-
+        
         if right then
             -- pick doors to be unlocked
             if not self.RandomnessCalulated then
@@ -495,14 +480,14 @@ function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
                     if i <= 6 and v < 0 then
                         -- we recycle the door randomness value as a general signal for requesting a door to open, and if a stop request originated from that door, always open it
                         self.DoorRandomness[i] =
-                            self.StopRequestRight[i] and 3 or math.random(0, 4)
+                        self.StopRequestRight[i] and 3 or math.random(0, 4)
                         -- print(self.DoorRandomness[i], "doorrandom", i)
                         self.RandomnessCalculated = true
                         break
                     end
                 end
             end
-
+            
             -- increment the door states
             for i, v in ipairs(self.DoorRandomness) do
                 if v == 3 and self.DoorStatesRight[i] < 1 and not IRGates[i] then
@@ -523,7 +508,7 @@ function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
                     end
                 end
             end
-
+            
             for i, v in ipairs(self.DoorRandomness) do
                 if v == 3 and self.DoorStatesLeft[i] < 1 and not IRGates[i+4] then
                     math.Clamp(self.DoorStatesLeft[i], 0, 1)
@@ -537,24 +522,24 @@ function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
             self.DoorLockSignalMoment = CurTime()
         end
         self.DoorCloseMomentsCaptured = false -- reset the flag for the randomness of closing the doors
-
+        
         if right then
             for i, v in ipairs(self.DoorStatesRight) do
                 if CurTime() > self.DoorLockSignalMoment +
-                    self.DoorCloseMoments[i] and not irStatus[i] and v > 0 then
+                self.DoorCloseMoments[i] and not irStatus[i] and v > 0 then
                     self.DoorStatesRight[i] =
-                        self.DoorStatesRight[i] - 0.20 * dT
+                    self.DoorStatesRight[i] - 0.20 * dT
                     self.DoorStatesRight[i] = math.Clamp(
-                                                  self.DoorStatesRight[i], 0, 1)
+                    self.DoorStatesRight[i], 0, 1)
                 end
             end
         elseif left then
             for i, v in ipairs(self.DoorStatesLeft) do
                 if CurTime() > self.DoorLockSignalMoment +
-                    self.DoorCloseMoments[i] and not irStatus[i] and v > 0 then
+                self.DoorCloseMoments[i] and not irStatus[i] and v > 0 then
                     self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.20 * dT
                     self.DoorStatesLeft[i] =
-                        math.Clamp(self.DoorStatesLeft[i], 0, 1)
+                    math.Clamp(self.DoorStatesLeft[i], 0, 1)
                 end
             end
         end
@@ -567,23 +552,23 @@ function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
                 if v == 3 and self.DoorStatesRight[i] < 1 then
                     if self.DoorOpenMoments[i] == 0 then
                         self.DoorStatesRight[i] =
-                            self.DoorStatesRight[i] + 0.2 * dT
+                        self.DoorStatesRight[i] + 0.2 * dT
                         self.DoorStatesRight[i] = math.Clamp(
-                                                      self.DoorStatesRight[i],
-                                                      0, 1)
+                        self.DoorStatesRight[i],
+                        0, 1)
                     end
                 elseif self.DoorStatesRight[i] > 0 and self.DoorOpenMoments[i] <
-                    CurTime() - 5 then
+                CurTime() - 5 then
                     -- If five seconds have passed, close the door
                     if not irStatus[i] then
                         self.DoorStatesRight[i] =
-                            self.DoorStatesRight[i] - 0.2 * dT
+                        self.DoorStatesRight[i] - 0.2 * dT
                         self.DoorStatesRight[i] = math.Clamp(
-                                                      self.DoorStatesRight[i],
-                                                      0, 1)
+                        self.DoorStatesRight[i],
+                        0, 1)
                     end
                 end
-
+                
                 if self.DoorStatesRight[i] == 1 and not opened then
                     self.DoorOpenMoments[i] = CurTime() -- Record the moment the door opened
                     opened = true
@@ -602,17 +587,17 @@ function TRAIN_SYSTEM:DoorHandler(unlock, left, right, door1, idleunlock, dT)
                     elseif self.DoorOpenMoments[i] == 0 then
                         self.DoorStatesLeft[i] = self.DoorStatesLeft[i] + 0.1
                         self.DoorStatesLeft[i] = math.Clamp(
-                                                     self.DoorStatesLeft[i], 0,
-                                                     1)
+                        self.DoorStatesLeft[i], 0,
+                        1)
                     end
                 elseif self.DoorStatesLeft[i] > 0 and CurTime() -
-                    self.DoorOpenMoments[i] > 5 and not irStatus[i] then
+                self.DoorOpenMoments[i] > 5 and not irStatus[i] then
                     self.DoorStatesLeft[i] = self.DoorStatesLeft[i] - 0.1
                     self.DoorStatesLeft[i] =
-                        math.Clamp(self.DoorStatesLeft[i], 0, 1)
+                    math.Clamp(self.DoorStatesLeft[i], 0, 1)
                 end
             end
-
+            
             if self.DoorStatesLeft[i] == 1 and not opened then
                 self.DoorOpenMoments[i] = CurTime()
                 opened = true
