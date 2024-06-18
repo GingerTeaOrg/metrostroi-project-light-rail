@@ -21,8 +21,8 @@ ENT.SyncTable = {
 	"MirrorRight",
 	"SwitchLeft",
 	"SwitchRight",
-	"BreakerOn",
-	"BreakerOff",
+	"Battery",
+	"BatteryDisable",
 	"PantographOn",
 	"PantographOff",
 	"Headlights",
@@ -40,67 +40,69 @@ ENT.SyncTable = {
 	"WindowWasherSet",
 	"EmergencyBrakeDisable"
 }
-
+ENT.InteractionZones = {
+	{ID = "DoorButton3L", Pos = Vector(328.8, 51, 74), Radius = 16},
+	{ID = "DoorButton4L", Pos = Vector(328.8, 51.3, 58), Radius = 16},
+	{ID = "DoorButton5L", Pos = Vector(261, 51, 74), Radius = 16},
+	{ID = "DoorButton6L", Pos = Vector(261, 51.3, 58), Radius = 16},
+	{ID = "DoorButton7L", Pos = Vector(144.5, 51, 74), Radius = 16},
+	{ID = "DoorButton8L", Pos = Vector(144.5, 51.3, 58), Radius = 16},
+	{ID = "Button6b", Pos = Vector(152.116, 50, 49.5253), Radius = 16},
+	{ID = "Button5b", Pos = Vector(84.6012, 50, 49.5253), Radius = 16}
+}
 function ENT:Initialize()
 	self:SetModel("models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl")
 	self.BaseClass.Initialize(self)
-	self.DriverSeat = self:CreateSeat("driver", Vector(484, 3, 55),Angle(0,0,0))
-	
-	--self.InstructorsSeat = self:CreateSeat("instructor", Vector(395, -20, 10), Angle(0, 90, 0), "models/vehicles/prisoner_pod_inner.mdl")
-	
+	self.DriverSeat = self:CreateSeat("driver", Vector(484, 3, 55), Angle(0, 0, 0))
+
+	-- self.InstructorsSeat = self:CreateSeat("instructor", Vector(395, -20, 10), Angle(0, 90, 0), "models/vehicles/prisoner_pod_inner.mdl")
+
 	self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
 	self.DriverSeat:SetColor(Color(0, 0, 0, 0))
-	--self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
-	--self.InstructorsSeat:SetColor(Color(0, 0, 0, 0))
-	
+	-- self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
+	-- self.InstructorsSeat:SetColor(Color(0, 0, 0, 0))
+
 	self.DoorStatesRight = {[1] = 0, [2] = 0, [3] = 0, [4] = 0, [5] = 0, [6] = 0}
-	self.DoorStatesLeft =  {[1] = 0, [2] = 0, [3] = 0, [4] = 0, [5] = 0, [6] = 0}
+	self.DoorStatesLeft = {[1] = 0, [2] = 0, [3] = 0, [4] = 0, [5] = 0, [6] = 0}
 	self.DoorsUnlocked = false
 	self.DoorsPreviouslyUnlocked = false
-	
+
 	self.DoorCloseMoments = {[1] = 0, [2] = 0, [3] = 0, [4] = 0, [5] = 0, [6] = 0}
 	self.DoorCloseMomentsCaptured = false
-	
+
 	self.Speed = 0
 	self.ThrottleState = 0
 	self.ThrottleEngaged = false
-	self.ReverserState = 0
-	self.ReverserLeverState = 0
-	self.ReverserEnaged = 0
-	self.BrakePressure = 0
-	self.ThrottleRate = 0
-	
+
 	self.Door1 = false
-	
+
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF(Vector(390, 0, 4), Angle(0, 0, 0), true, "b_motor","a")
-	self.MiddleBogey = self:CreateBogeyUF(Vector(0, 0, 4), Angle(0, 0, 0), false, "b_joint","a")
-	
-	
+	self.FrontBogey = self:CreateBogeyUF(Vector(390, 0, 4), Angle(0, 0, 0), true, "b_motor", "a")
+	self.MiddleBogey = self:CreateBogeyUF(Vector(0, 0, 4), Angle(0, 0, 0), false, "b_joint", "a")
+
 	-- Create couples
 	self.FrontCouple = self:CreateCustomCoupler(Vector(475, 0, 30), Angle(0, 180, 0), true, "b", "a")
 	self.FrontCoupler = self.FrontCouple
-	self.SectionB = self:CreateSectionB(Vector(-780, 0, 0),Angle(0,0,0),"gmod_subway_mplr_bwagen1973_section_b")
+	self.SectionB = self:CreateSectionB(Vector(-780, 0, 0), Angle(0, 0, 0), "gmod_subway_mplr_bwagen1973_section_b")
 	self.RearCouple = self:CreateCustomCoupler(Vector(-475, 0, 30), Angle(0, 0, 0), true, "b", "b")
 	self.RearCoupler = self.RearCouple
-	self.RearBogey = self:CreateBogeyUF(Vector(-390, 0, 4), Angle(0, 0, 0), true, "b_motor","b")
+	self.RearBogey = self:CreateBogeyUF(Vector(-390, 0, 4), Angle(0, 0, 0), true, "b_motor", "b")
 	self.Panto = self:CreatePanto(Vector(36.5, 0, 135), Angle(0, 180, 0), "einholm")
 	self.PantoUp = false
 
 	self.FrontBogey:SetNWInt("MotorSoundType", 0)
 	self.MiddleBogey:SetNWInt("MotorSoundType", 0)
 	self.RearBogey:SetNWInt("MotorSoundType", 0)
-	
-	
+
 	self.Blinker = "Off"
-	
+
 	self.TrainWireCrossConnections = {
 		[4] = 3, -- Reverser F<->B
 		[21] = 20, -- blinker
 		[13] = 14,
 		[31] = 32
 	}
-	
+
 	-- Lights sheen
 	self.Lights = {
 		[1] = {"light", Vector(530, 30, 43), Angle(0, 0, 0), Color(216, 161, 92), brightness = 0.6, scale = 1.5, texture = "sprites/light_glow02.vmt"}, -- headlight left
@@ -123,9 +125,9 @@ function ENT:Initialize()
 		[18] = {"light", Vector(152.116, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 3
 		[19] = {"light", Vector(85, -51, 49.7), Angle(0, 0, 0), Color(9, 142, 0), brightness = 1, scale = 0.025, texture = "sprites/light_glow02.vmt"}, -- door button front right 4
 		[20] = {"light", Vector(406, 39, 98), Angle(90, 0, 0), Color(227, 197, 160), brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt"}, -- cab light
-		[21] = {"light", Vector(406, -39, 98), Angle(90, 0, 0), Color(227, 197, 160), brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt"}, -- cab light
+		[21] = {"light", Vector(406, -39, 98), Angle(90, 0, 0), Color(227, 197, 160), brightness = 0.6, scale = 0.5, texture = "sprites/light_glow02.vmt"} -- cab light
 	}
-	
+
 	-- Initialize key mapping
 	self.KeyMap = {
 		[KEY_A] = "ThrottleUp",
@@ -136,7 +138,7 @@ function ENT:Initialize()
 		[KEY_W] = "ReverserUpSet",
 		[KEY_S] = "ReverserDownSet",
 		[KEY_P] = "PantographOnSet",
-		[KEY_O] = "DoorsUnlockSet",
+		[KEY_O] = "DoorsUnlockToggle",
 		[KEY_I] = "DoorsLockSet",
 		[KEY_K] = "DoorsCloseConfirmSet",
 		[KEY_Z] = "WarningAnnouncementSet",
@@ -155,8 +157,8 @@ function ENT:Initialize()
 		[KEY_8] = "Throttle80Pct",
 		[KEY_9] = "Throttle90Pct",
 		[KEY_0] = "IgnitionKeyOn",
-		[KEY_PERIOD] = "BlinkerRightSet",
-		[KEY_COMMA] = "BlinkerLeftSet",
+		[KEY_PERIOD] = "BlinkerRightToggle",
+		[KEY_COMMA] = "BlinkerLeftToggle",
 		[KEY_PAD_MINUS] = "IBISkeyTurnSet",
 		[KEY_LSHIFT] = {
 			[KEY_0] = "IgnitionKeyToggle",
@@ -180,7 +182,7 @@ function ENT:Initialize()
 			[KEY_8] = "Throttle80-Pct",
 			[KEY_9] = "Throttle90-Pct",
 			[KEY_P] = "PantographOffSet",
-			[KEY_MINUS] = "RemoveIBISKey",
+			[KEY_MINUS] = "RemoveIBISKey"
 		},
 		[KEY_LALT] = {
 			[KEY_PAD_1] = "Number1Set",
@@ -201,10 +203,10 @@ function ENT:Initialize()
 			[KEY_V] = "PassengerLightsSet",
 			[KEY_D] = "EmergencyBrakeSet",
 			[KEY_N] = "Parrallel",
-			[KEY_0] = "IgnitionKeyOff",
+			[KEY_0] = "IgnitionKeyOff"
 		}
 	}
-	
+
 	self.InteractionZones = {
 		{ID = "Button1a", Pos = Vector(396.884, -51, 50.5), Radius = 16},
 		{ID = "Button2a", Pos = Vector(326.89, -50, 49.5253), Radius = 16},
@@ -225,97 +227,113 @@ function ENT:Think(dT)
 	self.FrontCoupler = self.FrontCouple
 	self.RearCoupler = self.RearCouple
 	self:Traction()
+
 end
 
+function ENT:ToggleButton(button)
+
+	button2 = string.gsub(button, "Toggle", "")
+	print(button2)
+	if self.Panel[button2] < 1 then
+		self.Panel[button2] = 1
+	elseif self.Panel[button2] > 0 then
+		self.Panel[button2] = 0
+	end
+
+end
+
+function ENT:SetButton(button) self.Panel[button] = 1 end
+function ENT:UnsetButton(button) self.Panel[button] = 0 end
 function ENT:OnButtonPress(button)
+
+	local toggle = (string.find(button, "Toggle", 1)) ~= nil
+
+	if button and toggle then
+		self:ToggleButton(button)
+	else
+		self:SetButton(button)
+	end
+
 	local sys = self.CoreSys
-	if button == "IgnitionKeyOn" then
-		sys:IgnitionKeyOnA()
-	end
-	if button == "IgnitionKeyOff" then
-		sys:IgnitionKeyOffA()
-	end
-	if button == "IgnitionKeyToggle" then
-		sys:IgnitionKeyInOutA()
-	end
-	if button == "ReverserUpSet" then
-		self.CoreSys:ReverserUpA()
-	end
-	if button == "ReverserDownSet" then
-		self.CoreSys:ReverserDownA()
-	end
-	if self.CoreSys.ThrottleRateA == 0 and self.CoreSys.ReverserA ~= 1 then
-		if button == "ThrottleUp" then self.CoreSys.ThrottleRateA = 3 end
-		if button == "ThrottleDown" then self.CoreSys.ThrottleRateA = -3 end
-		if button == "ThrottleUpFast" then self.CoreSys.ThrottleRateA = 8 end
-		if button == "ThrottleDownFast" then self.CoreSys.ThrottleRateA = -8 end
+	local panel = self.Panel
+	if button == "IgnitionKeyOn" then sys:IgnitionKeyOnA() end
+	if button == "IgnitionKeyOff" then sys:IgnitionKeyOffA() end
+	if button == "IgnitionKeyToggle" then sys:IgnitionKeyInOutA() end
+	if button == "ReverserUpSet" then sys:ReverserUpA() end
+	if button == "ReverserDownSet" then sys:ReverserDownA() end
+	if sys.ThrottleRateA == 0 and sys.ReverserA ~= 1 then
+		if button == "ThrottleUp" then sys.ThrottleRateA = 3 end
+		if button == "ThrottleDown" then sys.ThrottleRateA = -3 end
+		if button == "ThrottleUpFast" then sys.ThrottleRateA = 8 end
+		if button == "ThrottleDownFast" then sys.ThrottleRateA = -8 end
 	end
 
 	if button == "ThrottleZero" then
-		self.CoreSys.ThrottleRateA = 0
-		self.CoreSys.ThrottleStateA = 0
+		sys.ThrottleRateA = 0
+		sys.ThrottleStateA = 0
 	end
 
-	if button == "BatterySet" then
-		self.CoreSys:BatteryOn()
+	if button == "BatterySet" then sys:BatteryOn() end
+	if button == "BatteryDisableSet" then sys:BatteryOff() end
+	if button == "StepsHighSet" then sys:StepsParameters("high") end
+	if button == "StepsLowSet" then sys:StepsParameters("low") end
+	if button == "StepsLowestSet" then sys:StepsParameters("lowest") end
+
+	if button == "BlinkerLeftToggle" and sys.BlinkerState == sys.BlinkerStates["Off"] then
+		sys.BlinkerState = sys.BlinkerStates["Left"]
+	elseif button == "BlinkerLeftToggle" and sys.BlinkerState == sys.BlinkerStates["Right"] then
+		sys.BlinkerState = sys.BlinkerStates["Off"]
+	elseif button == "BlinkerRightToggle" and sys.BlinkerState == sys.BlinkerStates["Off"] then
+		sys.BlinkerState = sys.BlinkerStates["Right"]
+	elseif button == "BlinkerRightToggle" and sys.BlinkerState == sys.BlinkerStates["Right"] then
+		sys.BlinkerState = sys.BlinkerStates["Off"]
+	elseif button == "WarnBlinkToggle" then
+		sys.BlinkerState = sys.BlinkerStates["Hazard"]
+		panel.BlinkerLeft = 0
+		panel.BlinkerRight = 0
 	end
-	if button == "BatteryDisableSet" then
-		self.CoreSys:BatteryOff()
+
+	if button == "DoorUnblockToggle" then end
+
+	if button == "SwitchLeftToggle" then
+		if self.IBIS.Override == "left" then
+			self.IBIS:OverrideSwitching(nil)
+		else
+			self.IBIS.Override = "left"
+		end
 	end
-	if button == "PantographOnSet" then
-		self.Panel.PantographOn = 1
+	if button == "SwitchRightToggle" then
+		if self.IBIS.Override == "right" then
+			self.IBIS:OverrideSwitching(nil)
+		else
+			self.IBIS.Override = "right"
+		end
 	end
-	if button == "PantographOffSet" then
-		self.Panel.PantographOff = 1
-	end
-	if button == "StepsHighToggle" then
-		sys:StepsParameters("high")
-	end
-	if button == "StepsLowToggle" then
-		sys:StepsParameters("low")
-	end
-	if button == "StepsLowestToggle" then
-		sys:StepsParameters("lowest")
-	end
-	if button == "BellSet" then
-		self.Panel.Bell = 1
-	end
-	if button == "HornSet" then
-		self.Panel.Horn = 1
-	end
+
 end
 function ENT:OnButtonRelease(button)
-	if button == "ThrottleUp" or button == "ThrottleDown" or button == "ThrottleUpFast" or button == "ThrottleDownFast" then
-		self.CoreSys.ThrottleRateA = 0
-	end
-	if button == "PantographOnSet" then
-		self.Panel.PantographOn = 0
-	end
-	if button == "PantographOffSet" then
-		self.Panel.PantographOff = 0
-	end
-	if button == "BellSet" then
-		self.Panel.Bell = 0
-	end
-	if button == "HornSet" then
-		self.Panel.Horn = 0
-	end
+	if button == "ThrottleUp" or button == "ThrottleDown" or button == "ThrottleUpFast" or button == "ThrottleDownFast" then self.CoreSys.ThrottleRateA = 0 end
+	if button == "PantographOnSet" then self.Panel.PantographOn = 0 end
+	if button == "PantographOffSet" then self.Panel.PantographOff = 0 end
+	if button == "BellSet" then self.Panel.Bell = 0 end
+	if button == "HornSet" then self.Panel.Horn = 0 end
+
 end
 
 function ENT:CoupledUncoupled()
-	
+
 	self.AisCoupled = self.FrontCoupler.CoupledEnt ~= nil
 	self.BisCoupled = self.RearCoupler.CoupledEnt ~= nil
 end
 
 function ENT:TrainSpawnerUpdate()
-	
+
 	local tex = "Def_B_1973"
 	self.MiddleBogey.Texture = self:GetNW2String("Texture")
 	self:UpdateTextures()
 	self.MiddleBogey:UpdateTextures()
 	if IsValid(self.SectionB) then self.SectionB:TrainSpawnerUpdate() end
-	
+
 	-- self.MiddleBogey:UpdateTextures()
 	-- self.MiddleBogey:UpdateTextures()
 	-- self:UpdateLampsColors()
@@ -339,7 +357,7 @@ function ENT:Traction()
 	local braking = traction < 1
 
 	local chopper = self.Chopper.ChopperOutput
-	
+
 	self.FrontBogey.MotorForce = traction > 0 and 126688.07175 or -138363.606
 	self.RearBogey.MotorForce = traction > 0 and 126688.07175 or -138363.606
 
@@ -352,5 +370,5 @@ function ENT:Traction()
 	fb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
 	mb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
 	rb.BrakeCylinderPressure = (speed < 8 and braking) and 5 or 0
-	--print(chopper)
+	-- print(chopper)
 end

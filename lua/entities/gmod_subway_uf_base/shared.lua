@@ -398,7 +398,7 @@ function ENT:LoadSystem(a,b,...)
 	end
 
 	if not Metrostroi.Systems[name] then ErrorNoHalt("No system defined: "..name) return end
-	if self.Systems[sys_name] then ErrorNoHalt("System already defined: "..sys_name)  return end
+	if self.Systems[sys_name] and self[sys_name] then ErrorNoHalt("System already defined: "..sys_name)  return end
 
 	local no_acceleration = Metrostroi.BaseSystems[name].DontAccelerateSimulation
 	local run_everywhere = Metrostroi.BaseSystems[name].RunEverywhere
@@ -486,10 +486,4 @@ ENT.SubwayTrain = {
 	Type = "Base",
 	Name = "Base",
 	WagType = 2,
-	ALS = {
-		HaveAutostop = false,
-		TwoToSix = true,
-		RSAs325Hz = true,
-		Aproove0As325Hz = false,
-	},
 }

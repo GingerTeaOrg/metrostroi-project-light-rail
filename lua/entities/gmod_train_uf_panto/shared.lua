@@ -12,7 +12,7 @@ ENT.AdminSpawnable  = false
 ENT.Types = {
     ["diamond"] = {
         "models/lilly/uf/panto_diamond.mdl",
-        Vector(0,0.0,-7),Angle(0,0,0),-2,
+        Vector(0,0.0,-7),Angle(0,0,0),9,
     },
     ["einholm"] = {
         "models/lilly/uf/panto_einholm.mdl",

@@ -563,13 +563,13 @@ local function isValidTrainDriver(ply)
     local train = util.TraceLine({
         start = LocalPlayer():GetPos(),
         endpos = LocalPlayer():GetPos() - LocalPlayer():GetAngles():Up() * 100,
-        filter = function( ent ) if ENT.ButtonMapMPLR ~= nil then return true end end
+        filter = function( ent ) if ent.ButtonMapMPLR ~= nil then return true end end
     }).Entity
     if not IsValid(train) then
         train = util.TraceLine({
             start = LocalPlayer():EyePos(),
             endpos = LocalPlayer():EyePos() + LocalPlayer():EyeAngles():Forward() * 300,
-            filter = function( ent ) if ENT.ButtonMapMPLR ~= nil then return true end end
+            filter = function( ent ) if ent.ButtonMapMPLR ~= nil then return true end end
         }).Entity
     end
     return IsValid(train) and train, true
@@ -2019,7 +2019,7 @@ end
 --------------------------------------------------------------------------------
 -- Look into mirrors hook
 --------------------------------------------------------------------------------
---[[hook.Add("InputMouseApply", "mplr_TrainView", function(cmd,x,y,ang)
+hook.Add("InputMouseApply", "mplr_TrainView", function(cmd,x,y,ang)
     local seat = LocalPlayer():GetVehicle()
     if (not seat) or (not seat:IsValid()) then
         return
@@ -2034,10 +2034,10 @@ end
     target_ang:RotateAroundAxis(seat:GetAngles():Right(),ang.r)
     train.CamAnglesComp = target_ang
     train.CamAng = ang
-end)]]
+end)
 
 hook.Add("CalcVehicleView", "mplr_TrainView", function(seat,ply,tbl)
-    print("running")
+    --print("running")
     local train = ply.InMetrostroiTrain
     if not IsValid(train) then
         return

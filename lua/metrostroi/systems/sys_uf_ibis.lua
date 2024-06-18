@@ -379,8 +379,9 @@ function TRAIN_SYSTEM:IBISScreen(Train)
 end
 
 function TRAIN_SYSTEM:UpdateState()
-	local batteryOn = self.Train.BatteryOn == true or self.Train:ReadTrainWire(6) > 0
+	local batteryOn = self.Train.BatteryOn == true or self.Train.CoreSys.CircuitBreakerOn == true or self.Train:ReadTrainWire(6) > 0 or false
 	local ibisKey = self.Train:GetNW2Bool("TurnIBISKey", false)
+	local ibisKeyRequired = self.Train.CoreSys.ibisKeyRequired
 
 	-- Function to reset state when device is off
 	local function resetState()
@@ -447,8 +448,8 @@ function TRAIN_SYSTEM:UpdateState()
 
 	if self.Menu > 0 then self:ReadDataset() end
 
-	self.PowerOn = (batteryOn and ibisKey) and 1 or 0
-	if batteryOn and ibisKey then
+	self.PowerOn = (batteryOn and ibisKey and ibisKeyRequired) or batteryOn and 1 or 0
+	if (batteryOn and ibisKey and ibisKeyRequired) or batteryOn then
 		self.Train:SetNW2Bool("IBISPowerOn", true)
 		self.PowerOffMoment = 0
 		if not self.PowerOnRegistered then -- register timer variable for simulated bootup
@@ -465,7 +466,7 @@ function TRAIN_SYSTEM:UpdateState()
 				self.Menu = 4
 			end
 		end
-	elseif batteryOn and not ibisKey then
+	elseif (batteryOn and not ibisKey and ibisKeyRequired) or not batteryOn then
 		resetState()
 	end
 
@@ -529,8 +530,7 @@ end
 
 function TRAIN_SYSTEM:Think()
 	local Train = self.Train
-
-	if not Train.BatteryOn or Train:ReadTrainWire(7) < 1 then return end -- why run anything when the train is off? fss.
+	-- if not Train.BatteryOn or not Train.CircuitBreakerOn or Train:ReadTrainWire(7) < 1 then return end -- why run anything when the train is off? fss.
 	self.RouteTable = UF.IBISRoutes[self.Train:GetNW2Int("IBIS:Routes", 1)]
 	self.DestinationTable = UF.IBISDestinations[self.Train:GetNW2Int("IBIS:Destinations", 1)]
 	self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[self.Train:GetNW2Int("IBIS:ServiceA", 1)]
@@ -749,7 +749,7 @@ end
 if SERVER then
 	function TRAIN_SYSTEM:OverrideSwitching(dir)
 		local Train = self.Train
-		if not Train.BatteryOn or Train:ReadTrainWire(7) < 1 then return end
+		if not (Train.BatteryOn or Train.CoreSys.CircuitOn or Train:ReadTrainWire(7) < 1) then return end
 		self.Override = dir
 	end
 
