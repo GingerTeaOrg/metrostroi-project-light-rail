@@ -429,9 +429,7 @@ end
 
 function ENT:Think(dT)
 	self.BaseClass.Think(self)
-	self.PrevTime = self.PrevTime or CurTime()
-	self.DeltaTime = (CurTime() - self.PrevTime)
-	self.PrevTime = CurTime()
+
 	self:HeadlightControl()
 	self:DoorHandler(self.DoorsUnlocked or self:ReadTrainWire(15) > 0, self:ReadTrainWire(13) > 0 or self.DoorSideUnlocked == "Left",
 	                 self:ReadTrainWire(14) > 0 or self.DoorSideUnlocked == "Right", false)
@@ -1700,6 +1698,7 @@ end)
 function ENT:Traction()
 	if not IsValid(self.FrontBogey) and not IsValid(self.MiddleBogey) and not IsValid(self.RearBogey) then return end
 	local resistors = math.abs(self.CoreSys:Camshaft())
+	resistors = resistors == 0 and 20 or resistors
 	local throttle = self.CoreSys.ThrottleState
 	local MU = not (self.CoreSys.ReverserLeverStateA == 3 or self:ReadTrainWire(6) < 1 or self.CoreSys.ReverserLeverStateA == -1 or self.CoreSys.ReverserLeverStateB == 3)
 				           or self:ReadTrainWire(6) > 0
@@ -1715,14 +1714,31 @@ function ENT:Traction()
 	throttle = not parralel and throttle / 2 or throttle
 	throttleWire = not parralel and throttleWire / 2 or throttleWire
 
-	self.RearBogey.MotorForce = self.Speed > 8 and not MU and throttle < 0 and -69101.57 + ((20 / resistors) * 3455.0785) * (throttle * 0.01) or not MU and 63571.428571429
-				                            - ((20 / resistors) * 3178.57142857145) * (throttle * 0.01) or MU and throttleWire > 0 and 63571.428571429
-				                            - ((20 / resistors) * 3178.57142857145) * (throttleWire * 0.01) or not self.DepartureConfirmed and self.Speed < 8 and 0 or deadmanTripped
-				                            and -69101.57
-	self.FrontBogey.MotorForce = self.Speed > 8 and not MU and throttle < 0 and -69101.57 + ((20 / resistors) * 3455.0785) * (throttle * 0.01) or not MU and 63571.428571429
-				                            - ((20 / resistors) * 3178.57142857145) * (throttle * 0.01) or MU and throttleWire > 0 and 63571.428571429
-				                            - ((20 / resistors) * 3178.57142857145) * (throttleWire * 0.01) or not self.DepartureConfirmed and self.Speed < 8 and 0 or deadmanTripped
-				                            and -69101.57
+	-- Calculate RearBogey MotorForce
+	print(thrott)
+	if not MU then
+		if throttle < 0 then
+			self.RearBogey.MotorForce = 69101.57 + ((20 / resistors) * 3455.0785) * (throttle * 0.01)
+			self.FrontBogey.MotorForce = 69101.57 + ((20 / resistors) * 3455.0785) * (throttle * 0.01)
+		else
+			self.RearBogey.MotorForce = 63571.428571429 - ((20 / resistors) * 3178.57142857145) * (throttle * 0.01)
+			self.FrontBogey.MotorForce = 63571.428571429 - ((20 / resistors) * 3178.57142857145) * (throttle * 0.01)
+		end
+	elseif MU then
+		if throttleWire > 0 then
+			self.RearBogey.MotorForce = 63571.428571429 - ((20 / resistors) * 3178.57142857145) * (throttleWire * 0.01)
+			self.FrontBogey.MotorForce = 63571.428571429 - ((20 / resistors) * 3178.57142857145) * (throttleWire * 0.01)
+		elseif throttleWire < 0 then
+			self.RearBogey.MotorForce = 69101.57 + ((20 / resistors) * 3455.0785) * (throttle * 0.01)
+			self.FrontBogey.MotorForce = 69101.57 - ((20 / resistors) * 3178.57142857145) * (throttleWire * 0.01)
+		end
+	elseif not self.DepartureConfirmed or self.Speed < 8 and ((MU and throttleWire < 0) or (throttle < 0)) then
+		self.RearBogey.MotorForce = 0
+		self.FrontBogey.MotorForce = 0
+	elseif deadmanTripped then
+		self.RearBogey.MotorForce = -69101.57
+		self.FrontBogey.MotorForce = -69101.57
+	end
 
 	self.RearBogey.MotorPower = not MU and throttle * 0.01 or throttleWire * 0.01 or not self.DepartureConfirmed and self.Speed < 8 and 0
 	self.FrontBogey.MotorPower = not MU and throttle * 0.01 or throttleWire * 0.01 or not self.DepartureConfirmed and self.Speed < 8 and 0

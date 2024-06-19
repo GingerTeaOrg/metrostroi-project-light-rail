@@ -15,10 +15,7 @@ function TRAIN_SYSTEM:Initialize()
     self.CurrentResistor = 0
     self.PrevResistorBank = nil
     self.ResistorChangeRegistered = false
-    self.DoorFLState = 100
-    self.DoorRLState = 100
-    self.DoorFRState = 100
-    self.DoorRRState = 100
+
     self.LeadingCabA = 0
     self.LeadingCabB = 0
     self.ResetTrainWires = false
@@ -143,11 +140,12 @@ end
 
 --------------------------------------------------------------------------------
 function TRAIN_SYSTEM:Think(Train)
-    -- local train = self.Train 
+    local t = self.Train 
     self:TriggerInput()
     self:TriggerOutput()
     self:U2Engine()
     self:MUHandler()
+
     -- print(self.ReverserState,self.Traction,self.Train)
     self.Speed = self.Train.Speed
     -- PrintMessage(HUD_PRINTTALK,self.ResistorBank)
@@ -286,7 +284,9 @@ function TRAIN_SYSTEM:Camshaft()
         -- Calculate number of required resistors
         local requiredResistors = math.ceil(requestedCurrent / maxResistorCurrent) -- Calculate adjusted required resistors
         
-        if (80 / self.Speed) > 1 then
+        if self.Speed == 0 then
+            speedFactor = 0
+        elseif (80 / self.Speed) > 1 then
             speedFactor = math.ceil(80 / self.Speed)
         else
             speedFactor = 0
