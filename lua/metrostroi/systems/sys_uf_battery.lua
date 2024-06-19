@@ -32,7 +32,7 @@ function TRAIN_SYSTEM:Think(dT)
 	self.Charge = math.min(self.Capacity, self.Charge + self.Charging * dT)
 
 	-- Calculate battery voltage
-	if self.Train.CoreSys.CircuitOn > 0 then
+	if self.Train.CoreSys.CircuitOn and self.Train.CoreSys.CircuitOn > 0 or self.Train.CoreSys.BatteryOn then
 		self.Voltage = 24 * (self.Charge / self.Capacity)
 	else
 		self.Voltage = 24 * (self.Charge / self.Capacity) + (self.Charging > 0 and 24 or 0)
