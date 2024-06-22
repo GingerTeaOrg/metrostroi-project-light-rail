@@ -1710,41 +1710,42 @@ function ENT:Traction()
 	local parralel = self.Panel.Parralel > 0
 	self.BrakesOn = MU and throttleWire < 0 or throttle < 0
 	local reverser = self.CoreSys.ReverserState
+	local braking = MU and throttleWire < 0 or throttle < 0
 	-- are the motors set to parralel or series?
 	throttle = not parralel and throttle / 2 or throttle
 	throttleWire = not parralel and throttleWire / 2 or throttleWire
 
-	-- Calculate RearBogey MotorForce
-	print(thrott)
+	self:SetNW2Bool("ElectricBrakes", MU and throttleWire < 1 or throttle < 0)
+
 	if not MU then
 		if throttle < 0 then
-			self.RearBogey.MotorForce = 69101.57 + ((20 / resistors) * 3455.0785) * (throttle * 0.01)
-			self.FrontBogey.MotorForce = 69101.57 + ((20 / resistors) * 3455.0785) * (throttle * 0.01)
+			self.RearBogey.MotorForce = 691.0157 + ((20 / resistors) * 34.550785) * (throttle)
+			self.FrontBogey.MotorForce = 691.0157 + ((20 / resistors) * 34.550785) * (throttle)
 		else
-			self.RearBogey.MotorForce = 63571.428571429 - ((20 / resistors) * 3178.57142857145) * (throttle * 0.01)
-			self.FrontBogey.MotorForce = 63571.428571429 - ((20 / resistors) * 3178.57142857145) * (throttle * 0.01)
+			self.RearBogey.MotorForce = 635.71428571429 - ((20 / resistors) * 31.7857142857145) * (throttle)
+			self.FrontBogey.MotorForce = 635.71428571429 - ((20 / resistors) * 31.7857142857145) * (throttle)
 		end
 	elseif MU then
 		if throttleWire > 0 then
-			self.RearBogey.MotorForce = 63571.428571429 - ((20 / resistors) * 3178.57142857145) * (throttleWire * 0.01)
-			self.FrontBogey.MotorForce = 63571.428571429 - ((20 / resistors) * 3178.57142857145) * (throttleWire * 0.01)
+			self.RearBogey.MotorForce = 635.71428571429 - ((20 / resistors) * 31.7857142857145) * (throttleWire)
+			self.FrontBogey.MotorForce = 635.71428571429 - ((20 / resistors) * 31.7857142857145) * (throttleWire)
 		elseif throttleWire < 0 then
-			self.RearBogey.MotorForce = 69101.57 + ((20 / resistors) * 3455.0785) * (throttle * 0.01)
-			self.FrontBogey.MotorForce = 69101.57 - ((20 / resistors) * 3178.57142857145) * (throttleWire * 0.01)
+			self.RearBogey.MotorForce = 691.0157 + ((20 / resistors) * 34.550785) * (throttle)
+			self.FrontBogey.MotorForce = 691.0157 - ((20 / resistors) * 31.7857142857145) * (throttleWire)
 		end
 	elseif not self.DepartureConfirmed or self.Speed < 8 and ((MU and throttleWire < 0) or (throttle < 0)) then
 		self.RearBogey.MotorForce = 0
 		self.FrontBogey.MotorForce = 0
 	elseif deadmanTripped then
-		self.RearBogey.MotorForce = -69101.57
-		self.FrontBogey.MotorForce = -69101.57
+		self.RearBogey.MotorForce = 691.0157
+		self.FrontBogey.MotorForce = 691.0157
 	end
 
-	self.RearBogey.MotorPower = not MU and throttle * 0.01 or throttleWire * 0.01 or not self.DepartureConfirmed and self.Speed < 8 and 0
-	self.FrontBogey.MotorPower = not MU and throttle * 0.01 or throttleWire * 0.01 or not self.DepartureConfirmed and self.Speed < 8 and 0
-	self.FrontBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
-	self.MiddleBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
-	self.RearBogey.BrakeCylinderPressure = not MU and self.CoreSys.BrakePressure or self:ReadTrainWire(7) or not self.DepartureConfirmed and self.Speed < 8 and 2.7
+	self.RearBogey.MotorPower = not MU and throttle or throttleWire or not self.DepartureConfirmed and self.Speed < 8 and 0
+	self.FrontBogey.MotorPower = not MU and throttle or throttleWire or not self.DepartureConfirmed and self.Speed < 8 and 0
+	self.FrontBogey.BrakeCylinderPressure = (braking and self.Speed < 8 or not self.DepartureConfirmed and self.Speed < 8) and 2.7 or 0
+	self.MiddleBogey.BrakeCylinderPressure = (braking and self.Speed < 8 or not self.DepartureConfirmed and self.Speed < 8) and 2.7 or 0
+	self.RearBogey.BrakeCylinderPressure = (braking and self.Speed < 8 or not self.DepartureConfirmed and self.Speed < 8) and 2.7 or 0
 	self.FrontBogey.Reversed = (MU and self:ReadTrainWire(4) > 0) or (reverser < 0)
 	self.RearBogey.Reversed = (MU and self:ReadTrainWire(4) > 0) or (reverser < 0)
 
