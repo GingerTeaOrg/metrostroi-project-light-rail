@@ -83,7 +83,7 @@ function ENT:Initialize()
 	-- Create couples
 	self.FrontCouple = self:CreateCustomCoupler(Vector(475, 0, 30), Angle(0, 180, 0), true, "b", "a")
 	self.FrontCoupler = self.FrontCouple
-	self.SectionB = self:CreateSectionB(Vector(-780, 0, 0), Angle(0, 0, 0), "gmod_subway_mplr_bwagen1973_section_b")
+	self.SectionB = self:CreateSectionB(Vector(-780, 0, 0), Angle(0, 0, 0), "gmod_subway_mplr_bwagen1973_section_b", self)
 	self.RearCouple = self:CreateCustomCoupler(Vector(-475, 0, 30), Angle(0, 0, 0), true, "b", "b")
 	self.RearCoupler = self.RearCouple
 	self.RearBogey = self:CreateBogeyUF(Vector(-390, 0, 4), Angle(0, 0, 0), true, "b_motor", "b")
