@@ -339,7 +339,7 @@ if SERVER then
 		local options = {z_pad = 256}
 		if Metrostroi.IgnoreEntityUpdates then return end
 		print("[!] LIGHT RAIL: Injecting Light Rail Signal Entities into Railnetwork")
-		local entities = ents.FindByClass("gmod_track_uf_signal")
+		local entities = ents.FindByClass("gmod_track_uf_signal*")
 		for k, v in pairs(entities) do
 			local pos = Metrostroi.GetPositionOnTrack(v:GetPos(), v:GetAngles() - Angle(0, 90, 0), options)[1]
 			if pos then -- FIXME make it select proper path
@@ -373,6 +373,20 @@ if not UF.RoutingTable then
 	UF.SwitchTable = {} -- create a list of switches on the map. the individual IDs would be set via toolgun
 	UF.RoutingTable = {} -- manually set routing table, for determining what IBIS Line/Route consists of what switch, where the switch needs to point, and what constitutes left or right 
 end
+
+
+
+function UF.CheckGameServerMode()
+	UF.GameMode = {}
+
+	UF.GameMode.SRCDS = game.IsDedicated()
+
+	UF.GameMode.Single = game.SinglePlayer()
+
+	UF.GameMode.Listen = (not game.SinglePlayer() and not game.IsDedicated())
+
+end
+UF.CheckGameServerMode()
 
 files = file.Find("uf/routing/*.lua", "LUA")
 for _, filename in pairs(files) do
