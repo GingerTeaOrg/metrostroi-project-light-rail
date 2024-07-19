@@ -15,6 +15,9 @@ Wire 14, Unlock Doors Right
 Wire 15, Unlock yes or no
 Wire 16, Doors all clear
 Wire 17, Raise Pantograph
+Wire 18, StepStates High
+Wire 19, StepStates Low
+Wire 20, StepStates Lowest
 
 
 ***********Lighting***********************
