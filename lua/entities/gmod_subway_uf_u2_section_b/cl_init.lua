@@ -162,7 +162,7 @@ ENT.ClientProps["Throttle"] = {model = "models/lilly/uf/common/cab/throttle.mdl"
 ENT.ClientProps["cab_decal"] = {model = "models/lilly/uf/u2/u2-cabfront-decal-1968.mdl", pos = Vector(0, 0, 0), ang = Angle(0, -180, 0), scale = 1, nohide = true}
 ENT.ClientProps["duewag_decal"] = {model = "models/lilly/uf/u2/duewag_decal.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1}
 ENT.ClientProps["cab"] = {model = "models/lilly/uf/u2/u2-cabfront_b.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
-ENT.ClientProps["headlights_on"] = {model = "models/lilly/uf/u2/headlight_on.mdl", pos = Vector(-535, 0, 43), ang = Angle(0, 180, 0), scale = 1, hide = 2}
+ENT.ClientProps["headlights_on"] = {model = "models/lilly/uf/u2/headlights_on.mdl", pos = Vector(0, 0, 43), ang = Angle(0, 180, 0), scale = 1, hide = 2}
 ENT.ClientProps["carnumber1"] = {model = "models/lilly/uf/u2/carnumber_front_1.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
 ENT.ClientProps["carnumber2"] = {model = "models/lilly/uf/u2/carnumber_front_2.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
 ENT.ClientProps["carnumber3"] = {model = "models/lilly/uf/u2/carnumber_front_3.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
