@@ -57,4 +57,10 @@
 	SwitchEnt(target_name_or_class) : "Entity to associate with"
 	PairedControllerLeft(target_name_or_class) : "Entity to associate with on left position"
 	PairedControllerRight(target_name_or_class) : "Entity to associate with on right position"
+	PositionCorrespondanceOppositeDir(Choices) : "Position Correspondance" : "If the trigger is on the 'dull' end of the point, which position should we switch to if in range?" : "main" =
+	[
+		"main" : "Main"
+		"alt" : "Alt"
+		"none" : "None (Ignore)"
+	]
 ]
