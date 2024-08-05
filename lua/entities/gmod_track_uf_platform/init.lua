@@ -69,6 +69,7 @@ function ENT:Initialize()
     end
 
     self:SetNW2Int( "TrainDoorCount", 0 )
+    self.DoorUnlockCalled = false
 end
 
 --------------------------------------------------------------------------------
@@ -179,6 +180,7 @@ function ENT:Think()
     local BoardTime = 8 + 7
     for k, v in pairs( ents.FindByClass( "gmod_subway_*" ) ) do
         if v.Base ~= "gmod_subway_uf_base" then continue end
+        if not v.MPLR_DoorHandler then continue end
         if not IsValid( v ) or v:GetPos():Distance( self:GetPos() ) > self.PlatformStart:Distance( self.PlatformEnd ) then continue end
         local platform_distance = ( ( self.PlatformStart - v:GetPos() ) - ( self.PlatformStart - v:GetPos() ):Dot( self.PlatformNorm ) * self.PlatformNorm ):Length()
         local vertical_distance = math.abs( v:GetPos().z - self.PlatformStart.z )
@@ -188,16 +190,15 @@ function ENT:Think()
         local train_end = ( minb - self.PlatformStart ):Dot( self.PlatformDir ) / ( self.PlatformDir:Length() ^ 2 )
         local left_side = train_start > train_end
         if self.InvertSides then left_side = not left_side end
-        local function override( HowMany )
-            for i = 1, HowMany do
-                v.CoreSys.DoorRandomness[ i ] = 3
-            end
+        local doorCount = self:CountDoors( v, left_side )
+        local pop = self:PopulationCount()
+        local doors_open = self:CheckDoors( v, left_side )
+        if not doors_open and pop > 0 and not self.DoorUnlockCalled then
+            v.MPLR_DoorHandler:RandomUnlock( math.random( 2, doorCount ), left_side and "left" or "right" )
+            self.DoorUnlockCalled = true
         end
 
-        local doorCount = v.CoreSys and #v.CoreSys.DoorRandomness or 0
-        local pop = self:PopulationCount()
-        if v.DoorRandomness and self:CheckDoorRandomness( v ) and ( v.CoreSys.DoorsUnlocked or v.DoorsUnlocked ) then override( math.random( lerp( 1, doorCount, pop ), doorCount ) ) end
-        local doors_open = left_side and v.LeftDoorsOpen or not left_side and v.RightDoorsOpen
+        if doors_open == nil then continue end
         if ( train_start < 0 ) and ( train_end < 0 ) then doors_open = false end
         if ( train_start > 1 ) and ( train_end > 1 ) then doors_open = false end
         if -0.2 < train_start and train_start < 1.2 then v.BoardTime = self.Timer and CurTime() - self.Timer end
@@ -231,16 +232,8 @@ function ENT:Think()
             -- Calculate number of passengers near the train
             local passenger_density = math.abs( CDF( train_start, self.PlatformX0, self.PlatformSigma ) - CDF( train_end, self.PlatformX0, self.PlatformSigma ) )
             local passenger_count = passenger_density * self:PopulationCount()
-            local function countDoors( tbl )
-                local count = 0
-                for _, v in pairs( tbl ) do
-                    if v > 0 then count = count + 1 end
-                end
-                return count
-            end
-
             -- Get number of doors
-            local door_count = v.DoorRandomness and countDoors( v.DoorRandomness ) or 0
+            local door_count = left_side and v.DoorNumberLeft or v.DoorNumberRight
             -- Get maximum boarding rate
             local max_boarding_rate = 1.2 * door_count * dT
             -- Get boarding rate based on passenger density
@@ -283,29 +276,37 @@ function ENT:Think()
             --People boarded train
             if IsValid( driver ) and boarded > 0 then driver:AddDeaths( boarded ) end
             -- Change number of people in train
-            v:BoardPassengers( passenger_delta )
+            if v.SectionB and not v.SectionC then
+                v.SectionB:BoardPassengers( passenger_delta / 2 )
+                v:BoardPassengers( passenger_delta / 2 )
+            elseif v.SectionA and v.SectionC then
+                v.SectionA:BoardPassengers( passenger_delta / 3 )
+                v.SectionB:BoardPassengers( passenger_delta / 3 )
+                v:BoardPassengers( passenger_delta / 3 )
+            end
+
             -- Keep list of door positions
             if left_side then
                 for k, vec in pairs( v.LeftDoorPositions ) do
                     if type( vec ) ~= "Vector" then continue end
-                    if v.CoreSys then
-                        if v.CoreSys.DoorStatesLeft[ k ] < 0.9 then continue end
-                    else
-                        if v.DoorStatesLeft[ k ] < 0.9 then continue end
+                    local doorHandler = v.MPLR_DoorHandler
+                    if doorHandler.DoorStatesLeft[ k ] < 0.9 then
+                        doorHandler.DoorStatesLeft[ k ] = 0
+                        continue
                     end
 
-                    table.insert( boardingDoorList, v:LocalToWorld( vec ) )
+                    boardingDoorList[ k ] = v:LocalToWorld( vec )
                 end
             else
                 for k, vec in pairs( v.RightDoorPositions ) do
                     if type( vec ) ~= "Vector" then continue end
-                    if v.CoreSys then
-                        if v.CoreSys.DoorStatesRight[ k ] < 0.9 then continue end
-                    else
-                        if v.DoorStatesRight[ k ] < 0.9 then continue end
+                    local doorHandler = v.MPLR_DoorHandler
+                    if doorHandler.DoorStatesRight[ k ] < 0.9 then
+                        doorHandler.DoorStatesRight[ k ] = 0
+                        continue
                     end
 
-                    table.insert( boardingDoorList, v:LocalToWorld( vec ) )
+                    boardingDoorList[ k ] = v:LocalToWorld( vec )
                 end
             end
 
@@ -328,6 +329,7 @@ function ENT:Think()
         self.CurrentTrain = CurrentTrain
     elseif not CurrentTrain and self.CurrentTrain then
         self.CurrentTrain = nil
+        self.DoorUnlockCalled = false
     end
 
     -- Add passengers
@@ -368,4 +370,29 @@ function ENT:Think()
     self.BoardingDoorListLength = #boardingDoorList
     self:NextThink( CurTime() + dT )
     return true
+end
+
+function ENT:CheckDoors( ent, left_side )
+    if not ent.MPLR_DoorHandler then return end
+    local tab = left_side and ent.MPLR_DoorHandler.DoorStatesLeft or ent.MPLR_DoorHandler.DoorStatesRight
+    for _, v in ipairs( tab ) do
+        if v > 0.9 then
+            --print( "doors are open!" )
+            return true
+        end
+    end
+    return false
+end
+
+function ENT:CountDoors( ent, left_side )
+    if not ent.MPLR_DoorHandler then return end
+    local count = 0
+    local tab = left_side and ent.MPLR_DoorHandler.DoorStatesLeft or ent.MPLR_DoorHandler.DoorStatesRight
+    for _, v in ipairs( tab ) do
+        if v > 0.9 then
+            count = count + 1
+            continue
+        end
+    end
+    return count
 end
