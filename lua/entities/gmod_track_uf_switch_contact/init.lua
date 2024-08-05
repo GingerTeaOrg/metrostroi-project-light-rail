@@ -53,8 +53,10 @@ function ENT:Think()
 		return
 	end
 
-	if not self.TargetEnt.TrackPosition then
+	if not self.TargetEnt.TrackPosition and next( Metrostroi.Paths ) then
 		print( "ERROR! Target Switch Position not found!" )
+		return
+	elseif not self.TargetEnt.TrackPosition then
 		return
 	end
 
