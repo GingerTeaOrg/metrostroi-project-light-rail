@@ -72,7 +72,12 @@ function ENT:TriggerSwitch( direction, ent )
 		return false
 	end
 
-	if self.Queue[ ent ][ 1 ] > 1 then
+	if not self.Queue[ ent ] then
+		self.AlternateTrack = false
+		return
+	end
+
+	if self.Queue[ ent ] and self.Queue[ ent ][ 1 ] > 1 then
 		return
 	else
 		direction = self.Queue[ ent ][ 2 ]
