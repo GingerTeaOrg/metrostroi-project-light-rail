@@ -1,17 +1,18 @@
 include("shared.lua")
 
 function ENT:Initialize()
+
 end
 
 function ENT:OnRemove()
 end
 
---------------------------------------------------------------------------------
 function ENT:Think()
+end
+
+function ENT:Draw()
+    self:DrawModel()
     local coupled = self:GetNW2Bool("IsCoupledAnim",false)
-    if coupled then
-        self:SetPoseParameter("position",100)
-    else
-        self:SetPoseParameter("position",0)
-    end
+    self:SetPoseParameter("position", coupled and 100 or 0)
+    self:InvalidateBoneCache()
 end

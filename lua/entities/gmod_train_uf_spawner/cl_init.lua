@@ -275,7 +275,7 @@ local function UpdateTrainList( fromPresets )
 		if k ~= "Train" and type( v ) ~= "function" and v.Call then v:Call( VGUI ) end
 	end
 
-	VGUI.WagNum:ValueChanged()
+	--VGUI.WagNum:ValueChanged()
 	frame:SetSize( 300 + 262 * math.floor( ( Pos - 1 ) / MaxHorisontal ) + 10, 58 + 24 * math.min( MaxHorisontal, Pos ) )
 	frame:Center()
 	if VGUI.Close then VGUI.Close() end
@@ -297,7 +297,7 @@ local function Draw()
 	end
 
 	CreateList( "Train", Format( "%s(%d/%d)\n%s:%d", Metrostroi.GetPhrase( "Spawner.Trains1" ), GetGlobalInt( "mplr_train_count" ), MaxWagons, Metrostroi.GetPhrase( "Spawner.Trains2" ), MaxWagonsOnPlayer ), Trains, UpdateTrainList, Settings )
-	CreateSlider( "WagNum", 0, 1, GetGlobalInt( "mplr_maxwagons" ), "Car Count									", --[[Metrostroi.GetPhrase("Spawner.WagNum")]]
+	--[[CreateSlider( "WagNum", 0, 1, GetGlobalInt( "mplr_maxwagons" ), "Car Count									",
 		function( slider )
 		local WagNumTable
 		for k, name in pairs( UF.TrainClasses ) do
@@ -314,8 +314,7 @@ local function Draw()
 			end
 			return retval
 		end
-	end, Settings )
-
+	end, Settings )]]
 	--CreateCheckBox("AutoCouple",Metrostroi.GetPhrase("Spawner.AutoCouple"),nil,Settings)
 	UpdateTrainList()
 end

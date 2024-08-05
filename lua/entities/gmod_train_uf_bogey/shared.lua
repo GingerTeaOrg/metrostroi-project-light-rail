@@ -1,15 +1,12 @@
-ENT.Type            = "anim"
-
-ENT.Author          = ""
-ENT.Contact         = ""
-ENT.Purpose         = ""
-ENT.Instructions    = ""
-ENT.Category        = "Metrostroi (utility)"
-
-ENT.Spawnable       = true
-ENT.AdminSpawnable  = false
-
-physenv.AddSurfaceData([[
+ENT.Type = "anim"
+ENT.Author = ""
+ENT.Contact = ""
+ENT.Purpose = ""
+ENT.Instructions = ""
+ENT.Category = "Metrostroi (utility)"
+ENT.Spawnable = true
+ENT.AdminSpawnable = false
+physenv.AddSurfaceData( [[
 "gmod_silent"
 {
 
@@ -30,34 +27,35 @@ physenv.AddSurfaceData([[
 	"audioroughnessfactor" "0.1"
 	"gamematerial"	"X"
 }
-]])
+]] )
 function ENT:GetSpeed()
-	return self:GetNW2Int("Speed")/5
+	return self:GetNW2Int( "Speed" ) / 5
 end
+
 function ENT:GetMotorPower()
-	return self:GetNW2Int("MotorPower")/50
+	return self:GetNW2Int( "MotorPower" ) / 50
 end
 
 function ENT:GetBrakeSqueal()
-	return self:GetNW2Int("BrakeSqueal")/10
+	return self:GetNW2Int( "BrakeSqueal" ) / 10
 end
 
 if SERVER then
-	function ENT:SetSpeed(val)
-		if self.OldSpeed == math.floor(val*5) then return end
-		self.OldSpeed = math.floor(val*5)
-		self:SetNW2Int("Speed",self.OldSpeed)
+	function ENT:SetSpeed( val )
+		if self.OldSpeed == math.floor( val * 5 ) then return end
+		self.OldSpeed = math.floor( val * 5 )
+		self:SetNW2Int( "Speed", self.OldSpeed )
 	end
 
-	function ENT:SetMotorPower(val)
-		if self.OldMotorPower == math.floor(val*50) then return end
-		self.OldMotorPower = math.floor(val*50)
-		self:SetNW2Int("MotorPower",self.OldMotorPower)
+	function ENT:SetMotorPower( val )
+		if self.OldMotorPower == math.floor( val * 50 ) then return end
+		self.OldMotorPower = math.floor( val * 50 )
+		self:SetNW2Int( "MotorPower", self.OldMotorPower )
 	end
 
-	function ENT:SetBrakeSqueal(val)
-		if self.OldBrakeSqueal == math.floor(val*10) then return end
-		self.OldBrakeSqueal = math.floor(val*10)
-		self:SetNW2Int("BrakeSqueal",self.OldBrakeSqueal)
+	function ENT:SetBrakeSqueal( val )
+		if self.OldBrakeSqueal == math.floor( val * 10 ) then return end
+		self.OldBrakeSqueal = math.floor( val * 10 )
+		self:SetNW2Int( "BrakeSqueal", self.OldBrakeSqueal )
 	end
 end
