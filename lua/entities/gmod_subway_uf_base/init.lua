@@ -29,9 +29,12 @@ function ENT:CreateSection( pos, ang, ent, parentSection, sectionC, sectionA ) -
     if IsValid( parentSection ) and parentSection == sectionA then --if the parent section is an A section then we're only an A/B train so no need for sectionC params
         local index = parentSection:EntIndex()
         local sectionB = sectionEnt
+        local sectionBIndex = sectionEnt:EntIndex()
         sectionB.parentSection = parentSection
+        sectionB.SectionA = self
         sectionB:SetNW2Int( "parentSectionIndex", index )
-        self.SectionB = sectionEnt
+        sectionB:SetNW2Int( "SectionAIndex", index )
+        self:SetNW2Int( "SectionBIndex", sectionBIndex )
     elseif IsValid( parentSection ) and parentSection == sectionC then
         local index = parentSection:EntIndex()
         if sectionA then
@@ -199,7 +202,6 @@ function ENT:CreateBogeyUF( pos, ang, forward, typ, a_b )
             TrainPhys:SetMass( TrainWeight )
             BogeyPhys:SetMass( BogeyWeight )
             constraint.NoCollide( bogey, self )
-            constraint.NoCollide( bogey, SectionB )
         elseif a_b == "b" then
             local BogeyPhys = bogey:GetPhysicsObject()
             local BogeyWeight = BogeyPhys:GetMass()
@@ -210,8 +212,18 @@ function ENT:CreateBogeyUF( pos, ang, forward, typ, a_b )
             constraint.AdvBallsocket( bogey, self.SectionB, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
             TrainPhys:SetMass( TrainWeight )
             BogeyPhys:SetMass( BogeyWeight )
-            constraint.NoCollide( bogey, self )
             constraint.NoCollide( bogey, self.SectionB )
+        else
+            local BogeyPhys = bogey:GetPhysicsObject()
+            local BogeyWeight = BogeyPhys:GetMass()
+            local TrainPhys = self.SectionB:GetPhysicsObject()
+            local TrainWeight = TrainPhys:GetMass()
+            TrainPhys:SetMass( 50000 )
+            BogeyPhys:SetMass( 50000 )
+            constraint.AdvBallsocket( bogey, self, 0, 0, Vector( 0, 0, 0 ), pos, 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+            TrainPhys:SetMass( TrainWeight )
+            BogeyPhys:SetMass( BogeyWeight )
+            constraint.NoCollide( bogey, self )
         end
     end
 
@@ -381,6 +393,11 @@ function ENT:Initialize()
     for k, v in pairs( self.CustomSpawnerUpdates ) do
         if k ~= "BaseClass" then v( self ) end
     end
+
+    self.WiperState = 0
+    self.WiperInterval = 0
+    self.WipeDown = false
+    self.Wiped = false
 end
 
 function ENT:GetWagonNumber()
@@ -2316,9 +2333,51 @@ if game.SinglePlayer() then
     end )
 end
 
-util.AddNetworkString( "GetScrollSensitivity" )
-net.Receive( "GetScrollSensitivity", function()
-    local ent = net.ReadEntity()
-    if not IsValid( ent ) then return end
-    ent.MouseSensitivity = net.ReadFloat() or 5
-end )
+function ENT:Wipe( speed )
+    local dT = self.DeltaTime > 0 and self.DeltaTime or 1
+    local function wipeOnce( dT, factor )
+        local wipeDown = self.WipeDown
+        if self.WiperState < 1 and not self.WipeDown then
+            self.WiperState = self.WiperState + factor * dT
+            self.WiperState = math.Clamp( self.WiperState, 0, 1 )
+        elseif self.WiperState == 1 and not self.WipeDown then
+            self.WipeDown = true
+        elseif self.WiperState > 0 and self.WipeDown then
+            self.WiperState = self.WiperState - factor * dT
+            self.WiperState = math.Clamp( self.WiperState, 0, 1 )
+        elseif self.WiperState == 0 and wipeDown then
+            self.WipeDown = false
+            return true
+        end
+    end
+
+    if ( speed < 1 or not speed ) and self.WiperState > 0 then
+        self.WiperState = self.WiperState - factor * dT
+        self.WiperState = math.Clamp( self.WiperState, 0, 1 )
+    elseif ( speed < 1 or not speed ) and self.WiperState == 0 then
+        return
+    end
+
+    if speed == 1 then
+        if not self.Wiped then
+            self.Wiped = wipeOnce( dT, 0.05 )
+            self.WipeInterval = CurTime()
+        elseif self.Wiped and CurTime() - self.WipeInterval > 5 then
+            self.Wiped = false
+        end
+    elseif speed == 2 then
+        if not self.Wiped then
+            self.Wiped = wipeOnce( dT, 0.25 )
+        elseif self.Wiped then
+            self.Wiped = false
+        end
+    elseif speed == 3 then
+        if not self.Wiped then
+            self.Wiped = wipeOnce( dT, 0.45 )
+        elseif self.Wiped then
+            self.Wiped = false
+        end
+    end
+
+    self:SetNW2Float( "WiperState", self.WiperState )
+end

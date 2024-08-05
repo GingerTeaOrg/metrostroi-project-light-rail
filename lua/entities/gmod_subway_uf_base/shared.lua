@@ -527,13 +527,12 @@ ENT.SubwayTrain = {
 	WagType = 2,
 }
 
-if CLIENT then
+--[[if CLIENT then
 	local C_ScrollSensitivity = GetConVar( "mplr_scrollwheel_sensitivity" ):GetFloat()
 	net.Start( "GetScrollSensitivity" )
 	net.WriteEntity( ENT )
 	net.WriteFloat( C_ScrollSensitivity )
-end
-
+end]]
 function ENT:ScrollThrottle()
 	if type( self.Driver ) ~= "entity" then return end
 	local ply = GetPredictionPlayer()

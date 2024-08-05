@@ -379,13 +379,13 @@ function ENT:SpawnCSEnt( k, override )
 		cent:SetAngles( self:LocalToWorldAngles( v.ang ) )
 		cent:SetLOD( C_ScreenshotMode:GetBool() and 0 or -1 )
 		--[[
-								hook.Add("MetrostroiBigLag",cent,function(ent)
-												--print(ent:GetLocalPos())
-												ent:SetLocalPos(ent:GetLocalPos())
-												ent:SetLocalAngles(ent:GetLocalAngles())
-												--if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
-												--ent.Spawned = true
-								end)]]
+		hook.Add("MetrostroiBigLag",cent,function(ent)
+			--print(ent:GetLocalPos())
+			ent:SetLocalPos(ent:GetLocalPos())
+			ent:SetLocalAngles(ent:GetLocalAngles())
+			--if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
+			--ent.Spawned = true
+		end)]]
 		cent:SetSkin( v.skin or 0 )
 		if v.scale then cent:SetModelScale( v.scale ) end
 		if v.bscale then cent:ManipulateBoneScale( 0, v.bscale ) end
@@ -654,7 +654,7 @@ local function enableDebug()
 										elseif ent.HiddenPanels[ kp ] then
 											surface.SetDrawColor( 100, 0, 0 )
 											--[[elseif not button.ID or button.ID[1] == "!" then
-																																												surface.SetDrawColor(25,40,180)]]
+											surface.SetDrawColor(25,40,180)]]
 										elseif button.state then
 											surface.SetDrawColor( 255, 0, 0 )
 										else
@@ -749,12 +749,16 @@ function ENT:Initialize()
 
 	--self:EntIndex()
 	self.PassengerModels = { "models/metrostroi/passengers/f1.mdl", "models/metrostroi/passengers/f2.mdl", "models/metrostroi/passengers/f3.mdl", "models/metrostroi/passengers/f4.mdl", "models/metrostroi/passengers/m1.mdl", "models/metrostroi/passengers/m2.mdl", "models/metrostroi/passengers/m4.mdl", "models/metrostroi/passengers/m5.mdl", }
-	self:InitSegments()
 	self.WagonNumber = 0
 	self:PostInitializeSystems()
 	self.TunnelCoeff = 0
 	self.StreetCoeff = 0
 	self.Street = 0
+	self:InitSegments()
+	self.WiperState = 0
+	self.WiperInterval = 0
+	self.WipeDown = false
+	self.Wiped = false
 end
 
 function ENT:InitSegments()
@@ -763,12 +767,13 @@ function ENT:InitSegments()
 	self.SectionAIndex = self:GetNW2Int( "SectionAIndex", nil )
 	self.SectionBIndex = self:GetNW2Int( "SectionBIndex", nil )
 	self.SectionCIndex = self:GetNW2Int( "SectionCIndex", nil )
-	for i = string.byte( 'A' ), string.byte( 'Z' ) do
+	for i = string.byte( 'A' ), string.byte( 'C' ) do
 		local letter = string.char( i )
 		local index = self[ "Section" .. letter .. "Index" ]
 		if index and index ~= 0 then
 			self.SegmentCount = self.SegmentCount + 1
 			self[ "Section" .. letter ] = Entity( index )
+			print( "Spawning sections:", self[ "Section" .. letter ] )
 		end
 	end
 end
@@ -1181,12 +1186,12 @@ function ENT:Think()
 			--print(math.Clamp((leftst-10)/40,0,1))
 			--print(Format("%02d %.2f %02d %.2f",leftst,math.Clamp((leftst-30)/20,0,1),rightst,)
 			--[[ if leftst < 30 or rightst < 30 then
-																LocalPlayer():ChatPrint(Format("I AM ON A STREET STATION, %.2f",coeff))
-												elseif coeff > 1.3 then
-																LocalPlayer():ChatPrint(Format("I AM ON A STREET, %.2f",coeff))
-												else
-																LocalPlayer():ChatPrint(Format("I AM ON A STREET WITH WALLS, %.2f",coeff))
-												end--]]
+			LocalPlayer():ChatPrint(Format("I AM ON A STREET STATION, %.2f",coeff))
+		elseif coeff > 1.3 then
+			LocalPlayer():ChatPrint(Format("I AM ON A STREET, %.2f",coeff))
+		else
+			LocalPlayer():ChatPrint(Format("I AM ON A STREET WITH WALLS, %.2f",coeff))
+		end--]]
 			self.TunnelCoeff = math.Clamp( self.TunnelCoeff + ( 0 - self.TunnelCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.StreetCoeff = math.Clamp( self.StreetCoeff + ( ( 0.8 + coeff * 0.2 ) - self.StreetCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.Street = 1
@@ -1195,12 +1200,12 @@ function ENT:Think()
 			--,
 			--(math.Clamp((leftst-30)/20,0,1)+math.Clamp((rightst-30)/20,0,1))*0.6
 			--[[ if (leftst < 30 or rightst < 30) and coeff > 1.2 then
-																LocalPlayer():ChatPrint(Format("I AM ON A STATION L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
-												elseif coeff > 1.3 then
-																LocalPlayer():ChatPrint(Format("I AM IN A BIG TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
-												else
-																LocalPlayer():ChatPrint(Format("I AM IN A TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
-												end--]]
+		LocalPlayer():ChatPrint(Format("I AM ON A STATION L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+	elseif coeff > 1.3 then
+		LocalPlayer():ChatPrint(Format("I AM IN A BIG TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+	else
+		LocalPlayer():ChatPrint(Format("I AM IN A TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+	end--]]
 			self.TunnelCoeff = math.Clamp( self.TunnelCoeff + ( ( 0.4 + coeff * 0.6 ) - self.TunnelCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.StreetCoeff = math.Clamp( self.StreetCoeff + ( ( 0.5 - math.max( 0, self.TunnelCoeff - 0.5 ) ) - self.StreetCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.Street = 0
@@ -1370,12 +1375,12 @@ function ENT:Think()
 				ent:SetPos( self:LocalToWorld( pos ) )
 				ent:SetAngles( Angle( 0, math.random( 0, 360 ), 0 ) )
 				--[[
-																hook.Add("MetrostroiBigLag",ent,function(ent)
-																				ent:SetPos(self:LocalToWorld(pos))
-																				ent:SetAngles(Angle(0,math.random(0,360),0))
-																				--if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
-																				--ent.Spawned = true
-																end)]]
+			hook.Add("MetrostroiBigLag",ent,function(ent)
+				ent:SetPos(self:LocalToWorld(pos))
+				ent:SetAngles(Angle(0,math.random(0,360),0))
+				--if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
+				--ent.Spawned = true
+			end)]]
 				ent:SetSkin( math.floor( ent:SkinCount() * math.random() ) )
 				ent:SetModelScale( 0.98 + ( -0.02 + 0.04 * math.random() ), 0 )
 				ent:SetParent( self )
@@ -1467,23 +1472,23 @@ hook.Add( "Think", "mplr_mouse_handle", function()
 		if IsValid( train ) then
 			OldSeat = LocalPlayer():GetVehicle()
 			--[=[train.CamAnglesComp = Angle(0,0,0)
-												train.OldAng = false
-												--OldSeat.CalcAbsolutePosition = function(...) return ... end
-												if not OldSeat.OldCalcAbsolutePosition then
-																OldSeat.OldCalcAbsolutePosition = OldSeat.CalcAbsolutePosition
-												end
-												OldSeat.CalcAbsolutePosition = function(ent,...)
-																--[[local target_ang = Angle(0,0,0)
-																local train = ent:GetNW2Entity("TrainEntity")
-																if not IsValid(train) then return end
-																target_ang:RotateAroundAxis(ent:GetAngles():Forward(),-train.CamAng.p)
-																target_ang:RotateAroundAxis(ent:GetAngles():Up(),train.CamAng.y)
-																target_ang:RotateAroundAxis(ent:GetAngles():Right(),train.CamAng.r)
-																train.CamAnglesComp = target_ang
-																print(target_ang)]]
-																return ent:OldCalcAbsolutePosition(...)
-												end
-												print(OldSeat.OnAngleChangeID)--]=]
+			train.OldAng = false
+			--OldSeat.CalcAbsolutePosition = function(...) return ... end
+			if not OldSeat.OldCalcAbsolutePosition then
+				OldSeat.OldCalcAbsolutePosition = OldSeat.CalcAbsolutePosition
+			end
+			OldSeat.CalcAbsolutePosition = function(ent,...)
+				--[[local target_ang = Angle(0,0,0)
+				local train = ent:GetNW2Entity("TrainEntity")
+				if not IsValid(train) then return end
+				target_ang:RotateAroundAxis(ent:GetAngles():Forward(),-train.CamAng.p)
+				target_ang:RotateAroundAxis(ent:GetAngles():Up(),train.CamAng.y)
+				target_ang:RotateAroundAxis(ent:GetAngles():Right(),train.CamAng.r)
+				train.CamAnglesComp = target_ang
+				print(target_ang)]]
+				return ent:OldCalcAbsolutePosition(...)
+			end
+			print(OldSeat.OnAngleChangeID)--]=]
 		elseif IsValid( OldSeat ) then
 			OldSeat.CalcAbsolutePosition = OldSeat.OldCalcAbsolutePosition or OldSeat.CalcAbsolutePosition
 			OldSeat.OldCalcAbsolutePosition = nil
@@ -2049,6 +2054,7 @@ hook.Add( "CalcVehicleView", "mplr_TrainView", function( seat, ply, tbl )
 		if trainAng.y < -180 then trainAng.y = trainAng.y + 360 end
 		if trainAng.y > 0 then
 			train.CamPos = train:LocalToWorld( train.MirrorCams[ 1 ] )
+			print( train.CamPos )
 			train.CamAngles = train:LocalToWorldAngles( train.MirrorCams[ 2 ] )
 			return {
 				origin = train.CamPos,
@@ -2219,11 +2225,11 @@ hook.Add( "Think", "mplr-cabin-panel", function()
 					end
 
 					--[[toolTipPosition = nil
-																				if button.tooltipState then
-																								local newTT,newTTpos = button.tooltipState(train)
-																								toolTipText = toolTipText..newTT
-																								toolTipPosition = Metrostroi.GetPhrase(newTTpos)
-																				end]]
+					if button.tooltipState then
+						local newTT,newTTpos = button.tooltipState(train)
+						toolTipText = toolTipText..newTT
+						toolTipPosition = Metrostroi.GetPhrase(newTTpos)
+					end]]
 					local convar
 					if IsValid( GetConVar( "metrostroi_disablehovertextpos" ) ) then
 						convar = GetConVar( "metrostroi_disablehovertextpos" )
@@ -2240,36 +2246,36 @@ end )
 
 local C_ScrollSensitivity = GetConVar( "mplr_scrollwheel_sensitivity" ):GetFloat()
 --[[hook.Add( "StartCommand" , "mplr-mouseThrottle" , function()
-	local ply = LocalPlayer()
-	if not IsValid( ply ) then return end
-	local train , outside = isValidTrainDriver( ply )
-	if not IsValid( train ) then return end
-	if gui.IsConsoleVisible() or gui.IsGameUIVisible() or IsValid( vgui.GetHoveredPanel() ) and not vgui.IsHoveringWorld() and vgui.GetHoveredPanel():GetParent() ~= vgui.GetWorldPanel() then return end
-	local currentTime = CurTime()
-	local lastScrollTime = 0
-	local scrollCount = 0
-	local scrollResetTime = 0
-	local cmd = ply:GetCurrentCommand()
-	print(cmd:GetMouseWheel())
-	-- Increment scroll count based on mouse wheel input
-	if input.IsMouseDown( MOUSE_WHEEL_UP ) then
-		print("up")
-		scrollCount = scrollCount + 1
-		lastScrollTime = currentTime
-	elseif input.IsMouseDown( MOUSE_WHEEL_DOWN ) then
-		scrollCount = scrollCount - 1
-		lastScrollTime = currentTime
-	end
+local ply = LocalPlayer()
+if not IsValid( ply ) then return end
+local train , outside = isValidTrainDriver( ply )
+if not IsValid( train ) then return end
+if gui.IsConsoleVisible() or gui.IsGameUIVisible() or IsValid( vgui.GetHoveredPanel() ) and not vgui.IsHoveringWorld() and vgui.GetHoveredPanel():GetParent() ~= vgui.GetWorldPanel() then return end
+local currentTime = CurTime()
+local lastScrollTime = 0
+local scrollCount = 0
+local scrollResetTime = 0
+local cmd = ply:GetCurrentCommand()
+print(cmd:GetMouseWheel())
+-- Increment scroll count based on mouse wheel input
+if input.IsMouseDown( MOUSE_WHEEL_UP ) then
+	print("up")
+	scrollCount = scrollCount + 1
+	lastScrollTime = currentTime
+elseif input.IsMouseDown( MOUSE_WHEEL_DOWN ) then
+	scrollCount = scrollCount - 1
+	lastScrollTime = currentTime
+end
 
-	-- Reset scroll count if enough time has passed since the last scroll
-	if currentTime - lastScrollTime > scrollResetTime then scrollCount = 0 end
-	-- Simulated analog value based on scroll count
-	local analogValue = scrollCount / C_ScrollSensitivity or 0 -- Adjust divisor for desired sensitivity
-	-- Send the analog value to the server
-	net.Start( "MouseWheelAnalog" )
-	net.WriteEntity( train )
-	net.WriteFloat( analogValue )
-	net.SendToServer()
+-- Reset scroll count if enough time has passed since the last scroll
+if currentTime - lastScrollTime > scrollResetTime then scrollCount = 0 end
+-- Simulated analog value based on scroll count
+local analogValue = scrollCount / C_ScrollSensitivity or 0 -- Adjust divisor for desired sensitivity
+-- Send the analog value to the server
+net.Start( "MouseWheelAnalog" )
+net.WriteEntity( train )
+net.WriteFloat( analogValue )
+net.SendToServer()
 end )]]
 -- Takes button table, sends current status
 local function sendButtonMessage( button, train, outside )
@@ -2483,17 +2489,17 @@ hook.Add( "HUDPaint", "mplr-draw-cameras", function()
 
 	render.SetScissorRect( 0, 0, 0, 0, false ) -- Disable after you are done
 	--[[
-				render.SetStencilEnable(true)
-				render.SetStencilTestMask(255);render.SetStencilWriteMask(255);render.SetStencilReferenceValue(10)
-				render.SetStencilPassOperation(STENCIL_REPLACE)
-				render.SetStencilFailOperation(STENCIL_KEEP)
-				render.SetStencilZFailOperation(STENCIL_KEEP)
-				render.SetStencilCompareFunction(STENCIL_ALWAYS)
-
-				render.SetStencilCompareFunction(STENCIL_EQUAL)
-
-				render.SetStencilEnable(false)
-				render.SetScissorRect(0,0,0,0,false)]]
+	render.SetStencilEnable(true)
+	render.SetStencilTestMask(255);render.SetStencilWriteMask(255);render.SetStencilReferenceValue(10)
+	render.SetStencilPassOperation(STENCIL_REPLACE)
+	render.SetStencilFailOperation(STENCIL_KEEP)
+	render.SetStencilZFailOperation(STENCIL_KEEP)
+	render.SetStencilCompareFunction(STENCIL_ALWAYS)
+	
+	render.SetStencilCompareFunction(STENCIL_EQUAL)
+	
+	render.SetStencilEnable(false)
+	render.SetScissorRect(0,0,0,0,false)]]
 end )
 
 local ppMat = Material( "pp/blurx" )
@@ -2514,28 +2520,28 @@ hook.Add( "HUDPaint", "mplr-draw-crosshair-tooltip", function()
 				local w2, h2 = surface.GetTextSize( v )
 				surface.DrawRect( scrX / 2 - w2 / 2 - 5, scrY / 2 - h2 / 2 + height * i, w2 + 10, h2 )
 				--[[if toolTipPosition and i==#texts then
-																				local st,en = v:find(toolTipPosition)
-																				local textSt,textEn = v:sub(1,st-1),v:sub(en+1,-1)
-																				local x1 = 0-w2/2
-																				local x2 = surface.GetTextSize(textSt)-w2/2
-																				local x3 = surface.GetTextSize(textSt)+surface.GetTextSize(toolTipPosition)-w2/2
-																				draw.SimpleText(textSt,"MetrostroiLabels",scrX/2+x1,y, toolTipColor or Color(255,255,255),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
-																				draw.SimpleText(toolTipPosition,"MetrostroiLabels",scrX/2+x2,y, toolTipColor or Color(0,255,0),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
-																				draw.SimpleText(textEn,"MetrostroiLabels",scrX/2+x3,y, toolTipColor or Color(255,255,255),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
-																				Metrostroi.DrawLine(scrX/2+x2,y+h/2-3,scrX/2+x3,y+h/2-3,toolTipColor or Color(0,255,0),1)
-																else]]
+				local st,en = v:find(toolTipPosition)
+				local textSt,textEn = v:sub(1,st-1),v:sub(en+1,-1)
+				local x1 = 0-w2/2
+				local x2 = surface.GetTextSize(textSt)-w2/2
+				local x3 = surface.GetTextSize(textSt)+surface.GetTextSize(toolTipPosition)-w2/2
+				draw.SimpleText(textSt,"MetrostroiLabels",scrX/2+x1,y, toolTipColor or Color(255,255,255),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+				draw.SimpleText(toolTipPosition,"MetrostroiLabels",scrX/2+x2,y, toolTipColor or Color(0,255,0),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+				draw.SimpleText(textEn,"MetrostroiLabels",scrX/2+x3,y, toolTipColor or Color(255,255,255),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+				Metrostroi.DrawLine(scrX/2+x2,y+h/2-3,scrX/2+x3,y+h/2-3,toolTipColor or Color(0,255,0),1)
+			else]]
 				draw.SimpleText( v, "MetrostroiLabels", scrX / 2, y, toolTipColor or Color( 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 				--end
 			end
 			--[[
-												local w1 = surface.GetTextSize(text1)
-												local w2 = surface.GetTextSize(text2)
-
-												surface.SetTextColor(toolTipColor or Color(255,255,255))
-												surface.SetTextPos((scrX-w1)/2,scrY/2+10)
-												surface.DrawText(text1)
-												surface.SetTextPos((scrX-w2)/2,scrY/2+30)
-												surface.DrawText(text2)]]
+			local w1 = surface.GetTextSize(text1)
+			local w2 = surface.GetTextSize(text2)
+			
+			surface.SetTextColor(toolTipColor or Color(255,255,255))
+			surface.SetTextPos((scrX-w1)/2,scrY/2+10)
+			surface.DrawText(text1)
+			surface.SetTextPos((scrX-w2)/2,scrY/2+30)
+			surface.DrawText(text2)]]
 		end
 	end
 end )
