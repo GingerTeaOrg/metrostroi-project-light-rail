@@ -2,7 +2,7 @@ if Metrostroi.Paths then
     UF.SwitchEntitiesByID = {}
     UF.ActiveRoutes = {}
     UF.SignalBlocks = {}
-    UF.Stations = {}
+    UF.StationEntsByIndex = {}
 end
 
 function UF.CheckOccupation()
@@ -30,10 +30,16 @@ end )
 
 function UF.UpdateStations()
     if not Metrostroi.Stations then return end
+    if not UF.StationEntsByIndex then return end
     local platforms = ents.FindByClass( "gmod_track_uf_platform" )
     for _, platform in pairs( platforms ) do
         local station = Metrostroi.Stations[ platform.StationIndex ] or {}
         Metrostroi.Stations[ platform.StationIndex ] = station
+        -- Ensure the sub-table for the specific station index is initialized
+        UF.StationEntsByIndex = UF.StationEntsByIndex or {}
+        UF.StationEntsByIndex[ platform.StationIndex ] = UF.StationEntsByIndex[ platform.StationIndex ] or {}
+        -- Assign the platform object to the correct platform index within the station index
+        UF.StationEntsByIndex[ platform.StationIndex ][ platform.PlatformIndex ] = platform
         -- Position
         local dir = platform.PlatformEnd - platform.PlatformStart
         local pos1 = Metrostroi.GetPositionOnTrack( platform.PlatformStart, dir:Angle() )[ 1 ]
@@ -398,7 +404,6 @@ function UF.Load( name, keep_signs )
     name = name or game.GetMap()
     -- loadTracks(name)
     -- Initialize stations list
-    UF.UpdateStations()
     -- Print info
     -- UF.PrintStatistics()
     -- Ignore updates to prevent created/removed switches from constantly updating table of positions
@@ -411,6 +416,7 @@ function UF.Load( name, keep_signs )
         UF.UpdateSignalEntities()
         -- Load switches
         UF.UpdateSwitchEntities()
+        UF.UpdateStations()
         UF.ConstructDefaultSignalBlocks()
         if not ents.FindByClass( "gmod_mplr_signalserver" ) then
             Server = ents.Create( "gmod_mplr_signalserver" )
