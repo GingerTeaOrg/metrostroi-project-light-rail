@@ -142,6 +142,18 @@ UF.AddIBISRoutes( "Frankfurt", {
     }
 } )
 
+UF.AddLinePrefixes( "Frankfurt", {
+    [ "01" ] = "U",
+    [ "02" ] = "U",
+    [ "03" ] = "U",
+    [ "04" ] = "U",
+    [ "05" ] = "U",
+    [ "06" ] = "U",
+    [ "07" ] = "U",
+    [ "08" ] = "U",
+    [ "09" ] = "U",
+} )
+
 UF.AddIBISDestinations( "Frankfurt", {
     [ 045 ] = "Leerfahrt",
     [ 700 ] = " ",
