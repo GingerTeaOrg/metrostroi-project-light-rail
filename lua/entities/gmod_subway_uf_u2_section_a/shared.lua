@@ -227,8 +227,7 @@ ENT.SectionBDoors = {
 	[ 6 ] = Vector( -88.604, 46.4148, 35.3841 )
 }
 
-ENT.DoorNumberRight = 6
-ENT.DoorNumberLeft = 6
+ENT.Bidirectional = true
 ENT.Cameras = { { Vector( 400, -55, 90 ), Angle( 0, -170, 0 ), "Train.UF_U2.OutTheWindowRight" }, { Vector( 400, 55, 90 ), Angle( 0, 170, 0 ), "Train.UF_U2.OutTheWindowLeft" }, { Vector( 300, 6, 90 ), Angle( 0, 180 + 5, 0 ), "Train.UF_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 90 ), Angle( 0, 0, 0 ), "Train.UF_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 388, -30, 80 ), Angle( 0, -90, 0 ), "Train.UF_U2.RouteList" }, { Vector( 388, 0, 120 ), Angle( 0, -180, 0 ), "Train.UF_U2.Rollsign" }, { Vector( 450, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.UF_U2.Bogey" }, { Vector( 413, -11, 62 ), Angle( 35, -46, 0 ), "Train.UF_U2.IBIS" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.UF_U2.IBISKey" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.UF_U2.Panto" } }
 ENT.MirrorCams = { Vector( 441, 72, 15 ), Angle( 1, 180, 0 ), 15, Vector( 441, -72, 15 ), Angle( 1, 180, 0 ), 18 }
 function ENT:InitializeSystems()

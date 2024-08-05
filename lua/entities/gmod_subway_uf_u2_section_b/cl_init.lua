@@ -1,17 +1,15 @@
-include("shared.lua")
-
+include( "shared.lua" )
 ENT.ClientProps = {}
 ENT.AutoAnims = {}
 ENT.ClientSounds = {}
 ENT.ButtonMapMPLR = {}
-
 ENT.Lights = {
 	-- Headlight glow
-	[1] = {
+	[ 1 ] = {
 		"headlight",
-		Vector(-410, 39, 43),
-		Angle(10, 0, 0),
-		Color(216, 161, 92),
+		Vector( -410, 39, 43 ),
+		Angle( 10, 0, 0 ),
+		Color( 216, 161, 92 ),
 		fov = 60,
 		farz = 600,
 		brightness = 1.2,
@@ -19,11 +17,11 @@ ENT.Lights = {
 		shadows = 1,
 		headlight = true
 	},
-	[2] = {
+	[ 2 ] = {
 		"headlight",
-		Vector(-410, -39, 43),
-		Angle(10, 0, 0),
-		Color(216, 161, 92),
+		Vector( -410, -39, 43 ),
+		Angle( 10, 0, 0 ),
+		Color( 216, 161, 92 ),
 		fov = 60,
 		farz = 600,
 		brightness = 1.2,
@@ -31,11 +29,11 @@ ENT.Lights = {
 		shadows = 1,
 		headlight = true
 	},
-	[3] = {
+	[ 3 ] = {
 		"light",
-		Vector(-406, 0, 100),
-		Angle(0, 0, 0),
-		Color(216, 161, 92),
+		Vector( -406, 0, 100 ),
+		Angle( 0, 0, 0 ),
+		Color( 216, 161, 92 ),
 		fov = 40,
 		farz = 450,
 		brightness = 3,
@@ -43,11 +41,11 @@ ENT.Lights = {
 		shadows = 1,
 		headlight = true
 	},
-	[4] = {
+	[ 4 ] = {
 		"headlight",
-		Vector(-545, 38.5, 40),
-		Angle(-20, 0, 0),
-		Color(255, 0, 0),
+		Vector( -545, 38.5, 40 ),
+		Angle( -20, 0, 0 ),
+		Color( 255, 0, 0 ),
 		fov = 50,
 		brightness = 0.7,
 		farz = 50,
@@ -55,11 +53,11 @@ ENT.Lights = {
 		shadows = 0,
 		backlight = true
 	},
-	[5] = {
+	[ 5 ] = {
 		"headlight",
-		Vector(-545, -38.5, 40),
-		Angle(-20, 0, 0),
-		Color(255, 0, 0),
+		Vector( -545, -38.5, 40 ),
+		Angle( -20, 0, 0 ),
+		Color( 255, 0, 0 ),
 		fov = 50,
 		brightness = 0.7,
 		farz = 50,
@@ -67,13 +65,29 @@ ENT.Lights = {
 		shadows = 0,
 		backlight = true
 	},
-	[6] = {"headlight", Vector(-406, 39, 98), Angle(90, 0, 0), Color(226, 197, 160), brightness = 0.9, scale = 0.7, texture = "effects/flashlight/soft.vmt"}, -- cab lights
-	[16] = {"headlight", Vector(-406, -39, 98), Angle(90, 0, 0), Color(226, 197, 160), brightness = 0.9, scale = 0.7, texture = "effects/flashlight/soft.vmt"},
-	[7] = {
+	[ 6 ] = {
+		"headlight", -- cab lights
+		Vector( -406, 39, 98 ),
+		Angle( 90, 0, 0 ),
+		Color( 226, 197, 160 ),
+		brightness = 0.9,
+		scale = 0.7,
+		texture = "effects/flashlight/soft.vmt"
+	},
+	[ 16 ] = {
 		"headlight",
-		Vector(-545, 38.5, 45),
-		Angle(-20, 0, 0),
-		Color(255, 102, 0),
+		Vector( -406, -39, 98 ),
+		Angle( 90, 0, 0 ),
+		Color( 226, 197, 160 ),
+		brightness = 0.9,
+		scale = 0.7,
+		texture = "effects/flashlight/soft.vmt"
+	},
+	[ 7 ] = {
+		"headlight",
+		Vector( -545, 38.5, 45 ),
+		Angle( -20, 0, 0 ),
+		Color( 255, 102, 0 ),
 		fov = 50,
 		brightness = 0.7,
 		farz = 50,
@@ -81,11 +95,11 @@ ENT.Lights = {
 		shadows = 0,
 		backlight = true
 	},
-	[8] = {
+	[ 8 ] = {
 		"headlight",
-		Vector(-545, -38.5, 45),
-		Angle(-20, 0, 0),
-		Color(255, 102, 0),
+		Vector( -545, -38.5, 45 ),
+		Angle( -20, 0, 0 ),
+		Color( 255, 102, 0 ),
 		fov = 50,
 		brightness = 0.7,
 		farz = 50,
@@ -93,97 +107,271 @@ ENT.Lights = {
 		shadows = 0,
 		backlight = true
 	},
-	[9] = {"dynamiclight", Vector(-400, 30, 490), Angle(90, 0, 0), Color(226, 197, 160), fov = 100, brightness = 0.9, scale = 1.0, texture = "effects/flashlight/soft.vmt"}, -- passenger light front left
-	[10] = {"dynamiclight", Vector(-400, -30, 490), Angle(90, 0, 0), Color(226, 197, 160), fov = 100, brightness = 1.0, scale = 1.0, texture = "effects/flashlight/soft.vmt"}, -- passenger light front right
-	[11] = {"dynamiclight", Vector(-327, -52, 71), Angle(90, 0, 0), Color(255, 102, 0), fov = 100, brightness = 1.0, scale = 1.0, texture = "effects/flashlight/soft.vmt"}
+	[ 9 ] = {
+		"dynamiclight", -- passenger light front left
+		Vector( -400, 30, 490 ),
+		Angle( 90, 0, 0 ),
+		Color( 226, 197, 160 ),
+		fov = 100,
+		brightness = 0.9,
+		scale = 1.0,
+		texture = "effects/flashlight/soft.vmt"
+	},
+	[ 10 ] = {
+		"dynamiclight", -- passenger light front right
+		Vector( -400, -30, 490 ),
+		Angle( 90, 0, 0 ),
+		Color( 226, 197, 160 ),
+		fov = 100,
+		brightness = 1.0,
+		scale = 1.0,
+		texture = "effects/flashlight/soft.vmt"
+	},
+	[ 11 ] = {
+		"dynamiclight",
+		Vector( -327, -52, 71 ),
+		Angle( 90, 0, 0 ),
+		Color( 255, 102, 0 ),
+		fov = 100,
+		brightness = 1.0,
+		scale = 1.0,
+		texture = "effects/flashlight/soft.vmt"
+	}
 }
 
-local function GetDoorPosition(i, k, j)
+local function GetDoorPosition( i, k, j )
 	if j == 0 then
-		return Vector(230.8 - 35.0 * k - 232.2 * i, -67.5 * (1 - 2 * k), 4.3)
+		return Vector( 230.8 - 35.0 * k - 232.2 * i, -67.5 * ( 1 - 2 * k ), 4.3 )
 	else
-		return Vector(230.8 - 35.0 * (1 - k) - 232.2 * i, -66 * (1 - 2 * k), 4.25)
+		return Vector( 230.8 - 35.0 * ( 1 - k ) - 232.2 * i, -66 * ( 1 - 2 * k ), 4.25 )
 	end
 end
 
 function ENT:Initialize()
-	self.BaseClass.Initialize(self)
-	self.IBIS = self:CreateRT("IBIS2", 512, 128)
-
-	self.SectionA = self:GetNW2Entity("SectionA")
+	self.BaseClass.Initialize( self )
+	self.IBIS = self:CreateRT( "IBIS2", 512, 128 )
+	self.SectionA = self:GetNW2Entity( "SectionA" )
 	self.Bogeys = {}
-
-	self.DoorSwitchStates = {["Left"] = 1, ["None"] = 0.5, ["Right"] = 0}
+	self.DoorSwitchStates = {
+		[ "Left" ] = 1,
+		[ "None" ] = 0.5,
+		[ "Right" ] = 0
+	}
 
 	self.ScrollModifier = 0
 	self.ScrollMoment = 0
-
 	if not self.FrontBogey or not self.RearBogey or not self.MiddleBogey then
-		self.FrontBogey = self:GetNW2Entity("FrontBogey")
-		self.MiddleBogey = self:GetNW2Entity("MiddleBogey")
-		self.RearBogey = self:GetNW2Entity("RearBogey")
-		table.insert(self.Bogeys, self.FrontBogey)
-		table.insert(self.Bogeys, self.MiddleBogey)
-		table.insert(self.Bogeys, self.RearBogey)
+		self.FrontBogey = self:GetNW2Entity( "FrontBogey" )
+		self.MiddleBogey = self:GetNW2Entity( "MiddleBogey" )
+		self.RearBogey = self:GetNW2Entity( "RearBogey" )
+		table.insert( self.Bogeys, self.FrontBogey )
+		table.insert( self.Bogeys, self.MiddleBogey )
+		table.insert( self.Bogeys, self.RearBogey )
 	end
+
 	self.SpeedoAnim = 0
-
 	self.ThrottleLastEngaged = 0
-
-	if IsValid(self.SectionA) then self:UpdateWagonNumber() end
+	if IsValid( self.SectionA ) then self:UpdateWagonNumber() end
 	self.BatterySwitch = 0.5
-
 end
 
-ENT.ClientProps["Speedo"] = {model = "models/lilly/uf/u2/cab/speedo.mdl", pos = Vector(-418.192, -10, 54.66), ang = Angle(-8.7, 180, 0), nohide = true}
-ENT.ClientProps["Mirror"] = {model = "models/lilly/uf/u2/mirror.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), nohide = true}
+ENT.ClientProps[ "Speedo" ] = {
+	model = "models/lilly/uf/u2/cab/speedo.mdl",
+	pos = Vector( -418.192, -10, 54.66 ),
+	ang = Angle( -8.7, 180, 0 ),
+	nohide = true
+}
 
-ENT.ClientProps["Mirror_vintage"] = {model = "models/lilly/uf/u2/mirror_vintage.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), nohide = true}
+ENT.ClientProps[ "Mirror" ] = {
+	model = "models/lilly/uf/u2/mirror.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	nohide = true
+}
 
-ENT.ClientProps["Door_fr1"] = {model = "models/lilly/uf/u2/door_h_fr1.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
+ENT.ClientProps[ "Mirror_vintage" ] = {
+	model = "models/lilly/uf/u2/mirror_vintage.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	nohide = true
+}
 
-ENT.ClientProps["Door_fr2"] = {model = "models/lilly/uf/u2/door_h_fr2.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
+ENT.ClientProps[ "Door_fr1" ] = {
+	model = "models/lilly/uf/u2/door_h_fr1.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	nohide = true
+}
 
-ENT.ClientProps["Door_rr1"] = {model = "models/lilly/uf/u2/door_h_fr1.mdl", pos = Vector(242.5, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
+ENT.ClientProps[ "Door_fr2" ] = {
+	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	nohide = true
+}
 
-ENT.ClientProps["Door_rr2"] = {model = "models/lilly/uf/u2/door_h_fr2.mdl", pos = Vector(242.5, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
+ENT.ClientProps[ "Door_rr1" ] = {
+	model = "models/lilly/uf/u2/door_h_fr1.mdl",
+	pos = Vector( 242.5, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	nohide = true
+}
 
-ENT.ClientProps["Door_fl1"] = {model = "models/lilly/uf/u2/door_h_fr1.mdl", pos = Vector(-721.3, 0, 0), ang = Angle(0, 0, 0), scale = 1, nohide = true}
+ENT.ClientProps[ "Door_rr2" ] = {
+	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector( 242.5, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	nohide = true
+}
 
-ENT.ClientProps["Door_fl2"] = {model = "models/lilly/uf/u2/door_h_fr2.mdl", pos = Vector(-721.3, 0, 0), ang = Angle(0, 0, 0), scale = 1, nohide = true}
+ENT.ClientProps[ "Door_fl1" ] = {
+	model = "models/lilly/uf/u2/door_h_fr1.mdl",
+	pos = Vector( -721.3, 0, 0 ),
+	ang = Angle( 0, 0, 0 ),
+	scale = 1,
+	nohide = true
+}
 
-ENT.ClientProps["Door_rl1"] = {model = "models/lilly/uf/u2/door_h_fr1.mdl", pos = Vector(-479, 0, 0), ang = Angle(0, 0, 0), scale = 1, nohide = true}
+ENT.ClientProps[ "Door_fl2" ] = {
+	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector( -721.3, 0, 0 ),
+	ang = Angle( 0, 0, 0 ),
+	scale = 1,
+	nohide = true
+}
 
-ENT.ClientProps["Door_rl2"] = {model = "models/lilly/uf/u2/door_h_fr2.mdl", pos = Vector(-479, 0, 0), ang = Angle(0, 0, 0), scale = 1, nohide = true}
-ENT.ButtonMapMPLR["Rollsign"] = {pos = Vector(-424.5, 25, 109), ang = Angle(0, 270, 90), width = 780, height = 160, scale = 0.0625}
+ENT.ClientProps[ "Door_rl1" ] = {
+	model = "models/lilly/uf/u2/door_h_fr1.mdl",
+	pos = Vector( -479, 0, 0 ),
+	ang = Angle( 0, 0, 0 ),
+	scale = 1,
+	nohide = true
+}
 
-ENT.ClientProps["reverser"] = {model = "models/lilly/uf/u2/cab/reverser_lever.mdl", pos = Vector(0, 0.5, 0), ang = Angle(0, 180, 0)}
-ENT.ClientProps["Throttle"] = {model = "models/lilly/uf/common/cab/throttle.mdl", pos = Vector(0, 0.2, 0), ang = Angle(0, 180, 0), nohide = true}
-ENT.ClientProps["cab_decal"] = {model = "models/lilly/uf/u2/u2-cabfront-decal-1968.mdl", pos = Vector(0, 0, 0), ang = Angle(0, -180, 0), scale = 1, nohide = true}
-ENT.ClientProps["duewag_decal"] = {model = "models/lilly/uf/u2/duewag_decal.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1}
-ENT.ClientProps["cab"] = {model = "models/lilly/uf/u2/u2-cabfront_b.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
-ENT.ClientProps["headlights_on"] = {model = "models/lilly/uf/u2/headlights_on.mdl", pos = Vector(0, 0, 43), ang = Angle(0, 180, 0), scale = 1, hide = 2}
-ENT.ClientProps["carnumber1"] = {model = "models/lilly/uf/u2/carnumber_front_1.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
-ENT.ClientProps["carnumber2"] = {model = "models/lilly/uf/u2/carnumber_front_2.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
-ENT.ClientProps["carnumber3"] = {model = "models/lilly/uf/u2/carnumber_front_3.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1, nohide = true}
-ENT.ClientProps["Mirror_vintage"] = {model = "models/lilly/uf/u2/mirror_vintage.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), nohide = true}
-ENT.ClientProps["RetroEquipment"] = {model = "models/lilly/uf/u2/retroprop_b.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 0, 0), scale = 1, nohide = true}
+ENT.ClientProps[ "Door_rl2" ] = {
+	model = "models/lilly/uf/u2/door_h_fr2.mdl",
+	pos = Vector( -479, 0, 0 ),
+	ang = Angle( 0, 0, 0 ),
+	scale = 1,
+	nohide = true
+}
 
-ENT.ClientProps["IBIS"] = {model = "models/lilly/uf/u2/IBIS.mdl", pos = Vector(0, 0, 0), ang = Angle(0, 180, 0), scale = 1}
-ENT.ButtonMapMPLR["IBISScreen"] = {
-	pos = Vector(-419.6, 12.75, 60.35),
-	ang = Angle(0, 45.4, 48.5), -- (0,44.5,-47.9),
+ENT.ButtonMapMPLR[ "Rollsign" ] = {
+	pos = Vector( -424.5, 25, 109 ),
+	ang = Angle( 0, 270, 90 ),
+	width = 780,
+	height = 160,
+	scale = 0.0625
+}
+
+ENT.ClientProps[ "reverser" ] = {
+	model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
+	pos = Vector( 0, 0.5, 0 ),
+	ang = Angle( 0, 180, 0 )
+}
+
+ENT.ClientProps[ "Throttle" ] = {
+	model = "models/lilly/uf/common/cab/throttle.mdl",
+	pos = Vector( 0, 0.2, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	nohide = true
+}
+
+ENT.ClientProps[ "cab_decal" ] = {
+	model = "models/lilly/uf/u2/u2-cabfront-decal-1968.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, -180, 0 ),
+	scale = 1,
+	nohide = true
+}
+
+ENT.ClientProps[ "duewag_decal" ] = {
+	model = "models/lilly/uf/u2/duewag_decal.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1
+}
+
+ENT.ClientProps[ "cab" ] = {
+	model = "models/lilly/uf/u2/u2-cabfront_b.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	nohide = true
+}
+
+ENT.ClientProps[ "headlights_on" ] = {
+	model = "models/lilly/uf/u2/headlights_on.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	hide = 2
+}
+
+ENT.ClientProps[ "carnumber1" ] = {
+	model = "models/lilly/uf/u2/carnumber_front_1.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	nohide = true
+}
+
+ENT.ClientProps[ "carnumber2" ] = {
+	model = "models/lilly/uf/u2/carnumber_front_2.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	nohide = true
+}
+
+ENT.ClientProps[ "carnumber3" ] = {
+	model = "models/lilly/uf/u2/carnumber_front_3.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1,
+	nohide = true
+}
+
+ENT.ClientProps[ "Mirror_vintage" ] = {
+	model = "models/lilly/uf/u2/mirror_vintage.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	nohide = true
+}
+
+ENT.ClientProps[ "RetroEquipment" ] = {
+	model = "models/lilly/uf/u2/retroprop_b.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 0, 0 ),
+	scale = 1,
+	nohide = true
+}
+
+ENT.ClientProps[ "IBIS" ] = {
+	model = "models/lilly/uf/u2/IBIS.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+	scale = 1
+}
+
+ENT.ButtonMapMPLR[ "IBISScreen" ] = {
+	pos = Vector( -419.6, 12.75, 60.35 ),
+	ang = Angle( 0, 45.4, 48.5 ), -- (0,44.5,-47.9),
 	width = 117,
 	height = 29.9,
 	scale = 0.0311
 }
-ENT.ButtonMapMPLR["IBIS"] = {
-	pos = Vector(-415.2, 18, 61),
-	ang = Angle(48, -45, 0),
+
+ENT.ButtonMapMPLR[ "IBIS" ] = {
+	pos = Vector( -415.2, 18, 61 ),
+	ang = Angle( 48, -45, 0 ),
 	width = 100,
 	height = 210,
 	scale = 0.04,
-
 	buttons = {
 		{
 			ID = "Number1Set",
@@ -197,14 +385,13 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				min = 0,
 				max = 1,
 				var = "Number1",
-				speed = 1,
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -221,10 +408,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -241,10 +428,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -261,10 +448,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -281,10 +468,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -301,10 +488,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -321,10 +508,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -341,10 +528,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -361,10 +548,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -381,10 +568,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -401,10 +588,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -421,10 +608,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -441,10 +628,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -461,10 +648,10 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -481,24 +668,22 @@ ENT.ButtonMapMPLR["IBIS"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "IBIS_beep" end,
+				snd = function( val ) return val and "IBIS_beep" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		}
 	}
 }
 
-ENT.ButtonMapMPLR["Cab"] = {
-	pos = Vector(-419.6, -24.88, 55.2),
-	ang = Angle(0, 90, 8),
+ENT.ButtonMapMPLR[ "Cab" ] = {
+	pos = Vector( -419.6, -24.88, 55.2 ),
+	ang = Angle( 0, 90, 8 ),
 	width = 500,
 	height = 120,
 	scale = 0.069,
-
 	buttons = {
-
 		{
 			ID = "WarningAnnouncementSet",
 			x = 266,
@@ -512,10 +697,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				var = "WarningAnnouncement",
 				speed = 15,
 				sndvol = 1,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -524,7 +709,11 @@ ENT.ButtonMapMPLR["Cab"] = {
 			y = 58,
 			radius = 10,
 			tooltip = "Blinker Status Lamp",
-			model = {model = "models/lilly/uf/u2/cab/button_bulge_green.mdl", z = -5, name = "BlinkerLamp"}
+			model = {
+				model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",
+				z = -5,
+				name = "BlinkerLamp"
+			}
 		},
 		{
 			ID = "DepartureBlockedLamp",
@@ -538,7 +727,7 @@ ENT.ButtonMapMPLR["Cab"] = {
 					var = "DepartureBlocked",
 					z = 0,
 					anim = true,
-					lcolor = Color(255, 0, 0),
+					lcolor = Color( 255, 0, 0 ),
 					lz = 12,
 					lbright = 3,
 					lfov = 130,
@@ -552,10 +741,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				var = "DepartureBlocked",
 				speed = 15,
 				sndvol = 1,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -568,7 +757,7 @@ ENT.ButtonMapMPLR["Cab"] = {
 				model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl",
 				z = -5,
 				ang = 0,
-				getfunc = function(ent) return ent:GetPackedRatio("Ventilation") end,
+				getfunc = function( ent ) return ent:GetPackedRatio( "Ventilation" ) end,
 				var = "Ventilation",
 				speed = 4,
 				min = 0,
@@ -578,10 +767,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
-				snd = function(val) return val and "button_on" end,
+				snd = function( val ) return val and "button_on" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -600,10 +789,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				min = 0,
 				max = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -621,10 +810,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -642,10 +831,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -663,10 +852,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -685,10 +874,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -697,7 +886,13 @@ ENT.ButtonMapMPLR["Cab"] = {
 			y = 57,
 			radius = 10,
 			tooltip = "High Beam On",
-			model = {model = "models/lilly/uf/u2/cab/button_bulge_blue.mdl", z = -6, ang = 45, anim = false, var = "HighbeamLamp"}
+			model = {
+				model = "models/lilly/uf/u2/cab/button_bulge_blue.mdl",
+				z = -6,
+				ang = 45,
+				anim = false,
+				var = "HighbeamLamp"
+			}
 		},
 		{
 			ID = "AutomatOnSet",
@@ -715,10 +910,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -737,10 +932,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -759,10 +954,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -780,10 +975,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -793,7 +988,6 @@ ENT.ButtonMapMPLR["Cab"] = {
 			radius = 10,
 			tooltip = "Enable Headlights",
 			model = {
-
 				model = "models/lilly/uf/u2/cab/battery_switch.mdl",
 				z = 0,
 				ang = 45,
@@ -802,10 +996,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 90,
 				sndmax = 1e3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -818,16 +1012,16 @@ ENT.ButtonMapMPLR["Cab"] = {
 				model = "models/lilly/uf/u2/cab/battery_switch.mdl",
 				z = -2.5,
 				ang = 45,
-				getfunc = function(ent) return ent.BatterySwitch end,
+				getfunc = function( ent ) return ent.BatterySwitch end,
 				var = "BatteryToggle",
 				speed = 5,
 				min = 0,
 				max = 1,
 				sndvol = 20,
-				snd = function(val, val2) return val2 == 1 and "button_on" or val and "button_on" or "button_off" end,
+				snd = function( val, val2 ) return val2 == 1 and "button_on" or val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -846,10 +1040,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -866,10 +1060,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -888,10 +1082,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -910,10 +1104,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -932,10 +1126,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -952,10 +1146,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -972,10 +1166,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -988,7 +1182,7 @@ ENT.ButtonMapMPLR["Cab"] = {
 				model = "models/lilly/uf/u2/cab/battery_switch.mdl",
 				z = 0,
 				ang = 45,
-				getfunc = function(ent) return ent:GetNW2Float("BlinkerStatus") end,
+				getfunc = function( ent ) return ent:GetNW2Float( "BlinkerStatus" ) end,
 				var = "BlinkerStatus",
 				speed = 10,
 				vmin = 0,
@@ -996,7 +1190,7 @@ ENT.ButtonMapMPLR["Cab"] = {
 				sndvol = 20,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1015,10 +1209,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1037,10 +1231,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1058,10 +1252,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1079,10 +1273,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1092,7 +1286,18 @@ ENT.ButtonMapMPLR["Cab"] = {
 			radius = 10,
 			tooltip = "Malfunction detected",
 			model = {
-				lamp = {var = "DepartureBlocked", z = 0, anim = true, lcolor = Color(129, 0, 0), lz = 12, lbright = 3, lfov = 130, lfar = 16, lnear = 8, lshadows = 0},
+				lamp = {
+					var = "DepartureBlocked",
+					z = 0,
+					anim = true,
+					lcolor = Color( 129, 0, 0 ),
+					lz = 12,
+					lbright = 3,
+					lfov = 130,
+					lfar = 16,
+					lnear = 8,
+					lshadows = 0
+				},
 				model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",
 				z = -5,
 				ang = 0,
@@ -1101,10 +1306,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1114,7 +1319,18 @@ ENT.ButtonMapMPLR["Cab"] = {
 			radius = 10,
 			tooltip = "Sander indicator",
 			model = {
-				lamp = {var = "Sand", z = 0, anim = true, lcolor = Color(129, 0, 0), lz = 12, lbright = 3, lfov = 130, lfar = 16, lnear = 8, lshadows = 0},
+				lamp = {
+					var = "Sand",
+					z = 0,
+					anim = true,
+					lcolor = Color( 129, 0, 0 ),
+					lz = 12,
+					lbright = 3,
+					lfov = 130,
+					lfar = 16,
+					lnear = 8,
+					lshadows = 0
+				},
 				model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",
 				z = -7,
 				ang = 0,
@@ -1123,10 +1339,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1144,10 +1360,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1165,10 +1381,10 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1181,16 +1397,16 @@ ENT.ButtonMapMPLR["Cab"] = {
 				model = "models/lilly/uf/u2/cab/battery_switch.mdl",
 				z = -2.5,
 				ang = 45,
-				getfunc = function(ent) return ent.DoorSwitchStates[ent:GetNW2String("DoorSideUnlocked", "None")] end,
+				getfunc = function( ent ) return ent.DoorSwitchStates[ ent:GetNW2String( "DoorSideUnlocked", "None" ) ] end,
 				var = "DoorSideSelect",
 				speed = 5,
 				vmin = 0,
 				vmax = 1,
 				sndvol = 50,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		},
 		{
@@ -1208,159 +1424,144 @@ ENT.ButtonMapMPLR["Cab"] = {
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
-				snd = function(val) return val and "button_on" or "button_off" end,
+				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
 				sndmax = 1e3 / 3,
-				sndang = Angle(-90, 0, 0)
+				sndang = Angle( -90, 0, 0 )
 			}
 		}
 	}
 }
 
 function ENT:Draw()
-	self.BaseClass.Draw(self)
+	self.BaseClass.Draw( self )
 	self:UpdateWagonNumber()
 end
 
 function ENT:DrawPost()
-	self.RTMaterial:SetTexture("$basetexture", self.IBIS)
-	self:DrawOnPanel("IBISScreen", function(...)
-		surface.SetMaterial(self.RTMaterial)
-		surface.SetDrawColor(0, 65, 11)
-		surface.DrawTexturedRectRotated(59, 16, 116, 25, 0)
-	end)
+	self.RTMaterial:SetTexture( "$basetexture", self.IBIS )
+	self:DrawOnPanel( "IBISScreen", function( ... )
+		surface.SetMaterial( self.RTMaterial )
+		surface.SetDrawColor( 0, 65, 11 )
+		surface.DrawTexturedRectRotated( 59, 16, 116, 25, 0 )
+	end )
 
-	local mat = Material("models/lilly/uf/u2/rollsigns/frankfurt_stock.png")
-	self:DrawOnPanel("Rollsign", function(...)
-		surface.SetDrawColor(color_white)
-		surface.SetMaterial(mat)
-		surface.DrawTexturedRectUV(0, 0, 780, 160, 0, self.ScrollModifier, 1, self.ScrollModifier + 0.015)
-	end)
+	local mat = Material( "models/lilly/uf/u2/rollsigns/frankfurt_stock.png" )
+	self:DrawOnPanel( "Rollsign", function( ... )
+		surface.SetDrawColor( color_white )
+		surface.SetMaterial( mat )
+		surface.DrawTexturedRectUV( 0, 0, 780, 160, 0, self.ScrollModifier, 1, self.ScrollModifier + 0.015 )
+	end )
 end
+
 function ENT:UpdateWagonNumber()
-	if not IsValid(self.SectionA) then return end
+	if not IsValid( self.SectionA ) then return end
 	for i = 0, 3 do
 		-- self:ShowHide("TrainNumberL"..i,i<count)
 		-- self:ShowHide("TrainNumberR"..i,i<count)
 		-- if i< count then
-		local leftNum, middleNum, rightNum = self.ClientEnts["carnumber1"], self.ClientEnts["carnumber2"], self.ClientEnts["carnumber3"]
-		local num1 = tonumber(string.sub(self.SectionA:GetNW2Int("WagonNumber"), 1, 1), 10)
-		local num2 = tonumber(string.sub(self.SectionA:GetNW2Int("WagonNumber"), 2, 2), 10)
-		local num3 = tonumber(string.sub(self.SectionA:GetNW2Int("WagonNumber"), 3, 3), 10)
-		if IsValid(leftNum) then
-			if num1 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-				leftNum:SetSkin(10)
-			elseif num1 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-				leftNum:SetSkin(11)
-			elseif num1 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
-				leftNum:SetSkin(num1 + 10)
+		local leftNum, middleNum, rightNum = self.ClientEnts[ "carnumber1" ], self.ClientEnts[ "carnumber2" ], self.ClientEnts[ "carnumber3" ]
+		local num1 = tonumber( string.sub( self.SectionA:GetNW2Int( "WagonNumber" ), 1, 1 ), 10 )
+		local num2 = tonumber( string.sub( self.SectionA:GetNW2Int( "WagonNumber" ), 2, 2 ), 10 )
+		local num3 = tonumber( string.sub( self.SectionA:GetNW2Int( "WagonNumber" ), 3, 3 ), 10 )
+		if IsValid( leftNum ) then
+			if num1 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+				leftNum:SetSkin( 10 )
+			elseif num1 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+				leftNum:SetSkin( 11 )
+			elseif num1 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
+				leftNum:SetSkin( num1 + 10 )
 			else
-				leftNum:SetSkin(num1)
+				leftNum:SetSkin( num1 )
 			end
 		end
-		if IsValid(middleNum) then
-			if num2 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-				middleNum:SetSkin(10)
-			elseif num2 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-				middleNum:SetSkin(11)
-			elseif num2 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
-				middleNum:SetSkin(num2 + 10)
+
+		if IsValid( middleNum ) then
+			if num2 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+				middleNum:SetSkin( 10 )
+			elseif num2 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+				middleNum:SetSkin( 11 )
+			elseif num2 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
+				middleNum:SetSkin( num2 + 10 )
 			else
-				middleNum:SetSkin(num2)
+				middleNum:SetSkin( num2 )
 			end
 		end
-		if IsValid(rightNum) then
-			if num3 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-				rightNum:SetSkin(10)
-			elseif num3 < 1 and self:GetNW2String("Texture") ~= "OrEbSW" then
-				rightNum:SetSkin(11)
-			elseif num3 > 0 and self:GetNW2String("Texture") == "OrEbSW" then
-				rightNum:SetSkin(num3 + 9)
+
+		if IsValid( rightNum ) then
+			if num3 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+				rightNum:SetSkin( 10 )
+			elseif num3 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+				rightNum:SetSkin( 11 )
+			elseif num3 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
+				rightNum:SetSkin( num3 + 9 )
 			else
-				rightNum:SetSkin(num3)
+				rightNum:SetSkin( num3 )
 			end
 		end
 		-- end
 	end
-
 end
+
 function ENT:Think()
-	self.BaseClass.Think(self)
+	self.BaseClass.Think( self )
+	self.SectionA = self.SectionA or self:GetNW2Entity( "SectionA" )
+	if not IsValid( self.SectionA ) then -- we don't do anything without the A section
+		return
+	end
 
-	self.SectionA = self.SectionA or self:GetNW2Entity("SectionA")
-
-	if not IsValid(self.SectionA) then return end -- we don't do anything without the A section
-
-	self.Coupled = self.SectionA:GetNW2Bool("BIsCoupled", false) == true
-
-	self.BatteryOn = self.SectionA:GetNW2Bool("BatteryOn")
-
+	self.Coupled = self.SectionA:GetNW2Bool( "BIsCoupled", false ) == true
+	self.BatteryOn = self.SectionA:GetNW2Bool( "BatteryOn" )
 	self:Animations()
 	self:SoundRoutine()
-
 end
 
 function ENT:SoundRoutine()
-	self:SetSoundState("bell", self:GetNW2Bool("Bell", false) and 1 or 0, 1)
-	self:SetSoundState("bell_in", self:GetNW2Bool("Bell", false) and 1 or 0, 1)
-
-	if self:GetNW2Bool("WarningAnnouncement") == true then self:PlayOnce("WarningAnnouncement", "cabin", 1, 1) end
-	self:SetSoundState("Deadman", self.SectionA:GetNW2Bool("DeadmanAlarmSound", false) and 1 or 0, 1)
+	self:SetSoundState( "bell", self:GetNW2Bool( "Bell", false ) and 1 or 0, 1 )
+	self:SetSoundState( "bell_in", self:GetNW2Bool( "Bell", false ) and 1 or 0, 1 )
+	if self:GetNW2Bool( "WarningAnnouncement" ) == true then self:PlayOnce( "WarningAnnouncement", "cabin", 1, 1 ) end
+	self:SetSoundState( "Deadman", self.SectionA:GetNW2Bool( "DeadmanAlarmSound", false ) and 1 or 0, 1 )
 end
 
 function ENT:Animations()
-
-	self:Animate("Throttle", self:GetNW2Float("ThrottleAnimB", 0), -45, 45, 50)
-
-	self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 80) / 100 * 1.5
-	self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
-
-	self:ShowHide("RetroEquipment", self.SectionA:GetNW2Bool("RetroMode", false))
-
-	self:ShowHide("reverser", self.SectionA:GetNW2Bool("ReverserInsertedB", false))
-
-	self:Animate("reverser", self:GetNW2Float("ReverserAnimate", 0.5), 0, 100, 50)
-
-	self.CabWindowL = self:GetNW2Float("CabWindowL", 0)
-	self.CabWindowR = self:GetNW2Float("CabWindowR", 0)
-	self:Animate("window_cab_r", self:GetNW2Float("CabWindowR", 0), 0, 100, 50, 9, false)
-	self:Animate("window_cab_l", self:GetNW2Float("CabWindowL", 0), 0, 100, 50, 9, false)
-
-	if self.SectionA:GetNW2Bool("Headlights", false) == true and self:GetNW2Bool("Headlights", false) == true then
-		self:ShowHide("headlights_on", true)
+	self:Animate( "Throttle", self:GetNW2Float( "ThrottleAnimB", 0 ), -45, 45, 50 )
+	self.SpeedoAnim = math.Clamp( self:GetNW2Int( "Speed" ), 0, 80 ) / 100 * 1.5
+	self:Animate( "Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0 )
+	self:ShowHide( "RetroEquipment", self.SectionA:GetNW2Bool( "RetroMode", false ) )
+	self:ShowHide( "reverser", self.SectionA:GetNW2Bool( "ReverserInsertedB", false ) )
+	self:Animate( "reverser", self:GetNW2Float( "ReverserAnimate", 0.5 ), 0, 100, 50 )
+	self.CabWindowL = self:GetNW2Float( "CabWindowL", 0 )
+	self.CabWindowR = self:GetNW2Float( "CabWindowR", 0 )
+	self:Animate( "window_cab_r", self:GetNW2Float( "CabWindowR", 0 ), 0, 100, 50, 9, false )
+	self:Animate( "window_cab_l", self:GetNW2Float( "CabWindowL", 0 ), 0, 100, 50, 9, false )
+	if self.SectionA:GetNW2Bool( "Headlights", false ) == true and self:GetNW2Bool( "Headlights", false ) == true then
+		self:ShowHide( "headlights_on", true )
 	else
-		self:ShowHide("headlights_on", false)
+		self:ShowHide( "headlights_on", false )
 	end
 
-	local pBSOn = self:GetPackedBool("FlickBatterySwitchOn", false)
-	local pBSOff = self:GetPackedBool("FlickBatterySwitchOff", false)
+	local pBSOn = self:GetPackedBool( "FlickBatterySwitchOn", false )
+	local pBSOff = self:GetPackedBool( "FlickBatterySwitchOff", false )
 	self.BatterySwitch = pBSOn and 1 or pBSOff and 0 or 0.5
-
-	local mirror = self:GetNW2Float("Mirror", 0)
-	self:Animate("Mirror", mirror, 0, 100, 17, 1, 0)
-	self:Animate("Mirror_vintage", mirror, 0, 100, 17, 1, 0)
-
-	self:ShowHide("RetroEquipment", self.SectionA:GetNW2Bool("RetroMode", false))
-
-	self:Animate("Door_fr2", self.SectionA:GetNWFloat("Door12b"), 0, 100, 50, 0, 0)
-	self:Animate("Door_fr1", self.SectionA:GetNWFloat("Door12b"), 0, 100, 50, 0, 0)
-
-	self:Animate("Door_rr2", self.SectionA:GetNWFloat("Door34b"), 0, 100, 50, 0, 0)
-	self:Animate("Door_rr1", self.SectionA:GetNWFloat("Door34b"), 0, 100, 50, 0, 0)
-
-	self:Animate("Door_fl2", self.SectionA:GetNWFloat("Door78a"), 0, 100, 50, 0, 0)
-	self:Animate("Door_fl1", self.SectionA:GetNWFloat("Door78a"), 0, 100, 50, 0, 0)
-
-	self:Animate("Door_rl2", self.SectionA:GetNWFloat("Door56a"), 0, 100, 50, 0, 0)
-	self:Animate("Door_rl1", self.SectionA:GetNWFloat("Door56a"), 0, 100, 50, 0, 0)
-	if self.SectionA:GetNW2Bool("RetroMode", false) == false then
-		self:ShowHide("Mirror_vintage", false)
-		self:ShowHide("Mirror", true)
-	elseif self.SectionA:GetNW2Bool("RetroMode", false) == true then
-		self:ShowHide("Mirror", false)
-		self:ShowHide("Mirror_vintage", true)
+	local mirror = self:GetNW2Float( "Mirror", 0 )
+	self:Animate( "Mirror", mirror, 0, 100, 17, 1, 0 )
+	self:Animate( "Mirror_vintage", mirror, 0, 100, 17, 1, 0 )
+	self:ShowHide( "RetroEquipment", self.SectionA:GetNW2Bool( "RetroMode", false ) )
+	self:Animate( "Door_fr2", self.SectionA:GetNWFloat( "Door12b" ), 0, 100, 50, 0, 0 )
+	self:Animate( "Door_fr1", self.SectionA:GetNWFloat( "Door12b" ), 0, 100, 50, 0, 0 )
+	self:Animate( "Door_rr2", self.SectionA:GetNWFloat( "Door34b" ), 0, 100, 50, 0, 0 )
+	self:Animate( "Door_rr1", self.SectionA:GetNWFloat( "Door34b" ), 0, 100, 50, 0, 0 )
+	self:Animate( "Door_fl2", self.SectionA:GetNWFloat( "Door78a" ), 0, 100, 50, 0, 0 )
+	self:Animate( "Door_fl1", self.SectionA:GetNWFloat( "Door78a" ), 0, 100, 50, 0, 0 )
+	self:Animate( "Door_rl2", self.SectionA:GetNWFloat( "Door56a" ), 0, 100, 50, 0, 0 )
+	self:Animate( "Door_rl1", self.SectionA:GetNWFloat( "Door56a" ), 0, 100, 50, 0, 0 )
+	if self.SectionA:GetNW2Bool( "RetroMode", false ) == false then
+		self:ShowHide( "Mirror_vintage", false )
+		self:ShowHide( "Mirror", true )
+	elseif self.SectionA:GetNW2Bool( "RetroMode", false ) == true then
+		self:ShowHide( "Mirror", false )
+		self:ShowHide( "Mirror_vintage", true )
 	end
-
 end
 
 UF.GenerateClientProps()

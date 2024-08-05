@@ -105,13 +105,6 @@ function ENT:Initialize()
 	self.Blinker = "Off"
 	self.LastTriggerTime = 0
 	self:SetNW2String( "BlinkerDirection", "none" )
-	dS.DoorRandomnessRight = {
-		[ 1 ] = -1,
-		[ 2 ] = -1,
-		[ 3 ] = -1,
-		[ 4 ] = -1
-	}
-
 	-- self.Lights = {}
 	self.DoorSideUnlocked = "None"
 	self:SetPackedBool( "FlickBatterySwitchOn", false )
@@ -134,13 +127,7 @@ function ENT:Initialize()
 		[ 31 ] = 32
 	}
 
-	self.DoorOpenMoments = {
-		[ 1 ] = 0,
-		[ 2 ] = 0,
-		[ 3 ] = 0,
-		[ 4 ] = 0
-	}
-
+	self.DoorsUnlock = false
 	-- Initialize key mapping
 	self.KeyMap = {
 		[ KEY_A ] = "ThrottleUp",
@@ -616,11 +603,21 @@ function ENT:HeadlightControl()
 	self.SectionB:SetLightPower( 37, ( self.DoorsUnlocked == false and self:ReadTrainWire( 15 ) < 1 ) and false or ( self.DoorsUnlocked == true and self.DoorSideUnlocked == "Right" ) or self:ReadTrainWire( 14 ) > 0 and ( self:ReadTrainWire( 15 ) > 0 ) )
 end
 
+function ENT:UnlockToggle()
+	local p = self.Panel
+	if p.DoorsUnlock > 0 then
+		self.DoorsUnlock = true
+	elseif p.DoorsUnlock < 1 and p.DoorsLock < 1 then
+		self.DoorsUnlock = self.DoorsUnlock
+	elseif p.DoorsLock > 1 then
+		self.DoorsUnlock = false
+	end
+end
+
 function ENT:Think( dT )
 	self.BaseClass.Think( self )
 	self:HeadlightControl()
-	self.CoreSys:DoorHandler( self.DoorsUnlocked or self:ReadTrainWire( 15 ) > 0, self:ReadTrainWire( 13 ) > 0 or self.DoorSideUnlocked == "Left", self:ReadTrainWire( 14 ) > 0 or self.DoorSideUnlocked == "Right", false )
-	self.CoreSys:Blink( ( self:ReadTrainWire( 20 ) > 0 or self:ReadTrainWire( 21 ) > 0 or self.Panel.BlinkerLeft > 0 or self.Panel.BlinkerRight > 0 ) and self.BatteryOn, self:ReadTrainWire( 20 ) > 0 or self.Panel.BlinkerLeft > 0 and not MU, self:ReadTrainWire( 21 ) > 0 or self.Panel.BlinkerRight > 0 and not MU )
+	self:UnlockToggle()
 	self:SetNW2Bool( "RetroMode", self.Texture == "SVB" )
 	if self:GetNW2Bool( "RetroMode", false ) == true and self:GetNW2Bool( "ModelOverrideDone", false ) == false then
 		self:SetModel( "models/lilly/uf/u2/u2_vintage.mdl" )
@@ -648,45 +645,14 @@ function ENT:Think( dT )
 		self:Traction()
 		self:WriteTrainWire( 20, self.Panel.WarnBlink < 1 and ( self.Panel.BlinkerLeft > 0 and 1 or 0 ) or 1 )
 		self:WriteTrainWire( 21, self.Panel.WarnBlink < 1 and ( self.Panel.BlinkerRight > 0 and 1 or 0 ) or 1 )
-		self.ThrottleState = math.Clamp( self.ThrottleState, -100, 100 )
 		-- Send door states to client
-		self:SetNWFloat( "Door12a", self.DoorStatesRight[ 1 ] )
-		self:SetNWFloat( "Door34a", self.DoorStatesRight[ 2 ] )
-		self:SetNWFloat( "Door56a", self.DoorStatesRight[ 3 ] )
-		self:SetNWFloat( "Door78a", self.DoorStatesRight[ 4 ] )
-		self:SetNWFloat( "Door12b", self.DoorStatesLeft[ 1 ] )
-		self:SetNWFloat( "Door34b", self.DoorStatesLeft[ 2 ] )
-		self:SetNWFloat( "Door56b", self.DoorStatesLeft[ 3 ] )
-		self:SetNWFloat( "Door78b", self.DoorStatesLeft[ 4 ] )
 		self:SetNWFloat( "DoorSwitch", self.Panel.DoorsSelectLeft > 0 and 1 or 0.5 or self.Panel.DoorsSelectLeft > 0 and 1 )
-		self.AllDoorsAreClosed = self.CoreSys:CheckDoorsAllClosed( self.DoorsPreviouslyUnlocked ) and true or false
-		self:SetNW2Bool( "DoorCloseAlarm", ( self.DoorsPreviouslyUnlocked and not self.DoorsUnlocked and self.AllDoorsAreClosed and not self.DoorsClosedAlarmAcknowledged and self.CoreSys.ReverserInsertedA == true ) and true or false )
 		-- print(self.AllDoorsAreClosed)
-		if self.DoorStatesRight[ 1 ] > 0 or self.DoorStatesRight[ 2 ] > 0 or self.DoorStatesRight[ 3 ] > 0 or self.DoorStatesRight[ 4 ] > 0 then
-			self.RightDoorsOpen = true
-			self.SectionB.RightDoorsOpen = true
-		else
-			self.RightDoorsOpen = false
-			self.SectionB.RightDoorsOpen = false
-		end
-
-		if ( self.DoorStatesLeft[ 1 ] > 0 or self.DoorStatesLeft[ 2 ] > 0 ) and ( self.DoorStatesLeft[ 3 ] < 0.9 and self.DoorStatesLeft[ 4 ] < 0.9 ) then
-			self.LeftDoorsOpen = false
-			self.SectionB.LeftDoorsOpen = true
-		elseif ( self.DoorStatesLeft[ 1 ] > 0.8 or self.DoorStatesLeft[ 2 ] > 0.8 ) and ( self.DoorStatesLeft[ 3 ] > 0.8 and self.DoorStatesLeft[ 4 ] > 0.8 ) then
-			self.LeftDoorsOpen = true
-			self.SectionB.LeftDoorsOpen = true
-		elseif ( self.DoorStatesLeft[ 1 ] < 0.8 or self.DoorStatesLeft[ 2 ] < 0.8 ) and ( self.DoorStatesLeft[ 3 ] > 0.8 and self.DoorStatesLeft[ 4 ] > 0.8 ) then
-			self.LeftDoorsOpen = true
-			self.SectionB.LeftDoorsOpen = false
-		else
-			self.LeftDoorsOpen = false
-			self.SectionB.LeftDoorsOpen = false
-		end
 	end
 end
 
 function ENT:OnButtonPress( button, ply )
+	self:HackButtonPress( button )
 	local dS = self.MPLR_DoorHandler
 	if button == "IBISkeyInsertSet" then
 		if self:GetNW2Bool( "InsertIBISKey", false ) == false then
@@ -1088,165 +1054,11 @@ function ENT:OnButtonPress( button, ply )
 
 	if button == "ComplaintSet" then self:SetNW2Bool( "Microphone", true ) end
 	if button == "ComplaintSet" then self:SetNW2Bool( "Microphone", false ) end
-	if button == "DestinationSet" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self:SetNW2Bool( "IBISKeyBeep", true )
-			self.IBIS:Trigger( "Destination", RealTime() )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number0Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "0", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "DeleteSet" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "Delete", RealTime() )
-			-- self.IBIS:Trigger(nil)
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number1Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "1", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number2Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "2", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number3Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "3", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number4Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "4", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number5Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "5", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number6Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "6", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number7Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "7", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number8Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "8", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number9Set" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "9", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "EnterSet" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "Enter", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "ServiceAnnouncementSet" then
-		if self.IBISKeyRegistered == false then
-			self.IBISKeyRegistered = true
-			self.IBIS:Trigger( "ServiceAnnouncements", RealTime() )
-			self:SetNW2Bool( "IBISKeyBeep", true )
-		else
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
 	if button == "ReduceBrakeSet" then self.Panel.ReduceBrake = 1 end
 end
 
 function ENT:OnButtonRelease( button, ply )
+	self:HackButtonRelease( button )
 	if button == "CycleIBISKey" then
 		if self.CoreSys.IBISKeyA == false and self.CoreSys.IBISKeyATurned == false then
 			self.CoreSys.IBISKeyA = true
@@ -1297,141 +1109,6 @@ function ENT:OnButtonRelease( button, ply )
 	if button == "BellEngageSet" then self:SetNW2Bool( "Bell", false ) end
 	if button == "Horn" then self:SetNW2Bool( "Horn", false ) end
 	if button == "BatteryToggle" then self:SetNW2Bool( "IBIS_impulse", false ) end
-	if button == "DestinationSet" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-	end
-
-	if button == "Number0Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-			self:SetNW2Bool( "IBISKeyBeep", false )
-		end
-	end
-
-	if button == "Number1Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "DeleteSet" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "Number2Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "Number3Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "Number4Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "Number5Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "Number6Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "Number7Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "Number8Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "Number9Set" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "EnterSet" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
-	if button == "ServiceAnnouncementSet" then
-		if self.IBISKeyRegistered == true then
-			self.IBISKeyRegistered = false
-			self.IBIS:Trigger( nil )
-		end
-
-		self:SetNW2Bool( "IBISKeyBeep", true )
-		self:SetNW2Bool( "IBISKeyBeep", false )
-	end
-
 	if button == "OpenBOStrab" then
 		net.Start( "manual" )
 		net.WriteBool( true )
@@ -1439,20 +1116,6 @@ function ENT:OnButtonRelease( button, ply )
 		-- self:SetPackedBool("BOStrab",false)
 	end
 end
-
-ENT.CloseMoments = {}
-ENT.CloseMomentsCalc = false
--- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
-function ENT:RollsignSync()
-	print( self.RollsignModifier )
-end
-
-util.AddNetworkString( "RollsignState" )
-net.Receive( "RollsignState", function()
-	local ent = net.ReadEntity()
-	if not IsValid( ent ) or ent ~= ENT then return end
-	ENT.RollsignModifier = net.ReadFloat()
-end )
 
 function ENT:Traction()
 	if not IsValid( self.FrontBogey ) and not IsValid( self.MiddleBogey ) and not IsValid( self.RearBogey ) then return end
@@ -1516,4 +1179,16 @@ function ENT:Traction()
 	self.RearBogey.BrakeCylinderPressure = self.FrontBogey.BrakeCylinderPressure
 	self.FrontBogey.Reversed = reverser < 0 or ( MU and self:ReadTrainWire( 4 ) > 0 ) or false
 	self.RearBogey.Reversed = self.FrontBogey.Reversed
+end
+
+function ENT:RollsignUp()
+	self.RollsignModifier = self.RollsignModifier + 0.01
+	self.RollsignModifier = math.Clamp( self.RollsignModifier, 0, 1 )
+	self:SetNW2Float( "RollsignModifier", self.RollsignModifier )
+end
+
+function ENT:RollsignDown()
+	self.RollsignModifier = self.RollsignModifier - 0.01
+	self.RollsignModifier = math.Clamp( self.RollsignModifier, 0, 1 )
+	self:SetNW2Float( "RollsignModifier", self.RollsignModifier )
 end
