@@ -93,6 +93,8 @@ function TRAIN_SYSTEM:Initialize()
 	self.DoorCloseMomentsCalculated = false
 	self.DoorRandomnessCalculated = false
 	self.DoorsClosed = true
+	self.DoorsPreviouslyUnlocked = false
+	self.RequireDepartureAcknowledge = self.Train.RequireDepartureAcknowledge
 end
 
 function TRAIN_SYSTEM:Think( dT )
@@ -109,17 +111,29 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 	local right = p.DoorsSelectRight > 0 and p.DoorsUnlock > 0
 	local idle = self.ReverserA == 1 or self.ReverserB == 1
 	local stepmode = self.StepMode
+	local unlock = t.DoorsUnlockToggle and p.DoorsUnlock > 0 or t.DoorsUnlock
 	if self.StepStatesMediumLeft or self.StepStatesMediumRight then self:Steps() end
-	self.DoorUnlockState = ( p.DoorsSelectLeft > 0 and p.DoorsUnlock > 0 ) and 1 or ( p.DoorsSelectRight > 0 and p.DoorsUnlock > 0 ) and 2 or 0
+	self.DoorUnlockState = ( p.DoorsSelectLeft > 0 and unlock ) and 1 or ( p.DoorsSelectRight > 0 and p.DoorsUnlock > 0 ) and 2 or 0
 	self:Doors( self.DoorUnlockState > 0, self.DoorUnlockState == 1, self.DoorUnlockState == 2, self.Door1Unlock, self.DoorUnlockState > 0 and idle, stepmode, dT )
+	self:PrevUnlock( left, right, self.DoorUnlockState )
 	self:DoorNW2()
+end
+
+function TRAIN_SYSTEM:DoorStuck()
+	local p = self.Train.Panel
+	local stuck = 0
+	local stuckWhich = 0
+	local num = p.DoorsSelectLeft > 0 and #self.DoorStatesLeft or #self.DoorStatesRight
+	if stuck == 0 then stuck = math.random( 0, 1 ) end
+	if stuck > 0.8 and stuckWhich == 0 then stuckWhich = math.random( 1, num ) end
+	return stuck, stuckWhich
 end
 
 function TRAIN_SYSTEM:DoorNW2()
 	local t = self.Train
-	local doornumberRight = self.Train.DoorNumberRight
-	local doornumberLeft = self.Train.DoorNumberLeft
-	for i = 1, doornumberRight do
+	local doorNumberRight = self.Train.DoorNumberRight
+	local doorNumberLeft = self.Train.DoorNumberLeft
+	for i = 1, doorNumberRight do
 		t:SetNW2Float( "Door" .. i .. "a", self.DoorStatesRight[ i ] )
 	end
 
@@ -189,17 +203,14 @@ function TRAIN_SYSTEM:StepHandler( side, open, dT )
 	local factor = open and ( 0.5 * dT ) or ( -0.5 * dT ) -- open or close and factor in deltaTime
 	local function updateStepStates( stepStates, side, open, factor )
 		local doorRandomness = side == "right" and self.DoorRandomnessRight or self.DoorRandomnessLeft
-		for i = 1, #self.DoorRandomness do
+		for i = 1, #doorRandomness do
 			if open then
 				if stepStates[ i ] < 1 and doorRandomness[ i ] == 3 then stepStates[ i ] = stepStates[ i ] + factor end
 			else
 				if ( side == "right" or p.DoorsSelectRight > 0 ) and self.DoorStatesRight[ i ] < 0.1 then --steps only move to retract when the doors are closed already
 					if stepStates[ i ] > 0 then stepStates[ i ] = stepStates[ i ] + factor end
 				elseif ( side == "left" or p.DoorsSelectLeft > 0 ) and self.DoorStatesLeft[ i ] < 0.1 then
-					if stepStates[ i ] > 0 then
-						print( "left" )
-						stepStates[ i ] = stepStates[ i ] + factor
-					end
+					if stepStates[ i ] > 0 then stepStates[ i ] = stepStates[ i ] + factor end
 				end
 			end
 
@@ -287,8 +298,14 @@ function TRAIN_SYSTEM:Doors( unlock, left, right, door1, idleunlock, stepmode, d
 	if unlock and self.ReverserA ~= 0 and not self.ConflictingHeads then
 		if not self.DoorRandomnessCalculated then
 			self.DoorRandomnessCalculated = true
-			for k, v in ipairs( self.DoorRandomness ) do
-				v = math.random( 0, 4 )
+			if right then
+				for k, v in ipairs( self.DoorRandomnessRight ) do
+					v = math.random( 0, 4 )
+				end
+			else
+				for k, v in ipairs( self.DoorRandomnessLeft ) do
+					v = math.random( 0, 4 )
+				end
 			end
 		end
 
@@ -307,12 +324,13 @@ end
 
 function TRAIN_SYSTEM:UnlockDoors( right, left, IRGates, dT )
 	local function IncrementDoorStates( doorStates, IRGates, right, dT )
-		local stepState = right and self.StepStatesMediumRight or self.StepStatesMediumLeft --only really needed to check the half height step in any case
-		for i = 1, #self.DoorRandomness do
-			if self.DoorRandomness[ i ] == 3 and doorStates[ i ] < 1 and not IRGates[ right and i or left and i + 6 ] then
+		local stepStates = right and self.StepStatesMediumRight or self.StepStatesMediumLeft --only really needed to check the half height step in any case
+		local tab = right and self.DoorRandomnessRight or self.DoorRandomnessLeft
+		for i = 1, #tab do
+			if tab[ i ] == 3 and doorStates[ i ] < 1 and not IRGates[ i ] then
 				if self.StepMode < 1 then --no steps, open immediately
 					doorStates[ i ] = math.Clamp( doorStates[ i ] + 0.55 * dT, 0, 1 )
-				elseif stepStates and self.StepMode > 0 and stepState[ i ] == 1 then
+				elseif stepStates and self.StepMode > 0 and stepStates[ i ] == 1 then
 					--first open steps, then the doors open
 					doorStates[ i ] = math.Clamp( doorStates[ i ] + 0.55 * dT, 0, 1 )
 				end
@@ -339,16 +357,22 @@ end
 function TRAIN_SYSTEM:LockDoors( right, left, IRGates, dT )
 	local closeMoments = right and self.DoorCloseMomentsRight or self.DoorCloseMomentsLeft
 	local function DecrementDoorStates( doorStates, lockSignalMoment, closeMoments, IRGates, right, dT )
+		local stuck, stuckWhich = self:DoorStuck()
 		for i, v in ipairs( doorStates ) do
+			local currentDoorBlocked = stuck and stuckWhich == i
 			--start closing doors if the IR sensor isn't blocked
-			if CurTime() > self.DoorLockMoment + closeMoments[ i ] and not IRGates[ i ] and v > 0 then
+			if CurTime() > self.DoorLockMoment + closeMoments[ i ] and not IRGates[ i ] and v > 0 and not currentDoorBlocked then
 				doorStates[ i ] = math.Clamp( v - 0.55 * dT, 0, 1 )
-			elseif IRGates[ i ] and doorStates[ i ] > 0 and doorStates[ i ] < 1 then
+			elseif ( IRGates[ i ] or currentDoorBlocked ) and doorStates[ i ] > 0 and doorStates[ i ] < 1 then
 				--open the door back up if the corresponding sensor is blocked
 				doorStates[ i ] = math.Clamp( v + 0.55 * dT, 0, 1 )
 			end
 
-			self.DoorRandomness[ i ] = 0
+			if right then
+				self.DoorRandomnessRight[ i ] = 0
+			else
+				self.DoorRandomnessLeft[ i ] = 0
+			end
 		end
 	end
 
@@ -357,26 +381,27 @@ function TRAIN_SYSTEM:LockDoors( right, left, IRGates, dT )
 end
 
 function TRAIN_SYSTEM:IdleUnlock( right, left, IRGates, dT ) --when the train is parked but the doors are unlocked, the doors close after a short delay after opening
-	local function HandleIdleUnlock( doorStates, doorOpenMoments, IRGates, dT )
+	local function HandleIdleUnlock( right, doorStates, doorOpenMoments, IRGates, dT )
+		local doorRandomness = right and self.DoorRandomnessRight or self.DoorRandomnessLeft
 		for i, v in ipairs( doorStates ) do
-			if self.DoorRandomness[ i ] == 3 and doorOpenMoments[ i ] == 0 then
+			if doorRandomness[ i ] == 3 and doorOpenMoments[ i ] == 0 then
 				doorOpenMoments = CurTime()
-			elseif self.DoorRandomness[ i ] == 3 and doorOpenMoments > 0 and doorStates[ i ] < 1 and not IRGates[ i ] then
+			elseif doorRandomness[ i ] == 3 and doorOpenMoments > 0 and doorStates[ i ] < 1 and not IRGates[ i ] then
 				doorStates[ i ] = math.Clamp( v + 0.1 * dT, 0, 1 )
 			end
 
 			if doorStates[ i ] > 0 and CurTime() - doorOpenMoments[ i ] > 5 and not IRGates[ i ] then doorStates[ i ] = math.Clamp( v - 0.1 * dT, 0, 1 ) end
-			if doorStates[ i ] == 0 and self.DoorRandomness[ i ] ~= 0 then
-				self.DoorRandomness[ i ] = 0
+			if doorStates[ i ] == 0 and doorRandomness[ i ] ~= 0 then
+				doorRandomness[ i ] = 0
 				doorOpenMoments = 0
 			end
 		end
 	end
 
-	HandleIdleUnlock( right and self.DoorStatesRight or left and self.DoorStatesLeft, self.DoorOpenMoments, IRGates, dT )
+	HandleIdleUnlock( right, right and self.DoorStatesRight or left and self.DoorStatesLeft, self.DoorOpenMoments, IRGates, dT )
 end
 
-function TRAIN_SYSTEM:IRPerDoor( ent, vec1, vec2 )
+function TRAIN_SYSTEM:IRPerDoor( ent, vec1 )
 	local train = ent
 	local result = util.TraceHull( {
 		start = train:LocalToWorld( vec1 ),
@@ -419,17 +444,77 @@ function TRAIN_SYSTEM:IRIS( enable )
 end
 
 function TRAIN_SYSTEM:RandomUnlock( num, side )
+	print( "randomUnlock", num )
 	if side == "left" then
 		for i = 1, num do
-			dN = #self.DoorRandomnessLeft
-			dI = math.random( 1, dN )
+			local dN = #self.DoorRandomnessLeft
+			local dI = math.random( 1, dN )
 			self.DoorRandomnessLeft[ dI ] = 3
+			if i == num then return end
 		end
 	elseif side == "right" then
 		for i = 1, num do
-			dN = #self.DoorRandomnessLeft
-			dI = math.random( 1, dN )
-			self.DoorRandomnessLeft[ dI ] = 3
+			local dN = #self.DoorRandomnessRight
+			local dI = math.random( 1, dN )
+			self.DoorRandomnessRight[ dI ] = 3
+			if i == num then return end
+		end
+	end
+end
+
+function TRAIN_SYSTEM:PrevUnlock( left, right, unlocked )
+	local doorsClosed = false
+	local departureAlarm = false
+	if unlocked then
+		self.DoorsPreviouslyUnlocked = true
+		if self.RequireDepartureAcknowledge then self.DepartureConfirmed = false end
+	else
+		if right then
+			for k, _ in ipairs( self.DoorStatesRight ) do
+				if not self.StepStatesMediumRight then
+					if self.DoorStatesRight[ k ] == 0 then
+						doorsClosed = true
+					else
+						doorsClosed = false
+					end
+				else
+					if self.DoorStatesRight[ k ] == 0 and self.StepStatesMediumRight[ k ] == 0 then
+						doorsClosed = true
+					else
+						doorsClosed = false
+					end
+				end
+			end
+		else
+			for k, _ in ipairs( self.DoorStatesLeft ) do
+				if not self.StepStatesMediumLeft then
+					if self.DoorStatesLeft[ k ] == 0 then
+						doorsClosed = true
+					else
+						doorsClosed = false
+					end
+				else
+					if self.DoorStatesLeft[ k ] == 0 and self.StepStatesMediumLeft[ k ] == 0 then
+						doorsClosed = true
+					else
+						doorsClosed = false
+					end
+				end
+			end
+		end
+
+		if doorsClosed and self.RequireDepartureAcknowledge and not self.DepartureConfirmed then
+			departureAlarm = true
+		elseif doorsClosed and self.RequireDepartureAcknowledge and self.DepartureConfirmed then
+			departureAlarm = true
+			self.Train:SetNW2Bool( "DepartureAlarm", departureAlarm )
+		elseif doorsClosed and not self.RequireDepartureAcknowledge then
+			departureAlarm = true
+			self.Train:SetNW2Bool( "DepartureAlarm", departureAlarm )
+			departureAlarm = false
+		elseif not doorsClosed then
+			departureAlarm = false
+			self.Train:SetNW2Bool( "DepartureAlarm", departureAlarm )
 		end
 	end
 end
