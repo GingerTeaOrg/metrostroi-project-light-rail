@@ -4,11 +4,11 @@ Metrostroi.AddSkin("train", "Def_U2SW",
 Metrostroi.AddSkin("train", "Def_U2FVV", {name = "1968 FVV", typ = "U2h", textures = {decals = "models/lilly/uf/u2/u2h/decals-FVV"}})
 Metrostroi.AddSkin("train", "Def_U2FVV_b", {name = "1968 FVV", typ = "U2hb", textures = {decals = "models/lilly/uf/u2/u2h/decals-FVV"}})
 
-Metrostroi.AddSkin("train", "pride", {
+--[[Metrostroi.AddSkin("train", "pride", {
 	name = "LGBTQ Pride because fuck bigots",
 	typ = "U2h",
 	textures = {main = "models/lilly/uf/u2/u2h/repaints/pride", decals = "models/lilly/uf/u2/u2h/decals-stadtwerke"}
-})
+})]]
 
 Metrostroi.AddSkin("train", "Duesseldorf", {
 	name = "Düsseldorf",
@@ -16,7 +16,7 @@ Metrostroi.AddSkin("train", "Duesseldorf", {
 	textures = {
 		main = "models/lilly/uf/u2/u2h/main-duesseldorf",
 		main_left = "models/lilly/uf/u2/u2h/main-duesseldorf-left",
-        jointdecal = "models/lilly/uf/u2/u2h/decals-int-duesseldorf",
+		jointdecal = "models/lilly/uf/u2/u2h/decals-int-duesseldorf",
 		decals = "models/lilly/uf/u2/u2h/decals",
 		door_external = "models/lilly/uf/u2/u2h/door_external_duesseldorf"
 	}
