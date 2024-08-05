@@ -33,7 +33,10 @@ function ENT:InitializeSystems()
 	self:LoadSystem( "IBIS", "COPILOT" )
 	self:LoadSystem( "Announcer", "uf_announcer" )
 	self:LoadSystem( "Duewag_Battery" )
-	self:LoadSystem( "Panel", "U2_panel" )
+	self:LoadSystem( "Panel", "U3_panel" )
+	self:LoadSystem( "Chopper" )
+	self:LoadSystem( "MPLR_DoorHandler" )
+	self:LoadSystem( "Blinkers" )
 	-- self:LoadSystem("duewag_electric")
 end
 
@@ -197,3 +200,18 @@ end
 
 ENT.DoorNumberRight = 4
 ENT.DoorNumberLeft = 4
+ENT.SectionADoors = {
+	[ 1 ] = Vector( 330.889, -46.4148, 35.3841 ),
+	[ 2 ] = Vector( 88.604, -46.4148, 35.3841 ),
+	[ 7 ] = Vector( 330.889, 46.4148, 35.3841 ),
+	[ 8 ] = Vector( 88.604, 46.4148, 35.3841 )
+}
+
+ENT.SectionBDoors = {
+	[ 3 ] = Vector( -330.889, -46.4148, 35.3841 ),
+	[ 4 ] = Vector( -88.604, -46.4148, 35.3841 ),
+	[ 5 ] = Vector( -330.889, 46.4148, 35.3841 ),
+	[ 6 ] = Vector( -88.604, 46.4148, 35.3841 )
+}
+
+ENT.Bidirectional = true

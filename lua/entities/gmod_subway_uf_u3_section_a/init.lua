@@ -1,6 +1,269 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
+ENT.Lights = {
+    [ 50 ] = {
+        "light",
+        Vector( 406, 39, 98 ),
+        Angle( 90, 0, 0 ),
+        Color( 227, 197, 160 ),
+        brightness = 0.6,
+        scale = 0.5,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- cab light
+    [ 60 ] = {
+        "light",
+        Vector( 406, -39, 98 ),
+        Angle( 90, 0, 0 ),
+        Color( 227, 197, 160 ),
+        brightness = 0.6,
+        scale = 0.5,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- cab light
+    [ 51 ] = {
+        "light",
+        Vector( 425.464, 40, 28 ),
+        Angle( 0, 0, 0 ),
+        Color( 216, 161, 92 ),
+        brightness = 0.6,
+        scale = 1.5,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- headlight left
+    [ 52 ] = {
+        "light",
+        Vector( 425.464, -40, 28 ),
+        Angle( 0, 0, 0 ),
+        Color( 216, 161, 92 ),
+        brightness = 0.6,
+        scale = 1.5,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- headlight right
+    [ 53 ] = {
+        "light",
+        Vector( 425.464, 0, 111 ),
+        Angle( 0, 0, 0 ),
+        Color( 226, 197, 160 ),
+        brightness = 0.9,
+        scale = 0.45,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- headlight top
+    [ 54 ] = {
+        "light",
+        Vector( 425.464, 31.5, 24.55 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 0, 0 ),
+        brightness = 0.9,
+        scale = 0.1,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- tail light left
+    [ 55 ] = {
+        "light",
+        Vector( 425.464, -31.5, 24.55 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 0, 0 ),
+        brightness = 0.9,
+        scale = 0.1,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- tail light right
+    [ 56 ] = {
+        "light",
+        Vector( 480.32, 31.2, 41.43 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 102, 0 ),
+        brightness = 0.9,
+        scale = 0.1,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- brake lights
+    [ 57 ] = {
+        "light",
+        Vector( 480.32, -31.2, 41.43 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 102, 0 ),
+        brightness = 0.9,
+        scale = 0.1,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- brake lights
+    [ 58 ] = {
+        "light",
+        Vector( 327, 52, 74 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 100, 0 ),
+        brightness = 0.9,
+        scale = 0.1,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- indicator top left
+    [ 59 ] = {
+        "light",
+        Vector( 327, -52, 74 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 102, 0 ),
+        brightness = 0.9,
+        scale = 0.1,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- indicator top right
+    [ 48 ] = {
+        "light",
+        Vector( 327, 52, 68 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 100, 0 ),
+        brightness = 0.9,
+        scale = 0.1,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- indicator bottom left
+    [ 49 ] = {
+        "light",
+        Vector( 327, -52, 68 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 102, 0 ),
+        brightness = 0.9,
+        scale = 0.1,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- indicator bottom right
+    [ 30 ] = {
+        "light",
+        Vector( 397, 49, 49.7 ),
+        Angle( 0, 0, 0 ),
+        Color( 9, 142, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- door button front left 1
+    [ 31 ] = {
+        "light",
+        Vector( 326.738, 49, 49.7 ),
+        Angle( 0, 0, 0 ),
+        Color( 9, 142, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- door button front left 2
+    [ 32 ] = {
+        "light",
+        Vector( 151.5, 49, 49.7 ),
+        Angle( 0, 0, 0 ),
+        Color( 9, 142, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- door button front left 3
+    [ 33 ] = {
+        "light",
+        Vector( 83.7, 49, 49.7 ),
+        Angle( 0, 0, 0 ),
+        Color( 9, 142, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- door button front left 4
+    [ 34 ] = {
+        "light",
+        Vector( 396.884, -51, 49.7 ),
+        Angle( 0, 0, 0 ),
+        Color( 9, 142, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- door button front right 1
+    [ 35 ] = {
+        "light",
+        Vector( 326.89, -51, 49.7 ),
+        Angle( 0, 0, 0 ),
+        Color( 9, 142, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- door button front right 2
+    [ 36 ] = {
+        "light",
+        Vector( 152.116, -51, 49.7 ),
+        Angle( 0, 0, 0 ),
+        Color( 9, 142, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- door button front right 3
+    [ 37 ] = {
+        "light",
+        Vector( 85, -51, 49.7 ),
+        Angle( 0, 0, 0 ),
+        Color( 9, 142, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- door button front right 4
+    [ 38 ] = {
+        "light",
+        Vector( 416.20, 6, 54 ),
+        Angle( 0, 0, 0 ),
+        Color( 0, 90, 59 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- indicator indication lamp in cab
+    [ 39 ] = {
+        "light",
+        Vector( 415.617, 18.8834, 54.8 ),
+        Angle( 0, 0, 0 ),
+        Color( 252, 247, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- battery discharge lamp in cab
+    [ 40 ] = {
+        "light",
+        Vector( 415.617, 12.4824, 54.9 ),
+        Angle( 0, 0, 0 ),
+        Color( 0, 130, 99 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- clear for departure lamp
+    [ 41 ] = {
+        "light",
+        Vector( 415.656, -2.45033, 54.55 ),
+        Angle( 0, 0, 0 ),
+        Color( 255, 0, 0 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    },
+    -- doors unlocked lamp
+    [ 42 ] = {
+        "light",
+        Vector( 415.656, 14.6172, 54.55 ),
+        Angle( 0, 0, 0 ),
+        Color( 27, 57, 141 ),
+        brightness = 1,
+        scale = 0.025,
+        texture = "sprites/light_glow02.vmt"
+    }
+}
+
+ENT.SyncTable = { "Wiper", "BlinkerRight", "BlinkerLeft", "WarnBlink", "Microphone", "Bell", "Horn", "WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn", "PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Headlights" }
 function ENT:Initialize()
     self:SetModel( "models/lilly/uf/u3/u3_a.mdl" )
     self.BaseClass.Initialize( self )
@@ -60,7 +323,7 @@ function ENT:Initialize()
     self.DoorsOpen = false
     -- Create bogeys
     self.FrontBogey = self:CreateBogeyUF( Vector( 345, 0, 10 ), Angle( 0, 180, 0 ), true, "duewag_motor", "a" )
-    self.MiddleBogey = self:CreateBogeyUF( Vector( 0, 0, 11.5 ), Angle( 0, 0, 0 ), false, "u3joint", "a" )
+    self.MiddleBogey = self:CreateBogeyUF( Vector( 0, 0, 11.9 ), Angle( 0, 0, 0 ), false, "u3joint", "a" )
     self:SetNWEntity( "FrontBogey", self.FrontBogey )
     -- Create couples
     self.FrontCouple = self:CreateCustomCoupler( Vector( 465, 0, 12 ), Angle( 0, 0, 0 ), true, "u2", "a" )
@@ -69,7 +332,9 @@ function ENT:Initialize()
     self.ElectricKickStart = false
     self.ElectricStarted = false
     -- Create U3 Section B
-    self.SectionB = self:CreateSection( Vector( -780, 0, -12 ) )
+    self.SectionB = self:CreateSection( Vector( 0, 0, 0 ), nil, --[[no angle]]
+        "gmod_subway_uf_u3_section_b", self, nil, self )
+
     self.RearBogey = self:CreateBogeyUF( Vector( -345, 0, 10 ), Angle( 0, 180, 0 ), false, "duewag_motor", "b" )
     self.RearCouple = self:CreateCustomCoupler( Vector( -465, 0, 12 ), Angle( 0, 180, 0 ), false, "u2", "b" )
     self.Panto = self:CreatePanto( Vector( 38, 0, 128 ), Angle( 0, 180, 0 ), "einholm" )
@@ -199,268 +464,6 @@ function ENT:Initialize()
         }
     }
 
-    self.Lights = {
-        [ 50 ] = {
-            "light",
-            Vector( 406, 39, 98 ),
-            Angle( 90, 0, 0 ),
-            Color( 227, 197, 160 ),
-            brightness = 0.6,
-            scale = 0.5,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- cab light
-        [ 60 ] = {
-            "light",
-            Vector( 406, -39, 98 ),
-            Angle( 90, 0, 0 ),
-            Color( 227, 197, 160 ),
-            brightness = 0.6,
-            scale = 0.5,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- cab light
-        [ 51 ] = {
-            "light",
-            Vector( 425.464, 40, 28 ),
-            Angle( 0, 0, 0 ),
-            Color( 216, 161, 92 ),
-            brightness = 0.6,
-            scale = 1.5,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- headlight left
-        [ 52 ] = {
-            "light",
-            Vector( 425.464, -40, 28 ),
-            Angle( 0, 0, 0 ),
-            Color( 216, 161, 92 ),
-            brightness = 0.6,
-            scale = 1.5,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- headlight right
-        [ 53 ] = {
-            "light",
-            Vector( 425.464, 0, 111 ),
-            Angle( 0, 0, 0 ),
-            Color( 226, 197, 160 ),
-            brightness = 0.9,
-            scale = 0.45,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- headlight top
-        [ 54 ] = {
-            "light",
-            Vector( 425.464, 31.5, 24.55 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 0, 0 ),
-            brightness = 0.9,
-            scale = 0.1,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- tail light left
-        [ 55 ] = {
-            "light",
-            Vector( 425.464, -31.5, 24.55 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 0, 0 ),
-            brightness = 0.9,
-            scale = 0.1,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- tail light right
-        [ 56 ] = {
-            "light",
-            Vector( 480.32, 31.2, 41.43 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 102, 0 ),
-            brightness = 0.9,
-            scale = 0.1,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- brake lights
-        [ 57 ] = {
-            "light",
-            Vector( 480.32, -31.2, 41.43 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 102, 0 ),
-            brightness = 0.9,
-            scale = 0.1,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- brake lights
-        [ 58 ] = {
-            "light",
-            Vector( 327, 52, 74 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 100, 0 ),
-            brightness = 0.9,
-            scale = 0.1,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- indicator top left
-        [ 59 ] = {
-            "light",
-            Vector( 327, -52, 74 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 102, 0 ),
-            brightness = 0.9,
-            scale = 0.1,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- indicator top right
-        [ 48 ] = {
-            "light",
-            Vector( 327, 52, 68 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 100, 0 ),
-            brightness = 0.9,
-            scale = 0.1,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- indicator bottom left
-        [ 49 ] = {
-            "light",
-            Vector( 327, -52, 68 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 102, 0 ),
-            brightness = 0.9,
-            scale = 0.1,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- indicator bottom right
-        [ 30 ] = {
-            "light",
-            Vector( 397, 49, 49.7 ),
-            Angle( 0, 0, 0 ),
-            Color( 9, 142, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- door button front left 1
-        [ 31 ] = {
-            "light",
-            Vector( 326.738, 49, 49.7 ),
-            Angle( 0, 0, 0 ),
-            Color( 9, 142, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- door button front left 2
-        [ 32 ] = {
-            "light",
-            Vector( 151.5, 49, 49.7 ),
-            Angle( 0, 0, 0 ),
-            Color( 9, 142, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- door button front left 3
-        [ 33 ] = {
-            "light",
-            Vector( 83.7, 49, 49.7 ),
-            Angle( 0, 0, 0 ),
-            Color( 9, 142, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- door button front left 4
-        [ 34 ] = {
-            "light",
-            Vector( 396.884, -51, 49.7 ),
-            Angle( 0, 0, 0 ),
-            Color( 9, 142, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- door button front right 1
-        [ 35 ] = {
-            "light",
-            Vector( 326.89, -51, 49.7 ),
-            Angle( 0, 0, 0 ),
-            Color( 9, 142, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- door button front right 2
-        [ 36 ] = {
-            "light",
-            Vector( 152.116, -51, 49.7 ),
-            Angle( 0, 0, 0 ),
-            Color( 9, 142, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- door button front right 3
-        [ 37 ] = {
-            "light",
-            Vector( 85, -51, 49.7 ),
-            Angle( 0, 0, 0 ),
-            Color( 9, 142, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- door button front right 4
-        [ 38 ] = {
-            "light",
-            Vector( 416.20, 6, 54 ),
-            Angle( 0, 0, 0 ),
-            Color( 0, 90, 59 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- indicator indication lamp in cab
-        [ 39 ] = {
-            "light",
-            Vector( 415.617, 18.8834, 54.8 ),
-            Angle( 0, 0, 0 ),
-            Color( 252, 247, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- battery discharge lamp in cab
-        [ 40 ] = {
-            "light",
-            Vector( 415.617, 12.4824, 54.9 ),
-            Angle( 0, 0, 0 ),
-            Color( 0, 130, 99 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- clear for departure lamp
-        [ 41 ] = {
-            "light",
-            Vector( 415.656, -2.45033, 54.55 ),
-            Angle( 0, 0, 0 ),
-            Color( 255, 0, 0 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        },
-        -- doors unlocked lamp
-        [ 42 ] = {
-            "light",
-            Vector( 415.656, 14.6172, 54.55 ),
-            Angle( 0, 0, 0 ),
-            Color( 27, 57, 141 ),
-            brightness = 1,
-            scale = 0.025,
-            texture = "sprites/light_glow02.vmt"
-        }
-    }
-
     -- departure clear lamp
     self.InteractionZones = {
         {
@@ -506,42 +509,6 @@ function ENT:Initialize()
     }
 end
 
-function ENT:CreateSection( pos )
-    local ang = Angle( 0, 0, 0 )
-    local u3sectionb = ents.Create( "gmod_subway_uf_u3_section_b" )
-    u3sectionb.ParentTrain = self
-    self:SetNWEntity( "U3b", u3sectionb )
-    u3sectionb:SetNWEntity( "U3a", self )
-    -- self.u3sectionb = u2b
-    u3sectionb:SetPos( self:LocalToWorld( Vector( 0, 0, 0 ) ) )
-    u3sectionb:SetAngles( self:GetAngles() + ang )
-    u3sectionb:Spawn()
-    u3sectionb:SetOwner( self:GetOwner() )
-    local xmin = 5
-    local xmax = 5
-    constraint.AdvBallsocket( u3sectionb, self.MiddleBogey, 0, -- bone
-        0, -- bone		
-        Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, -- forcelimit
-        0, -- torquelimit
-        -0, -- xmin
-        -0, -- ymin
-        -180, -- zmin
-        0, -- xmax
-        0, -- ymax
-        180, -- zmax
-        0, -- xfric
-        10, -- yfric
-        0, -- zfric
-        0, -- rotonly
-        1 )
-
-    -- nocollide
-    table.insert( self.TrainEntities, u3sectionb )
-    constraint.NoCollide( self.MiddleBogey, u3sectionb, 0, 0 )
-    constraint.NoCollide( self, u3sectionb, 0, 0 )
-    return u3sectionb
-end
-
 function ENT:Think( dT )
     self.BaseClass.Think( self )
     self.PrevTime = self.PrevTime or CurTime()
@@ -561,272 +528,49 @@ function ENT:Think( dT )
     end
 
     self:SetNW2Float( "BatteryCharge", self.Duewag_Battery.Voltage )
-    if IsValid( self.FrontBogey ) and IsValid( self.MiddleBogey ) and IsValid( self.RearBogey ) then
-        if self.CoreSys.ReverserLeverStateA == 3 or self:ReadTrainWire( 6 ) < 1 or self.CoreSys.ReverserLeverStateA == -1 or self.CoreSys.ReverserLeverStateB == 3 or self.CoreSys.ReverserLeverStateB == -1 then
-            if self.DepartureConfirmed == true then
-                if self.CoreSys.ThrottleState < 0 then
-                    self.RearBogey.MotorForce = 67791.24
-                    self.FrontBogey.MotorForce = 67791.24
-                    self.BrakesOn = true
-                    self.RearBogey.MotorPower = self.CoreSys.Traction
-                    self.FrontBogey.MotorPower = self.CoreSys.Traction
-                    self.FrontBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    self.MiddleBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    self.RearBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                        self.SectionB:SetLightPower( 66, true )
-                        self.SectionB:SetLightPower( 67, true )
-                    end
-                elseif self.CoreSys.ThrottleState > 0 then
-                    self.RearBogey.MotorForce = 67791.24
-                    self.FrontBogey.MotorForce = 67791.24
-                    self.RearBogey.MotorPower = self.CoreSys.Traction
-                    self.FrontBogey.MotorPower = self.CoreSys.Traction
-                    self.FrontBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    self.MiddleBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    self.RearBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    self.BrakesOn = false
-                elseif self.CoreSys.ThrottleState == 0 then
-                    self.RearBogey.MotorForce = 67791.24
-                    self.FrontBogey.MotorForce = 67791.24
-                    self.BrakesOn = false
-                    self.RearBogey.MotorPower = self.CoreSys.Traction
-                    self.FrontBogey.MotorPower = self.CoreSys.Traction
-                    self.FrontBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    self.MiddleBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    self.RearBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                    if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                        self.SectionB:SetLightPower( 66, false )
-                        self.SectionB:SetLightPower( 67, false )
-                    end
-                elseif self.DeadmanUF.DeadmanTripped == true then
-                    if self.Speed > 5 then
-                        self.RearBogey.MotorPower = self.CoreSys.Traction
-                        self.FrontBogey.MotorPower = self.CoreSys.Traction
-                        self.FrontBogey.BrakeCylinderPressure = 2.7
-                        self.MiddleBogey.BrakeCylinderPressure = 2.7
-                        self.RearBogey.BrakeCylinderPressure = 2.7
-                        self.BrakesOn = true
-                        if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                            self.SectionB:SetLightPower( 66, true )
-                            self.SectionB:SetLightPower( 67, true )
-                        end
-                    else
-                        self.RearBogey.MotorPower = 0
-                        self.FrontBogey.MotorPower = 0
-                        self.FrontBogey.BrakeCylinderPressure = 2.7
-                        self.MiddleBogey.BrakeCylinderPressure = 2.7
-                        self.RearBogey.BrakeCylinderPressure = 2.7
-                        self.BrakesOn = true
-                        if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                            self.SectionB:SetLightPower( 66, true )
-                            self.SectionB:SetLightPower( 67, true )
-                        end
-                    end
-                end
-            elseif self.DepartureConfirmed == false then
-                self.FrontBogey.BrakeCylinderPressure = 2.7
-                self.MiddleBogey.BrakeCylinderPressure = 2.7
-                self.RearBogey.BrakeCylinderPressure = 2.7
-                self.RearBogey.MotorPower = 0
-                self.FrontBogey.MotorPower = 0
-                self.BrakesOn = true
-                if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                    self.SectionB:SetLightPower( 66, true )
-                    self.SectionB:SetLightPower( 67, true )
-                end
-            end
+    self:Traction()
+    --self:Wipe( 2 )
+end
 
-            if self.CoreSys.ReverserState == 1 then
-                self.FrontBogey.Reversed = false
-                self.RearBogey.Reversed = false
-            elseif self.CoreSys.ReverserState == -1 then
-                self.FrontBogey.Reversed = true
-                self.RearBogey.Reversed = true
-            end
-        elseif self:ReadTrainWire( 6 ) > 0 then
-            if self:ReadTrainWire( 8 ) < 1 then
-                self.FrontBogey.BrakeCylinderPressure = self:ReadTrainWire( 5 )
-                self.MiddleBogey.BrakeCylinderPressure = self:ReadTrainWire( 5 )
-                self.RearBogey.BrakeCylinderPressure = self:ReadTrainWire( 5 )
-                if self:ReadTrainWire( 9 ) < 1 then
-                    if self:ReadTrainWire( 3 ) > 0 or self:ReadTrainWire( 4 ) > 0 then
-                        if self:ReadTrainWire( 2 ) < 1 then
-                            self.RearBogey.MotorForce = 67791.24
-                            self.FrontBogey.MotorForce = 67791.24
-                            self.BrakesOn = false
-                            if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                                self.SectionB:SetLightPower( 66, false )
-                                self.SectionB:SetLightPower( 67, false )
-                            end
-                        elseif self:ReadTrainWire( 2 ) > 0 then
-                            self.RearBogey.MotorForce = 67791.24
-                            self.FrontBogey.MotorForce = 67791.24
-                            self.BrakesOn = true
-                            if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                                self.SectionB:SetLightPower( 66, true )
-                                self.SectionB:SetLightPower( 67, true )
-                            end
-                        end
-
-                        self.RearBogey.MotorPower = self:ReadTrainWire( 1 )
-                        self.FrontBogey.MotorPower = self:ReadTrainWire( 1 )
-                        if self:ReadTrainWire( 4 ) < 1 and self:ReadTrainWire( 3 ) > 0 then
-                            self.FrontBogey.Reversed = false
-                            self.RearBogey.Reversed = false
-                            -- print(self:ReadTrainWire(4),self)
-                        elseif self:ReadTrainWire( 3 ) < 1 and self:ReadTrainWire( 4 ) > 0 then
-                            self.FrontBogey.Reversed = true
-                            self.RearBogey.Reversed = true
-                            -- print(self:ReadTrainWire(3),self)
-                        end
-                    end
-                elseif self:ReadTrainWire( 9 ) > 0 then
-                    self.FrontBogey.BrakeCylinderPressure = 2.7
-                    self.MiddleBogey.BrakeCylinderPressure = 2.7
-                    self.RearBogey.BrakeCylinderPressure = 2.7
-                    self.RearBogey.MotorPower = 0
-                    self.FrontBogey.MotorPower = 0
-                    self.BrakesOn = true
-                    if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                        self.SectionB:SetLightPower( 66, true )
-                        self.SectionB:SetLightPower( 67, true )
-                    end
-
-                    if self:ReadTrainWire( 3 ) > 0 then
-                        self.FrontBogey.Reversed = false
-                        self.RearBogey.Reversed = false
-                    elseif self:ReadTrainWire( 4 ) > 0 then
-                        self.FrontBogey.Reversed = true
-                        self.RearBogey.Reversed = true
-                    end
-                end
-            elseif self:ReadTrainWire( 8 ) > 0 then
-                self.FrontBogey.BrakeCylinderPressure = 2.7
-                self.MiddleBogey.BrakeCylinderPressure = 2.7
-                self.RearBogey.BrakeCylinderPressure = 2.7
-                if self.CoreSys.Speed >= 2 then
-                    self.RearBogey.MotorPower = 110
-                    self.FrontBogey.MotorPower = 110
-                    self.RearBogey.MotorForce = -67791.24
-                    self.FrontBogey.MotorForce = -67791.24
-                    if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                        self.SectionB:SetLightPower( 66, true )
-                        self.SectionB:SetLightPower( 67, true )
-                    end
-                elseif self.CoreSys.Speed < 2 then
-                    self.RearBogey.MotorPower = 0
-                    self.FrontBogey.MotorPower = 0
-                    if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                        self.SectionB:SetLightPower( 66, true )
-                        self.SectionB:SetLightPower( 67, true )
-                    end
-                end
-            end
-        elseif self.CoreSys.ReverserLeverStateA == -1 then
-            if self.CoreSys.ThrottleState < 0 then
-                self.RearBogey.MotorForce = 5980
-                self.FrontBogey.MotorForce = 5980
-                self.BrakesOn = true
-                if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                    self.SectionB:SetLightPower( 66, true )
-                    self.SectionB:SetLightPower( 67, true )
-                end
-
-                self.RearBogey.MotorPower = self.CoreSys.Traction
-                self.FrontBogey.MotorPower = self.CoreSys.Traction
-                self.FrontBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                self.MiddleBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                self.RearBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-            elseif self.CoreSys.ThrottleState > 0 and self.DepartureConfirmed == true then
-                self.RearBogey.MotorForce = 4980
-                self.FrontBogey.MotorForce = 4980
-                self.RearBogey.MotorPower = self.CoreSys.Traction
-                self.FrontBogey.MotorPower = self.CoreSys.Traction
-                self.FrontBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                self.MiddleBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                self.RearBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-            elseif self.CoreSys.ThrottleState == 0 then
-                self.RearBogey.MotorForce = 0
-                self.FrontBogey.MotorForce = 0
-                self.BrakesOn = false
-                if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                    self.SectionB:SetLightPower( 66, false )
-                    self.SectionB:SetLightPower( 67, false )
-                end
-
-                self.RearBogey.MotorPower = self.CoreSys.Traction
-                self.FrontBogey.MotorPower = self.CoreSys.Traction
-                self.FrontBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                self.MiddleBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-                self.RearBogey.BrakeCylinderPressure = self.CoreSys.BrakePressure
-            elseif self.Train:GetNW2Bool( "DeadmanTripped" ) == true then
-                if self.Speed > 5 then
-                    self.RearBogey.MotorPower = self.CoreSys.Traction
-                    self.FrontBogey.MotorPower = self.CoreSys.Traction
-                    self.FrontBogey.BrakeCylinderPressure = 2.7
-                    self.MiddleBogey.BrakeCylinderPressure = 2.7
-                    self.RearBogey.BrakeCylinderPressure = 2.7
-                    self.BrakesOn = true
-                    if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                        self.SectionB:SetLightPower( 66, true )
-                        self.SectionB:SetLightPower( 67, true )
-                    end
-                else
-                    self.RearBogey.MotorPower = 0
-                    self.FrontBogey.MotorPower = 0
-                    self.FrontBogey.BrakeCylinderPressure = 2.7
-                    self.MiddleBogey.BrakeCylinderPressure = 2.7
-                    self.RearBogey.BrakeCylinderPressure = 2.7
-                    self.BrakesOn = true
-                    if self.RearCouple.CoupledEnt == nil and self.BlinkerOn == false then
-                        self.SectionB:SetLightPower( 66, true )
-                        self.SectionB:SetLightPower( 67, true )
-                    end
-                end
-            end
-
-            if self.CoreSys.ReverserState == 1 then
-                self.FrontBogey.Reversed = false
-                self.RearBogey.Reversed = false
-            elseif self.CoreSys.ReverserState == -1 then
-                self.FrontBogey.Reversed = true
-                self.RearBogey.Reversed = true
-            end
+function ENT:Traction()
+    if not IsValid( self.FrontBogey ) and not IsValid( self.RearBogey ) then return end
+    local fb = self.FrontBogey
+    local mb = self.MiddleBogey
+    local rb = self.RearBogey
+    local speed = self.CoreSys.Speed
+    local traction = self:ReadTrainWire( 1 ) * 0.01
+    local braking = traction < 0.01
+    local chopper = self.Chopper.ChopperOutput > 0 and self.Chopper.ChopperOutput / 750 or 0
+    --print(chopper,traction)
+    local P = math.max( 0, 0.04449 + 1.06879 * math.abs( chopper ) - 0.465729 * chopper ^ 2 )
+    if self.Speed < 10 then P = P * ( 1.0 + 0.5 * ( 10.0 - self.Speed ) / 10.0 ) end
+    self.FrontBogey.MotorForce = traction > 0 and 126688.07175 or -138363.606
+    self.RearBogey.MotorForce = self.FrontBogey.MotorForce
+    if self.Speed > 8 then
+        if traction > 0 then
+            self.FrontBogey.MotorPower = math.abs( chopper )
+        else
+            self.FrontBogey.MotorPower = math.abs( traction )
         end
-        -- self.FrontBogey.PneumaticBrakeForce = 100
-        -- self.MiddleBogey.PneumaticBrakeForce = 60
-        -- self.RearBogey.PneumaticBrakeForce = 100
+    else
+        if traction > 0 then
+            self.FrontBogey.MotorPower = math.abs( chopper )
+        else
+            self.FrontBogey.MotorPower = 0
+        end
     end
+
+    self.RearBogey.MotorPower = self.FrontBogey.MotorPower
+    rb.Reversed = self:ReadTrainWire( 4 ) > 0
+    fb.Reversed = rb.Reversed
+    fb.BrakeCylinderPressure = ( speed < 8 and braking ) and 5 or 0
+    mb.BrakeCylinderPressure = fb.BrakeCylinderPressure
+    rb.BrakeCylinderPressure = fb.BrakeCylinderPressure
+    --print(self.FrontBogey.MotorPower, traction, fb.BrakeCylinderPressure, rb.Reversed, self.FrontBogey.MotorForce)
 end
 
 function ENT:OnButtonPress( button, ply )
-    if button == "IBISkeyInsertSet" then
-        if self:GetNW2Bool( "InsertIBISKey", false ) == false then
-            self:SetNW2Bool( "InsertIBISKey", true )
-        else
-            self:SetNW2Bool( "InsertIBISKey", false )
-        end
-    end
-
-    if button == "IBISkeyTurnSet" then
-        if self:GetNW2Bool( "InsertIBISKey", false ) == true then
-            if self:GetNW2Bool( "TurnIBISKey", false ) == false then
-                self:SetNW2Bool( "TurnIBISKey", true )
-            else
-                self:SetNW2Bool( "TurnIBISKey", false )
-            end
-        end
-    end
-
-    if button == "HighbeamToggle" then
-        if self.Panel.Highbeam == 0 then
-            self.Panel.Highbeam = 1
-        else
-            self.Panel.Highbeam = 0
-        end
-    end
-
+    self:HackButtonPress( button )
     if button == "PassengerOvergroundSet" then self.Panel.PassengerOverground = 1 end
     if button == "PassengerUndergroundSet" then self.Panel.PassengerUnderground = 1 end
     if button == "SetPointLeftSet" then self.Panel.SetPointLeft = 1 end
@@ -970,13 +714,10 @@ function ENT:OnButtonPress( button, ply )
         end
     end
 
-    if button == "BatterySet" then
-        self:SetPackedBool( "FlickBatterySwitchOn", true )
+    if button == "BatteryOnSet" then
         if self.BatteryOn == false and self.CoreSys.ReverserLeverStateA == 1 then
             self.BatteryOn = true
             self.Duewag_Battery:TriggerInput( "Charge", 1.3 )
-            self:SetNW2Bool( "BatteryOn", true )
-            -- PrintMessage(HUD_PRINTTALK, "Battery switch is ON")
         end
     end
 
@@ -984,12 +725,7 @@ function ENT:OnButtonPress( button, ply )
         if self.BatteryOn == true and self.CoreSys.ReverserLeverStateA == 1 then
             self.BatteryOn = false
             self.Duewag_Battery:TriggerInput( "Charge", 0 )
-            self:SetNW2Bool( "BatteryOn", false )
-            -- PrintMessage(HUD_PRINTTALK, "Battery switch is off")
-            -- self:SetNW2Bool("BatterySetIsTouched",true)
         end
-
-        self:SetPackedBool( "FlickBatterySwitchOff", true )
     end
 
     if button == "DeadmanSet" then
@@ -1355,6 +1091,7 @@ function ENT:OnButtonPress( button, ply )
 end
 
 function ENT:OnButtonRelease( button, ply )
+    self:HackButtonRelease( button )
     if button == "CycleIBISKey" then
         if self.CoreSys.IBISKeyA == false and self.CoreSys.IBISKeyATurned == false then
             self.CoreSys.IBISKeyA = true
@@ -1367,7 +1104,6 @@ function ENT:OnButtonRelease( button, ply )
         end
     end
 
-    if button == "RemoveIBISKey" then if self.CoreSys.IBISKeyA == true then self.CoreSys.IBISKeyA = false end end
     if button == "ReduceBrakeSet" then self.Panel.ReduceBrake = 0 end
     if button == "PassengerOvergroundSet" then self.Panel.PassengerOverground = 0 end
     if button == "PassengerUndergroundSet" then self.Panel.PassengerUnderground = 0 end
@@ -1380,7 +1116,6 @@ function ENT:OnButtonRelease( button, ply )
     if button == "Door1Set" then self.Panel.Door1 = 0 end
     if button == "PantographRaiseSet" then self.Panel.PantographRaise = 0 end
     if button == "ThrowCouplerSet" then self.Panel.ThrowCoupler = 0 end
-    if button == "EmergencyBrakeSet" then end
     if ( button == "ThrottleUp" and self.CoreSys.ThrottleRateA > 0 ) or ( button == "ThrottleDown" and self.CoreSys.ThrottleRateA < 0 ) then self.CoreSys.ThrottleRateA = 0 end
     if ( button == "ThrottleUpFast" and self.CoreSys.ThrottleRateA > 0 ) or ( button == "ThrottleDownFast" and self.CoreSys.ThrottleRateA < 0 ) then self.CoreSys.ThrottleRateA = 0 end
     if button == "Rollsign+" then
@@ -1401,409 +1136,13 @@ function ENT:OnButtonRelease( button, ply )
         ------print("DeadmanPressedNo")
     end
 
-    if button == "WarningAnnouncementSet" then self:SetNW2Bool( "WarningAnnouncement", false ) end
     if button == "BellEngageSet" then self:SetNW2Bool( "Bell", false ) end
     if button == "Horn" then self:SetNW2Bool( "Horn", false ) end
     if button == "BatterySet" then self:SetNW2Bool( "IBIS_impulse", false ) end
-    if button == "DestinationSet" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-    end
-
-    if button == "Number0Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number1Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "DeleteSet" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "Number2Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "Number3Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "Number4Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "Number5Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "Number6Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "Number7Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "Number8Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "Number9Set" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "EnterSet" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
-    if button == "ServiceAnnouncementSet" then
-        if self.IBISKeyRegistered == true then
-            self.IBISKeyRegistered = false
-            self.IBIS:Trigger( nil )
-        end
-
-        self:SetNW2Bool( "IBISKeyBeep", true )
-        self:SetNW2Bool( "IBISKeyBeep", false )
-    end
-
     if button == "OpenBOStrab" then
         net.Start( "manual" )
         net.WriteBool( true )
         net.Send( self:GetDriverPly() )
         -- self:SetPackedBool("BOStrab",false)
-    end
-end
-
-ENT.CloseMoments = {}
-ENT.CloseMomentsCalc = false
-function ENT:DoorHandler( unlock, left, right, door1, idleunlock ) -- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position
-    -- print(self.DeltaTime)
-    -- local irStatus = self:IRIS(self.DoorStatesRight[1] > 0 or self.DoorStatesRight[2] > 0 or self.DoorStatesRight[3] > 0 or self.DoorStatesRight[4] > or self.DoorStatesLeft[1] > 0 or self.DoorStatesLeft[2] > 0 or self.DoorStatesLeft[3] > 0 or self.DoorStatesLeft[4]) -- Call IRIS function to get IR gate sensor status, but only when the doors are open
-    local irStatus = self:IRIS( true )
-    if right and door1 then -- door1 control according to side preselection
-        if self.DoorStatesRight[ 1 ] < 1 then
-            self.DoorStatesRight[ 1 ] = self.DoorStatesRight[ 1 ] + 0.13
-            math.Clamp( self.DoorStatesRight[ 1 ], 0, 1 )
-        end
-    elseif left and door1 then
-        if self.DoorStatesLeft[ 4 ] < 1 then
-            self.DoorStatesLeft[ 4 ] = self.DoorStatesLeft[ 4 ] + 0.13
-            math.Clamp( self.DoorStatesLeft[ 4 ], 0, 1 )
-        end
-    end
-
-    ----------------------------------------------------------------------
-    if unlock then
-        self.DoorsPreviouslyUnlocked = true
-        self.DoorLockSignalMoment = 0
-        if self.DoorCloseMomentsCaptured == false then -- randomise door closing for more realistic behaviour
-            self.DoorCloseMoments[ 1 ] = math.random( 1, 4 )
-            self.DoorCloseMoments[ 2 ] = math.random( 1, 4 )
-            self.DoorCloseMoments[ 3 ] = math.random( 1, 4 )
-            self.DoorCloseMoments[ 4 ] = math.random( 1, 4 )
-            self.DoorCloseMomentsCaptured = true
-        end
-
-        if right then
-            if self.RandomnessCalulated ~= true then -- pick a random door to be unlocked
-                for i, v in ipairs( self.DoorRandomness ) do
-                    if i <= 4 and v < 0 then
-                        self.DoorRandomness[ i ] = math.random( 0, 4 )
-                        -- print(self.DoorRandomness[i], "doorrandom", i)
-                        self.RandomnessCalculated = true
-                        break
-                    end
-                end
-            end
-
-            for i, v in ipairs( self.DoorRandomness ) do -- increment the door states
-                if v == 3 and self.DoorStatesRight[ i ] < 1 then
-                    if self.DeltaTime > 0 or self.DeltaTime < 0 then
-                        self.DoorStatesRight[ i ] = self.DoorStatesRight[ i ] + ( 0.8 * self.DeltaTime / 8 )
-                        math.Clamp( self.DoorStatesRight[ i ], 0, 1 )
-                    else
-                        self.DoorStatesRight[ i ] = self.DoorStatesRight[ i ] + 0.1
-                        math.Clamp( self.DoorStatesRight[ i ], 0, 1 )
-                    end
-                end
-            end
-        elseif left then
-            if self.RandomnessCalulated ~= true then -- pick a random door to be unlocked
-                for i, v in ipairs( self.DoorRandomness ) do
-                    if i <= 4 and v < 0 then
-                        self.DoorRandomness[ i ] = math.random( 0, 4 )
-                        -- print(self.DoorRandomness[i], "doorrandom", i)
-                        self.RandomnessCalculated = true
-                        break
-                    end
-                end
-            end
-
-            for i, v in ipairs( self.DoorRandomness ) do
-                if v == 3 and self.DoorStatesLeft[ i ] < 1 then
-                    if self.DeltaTime > 0 or self.DeltaTime < 0 then
-                        self.DoorStatesLeft[ i ] = self.DoorStatesLeft[ i ] + ( 0.8 * self.DeltaTime / 8 )
-                        math.Clamp( self.DoorStatesLeft[ i ], 0, 1 )
-                    else
-                        self.DoorStatesLeft[ i ] = self.DoorStatesLeft[ i ] + 0.1
-                        math.Clamp( self.DoorStatesLeft[ i ], 0, 1 )
-                    end
-                end
-            end
-        end
-    elseif not unlock then
-        if self.DoorLockSignalMoment == 0 then self.DoorLockSignalMoment = CurTime() end
-        self.DoorCloseMomentsCaptured = false
-        if right then
-            for i, v in ipairs( self.DoorStatesRight ) do
-                if CurTime() > self.DoorLockSignalMoment + self.DoorCloseMoments[ i ] then
-                    if irStatus ~= "Sensor" .. i .. "Blocked" then
-                        if v > 0 then
-                            if self.DeltaTime > 0 or self.DeltaTime < 0 then
-                                self.DoorStatesRight[ i ] = self.DoorStatesRight[ i ] - ( 0.8 * self.DeltaTime / 8 )
-                                self.DoorStatesRight[ i ] = math.Clamp( self.DoorStatesRight[ i ], 0, 1 )
-                            else
-                                self.DoorStatesRight[ i ] = self.DoorStatesRight[ i ] - 0.1
-                                self.DoorStatesRight[ i ] = math.Clamp( self.DoorStatesRight[ i ], 0, 1 )
-                            end
-                        end
-                    end
-                end
-            end
-        elseif left then
-            for i, v in ipairs( self.DoorStatesLeft ) do
-                if CurTime() > self.DoorLockSignalMoment + self.DoorCloseMoments[ i ] then
-                    if irStatus ~= "Sensor" .. i + 4 .. "Blocked" then
-                        if v > 0 then
-                            if self.DeltaTime > 0 or self.DeltaTime < 0 then
-                                self.DoorStatesLeft[ i ] = self.DoorStatesLeft[ i ] - ( 0.8 * self.DeltaTime / 8 )
-                                self.DoorStatesLeft[ i ] = math.Clamp( self.DoorStatesLeft[ i ], 0, 1 )
-                            else
-                                self.DoorStatesLeft[ i ] = self.DoorStatesLeft[ i ] - 0.1
-                                self.DoorStatesLeft[ i ] = math.Clamp( self.DoorStatesLeft[ i ], 0, 1 )
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    elseif idleunlock then
-        -- If the Reverser is set to *, the doors automatically close again after five seconds
-        if right then
-            local opened
-            -- Iterate through each door with random behavior
-            for i, v in ipairs( self.DoorRandomness ) do
-                if v == 3 and self.DoorStatesRight[ i ] < 1 then
-                    if self.DeltaTime > 0 or self.DeltaTime < 0 then -- Check if dT is something we use
-                        if self.DoorOpenMoments[ i ] == 0 then
-                            -- Increase door state based on time (using dT)
-                            self.DoorStatesRight[ i ] = self.DoorStatesRight[ i ] + ( 0.8 * self.DeltaTime / 8 )
-                            self.DoorStatesRight[ i ] = math.Clamp( self.DoorStatesRight[ i ], 0, 1 )
-                        end
-                    else -- If dT is not usable
-                        if self.DoorOpenMoments[ i ] == 0 then
-                            -- Increase door state without using dT
-                            self.DoorStatesRight[ i ] = self.DoorStatesRight[ i ] + 0.1
-                            self.DoorStatesRight[ i ] = math.Clamp( self.DoorStatesRight[ i ], 0, 1 )
-                        end
-                    end
-                elseif self.DoorStatesRight[ i ] > 0 and self.DoorOpenMoments[ i ] < CurTime() - 5 then
-                    -- If five seconds have passed, close the door
-                    if irStatus ~= "Sensor" .. i .. "Blocked" then
-                        if self.DeltaTime > 0 or self.DeltaTime < 0 then
-                            -- Decrease door state based on time (using dT)
-                            self.DoorStatesRight[ i ] = self.DoorStatesRight[ i ] - ( 0.8 * self.DeltaTime / 8 )
-                            self.DoorStatesRight[ i ] = math.Clamp( self.DoorStatesRight[ i ], 0, 1 )
-                        else
-                            -- Decrease door state without using dT
-                            self.DoorStatesRight[ i ] = self.DoorStatesRight[ i ] - 0.1
-                            self.DoorStatesRight[ i ] = math.Clamp( self.DoorStatesRight[ i ], 0, 1 )
-                        end
-                    end
-                end
-
-                if self.DoorStatesRight[ i ] == 1 and not opened then
-                    self.DoorOpenMoments[ i ] = CurTime() -- Record the moment the door opened
-                    opened = true
-                elseif self.DoorStatesRight[ i ] == 0 then
-                    self.DoorOpenMoments[ i ] = 0
-                    opened = false
-                end
-            end
-        elseif left then
-            local opened
-            -- Similar logic for the left doors
-            for i, v in ipairs( self.DoorRandomness ) do
-                if v == 3 and self.DoorStatesLeft[ i ] < 1 then
-                    if self.DeltaTime > 0 or self.DeltaTime < 0 then
-                        if self.DoorOpenMoments[ i ] == 0 then
-                            self.DoorStatesLeft[ i ] = self.DoorStatesLeft[ i ] + ( 0.8 * self.DeltaTime / 8 )
-                            self.DoorStatesLeft[ i ] = math.Clamp( self.DoorStatesLeft[ i ], 0, 1 )
-                            if self.DoorStatesLeft[ i ] == 1 then self.DoorOpenMoments[ i ] = CurTime() end
-                        end
-                    else
-                        if self.DoorOpenMoments[ i ] == 0 then
-                            self.DoorStatesLeft[ i ] = self.DoorStatesLeft[ i ] + 0.1
-                            self.DoorStatesLeft[ i ] = math.Clamp( self.DoorStatesLeft[ i ], 0, 1 )
-                        end
-                    end
-                elseif self.DoorStatesLeft[ i ] > 0 and self.DoorOpenMoments[ i ] + 5 < CurTime() then
-                    if irStatus ~= "Sensor" .. i + 4 .. "Blocked" then
-                        if self.DeltaTime > 0 or self.DeltaTime < 0 then
-                            self.DoorStatesLeft[ i ] = self.DoorStatesLeft[ i ] - ( 0.8 * self.DeltaTime / 8 )
-                            self.DoorStatesLeft[ i ] = math.Clamp( self.DoorStatesLeft[ i ], 0, 1 )
-                        else
-                            self.DoorStatesLeft[ i ] = self.DoorStatesLeft[ i ] - 0.1
-                            self.DoorStatesLeft[ i ] = math.Clamp( self.DoorStatesLeft[ i ], 0, 1 )
-                        end
-                    end
-                end
-
-                if self.DoorStatesLeft[ i ] == 1 and not opened then
-                    self.DoorOpenMoments[ i ] = CurTime()
-                    opened = true
-                elseif self.DoorStatesLeft[ i ] == 0 then
-                    self.DoorOpenMoments[ i ] = 0
-                    opened = false
-                end
-            end
-        end
-    end
-end
-
-function ENT:IRIS( enable ) -- IR sensors for blocking the doors
-    if enable then
-        local result1 = util.TraceHull( {
-            start = self:LocalToWorld( Vector( 330.889, -46.4148, 35.3841 ) ),
-            endpos = self:LocalToWorld( Vector( 330.889, -46.4148, 35.3841 ) ) + self:GetForward() * 70,
-            mask = MASK_PLAYERSOLID,
-            filter = {
-                self -- filter out the train entity
-            },
-            mins = Vector( -24, -2, 0 ),
-            maxs = Vector( 24, 2, 1 )
-        } )
-
-        local result2 = util.TraceHull( {
-            start = self:LocalToWorld( Vector( 88.604, -46.4148, 35.3841 ) ),
-            endpos = self:LocalToWorld( Vector( 88.604, -46.4148, 35.3841 ) ) + self:GetForward() * 70,
-            mask = MASK_PLAYERSOLID,
-            filter = {
-                self -- filter out the train entity
-            },
-            mins = Vector( -24, -2, 0 ),
-            maxs = Vector( 24, 2, 1 )
-        } )
-
-        local result7 = util.TraceHull( {
-            start = self:LocalToWorld( Vector( 330.889, 46.4148, 35.3841 ) ),
-            endpos = self:LocalToWorld( Vector( 330.889, 46.4148, 35.3841 ) ) + self:GetForward() * 70,
-            mask = MASK_PLAYERSOLID,
-            filter = {
-                self -- filter out the train entity
-            },
-            mins = Vector( -24, -2, 0 ),
-            maxs = Vector( 24, 2, 1 )
-        } )
-
-        local result8 = util.TraceHull( {
-            start = self:LocalToWorld( Vector( 88.604, 46.4148, 35.3841 ) ),
-            endpos = self:LocalToWorld( Vector( 88.604, 46.4148, 35.3841 ) ) + self:GetForward() * 70,
-            mask = MASK_PLAYERSOLID,
-            filter = {
-                self -- filter out the train entity
-            },
-            mins = Vector( -24, -2, 0 ),
-            maxs = Vector( 24, 2, 1 )
-        } )
-
-        local statuses = {} -- Store the statuses in a table
-        if IsValid( result1.Entity ) and ( result1.Entity:IsPlayer() or result1.Entity:IsNPC() ) then table.insert( statuses, "Sensor1Blocked" ) end
-        if IsValid( result2.Entity ) and ( result2.Entity:IsPlayer() or result2.Entity:IsNPC() ) then table.insert( statuses, "Sensor2Blocked" ) end
-        if self.SectionB:IRIS( enable ) == "Sensor3Blocked" then table.insert( statuses, "Sensor3Blocked" ) end
-        if self.SectionB:IRIS( enable ) == "Sensor4Blocked" then table.insert( statuses, "Sensor4Blocked" ) end
-        if self.SectionB:IRIS( enable ) == "Sensor5Blocked" then table.insert( statuses, "Sensor5Blocked" ) end
-        if self.SectionB:IRIS( enable ) == "Sensor6Blocked" then table.insert( statuses, "Sensor6Blocked" ) end
-        if IsValid( result7.Entity ) and ( result7.Entity:IsPlayer() or result7.Entity:IsNPC() ) then table.insert( statuses, "Sensor7Blocked" ) end
-        if IsValid( result8.Entity ) and ( result8.Entity:IsPlayer() or result8.Entity:IsNPC() ) then table.insert( statuses, "Sensor8Blocked" ) end
-        if statuses then
-            return unpack( statuses, 1, 8 ) -- Return all blocked sensors
-        else
-            return nil
-        end
     end
 end
