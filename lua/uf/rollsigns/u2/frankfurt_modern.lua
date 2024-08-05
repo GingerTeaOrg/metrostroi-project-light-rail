@@ -1,0 +1,1 @@
+AddU2Rollsigns( "Modern Frankfurt", { "materials/models/lilly/uf/u2/rollsigns/frankfurt_stock.png" } )
