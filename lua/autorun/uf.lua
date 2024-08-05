@@ -109,6 +109,7 @@ UF.Stations = {}
 UF.TrainCountOnPlayer = {}
 UF.IBISRegisteredTrains = {}
 UF.IBISAnnouncementMetadata = {}
+UF.IBISLinePrefixes = {}
 function UF.checkDuplicateTrain( train, LC )
 	local foundDuplicate = false -- Initialize variable to track duplicate value
 	for key, value in pairs( UF.IBISRegisteredTrains ) do
@@ -265,6 +266,22 @@ function UF.AddIBISLines( name, lines )
 	print( "Light Rail: Loaded \"" .. name .. "\" IBIS line index." )
 end
 
+function UF.AddLinePrefixes( name, lines )
+	if not name or not lines then return end
+	for k, v in pairs( UF.IBISLinePrefixes ) do
+		if v.name == name then
+			UF.IBISLinePrefixes[ k ] = lines
+			UF.IBISLinePrefixes[ k ].name = name
+			print( "Light Rail: Reloaded \"" .. name .. "\" IBIS line index." )
+			return
+		end
+	end
+
+	local id = table.insert( UF.IBISLinePrefixes, lines )
+	UF.IBISLinePrefixes[ id ].name = name
+	print( "Light Rail: Loaded \"" .. name .. "\" line prefix index." )
+end
+
 function UF.AddU2Rollsigns( name, lines )
 	if not name or not lines then return end
 	for k, v in pairs( UF.U2Rollsigns ) do
@@ -353,12 +370,6 @@ files = file.Find( "uf/IBIS/*.lua", "LUA" )
 for _, filename in pairs( files ) do
 	AddCSLuaFile( "uf/IBIS/" .. filename )
 	include( "uf/IBIS/" .. filename )
-end
-
-files = file.Find( "uf/rollsigns/*/*.lua", "LUA" )
-for _, filename in pairs( files ) do
-	AddCSLuaFile( "uf/rollsigns/" .. filename )
-	include( "uf/rollsigns/" .. filename )
 end
 
 if not UF.RoutingTable then
