@@ -71,7 +71,7 @@ function ENT:Think()
 
 	-----------------------------------------------------------------------------
 	local train = TrainDetected -- use the first train detected as our target
-	if not train then return end
+	if not IsValid( train ) then return end
 	local trainTrackPos = Metrostroi.GetPositionOnTrack( train:GetPos() )[ 1 ]
 	local touchedContactFirst = ( forward and trainTrackPos.x < self.TargetEnt.TrackPosition.x ) or trainTrackPos.x > self.TargetEnt.TrackPosition.x
 	if not touchedContactFirst then return end
