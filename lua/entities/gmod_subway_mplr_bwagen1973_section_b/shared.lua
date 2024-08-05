@@ -16,7 +16,7 @@ end
 
 ENT.IsSectionB = true
 function ENT:GetStandingArea()
-	return Vector( 350, -20, 25 ), Vector( 60, 20, 25 ) -- TWEAK: NEEDS TESTING INGAME
+	return Vector( -420, -20, 40 ), Vector( -60, 20, 40 ) -- TWEAK: NEEDS TESTING INGAME
 end
 
 function ENT:InitializeSounds()

@@ -16,7 +16,7 @@ function ENT:PassengerCapacity()
 end
 
 function ENT:GetStandingArea()
-	return Vector( 350, -20, 25 ), Vector( 60, 20, 25 ) -- TWEAK: NEEDS TESTING INGAME
+	return Vector( 420, -20, 40 ), Vector( 60, 20, 40 )
 end
 
 function ENT:InitializeSounds()
@@ -36,7 +36,11 @@ function ENT:InitializeSounds()
 		"lilly/uf/u2/insidecab/Bell_end.mp3"
 	}
 
-	self.SoundNames[ "Cruise" ] = { "lilly/mplr/b-wagen_common.mp3" }
+	self.SoundNames[ "Cruise" ] = { "lilly/mplr/b-wagen_common/cruise.mp3" }
+	self.SoundPositions[ "Cruise" ] = { 800, 1e9, Vector( 240, 0, 50 ), 1 }
+	self.SoundNames[ "DepartureConfirmed" ] = { "lilly/mplr/common/departure_ready.wav" }
+	self.SoundPositions[ "DepartureConfirmed" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
+	-----------------------------------------------------------------------------------------
 	self.SoundPositions[ "bell_in" ] = { 800, 1e9, Vector( 480, -20, 50 ), 1 }
 	self.SoundNames[ "IBIS_beep" ] = { "lilly/uf/IBIS/beep.mp3" }
 	self.SoundPositions[ "IBIS_beep" ] = { 1100, 1e9, Vector( 412, -12, 55 ), 5 }
@@ -72,6 +76,8 @@ ENT.SectionBDoors = {
 ENT.StepsLow = true
 ENT.StepsMedium = true
 ENT.StopRequest = true
+ENT.Bidirectional = true
+ENT.DoorsUnlockToggle = true
 ENT.MirrorCams = { Vector( 441, 72, 15 ), Angle( 1, 180, 0 ), 15, Vector( 441, -72, 15 ), Angle( 1, 180, 0 ), 15 }
 function ENT:InitializeSystems()
 	self:LoadSystem( "DeadmanUF", "Duewag_Deadman" )
@@ -83,6 +89,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem( "IBIS" )
 	self:LoadSystem( "Announcer", "uf_announcer" )
 	self:LoadSystem( "MPLR_DoorHandler" )
+	self:LoadSystem( "Blinkers" )
 	-- self:LoadSystem("duewag_electric")
 end
 
@@ -95,7 +102,7 @@ ENT.SubwayTrain = {
 }
 
 ENT.AnnouncerPositions = { { Vector( 293, 44, 102 ) }, { Vector( 293, -44, 102 ) } }
-ENT.NumberRanges = { { 5001, 5011 }, { 5012, 5016 }, { 5031, 5032 }, { 5012, 5016 }, { 5141, 5145 } }
+ENT.NumberRanges = { { 5021, 5028 } }
 ENT.Spawner = {
 	model = { "models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl", "models/lilly/mplr/ruhrbahn/b_1973/section_b.mdl" },
 	head = "gmod_subway_mplr_bwagen1973_section_a",

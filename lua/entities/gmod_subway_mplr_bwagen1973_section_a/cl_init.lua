@@ -218,7 +218,8 @@ ENT.ClientProps[ "step_tray2" ] = {
 ENT.ClientProps[ "key_ignition" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/key.mdl",
 	pos = Vector( 0, 0, 0 ),
-	ang = Angle( 0, 00, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "step_tray3" ] = {
@@ -253,14 +254,14 @@ ENT.ClientProps[ "mirror_l" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/mirror_l.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	hideseat = 0.2
+	nohide = true
 }
 
 ENT.ClientProps[ "mirror_r" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/mirror_r.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	hideseat = 0.2
+	nohide = true
 }
 
 ENT.ButtonMapMPLR[ "dashboard" ] = {
@@ -1239,9 +1240,15 @@ function ENT:Think()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
 	self.BatteryOn = self:GetNW2Bool( "BatteryOn", false )
+	if not IsValid( self.SectionB ) then self.SectionB = Entity( self.SectionBIndex ) end
 end
 
 function ENT:Animations()
+	if not IsValid( self.SectionB ) then
+		print( "sectionB invalid" )
+		return
+	end
+
 	self.Speed = self:GetNW2Int( "Speed", 0 )
 	self.KeyInserted = self:GetNW2Bool( "IgnitionKeyIn", false )
 	self.KeyTurned = self:GetNW2Bool( "IgnitionTurned", false )
@@ -1254,19 +1261,38 @@ function ENT:Animations()
 	-- self:Animate("window_cab_l", self:GetNW2Float("CabWindowL", 0), 0, 100, 50, 9, false)
 	self:ShowHide( "key_ignition", self.KeyInserted )
 	self:Animate( "key_ignition", self.KeyTurned and 1 or 0, 0, 100, 800, 0, 0 )
+	local Door1a = self:GetNW2Float( "Door1a", 0 )
 	local Door12a = self:GetNW2Float( "Door2a", 0 )
 	local Door34a = self:GetNW2Float( "Door3a", 0 )
-	local Door78b = self:GetNW2Float( "Door4b", 0 )
-	local Door56b = self:GetNW2Float( "Door5b", 0 )
-	self:Animate( "door1_r", Door12a, 0, 100, 100, 10, 0 )
+	local Door56a = self:GetNW2Float( "Door4a", 0 )
+	local Door78a = self:GetNW2Float( "Door5a", 0 )
+	local Door9a = self:GetNW2Float( "Door6a", 0 )
+	local Door1b = self:GetNW2Float( "Door1b", 0 )
+	local Door23b = self:GetNW2Float( "Door2b", 0 )
+	local Door45b = self:GetNW2Float( "Door3b", 0 )
+	local Door67b = self:GetNW2Float( "Door4b", 0 )
+	local Door89b = self:GetNW2Float( "Door5b", 0 )
+	local Door10b = self:GetNW2Float( "Door6b", 0 )
+	---------------------------------------------------------------------------
+	self:Animate( "door1_r", Door1a, 0, 100, 100, 10, 0 )
 	self:Animate( "door_fr2", Door12a, 0, 100, 100, 10, 0 )
 	self:Animate( "door_fr1", Door12a, 0, 100, 100, 10, 0 )
 	self:Animate( "door_rr2", Door34a, 0, 100, 100, 10, 0 )
 	self:Animate( "door_rr1", Door34a, 0, 100, 100, 10, 0 )
-	self:Animate( "door_fl2", Door78b, 0, 100, 100, 10, 0 )
-	self:Animate( "door_fl1", Door78b, 0, 100, 100, 10, 0 )
-	self:Animate( "door_rl2", Door56b, 0, 100, 100, 10, 0 )
-	self:Animate( "door_rl1", Door56b, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door_rl1", Door56a, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door_rl2", Door56a, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door_fl1", Door78a, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door_fl2", Door78a, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door1_l", Door9a, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door1_r", Door1b, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door_fr1", Door23b, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door_fr2", Door23b, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door_rr1", Door45b, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "door_rr2", Door45b, 0, 100, 100, 10, 0 )
+	self:Animate( "door_fl2", Door67b, 0, 100, 100, 10, 0 )
+	self:Animate( "door_fl1", Door67b, 0, 100, 100, 10, 0 )
+	self:Animate( "door_rl2", Door89b, 0, 100, 100, 10, 0 )
+	self:Animate( "door_rl1", Door89b, 0, 100, 100, 10, 0 )
 	local StepMediumLeft1 = self:GetNW2Float( "StepMediumLeft1", 0 )
 	local StepMediumLeft2 = self:GetNW2Float( "StepMediumLeft2", 0 )
 	local StepMediumLeft3 = self:GetNW2Float( "StepMediumLeft3", 0 )
@@ -1283,6 +1309,8 @@ function ENT:Animations()
 	local StepLowestLeft6 = self:GetNW2Float( "StepLowestLeft6", 0 )
 	self:Animate( "step_tray4", StepLowestLeft4, 0, 100, 100, 10, 0 )
 	self:Animate( "step_tray3", StepLowestLeft5, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "step_tray2", StepLowestLeft5, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "step_tray", StepLowestLeft4, 0, 100, 100, 10, 0 )
 	local StepMediumRight1 = self:GetNW2Float( "StepMediumRight1", 0 )
 	self:Animate( "foldingstep_small_r", StepMediumRight1, 0, 100, 100, 10, 0 )
 	local StepMediumRight2 = self:GetNW2Float( "StepMediumRight2", 0 )
@@ -1292,6 +1320,9 @@ function ENT:Animations()
 	local StepMediumRight6 = self:GetNW2Float( "StepMediumRight6", 0 )
 	self:Animate( "foldingstep_fr", StepMediumRight2, 0, 100, 100, 10, 0 )
 	self:Animate( "foldingstep_rr", StepMediumRight3, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "foldingstep_fl", StepMediumRight5, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "foldingstep_rl", StepMediumRight4, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "foldingstep_small_l", StepMediumRight6, 0, 100, 100, 10, 0 )
 	local StepLowestRight1 = self:GetNW2Float( "StepLowestRight1", 0 )
 	local StepLowestRight2 = self:GetNW2Float( "StepLowestRight2", 0 )
 	local StepLowestRight3 = self:GetNW2Float( "StepLowestRight3", 0 )
@@ -1300,6 +1331,8 @@ function ENT:Animations()
 	local StepLowestRight6 = self:GetNW2Float( "StepLowestRight6", 0 )
 	self:Animate( "step_tray", StepLowestRight3, 0, 100, 100, 10, 0 )
 	self:Animate( "step_tray2", StepLowestRight2, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "step_tray3", StepLowestRight4, 0, 100, 100, 10, 0 )
+	self.SectionB:Animate( "step_tray4", StepLowestRight5, 0, 100, 100, 10, 0 )
 	local mirrorLeft = self:GetNW2Bool( "MirrorLeft", 0 ) and 1 or 0
 	local mirrorRight = self:GetNW2Bool( "MirrorRight", 0 ) and 1 or 0
 	self:Animate( "mirror_l", mirrorLeft, 0, 1, 35, 10, 5 )
@@ -1377,6 +1410,7 @@ function ENT:SoundsFunc()
 	-- print(self:GetNW2Bool("Bell",false))
 	self:SetSoundState( "bell", self:GetNW2Bool( "Bell", false ) and 1 or 0, 1 )
 	self:SetSoundState( "bell_in", self:GetNW2Bool( "Bell", false ) and 1 or 0, 1 )
+	self:SetSoundState( "DepartureConfirmed", self:GetNW2Bool( "DepartureAlarm", false ) and 1 or 0, 1 )
 end
 
 function ENT:OnPlay( soundid, location, range, pitch )

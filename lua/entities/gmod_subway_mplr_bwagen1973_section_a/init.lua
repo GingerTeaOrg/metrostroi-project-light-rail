@@ -176,15 +176,15 @@ function ENT:Initialize()
 	self.ThrottleEngaged = false
 	self.Door1 = false
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF( Vector( 390, 0, 4 ), Angle( 0, 0, 0 ), true, "b_motor", "a" )
-	self.MiddleBogey = self:CreateBogeyUF( Vector( 0, 0, 4 ), Angle( 0, 0, 0 ), false, "b_joint", "a" )
+	self.FrontBogey = self:CreateBogeyUF( Vector( 390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "a" )
+	self.MiddleBogey = self:CreateBogeyUF( Vector( 0, 0, 4 ), Angle( 0, 180, 0 ), false, "b_joint", "a" )
 	-- Create couples
 	self.FrontCouple = self:CreateCustomCoupler( Vector( 475, 0, 30 ), Angle( 0, 0, 0 ), true, "b", "a" )
 	self.FrontCoupler = self.FrontCouple
 	self.SectionB = self:CreateSection( Vector( 0, 0, 0 ), Angle( 0, 0, 0 ), "gmod_subway_mplr_bwagen1973_section_b", self, nil, self )
 	self.RearCouple = self:CreateCustomCoupler( Vector( -475, 0, 30 ), Angle( 0, 180, 0 ), true, "b", "b" )
 	self.RearCoupler = self.RearCouple
-	self.RearBogey = self:CreateBogeyUF( Vector( -390, 0, 4 ), Angle( 0, 0, 0 ), true, "b_motor", "b" )
+	self.RearBogey = self:CreateBogeyUF( Vector( -390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "b" )
 	self.Panto = self:CreatePanto( Vector( 36.5, 0, 135 ), Angle( 0, 180, 0 ), "einholm" )
 	self.PantoUp = false
 	self.FrontBogey:SetNWInt( "MotorSoundType", 0 )
@@ -525,7 +525,6 @@ end
 
 function ENT:OnButtonPress( button )
 	self:HackButtonPress( button )
-	print( button )
 	local toggle = string.find( button, "Toggle", 1 ) ~= nil
 	if button and toggle then
 		self:ToggleButton( button )
@@ -535,6 +534,7 @@ function ENT:OnButtonPress( button )
 
 	local sys = self.CoreSys
 	local panel = self.Panel
+	local doorHandler = self.MPLR_DoorHandler
 	if button == "IgnitionKeyOn" then sys:IgnitionKeyOnA() end
 	if button == "IgnitionKeyOff" then sys:IgnitionKeyOffA() end
 	if button == "IgnitionKeyToggle" then sys:IgnitionKeyInOutA() end
@@ -585,8 +585,10 @@ function ENT:OnButtonPress( button )
 	end
 
 	if button == "DoorsForceOpenSet" then
-		for k, v in ipairs( sys.DoorRandomness ) do
-			sys.DoorRandomness[ k ] = 3
+		local right = panel.DoorsSelectRight > 0
+		local tab = right and doorHandler.DoorRandomnessRight or doorHandler.DoorRandomnessLeft
+		for k, _ in ipairs( tab ) do
+			tab[ k ] = 3
 		end
 	end
 end
@@ -649,7 +651,7 @@ function ENT:Traction()
 	end
 
 	self.RearBogey.MotorPower = self.FrontBogey.MotorPower
-	rb.Reversed = self:ReadTrainWire( 3 ) > 0
+	rb.Reversed = self:ReadTrainWire( 4 ) > 0
 	fb.Reversed = rb.Reversed
 	fb.BrakeCylinderPressure = ( speed < 8 and braking ) and 5 or 0
 	mb.BrakeCylinderPressure = fb.BrakeCylinderPressure
