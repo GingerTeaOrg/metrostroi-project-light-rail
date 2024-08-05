@@ -1,5 +1,5 @@
 Metrostroi.DefineSystem("1973_panel")
-
+TRAIN_SYSTEM.DontAccelerateSimulation = true
 function TRAIN_SYSTEM:Initialize()
 
 	self.Train:LoadSystem("IgnitionKey", "Relay", "Switch", {bass = true})
@@ -116,7 +116,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.BlinkerLeft = 0
 	self.BlinkerRight = 0
 
-	self.StepsHigh = 1
+	self.StepsHigh = 0
 	self.StepsLow = 0
 	self.StepsLowest = 0
 
@@ -159,7 +159,7 @@ function TRAIN_SYSTEM:Outputs()
 		"PantographOn",
 		"PantographOff",
 		"Headlights",
-		"WarnBlink",
+		"HazardBlink",
 		"DriverLight",
 		"BlinkerLeft",
 		"BlinkerRight",
@@ -168,6 +168,35 @@ function TRAIN_SYSTEM:Outputs()
 		"StepsLowest",
 		"Bell",
 		"Horn",
-		"ThrowCoupler"
+		"ThrowCoupler",
+		"WiperConstant",
+		"WiperIntervalSet",
+		"WindowWasherSet",
+		"EmergencyBrakeDisable",
+		"Number1",
+		"Number2",
+		"Number3",
+		"Number4",
+		"Number5",
+		"Number6",
+		"Number7",
+		"Number8",
+		"Number9",
+		"Number0",
+		"Enter",
+		"Delete",
+		"Destination",
+		"SpecialAnnouncements",
+		"DateAndTime",
+		"AnnouncerPlaying",
+		"Button1a",
+		"Button2a",
+		"Button3a",
+		"Button4a",
+		"Button5a",
+		"Button6a",
+		"Button7a",
+		"Button8a"
 	}
 end
+
