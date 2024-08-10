@@ -36,17 +36,16 @@ end
 function TRAIN_SYSTEM:Think()
 	-- local variables to save space
 	local train = self.Train
-	if not speed then return end
+	local sys = self.Train.CoreSys
+	local p = self.Train.Panel
+	local pB = self.Train.Bidirectional and self.Train.SectionB.Panel or nil
 	local speed = math.abs( train.Speed )
+	if not speed then return end
 	-- Determine if pedal A or pedal B is pressed, either way is fine
-	if self.IsPressedA == true or self.IsPressedB == true then
-		self.IsPressed = 1
-	else
-		self.IsPressed = 0
-	end
-
+	self.IsPressed = pB and ( p.Deadman > 0 or pB.Deadman > 0 ) and 1 or not pB and p.Deadman > 0 and 1 or 0
+	local batteryOn = train:GetNW2Bool( "BatteryOn", false )
 	-- Check if battery is on and MUDeadman conditions are met
-	if train:GetNW2Bool( "BatteryOn", false ) == true or train:ReadTrainWire( 6 ) > 0 and train:ReadTrainWire( 7 ) > 0 then
+	if batteryOn or train:ReadTrainWire( 6 ) > 0 and train:ReadTrainWire( 7 ) > 0 then
 		if train:ReadTrainWire( 6 ) > 0 and #train.WagonList < 2 and math.random( 0, 100 ) <= 33 and speed > 5 then
 			self.IsPressed = 0
 			self.DeadmanTripped = true
@@ -166,9 +165,10 @@ function TRAIN_SYSTEM:Think()
 	end
 end
 
-function TRAIN_SYSTEM:OverspeedProtection( tripped, mandatedSpeed )
+function TRAIN_SYSTEM:Overspeed( tripped )
 	if not tripped then
-		self.AlarmSound = tripped
+		-- Reset the state if not tripped
+		self.AlarmSound = false
 		self.OverspeedTimer = 0
 		self.OverspeedDeadmanRelease = false
 		self.OverspeedAcknowledged = true
@@ -176,17 +176,22 @@ function TRAIN_SYSTEM:OverspeedProtection( tripped, mandatedSpeed )
 		return
 	end
 
-	local train = self.Train
-	local speed = math.abs( train.Speed )
-	local overspeed = speed > mandatedSpeed
-	self.OverSpeedTimer = self.OverspeedTimer == 0 and CurTime() or self.OverSpeedTimer --set the timer trigger time if 0 or leave it alone if not
-	if self.OverSpeedTimer ~= 0 and self.AlarmSound then
-		self.OverspeedDeadmanRelease = ( not self.OverspeedDeadmanRelease and self.IsPressed < 1 ) and true or self.OverspeedDeadmanRelease
-		if self.OverspeedDeadmanRelease then
-			self.OverspeedAcknowledged = true
-			self.OverSpeedTimer = CurTime()
-		end
+	-- Initialize or update the overspeed timer
+	self.OverspeedTimer = self.OverspeedTimer == 0 and CurTime() or self.OverspeedTimer
+	-- Check if the alarm sound should be active
+	if not self.AlarmSound then self.AlarmSound = true end
+	-- Check if the pedal is released and acknowledged
+	if not self.OverspeedDeadmanRelease and self.IsPressed < 1 then self.OverspeedDeadmanRelease = true end
+	-- Acknowledge the overspeed condition if pedal is released
+	if self.OverspeedDeadmanRelease then
+		self.OverspeedAcknowledged = true
+		self.OverspeedTimer = CurTime() -- Reset the timer on acknowledgment
+	end
 
-		if CurTime() - self.OverSpeedTimer > 20 then train:SetNW2Bool( "DeadmanTripped", true ) end
+	-- Check if the speed has been corrected
+	if self.OverspeedAcknowledged and CurTime() - self.OverspeedTimer > 10 then
+		-- If overspeed has not been corrected within 10 seconds, initiate emergency brake
+		-- Apply emergency brake here, if applicable
+		self.OverspeedNotCorrected = true
 	end
 end
