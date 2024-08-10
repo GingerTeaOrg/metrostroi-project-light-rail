@@ -95,16 +95,16 @@ function ENT:Think()
         self:CopyResults()
     end
 
+    self:SetNW2String( "ModeMessage", trainPresent )
     if not next( UF.IBISRegisteredTrains ) and not trainPresent then -- either fall back to idle, train list, or current train display
         self.Mode = 0
         self.IgnoredTrains = {}
     elseif not next( UF.IBISRegisteredTrains ) and trainPresent then
-        self:SetNW2String( "Mode0Message", trainPresent )
         self.Mode = 0
         self.IgnoredTrains = {}
     elseif self.Train1ETA and tonumber( self.Train1ETA ) > 0 then
         self.Mode = 1
-    elseif self.Train1ETA and tonumber( self.Train1ETA ) == 0 then
+    elseif self.Train1ETA and tonumber( self.Train1ETA ) == 0 or trainPresent then
         self.Mode = 2
         local CourseRoute = self.Train1Ent.IBIS.Course .. "/" .. self.Train1Ent.IBIS.Route
         if not valueExists( self.IgnoredTrains, CourseRoute ) then table.insert( self.IgnoredTrains, CourseRoute ) end
@@ -120,7 +120,7 @@ function ENT:TrainPresent()
     local trainPresent, train = IsValid( platform.CurrentTrain ), platform.CurrentTrain
     if not trainPresent then return false end
     local msg = {}
-    if not train.IBIS then
+    if not train.IBIS or not next( UF.IBISRegisteredTrains ) then
         return "DestUnknown"
     elseif train.IBIS then
         local ibis = train.IBIS
@@ -252,11 +252,14 @@ function ENT:ScanForTrains() -- scrape all trains that have been logged into RBL
     end
 
     if not self.TrackPosition then return end
-    for k, _ in pairs( UF.IBISRegisteredTrains ) do
+    for k, v in pairs( UF.IBISRegisteredTrains ) do
         local trainpath = Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ]
+        local trainCourse = k.IBIS.Course
+        local route = k.IBIS.Route
+        local courseRoute = trainCourse .. "/" .. route
         if trainpath.path ~= self.TrackPosition.path then
             continue
-        elseif not valueExists( self.WorkTable, k ) then
+        elseif not valueExists( self.WorkTable, k ) and not self.IgnoredTrains[ courseRoute ] then
             table.insert( self.WorkTable, k )
         else
             break
@@ -286,7 +289,7 @@ function ENT:ScanForTrains() -- scrape all trains that have been logged into RBL
             table.insert( self.SortedTable, {
                 train = v, -- Insert a train and its ETA into the table
                 ETA = eta,
-                DIST = dist
+                DIST = Dist
             } )
         else
             print( "Train already exists in table; bailing" )
