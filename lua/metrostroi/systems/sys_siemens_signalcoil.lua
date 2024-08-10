@@ -21,6 +21,7 @@ function TRAIN_SYSTEM:Think( dT )
 
 	if not IsValid( self.Train.FrontBogey ) or not IsValid( self.Train.RearBogey ) then return end
 	self:CheckForConsistChange()
+	self:ApplyNW2Int()
 	if self.INDUSIRunner ~= self.Train then return end
 	local speed = self.Train.CoreSys.Speed
 	local deadman = self.Train.Deadman
@@ -36,6 +37,16 @@ function TRAIN_SYSTEM:Think( dT )
 	end
 
 	deadman:OverSpeed( speed > self.SpeedLimit )
+end
+
+function TRAIN_SYSTEM:ApplyNW2Int()
+	--fetch the entity that runs the function and get its speed limit
+	local speedLimit = self.INDUSIRunner.Siemens_INDUSI.SpeedLimit
+	if speedLimit > -1 then
+		self.Train:SetNW2Int( "SpeedLimit", speedLimit )
+	else
+		self.Train:SetNW2Int( "SpeedLimit", 0 )
+	end
 end
 
 function TRAIN_SYSTEM:CheckForConsistChange()
@@ -109,8 +120,8 @@ function TRAIN_SYSTEM:Scan()
 	end
 
 	-- Update the speed limit if valid
-	if speedLimit and tonumber( speedLimit ) then
-		self.SpeedLimit = speedLimit
+	if speedLimit and tonumber( speedLimit, 10 ) then
+		self.SpeedLimit = tonumber( speedLimit, 10 )
 	else
 		self.SpeedLimit = -1
 	end
