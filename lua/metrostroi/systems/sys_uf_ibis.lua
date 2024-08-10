@@ -520,6 +520,7 @@ function TRAIN_SYSTEM:Think()
 		self.KeyInserted = false
 	end
 
+	if self.Menu == 0 then self:Menu0() end
 	self:HandleInput()
 	self:ProcessChars()
 end
@@ -549,7 +550,6 @@ function TRAIN_SYSTEM:ProcessChars()
 	Train:SetNW2Int( "IBIS:Menu", self.Menu )
 	Train:SetNW2Int( "IBIS:PowerOn", self.PowerOn )
 	Train:SetNW2Int( "IBIS:Booted", self.IBISBootupComplete )
-	Train:SetNW2String( "IBIS:KeyInput", self.KeyInput )
 	Train:SetNW2String( "IBIS:CourseChar5", self.CourseChar5 )
 	Train:SetNW2String( "IBIS:CourseChar4", self.CourseChar4 )
 	Train:SetNW2String( "IBIS:CourseChar3", self.CourseChar3 )
@@ -561,7 +561,12 @@ function TRAIN_SYSTEM:ProcessChars()
 	Train:SetNW2String( "IBIS:DestinationChar2", self.DestinationChar2 )
 	Train:SetNW2String( "IBIS:DestinationChar3", self.DestinationChar3 )
 	Train:SetNW2String( "IBIS:ServiceAnnouncement", self.ServiceAnnouncement )
-	self.Course = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4
+	if self.LineLength == 2 then
+		self.Course = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4
+	elseif self.LineLength == 3 then
+		self.Course = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4 .. self.CourseChar5
+	end
+
 	if self.CurrentStation ~= -1 and self.CurrentStation ~= nil and self.CurrentStation ~= 0 then
 		self.Train:SetNW2String( "CurrentStation", self.DestinationTable[ self.CurrentStation ] )
 	elseif self.CurrentStation == 0 then
@@ -625,7 +630,9 @@ function TRAIN_SYSTEM:ReadDataset()
 		self.AnnouncementChar2 = self.AnnouncementPrompt2
 	end
 
-	if self.Menu == 1 then
+	if self.Menu == 0 then
+		self:Menu0()
+	elseif self.Menu == 1 then
 		local commit = self:Menu1()
 		--print( commit )
 		if commit then
@@ -672,14 +679,29 @@ function TRAIN_SYSTEM:ReadDataset()
 end
 
 function TRAIN_SYSTEM:Menu0()
-	if self.Triggers[ "3" ] then
-		local routeTable = self.RouteTable[ line ][ Route ]
-		if not self.Debounce[ "3" ] or ( currentTime - self.Debounce[ "3" ] > self.DebounceTime ) then
-			self.CurrentStation = routeTable[ self.CurrentStationInternal ]
-			self.CurrentStationInternal = self.CurrentStationInternal + 1
-			self.NextStation = self.RouteTable[ self.CurrentStationInternal + 1 ]
-			self.Debounce[ "3" ] = 0
-		end
+	if self.State == 0 then return end
+	local line = " "
+	if self.LineLength == 2 then
+		line = self.CourseChar1 .. self.CourseChar2
+	elseif self.LineLength == 3 then
+		line = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3
+	end
+
+	local currentTime = CurTime()
+	local route = self.Route
+	local routeTable = self.RouteTable[ line ][ route ] or nil
+	if self.Triggers[ "Number3" ] then
+		self.CurrentStationInternal = self.CurrentStationInternal + 1
+		self.CurrentStation = routeTable[ self.CurrentStationInternal ]
+		self.NextStation = self.RouteTable[ self.CurrentStationInternal + 1 ]
+	elseif self.Triggers[ "Number6" ] then
+		self.CurrentStationInternal = self.CurrentStationInternal - 1
+		self.CurrentStation = routeTable[ self.CurrentStationInternal ]
+		self.NextStation = self.RouteTable[ self.CurrentStationInternal - 1 ]
+	elseif self.Triggers[ "Number7" ] then
+		self.Menu = 2
+	elseif self.Triggers[ "Number9" ] then
+		self:Play()
 	end
 end
 
@@ -811,13 +833,13 @@ function TRAIN_SYSTEM:Menu2()
 			-- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
 			self.RoutePrompt1 = self.RoutePrompt2
 			self.RoutePrompt2 = input
-			self.Debounce[ input ] = currentTime -- Reset debounce timer
+			self.Debounce[ input ] = CurTime()
 		end
 	elseif self.Triggers[ "Delete" ] then
 		if not self.Debounce[ "Delete" ] or ( currentTime - self.Debounce[ "Delete" ] > self.DebounceTime ) then
 			self.RoutePrompt2 = self.RoutePrompt1
 			self.RoutePrompt1 = " "
-			self.Debounce[ "Delete" ] = currentTime -- Reset debounce timer
+			self.Debounce[ "Delete" ] = CurTime()
 		end
 	else
 		self.RoutePrompt1 = self.RoutePrompt1
@@ -954,40 +976,35 @@ end
 TRAIN_SYSTEM.lastTrigger = 0
 function TRAIN_SYSTEM:Play( time )
 	local message = {}
-	if CurTime() - self.lastTrigger < 1.5 then
-		print( "Bailing Play()", lastTrigger )
-		return
-	end
-
-	self.lastTrigger = time
+	local line = " "
 	if self.LineLength == 2 then
-		local line = self.CourseChar1 .. self.CourseChar2
+		line = self.CourseChar1 .. self.CourseChar2
 	elseif self.LineLength == 3 then
-		local line = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3
+		line = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3
 	end
 
 	local commonFiles = UF.IBISCommonFiles[ self.Train:GetNW2Int( "IBIS:CommonFiles", 1 ) ]
 	local announcementScript = UF.IBISAnnouncementScript[ self.Train:GetNW2Int( "IBIS:AnnouncementScript", 1 ) ]
-	for k, v in ipairs( announcementScript ) do
-		local temp = {}
-		if v ~= "station" and type( commonFiles[ v ][ 1 ] ) == "string" then
+	local temp = {}
+	for i = 1, #announcementScript do
+		print( announcementScript[ i ] )
+		if announcementScript[ i ] ~= "station" and type( commonFiles[ announcementScript[ i ] ][ 1 ] ) == "string" then
 			temp = {
-				[ 1 ] = {
-					[ commonFiles[ v ][ 1 ] ] = commonFiles[ v ][ 2 ]
-				}
+				[ commonFiles[ announcementScript[ i ] ][ 1 ] ] = commonFiles[ announcementScript[ i ] ][ 2 ]
 			}
 
-			table.Add( message, temp )
-		elseif announcementScript[ k ] == "station" then
+			table.insert( message, i, temp )
+		elseif announcementScript[ i ] == "station" then
 			temp = UF.IBISAnnouncementMetadata[ self.Train:GetNW2Int( "IBIS:Announcements", 1 ) ][ self.CurrentStation ][ line ][ self.Route ]
-			table.Add( message, temp )
-		end
-
-		if k == #announcementScript then
-			self:AnnQueue( message )
-			return
+			PrintTable( temp )
+			for j = 1, #temp do
+				table.insert( message, temp[ j ] )
+			end
 		end
 	end
+
+	PrintTable( message )
+	if next( message ) then self:AnnQueue( message ) end
 end
 
 function TRAIN_SYSTEM:OverrideSwitching( dir )
