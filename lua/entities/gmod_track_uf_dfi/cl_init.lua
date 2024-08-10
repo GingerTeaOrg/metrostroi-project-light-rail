@@ -185,16 +185,16 @@ function ENT:Think()
 		end
 	end
 
-	if mode == 2 and self.AnnouncementPlayed == false then
+	if self.Mode == 2 and self.AnnouncementPlayed == false then
 		self.AnnouncementPlayed = true
 		if self.Theme == "Frankfurt" then -- todo implement other themes
-			if self.Train1Destination and self.Train1Destination ~= "Leerfahrt" and self.Train1Destination ~= "PROBEWAGEN NICHT EINSTEIGEN" and self.Train1Destination ~= "FAHRSCHULE NICHT EINSTEIGEN" and self.Train1Destination ~= "SONDERWAGEN NICHT EINSTEIGEN" and self.Train1Destination ~= " " then
-				self:PlayOnceFromPos( "lilly/uf/DFI/frankfurt/" .. self.LineString1 .. " " .. "Richtung" .. " " .. self.Train1Destination1 .. ".mp3", 2, 1, 1, 1, self:GetPos() )
+			if self.Train1DestinationString and self.Train1DestinationString ~= "Leerfahrt" and self.Train1DestinationString ~= "PROBEWAGEN NICHT EINSTEIGEN" and self.Train1DestinationString ~= "FAHRSCHULE NICHT EINSTEIGEN" and self.Train1DestinationString ~= "SONDERWAGEN NICHT EINSTEIGEN" and self.Train1DestinationString ~= " " then
+				self:PlayOnceFromPos( "lilly/uf/DFI/frankfurt/" .. self.LineString1 .. " " .. "Richtung" .. " " .. self.Train1DestinationString .. ".mp3", 2, 1, 1, 1, self:GetPos() )
 			else
 				self:PlayOnceFromPos( "lilly/uf/DFI/frankfurt/Bitte Nicht Einsteigen.mp3", 2, 1, 1, 1, self:GetPos() )
 			end
 		end
-	elseif mode == 1 or mode == 0 then
+	elseif self.Mode == 1 or self.Mode == 0 then
 		self.AnnouncementPlayed = false
 	end
 
@@ -226,7 +226,6 @@ function ENT:RenderDisplay()
 	render.PushRenderTarget( self.DFI1, 0, 0, 4096, 912 )
 	render.Clear( 0, 0, 0, 255, true, true )
 	cam.Start2D()
-	print( self.Mode )
 	if self.Mode == 0 then
 		self:Mode0Disp()
 	elseif self.Mode == 1 then
@@ -457,7 +456,8 @@ end
 
 function ENT:Mode0Disp()
 	if self.Mode ~= 0 then return end
-	local Text = self:GetNW2String( "Mode0Message", "Keine Zugfahrten!" )
+	local Text = self:GetNW2String( "ModeMessage", "Keine Zugfahrten!" )
+	if Text == "false" then Text = "Keine Zugfahrten!" end
 	self.TextPosX = math.floor( #self.Grid / 2 ) + #Text
 	local msg = {
 		[ 1 ] = { 15, { Text, "SmallThin", self.TextPosX } }
@@ -482,7 +482,6 @@ function ENT:Mode1Disp()
 		[ 1 ] = { self.Row1, { self.Line1String, "SmallBold", self.LinePosX }, { self.Train1DestinationString, "SmallThin", self.DestPosX }, { self.Train1Time, "SmallBold", self.TimePosX } }
 	}
 
-	print( self.Line1String )
 	local msg2 = { self.Row2, { self.Line2String, "SmallBold", self.LinePosX }, { self.Train2DestinationString, "SmallThin", self.DestPosX }, { self.Train2Time, "SmallBold", self.TimePosX } }
 	local msg3 = { self.Row3, { self.Line3String, "SmallBold", self.LinePosX }, { self.Train3DestinationString, "SmallThin", self.DestPosX }, { self.Train3Time, "SmallBold", self.TimePosX } }
 	local msg4 = { self.Row4, { self.Line4String, "SmallBold", self.LinePosX }, { self.Train4DestinationString, "SmallThin", self.DestPosX }, { self.Train4Time, "SmallBold", self.TimePosX } }
@@ -508,6 +507,7 @@ function ENT:Mode1Disp()
 end
 
 function ENT:Mode2Disp()
+	local Text = self:GetNW2String( "ModeMessage", "Keine Zugfahrten!" )
 	self.LinePosX = 0
 	if not self.Line1String then return end
 	local str = self.Train1DestinationString
@@ -519,10 +519,24 @@ function ENT:Mode2Disp()
 	self.DestPosX = 22 --self.Theme == "Essen" and ( 76 - ( DestWidth / 2 ) ) or #UF.charMatrixSmallThin[ string.sub( self.Line1String, 1, 1 ) ][ 1 ] + #UF.charMatrixSmallThin[ string.sub( self.LineString1, 2, 2 ) ][ 1 ] + 8
 	-- todo implement modular "via" information, listing notable stations along the way: U7 Hausen über Eissporthalle/Festplatz
 	local msg = {}
-	msg[ 1 ] = { 0, { self.Line1String, "Headline", self.LinePosX }, { st, "Headline", self.DestPosX } }
-	msg[ 2 ] = { 26, { string.rep( "T", CarCount ), "Symbols", CarPos } }
-	msg[ 3 ] = { 33, { "R", "Symbols", TrackPos } }
-	print( self.Line1String, self.Train1DestinationString )
+	if Text ~= "DontBoard" then
+		msg[ 1 ] = { 0, { self.Line1String, "Headline", self.LinePosX }, { str, "Headline", self.DestPosX } }
+		msg[ 2 ] = { 26, { string.rep( "T", CarCount ), "Symbols", CarPos } }
+		msg[ 3 ] = { 33, { "R", "Symbols", TrackPos } }
+	elseif Text == "DontBoard" then
+		local message = "Nicht Einsteigen!"
+		local textPos = math.floor( #self.Grid / 2 ) + #message
+		local msg = {
+			[ 1 ] = { 15, { message, "SmallThin", textPos } }
+		}
+	elseif Text == "DestUnknown" then
+		local message = "Auf Zugschild achten!"
+		local textPos = math.floor( #self.Grid / 2 ) + #message
+		local msg = {
+			[ 1 ] = { 15, { message, "SmallThin", textPos } }
+		}
+	end
+
 	self:NewDisplay( msg )
 end
 
