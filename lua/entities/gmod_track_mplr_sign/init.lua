@@ -53,11 +53,11 @@ function ENT:SetSpeedLimitSection()
 		end
 	end
 
-	if forward and not self.Type ~= "speed_clear" then
+	if forward and self.Type ~= "speed_clear" then
 		k_v = {
 			speed_forward = string.sub( speedVar, #speedVar - 2, #speedVar )
 		}
-	elseif not forward and not self.Type ~= "speed_clear" then
+	elseif not forward and self.Type ~= "speed_clear" then
 		k_v = {
 			speed_backward = string.sub( speedVar, #speedVar - 2, #speedVar )
 		}
