@@ -50,7 +50,7 @@ function ENT:Initialize()
 	self.ang2 = self:LocalToWorldAngles( Angle( 0, 180, 96.8 ) )
 	self.LEDMaterial = CreateMaterial( "LED", "UnlitGeneric", {
 		[ "$basetexture" ] = "color/white",
-		[ "selfillum" ] = "1"
+		[ "$selfillum" ] = "1"
 	} )
 
 	self.Hours = ents.CreateClientProp( "models/lilly/uf/stations/dfi_hands_hours.mdl" )
