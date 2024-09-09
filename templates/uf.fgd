@@ -10,6 +10,12 @@
 		"no" : "No"
 		"yes" : "Yes"
 	]
+	StepsType(choices) : "Are steps required on this station, and which" : 0 : 0 =
+	[
+    		0 : "No"
+    		1 : "Medium"
+		2 : "Street Level"
+	]
 ]
 @PointClass base(Targetname, Origin) studioprop("models/lilly/uf/stations/dfi.mdl") = gmod_track_uf_dfi : "Lumino Station Display (Frankfurt Version)"
 [
@@ -18,7 +24,12 @@
 	PlatformStart(target_destination) : "Start of the platform (arrival side)"
 	PlatformEnd(target_destination) : "End of the platform (departure side)"
 	ParentDisplay(target_destination) : "Entity that this display should be subordinate to"
-	ThemeName(string) : "Theme" : "Frankfurt" : "Set the display's city theme which alters its behaviour. Essen,Frankfurt,Duesseldorf,Hannover"
+	ThemeName(string) : "Theme" : "Frankfurt" : "Set the display's city theme which alters its behaviour. Essen, Frankfurt, Duesseldorf, Hannover"
+	Type(Choices) : "Type" : "Select whether the display spawns with a pole or not" : "pole" =
+	[
+		"pole" : "With Pole"
+		"nopole" : "Without Pole"
+	]
 ]
 @PointClass base(Targetname, Origin ) studioprop("models/lilly/uf/signage/point_contact.mdl") = gmod_track_uf_switch : "Trackside Switch"
 [
@@ -35,6 +46,11 @@
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
 	Blade1(target_destination) : "Blade 1"
 	Blade2(target_destination) : "Blade 2"
+	AllowSwitchingIron(choices) : "Allow to be switched manually" : 0 : 0 =
+	[
+    		0 : "No"
+    		1 : "Yes"
+	]
 ]
 @PointClass base(Targetname, Origin ) studioprop("models/lilly/uf/signage/point_contact.mdl") = gmod_track_uf_switch_contact : "Trackside Switch Trigger"
 [
@@ -57,7 +73,7 @@
 	SwitchEnt(target_name_or_class) : "Entity to associate with"
 	PairedControllerLeft(target_name_or_class) : "Entity to associate with on left position"
 	PairedControllerRight(target_name_or_class) : "Entity to associate with on right position"
-	PositionCorrespondanceOppositeDir(Choices) : "Position Correspondance" : "If the trigger is on the 'dull' end of the point, which position should we switch to if in range?" : "main" =
+	PositionCorrespondanceOppositeDir(Choices) : "If the trigger is on the 'dull' end of the point, which position should we switch to if in range?" : "main" : "main" =
 	[
 		"main" : "Main"
 		"alt" : "Alt"
