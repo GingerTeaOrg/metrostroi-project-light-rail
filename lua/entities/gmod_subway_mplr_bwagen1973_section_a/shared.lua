@@ -78,7 +78,7 @@ ENT.StepsMedium = true
 ENT.StopRequest = true
 ENT.Bidirectional = true
 ENT.DoorsUnlockToggle = true
-ENT.MirrorCams = { Vector( 441, 72, 15 ), Angle( 1, 180, 0 ), 15, Vector( 441, -72, 15 ), Angle( 1, 180, 0 ), 15 }
+ENT.MirrorCams = { Vector( 540, 60, 100 ), Angle( 1, 180, 0 ), 50, Vector( 540, -60, 100 ), Angle( 1, 180, 0 ), 50 }
 function ENT:InitializeSystems()
 	self:LoadSystem( "DeadmanUF", "Duewag_Deadman" )
 	self:LoadSystem( "Duewag_Battery" )
