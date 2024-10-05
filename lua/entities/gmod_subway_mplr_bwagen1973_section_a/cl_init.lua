@@ -18,6 +18,30 @@ ENT.ClientProps[ "empty_button" ] = {
 	ang = Angle( 0, 0, 0 )
 }
 
+ENT.ClientProps[ "windows2" ] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/window_1.mdl",
+	pos = Vector( 417.8, -49, 101.6 ),
+	ang = Angle( 0, 0, 0 )
+}
+
+ENT.ClientProps[ "windows1" ] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/window_1.mdl",
+	pos = Vector( 363.4, -49, 101.6 ),
+	ang = Angle( 0, 0, 0 )
+}
+
+ENT.ClientProps[ "windows3" ] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/window_1.mdl",
+	pos = Vector( 230, -49, 101.6 ),
+	ang = Angle( 0, 0, 0 )
+}
+
+ENT.ClientProps[ "windows4" ] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/window_1.mdl",
+	pos = Vector( 175.8, -49, 101.6 ),
+	ang = Angle( 0, 0, 0 )
+}
+
 ENT.ClientProps[ "empty_button2" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
 	pos = Vector( -0.1, -7.1, 0 ),
@@ -170,7 +194,7 @@ ENT.ClientProps[ "reverser" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/reverser.mdl",
 	pos = Vector( -0.5, 0, 0 ),
 	ang = Angle( 0, 00, 0 ),
-	hideseat = 0.2
+	nohide = true
 }
 
 ENT.ClientProps[ "foldingstep_rr" ] = {
@@ -1407,7 +1431,9 @@ function ENT:DrawPost()
 end
 
 function ENT:SoundsFunc()
-	-- print(self:GetNW2Bool("Bell",false))
+	local departureAlarm = self:GetNW2Bool( "DepartureAlarm", false )
+	--print( departureAlarm )
+	if departureAlarm then self:PlayOnce( "DepartureConfirmed", "cabin", 1, 1 ) end
 	self:SetSoundState( "bell", self:GetNW2Bool( "Bell", false ) and 1 or 0, 1 )
 	self:SetSoundState( "bell_in", self:GetNW2Bool( "Bell", false ) and 1 or 0, 1 )
 	self:SetSoundState( "DepartureConfirmed", self:GetNW2Bool( "DepartureAlarm", false ) and 1 or 0, 1 )
