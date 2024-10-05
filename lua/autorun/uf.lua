@@ -62,7 +62,7 @@ timer.Create( "RBLHousekeeping", 30, 0, function()
 end )
 
 hook.Add( "EntityRemoved", "UFTrains", function( ent )
-	for i, v in pairs( UF.IBISRegisteredTrains ) do
+	for i, _ in pairs( UF.IBISRegisteredTrains ) do
 		if i == ent then
 			UF.IBISRegisteredTrains[ ent ] = nil
 			print( "MPLR RBL: Cleared entity at index: ", i )
