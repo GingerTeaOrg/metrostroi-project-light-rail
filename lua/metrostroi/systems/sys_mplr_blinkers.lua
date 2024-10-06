@@ -10,18 +10,18 @@ function TRAIN_SYSTEM:Blink( enable, left, right )
     local sectionB = t.SectionB
     local sectionA = t.SectionA
     local tailblink = not IsValid( t.RearCouple.CoupledEnt ) and t:ReadTrainWire( 6 ) < 1
-    local blinkerTabL = self.Train.CoreSys.BlinkersLeft
-    local blinkerTabR = self.Train.CoreSys.BlinkersRight
-    local brakeLightL = self.BrakeLightLeft
-    local brakeLightR = self.BrakeLightRight
+    local blinkerTabL = t.BlinkersLeft
+    local blinkerTabR = t.BlinkersRight
+    local brakeLightL = t.BrakeLightLeft
+    local brakeLightR = t.BrakeLightRight
     local function blinking( enable, left, right, ent )
         local t = self.Train
         if not enable then
             self.BlinkerOn = false
-            t.LastTriggerTime = CurTime()
+            self.LastTriggerTime = CurTime()
         elseif CurTime() - t.LastTriggerTime > 0.4 then
             self.BlinkerOn = not self.BlinkerOn
-            t.LastTriggerTime = CurTime()
+            self.LastTriggerTime = CurTime()
         end
 
         for k, _ in ipairs( blinkerTabL ) do
@@ -35,10 +35,7 @@ function TRAIN_SYSTEM:Blink( enable, left, right )
         ent:SetNW2Bool( "BlinkerTick", self.BlinkerOn )
     end
 
-    local function HazardLights( enable, brakeLightL, brakeLightR )
-        local t = self.Train
-        local sectionB = t.SectionB
-        local sectionA = t.SectionA
+    local function HazardLights( enable )
         local fC = IsValid( t.FrontCouple.CoupledEnt )
         local rC = IsValid( t.RearCouple.CoupledEnt )
         if sectionA and not fC then
@@ -72,7 +69,7 @@ function TRAIN_SYSTEM:Blink( enable, left, right )
         end
     end
 
-    if t.BatteryOn == true or t:ReadTrainWire( 6 ) > 0 then
+    if t.CoreSys.BatteryOn or t:ReadTrainWire( 6 ) > 0 then
         if sectionA then blinking( enable, left, right, sectionA ) end
         if sectionB then blinking( enable, left, right, sectionB ) end
         blinking( enable, left, right, self )
