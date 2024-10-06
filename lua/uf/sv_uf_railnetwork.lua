@@ -162,96 +162,111 @@ end
 --------------------------------------------------------------------------------
 -- Scans an isolated track segment and for every useable segment calls func
 --------------------------------------------------------------------------------
-local check_table = {}
+-- UF.ScanTrack recursively scans the track starting from a given node, calling a specified function for each node it encounters.
+-- Parameters:
+--   itype: The type of scan (e.g., "light", "switch"). Controls scan behavior.
+--   node: The node to start scanning from.
+--   func: The callback function to be called for each node, which receives the node and its min/max X range.
+--   x: The current X position (starting point) for scanning.
+--   dir: Direction of scanning (true = forward, false = backward).
+--   checked: A table of nodes that have already been scanned (to avoid infinite loops).
+-- Returns:
+--   Results from the callback function, if any are returned.
+local check_table = {} -- Table to track which nodes have already been checked.
 function UF.ScanTrack( itype, node, func, x, dir, checked )
-    local light, switch = itype == "light", itype == "switch"
-    -- Check if this node was already scanned
+    local light, switch = itype == "light", itype == "switch" -- Determine if we're scanning for "light" or "switch".
+    -- If no node is provided, stop the scan.
     if not node then return end
+    -- If no 'checked' table is passed, initialize it to track scanned nodes.
     if not checked then
-        for k, v in pairs( check_table ) do
-            check_table[ k ] = nil
+        for k, _ in pairs( check_table ) do
+            check_table[ k ] = nil -- Reset the check_table for fresh scans.
         end
 
         checked = check_table
     end
 
+    -- If this node has already been scanned, skip it.
     if checked[ node ] then return end
-    checked[ node ] = true
-    -- Try to use entire node length by default
+    checked[ node ] = true -- Mark this node as scanned.
+    -- Set initial X bounds (full node length by default).
     local min_x = node.x
     local max_x = min_x + node.length
-    -- Get range of node which can be actually sensed
-    local isolateForward = false -- Should scanning continue forward along track
-    local isolateBackward = false -- Should scanning continue backward along track
+    -- Variables to control isolation (i.e., stopping the scan at certain signals/switches).
+    local isolateForward = false
+    local isolateBackward = false
+    -- Check for signals or switches on this node to determine isolation behavior.
     if Metrostroi.SignalEntitiesForNode[ node ] then
-        for k, v in pairs( Metrostroi.SignalEntitiesForNode[ node ] ) do
+        for _, signal in pairs( Metrostroi.SignalEntitiesForNode[ node ] ) do
             local isolating = false
-            if IsValid( v ) then
-                if light then isolating = ( v.TrackDir == dir ) or ( not v.PassOcc or v.TrackX == x ) end
-                if switch then isolating = v.IsolateSwitches end
-                -- if itype == "ars" then isolating = true end
+            if IsValid( signal ) then
+                -- Light scans: check if the signal is aligned with the scan direction or has a pass/occupation constraint.
+                if light then isolating = ( signal.TrackDir == dir ) or ( not signal.PassOcc or signal.TrackX == x ) end
+                -- Switch scans: check if the signal isolates switches.
+                if switch then isolating = signal.IsolateSwitches end
             end
 
+            -- If the signal isolates this section of the track, adjust the X bounds accordingly.
             if isolating then
-                -- If scanning forward, and there's a joint IN FRONT of current X
-                if dir and ( v.TrackX > x ) then
-                    max_x = math.min( max_x, v.TrackX )
+                -- Forward direction: limit max_x if the signal is in front.
+                if dir and ( signal.TrackX > x ) then
+                    max_x = math.min( max_x, signal.TrackX )
                     isolateForward = true
                 end
 
-                -- If scanning forward, and there's a joint in current X
-                -- This is triggered when traffic light searches for next light from its own X (then
-                --  scan direction is defined by dir)
-                if dir and ( v.TrackX == x ) then
-                    min_x = math.max( min_x, v.TrackX )
+                -- Forward direction: limit min_x if the signal is at the current X.
+                if dir and ( signal.TrackX == x ) then
+                    min_x = math.max( min_x, signal.TrackX )
                     isolateBackward = true
                 end
 
-                -- if scanning backward, and there's a joint BEHIND current X
-                if ( not dir ) and ( v.TrackX < x ) then
-                    min_x = math.max( min_x, v.TrackX )
+                -- Backward direction: limit min_x if the signal is behind.
+                if not dir and ( signal.TrackX < x ) then
+                    min_x = math.max( min_x, signal.TrackX )
                     isolateBackward = true
                 end
 
-                -- If scanning backward starting from current X, use dir for guiding scan
-                if ( not dir ) and ( v.TrackX == x ) then
-                    max_x = math.min( max_x, v.TrackX )
+                -- Backward direction: limit max_x if the signal is at the current X.
+                if not dir and ( signal.TrackX == x ) then
+                    max_x = math.min( max_x, signal.TrackX )
                     isolateForward = true
                 end
             end
         end
     end
 
-    -- Show the scanned path
+    -- Debugging: draw a visual representation of the scanned path (optional).
     if GetConVar( "mplr_drawdebug" ):GetInt() == 1 then
         local T = CurTime()
         timer.Simple( 0.05 + math.random() * 0.05, function() if node.next then debugoverlay.Line( node.pos, node.next.pos, 3, Color( ( T * 1234 ) % 255, ( T * 12345 ) % 255, ( T * 12346 ) % 255 ), true ) end end )
     end
 
-    -- Call function for the determined portion of the node
+    -- Call the function for the current node with its min/max X bounds.
     local results = { func( node, min_x, max_x ) }
-    if results[ 1 ] ~= nil then return unpack( results ) end
-    -- First check all the branches, whose positions fall within min_x..max_x
+    if results[ 1 ] ~= nil then -- If the function returns anything, stop further scanning.
+        return unpack( results )
+    end
+
+    -- Handle node branches: if any branches fall within the X range, scan them as well.
     if node.branches then
-        for k, v in pairs( node.branches ) do
-            if ( v[ 1 ] >= min_x ) and ( v[ 1 ] <= max_x ) then
-                -- FIXME: somehow define direction and X!
-                local results = { UF.ScanTrack( itype, v[ 2 ], func, v[ 1 ], true, checked ) }
-                if results[ 1 ] ~= nil then return unpack( results ) end
+        for _, branch in pairs( node.branches ) do
+            if ( branch[ 1 ] >= min_x ) and ( branch[ 1 ] <= max_x ) then
+                local branch_results = { UF.ScanTrack( itype, branch[ 2 ], func, branch[ 1 ], true, checked ) }
+                if branch_results[ 1 ] ~= nil then return unpack( branch_results ) end
             end
         end
     end
 
-    -- If not isolated, continue scanning forward from the front end of node
-    if ( dir or switch ) and ( not isolateForward ) then
-        local results = { UF.ScanTrack( itype, node.next, func, max_x, true, checked ) }
-        if results[ 1 ] ~= nil then return unpack( results ) end
+    -- Continue scanning forward if not isolated, scanning from the front end of the node.
+    if ( dir or switch ) and not isolateForward then
+        local forward_results = { UF.ScanTrack( itype, node.next, func, max_x, true, checked ) }
+        if forward_results[ 1 ] ~= nil then return unpack( forward_results ) end
     end
 
-    -- If not isolated, continue scanning backward from the rear end of node
-    if ( not dir or switch ) and ( not isolateBackward ) then
-        local results = { UF.ScanTrack( itype, node.prev, func, min_x, false, checked ) }
-        if results[ 1 ] ~= nil then return unpack( results ) end
+    -- Continue scanning backward if not isolated, scanning from the rear end of the node.
+    if ( not dir or switch ) and not isolateBackward then
+        local backward_results = { UF.ScanTrack( itype, node.prev, func, min_x, false, checked ) }
+        if backward_results[ 1 ] ~= nil then return unpack( backward_results ) end
     end
 end
 
@@ -370,24 +385,23 @@ function UF.Save( name )
             Class = "gmod_track_uf_switch",
             Pos = v:GetPos(),
             Angles = v:GetAngles(),
-            Name = v.Name,
-            NotChangePos = v.NotChangePos,
-            LockedSignal = v.LockedSignal
+            ID = v.ID,
         } )
     end
 
-    --[[local signs_ents = ents.FindByClass("gmod_track_signs")
-    for k,v in pairs(signs_ents) do
-        table.insert(signs,{
-            Class = "gmod_track_signs",
+    local signs_ents = ents.FindByClass( "gmod_track_mplr_sign" )
+    for _, v in pairs( signs_ents ) do
+        table.insert( signs, {
+            Class = "gmod_track_mplr_sign",
             Pos = v:GetPos(),
             Angles = v:GetAngles(),
-            SignType = v.SignType,
+            SignType = v.Type,
             YOffset = v.YOffset,
             ZOffset = v.ZOffset,
             Left = v.Left,
-        })
-    end]]
+        } )
+    end
+
     -- Save data
     print( "MPLR: Saving signs and track definition..." )
     local data = util.TableToJSON( signs, true )
@@ -594,32 +608,42 @@ function UF.LoadSignalling( name, keep )
     end
 end
 
+-- UF.IsTrackOccupied checks if any trains are present between two positions on the track.
+-- It scans the track from a source node, returning true if a train is detected, along with details of the train(s).
+-- Parameters:
+--   src_node: The node to start scanning from.
+--   x: The current X position on the track.
+--   dir: Direction of travel (true = forward, false = backward).
+--   t: The type of scan (e.g., "light", "switch"). Defaults to "light".
+--   maximum_x: The maximum X position to scan up to.
+-- Returns:
+--   true if a train is found, along with the first and last detected train and a list of all trains.
 function UF.IsTrackOccupied( src_node, x, dir, t, maximum_x )
-    local Trains = {}
+    local Trains = {} -- List to store any detected trains.
+    -- Call UF.ScanTrack to scan the track and look for trains. The callback checks for trains within the scan range.
     UF.ScanTrack( t or "light", src_node, function( node, min_x, max_x )
-        -- If there are no trains in node, keep scanning
+        -- If no trains are present in this node, continue scanning.
         if ( not Metrostroi.TrainsForNode[ node ] ) or ( #Metrostroi.TrainsForNode[ node ] == 0 ) then return end
-        -- For every train in node, for every path it rests on, check if it's in range
-        -- print("SCAN TRACK",node.id,min_x,max_x)
-        for k, v in pairs( Metrostroi.TrainsForNode[ node ] ) do
-            local pos = Metrostroi.TrainPositions[ v ]
-            for k2, v2 in pairs( pos ) do
-                if v2.path == node.path then
-                    -- local pos1 = Metrostroi.GetPositionOnTrack(v:LocalToWorld(Vector(0,1,0)), v:GetAngles())
-                    -- if pos1 then pos1 = pos1[1] end
-                    -- if pos1 and (((pos1.x - v2.x) < 0 and not dir)  or ((pos1.x - v2.x) > 0 and dir)) then continue end
-                    -- local TrackX = v2.TrackX
-                    -- local x1 = v2.x-1100*0.5
-                    -- local x2 = v2.x+1100*0.5
-                    -- print(x1,x2)
-                    local x1, x2 = v2.x, v2.x
+        -- Loop through each train in the node.
+        for _, train in pairs( Metrostroi.TrainsForNode[ node ] ) do
+            -- Get the position of the train on the track.
+            local positions = Metrostroi.TrainPositions[ train ]
+            -- For each path that the train is on, check if it's in the scan range.
+            for _, pos_data in pairs( positions ) do
+                -- Check if the train's path matches the node's path.
+                if pos_data.path == node.path then
+                    -- Define X bounds for the train's position.
+                    local x1, x2 = pos_data.x, pos_data.x
+                    -- Check if the train is within the scanning range (between min_x and max_x).
                     if ( ( x1 >= min_x ) and ( x1 <= max_x ) ) or ( ( x2 >= min_x ) and ( x2 <= max_x ) ) or ( ( x1 <= min_x ) and ( x2 >= max_x ) ) then
-                        table.insert( Trains, v ) -- return true,v
+                        -- Train detected, insert into the Trains list.
+                        table.insert( Trains, train )
                     end
                 end
             end
         end
     end, x, dir, nil, maximum_x )
+    -- Return true if any trains were found, and also return the first and last train detected, along with the train list.
     return #Trains > 0, Trains[ #Trains ], Trains[ 1 ], Trains
 end
 
