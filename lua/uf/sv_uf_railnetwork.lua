@@ -29,21 +29,15 @@ hook.Add( "Initialize", "UF_MapInitialize", function()
 end )
 
 function UF.UpdateStations()
-    if not Metrostroi.Stations then return end
     if not UF.StationEntsByIndex then return end
     local platforms = ents.FindByClass( "gmod_track_uf_platform" )
     for _, platform in pairs( platforms ) do
         local station = Metrostroi.Stations[ platform.StationIndex ] or {}
-        Metrostroi.Stations[ platform.StationIndex ] = station
-        -- Ensure the sub-table for the specific station index is initialized
-        UF.StationEntsByIndex = UF.StationEntsByIndex or {}
-        UF.StationEntsByIndex[ platform.StationIndex ] = UF.StationEntsByIndex[ platform.StationIndex ] or {}
-        -- Assign the platform object to the correct platform index within the station index
-        UF.StationEntsByIndex[ platform.StationIndex ][ platform.PlatformIndex ] = platform
         -- Position
         local dir = platform.PlatformEnd - platform.PlatformStart
         local pos1 = Metrostroi.GetPositionOnTrack( platform.PlatformStart, dir:Angle() )[ 1 ]
         local pos2 = Metrostroi.GetPositionOnTrack( platform.PlatformEnd, dir:Angle() )[ 1 ]
+        local path = Metrostroi.GetPositionOnTrack( platform.PlatformStart:GetPos(), dir:Angle() )[ 1 ].path
         if pos1 and pos2 then
             -- Add platform to station
             local platform_data = {
@@ -53,13 +47,18 @@ function UF.UpdateStations()
                 node_start = pos1.node1,
                 node_end = pos2.node1,
                 forward = pos1.x > pos2.x,
-                ent = platform
+                ent = platform,
+                midVector = ( pos1 + pos2 ) / 2,
+                platformPath = path
             }
 
             if station[ platform.PlatformIndex ] then
                 print( Format( "MPLR: Error, station %03d has two platforms %d with same index!", platform.StationIndex, platform.PlatformIndex ) )
             else
-                station[ platform.PlatformIndex ] = platform_data
+                UF.StationEntsByIndex[ platform.StationIndex ] = UF.StationEntsByIndex[ platform.StationIndex ] or {}
+                -- Assign the platform object to the correct platform index within the station index
+                UF.StationEntsByIndex[ platform.StationIndex ][ platform.PlatformIndex ] = platform
+                UF.StationEntsByIndex[ platform.StationIndex ] = platform_data
             end
 
             -- Print information
@@ -157,6 +156,10 @@ function UF.CheckForSignal( node, min_x, max_x )
         end
     end
     return false, nil -- No signal found in this segment
+end
+
+function UF.GetXCoordinate( ent )
+    return Metrostroi.GetPositionOnTrack( ent:GetPos(), ent:GetAngles() )[ 1 ].x
 end
 
 --------------------------------------------------------------------------------
@@ -303,12 +306,12 @@ function UF.ScanTrackForEntity( entityClass, currentNode, position, direction, c
     end
 
     --give applicable entities track coordinates
-    for k, v in ipairs( finalEntList ) do
+    for _, v in ipairs( finalEntList ) do
         if not EntTrackPos[ v ] then EntTrackPos[ v ] = Metrostroi.GetPositionOnTrack( v:GetPos(), v:GetAngles() )[ 1 ] end
     end
 
     -- If the current node is nil or has already been checked, return
-    if checkedNodes then if checkedNodes[ currentNode ] then return end end
+    if checkedNodes and checkedNodes[ currentNode ] then return end
     -- Mark the current node as checked
     if currentNode then checkedNodes[ currentNode ] = true end
     -- Determine the scanning direction (forward or backward)
