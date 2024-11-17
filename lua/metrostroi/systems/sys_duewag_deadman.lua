@@ -3,7 +3,7 @@ Metrostroi.DefineSystem( "Duewag_Deadman" )
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 function TRAIN_SYSTEM:Initialize()
 	-- Initialize various system variables
-	self.IsPressed = 0
+	self.IsPressed = false
 	self.Alarm = 0
 	self.AlarmSound = false
 	self.AlarmTime = 0
@@ -15,11 +15,14 @@ function TRAIN_SYSTEM:Initialize()
 	self.MUDeadman = false
 	self.IsPressedA = false
 	self.IsPressedB = false
-	self.OverSpeedCutout = false
-	self.OverspeedTimer = 0
-	self.OverspeedDeadmanRelease = false
-	self.OverspeedAcknowledged = true
-	self.OverspeedNotCorrected = false
+	self.OverSpeed = false
+	self.CabConflict = false
+	self.Power = false
+	self.BrokenConsist = false
+	----------------------------
+	self.Sys = self.Train.CoreSys
+	self.PanelA = self.Train.Panel
+	if self.Train.SectionB then self.PanelB = self.Train.SectionB.Panel end
 end
 
 -- Define inputs for the system
@@ -27,171 +30,129 @@ function TRAIN_SYSTEM:Inputs()
 	return { "IsPressed", "IsPressedB", "Speed", "BypassKeyInserted" }
 end
 
--- -- Handle inputs to the system
--- function TRAIN_SYSTEM:TriggerInput(name, value)
--- 	if name == "Speed" then self.Speed = value end
--- 	if name == "BypassKeyInserted" then self.KeyBypass = true end
--- end
--- Update the system's logic in each frame
-function TRAIN_SYSTEM:Think()
-	-- local variables to save space
+function TRAIN_SYSTEM:HasPower()
 	local train = self.Train
+	local batteryOn = train:GetNW2Bool( "BatteryOn", false ) --self.Train.Battery.Charge == 24
+	return batteryOn or train:ReadTrainWire( 6 ) > 0 and train:ReadTrainWire( 7 ) > 0
+end
+
+function TRAIN_SYSTEM:IsPressedAcrossTrain()
+	local MU = self.Train:ReadTrainWire( 6 ) > 0
 	local sys = self.Train.CoreSys
 	local p = self.Train.Panel
-	local pB = self.Train.Bidirectional and self.Train.SectionB.Panel or nil
-	local speed = math.abs( train.Speed )
-	if not speed then return end
-	-- Determine if pedal A or pedal B is pressed, either way is fine
-	self.IsPressed = pB and ( p.Deadman > 0 or pB.Deadman > 0 ) and 1 or not pB and p.Deadman > 0 and 1 or 0
-	local batteryOn = train:GetNW2Bool( "BatteryOn", false )
-	-- Check if battery is on and MUDeadman conditions are met
-	if batteryOn or train:ReadTrainWire( 6 ) > 0 and train:ReadTrainWire( 7 ) > 0 then
-		if train:ReadTrainWire( 6 ) > 0 and #train.WagonList < 2 and math.random( 0, 100 ) <= 33 and speed > 5 then
-			self.IsPressed = 0
-			self.DeadmanTripped = true
-			self.BrokenConsistProtect = true
-			self.MUDeadman = false
+	local pB = ( self.Train.Bidirectional and self.Train.SectionB ) and self.Train.SectionB.Panel or nil
+	local pressed
+	if pB then
+		if sys.ReverserA ~= 0 then
+			pressed = p.Deadman > 0
+		elseif sys.ReverserB ~= 0 then
+			pressed = pB.Deadman > 0
 		end
-
-		self.MUDeadman = train:ReadTrainWire( 12 ) > 0 and train:ReadTrainWire( 6 ) > 0
-		-- Handle various deadman and emergency shut-off scenarios
-		if self.IsPressed == 1 or self.MUDeadman == true and not self.BrokenConsistProtect then
-			-- Reset deadman trip and alarm if conditions are met
-			if self.EmergencyShutOff == false then
-				if self.TrainHasReset == false then
-					-- Reset deadman conditions
-					train:SetNW2Bool( "DeadmanTripped", false )
-					self.DeadmanTripped = false
-					self.AlarmSound = false
-					train:SetNW2Bool( "DeadmanAlarmSound", self.AlarmSound )
-					self.AlarmTime = CurTime()
-				elseif self.TrainHasReset == true then
-					-- Reset deadman conditions after reset
-					train:SetNW2Bool( "DeadmanTripped", false )
-					self.DeadmanTripped = false
-					self.AlarmSound = false
-					train:SetNW2Bool( "DeadmanAlarmSound", self.AlarmSound )
-					self.TrainHasReset = false
-					self.AlarmTime = CurTime()
-				end
-			elseif self.EmergencyShutOff == true then
-				-- Reset conditions after emergency shut-off
-				if self.TrainHasReset == true then
-					train:SetNW2Bool( "DeadmanTripped", false )
-					self.DeadmanTripped = false
-					self.AlarmSound = false
-					train:SetNW2Bool( "DeadmanAlarmSound", self.AlarmSound )
-					self.EmergencyShutOff = false
-					self.TrainHasReset = false
-				end
-			end
-			-- Handle scenarios when pedal is not pressed
-		elseif self.IsPressed == 0 and self.MUDeadman == false then
-			if speed < 5 then
-				if self.EmergencyShutOff == false and speed < 80 then
-					-- Reset deadman conditions if speed is low
-					train:SetNW2Bool( "DeadmanTripped", false )
-					self.DeadmanTripped = false
-					self.AlarmSound = false
-					train:SetNW2Bool( "DeadmanAlarmSound", self.AlarmSound )
-					train:WriteTrainWire( 8, 0 )
-					self.AlarmTime = CurTime()
-				end
-
-				-- Reset deadman conditions if previously reset
-				if self.TrainHasReset == true then
-					self.TrainHasReset = false
-					train:SetNW2Bool( "DeadmanTripped", false )
-					self.DeadmanTripped = false
-					self.AlarmSound = false
-					train:SetNW2Bool( "DeadmanAlarmSound", self.AlarmSound )
-					train:WriteTrainWire( 8, 0 )
-					self.AlarmTime = CurTime()
-				end
-				-- Handle alarm when train is at speed but pedal not pressed
-			elseif speed > 5 and self.AlarmTimeRecorded == false then
-				self.AlarmTimeRecorded = true
-				self.AlarmTime = CurTime()
-				self.AlarmSound = true
-				self.TrainHasReset = false
-			end
-
-			-- Handle overspeed cut-out and emergency shut-off
-			if train:GetNW2Bool( "OverspeedCutOut", false ) == true then
-				if train:ReadTrainWire( 6 ) > 0 then -- only handle train wire when MU wire is high
-					train:WriteTrainWire( 8, 1 )
-				end
-
-				self.EmergencyShutOff = true
-				self.AlarmSound = true
-			end
-		end
-
-		-- Handle emergency stop when deadman is tripped
-		if train:GetNW2Bool( "DeadmanTripped" ) == true and ( train.CoreSys.ReverserLeverStateA == 0 and train.CoreSys.ReverserLeverStateB == 0 ) and train.CoreSys.ThrottleState == 0 then
-			self.TrainHasReset = true
-			train:SetNW2Bool( "DeadmanTripped", false )
-			self.AlarmSound = false
-			train:WriteTrainWire( 8, 0 )
-		end
-
-		-- Check if alarm duration has passed and apply emergency shut-off
-		if CurTime() - self.AlarmTime > 4.5 and self.KeyBypass == false and self.TrainHasReset == false and not self.TrainHasReset then
-			train:SetNW2Bool( "DeadmanTripped", true )
-			if train:ReadTrainWire( 6 ) == 1 then
-				train:WriteTrainWire( 8, 1 )
-				-- print("Deadman braking")
-			end
-
-			self.EmergencyShutOff = true
-			self.AlarmSound = true
-		else
-			self.EmergencyShutOff = false
-		end
-		-- Check if deadman is tripped and reset conditions
+	else
+		pressed = p.Deadman > 0
 	end
 
-	train:SetNW2Bool( "DeadmanAlarmSound", self.AlarmSound )
-	if train:GetNW2Bool( "DeadmanTripped" ) == true and train.ReverserLeverState == 0 and self.ThrottleState == 0 and speed < 5 then self.TrainHasReset = true end
-	-- Reset deadman conditions if battery is off
-	if train:GetNW2Bool( "BatteryOn", false ) == false then
-		train:SetNW2Bool( "DeadmanTripped", false )
-		self.TrainHasReset = true
+	if MU then
+		if pressed then self.Train:WriteTrainWire( 6, 1 ) end
+		pressed = pressed or self.Train:ReadTrainWire( 6 ) > 0
 	end
+	return pressed
+end
 
-	if train:GetNW2Bool( "BatteryOn", false ) == true or train:ReadTrainWire( 6 ) > 0 then -- if either the battery is on or the EMU cables signal multiple unit mode
-		train:WriteTrainWire( 12, self.IsPressed )
-		-- train:SetNW2Bool("TractionAppliedWhileStillNoDeadman", (self.ReverserState ~= 0 and train:ReadTrainWire(12) < 1 and self.ThrottleState > 0) or false)
+function TRAIN_SYSTEM:BrokenConsistProtect()
+	if self.Train.SubwayTrain.Type ~= "U2" then return end
+	local speed = self.CoreSys.Speed
+	local consistLength = #self.Train.WagonList
+	local reverserA = self.Train.CoreSys.ReverserA
+	local reverserB = self.Train.CoreSys.ReverserB
+	local rng = math.random( 0, 100 )
+	if consistLength == 1 and ( reverserA == 2 or reverserB == 2 ) and rng == 33 and speed > 5 then
+		self.BrokenConsist = true
+	elseif speed < 5 and ( reverserA == 0 and reverserB == 0 ) then
+		self.BrokenConsist = false
 	end
 end
 
-function TRAIN_SYSTEM:Overspeed( tripped )
-	if not tripped then
-		-- Reset the state if not tripped
-		self.AlarmSound = false
-		self.OverspeedTimer = 0
-		self.OverspeedDeadmanRelease = false
-		self.OverspeedAcknowledged = true
-		self.OverspeedNotCorrected = false
-		return
+function TRAIN_SYSTEM:AlarmTimer()
+	local time
+	if not self.IsPressed then
+		if not time then time = CurTime() end
+		if CurTime() - time > 3 then self.Alarm = true end
+	elseif self.IsPressed and not self.DeadmanTripped then
+		self.Alarm = false
+	end
+end
+
+function TRAIN_SYSTEM:ResetDeadman()
+	local speed = self.CoreSys.Speed
+	local reverserA = self.Train.CoreSys.ReverserA
+	local reverserB = self.Train.CoreSys.ReverserB
+	local throttle
+	if self.CoreSys.ThrottleState then
+		throttle = self.CoreSys.ThrottleState
+	elseif self.CoreSys.ReverserA ~= 0 and self.CoreSys.ThrottleStateA then
+		throttle = self.CoreSys.ThrottleStateA
+	elseif self.CoreSys.ReverserB ~= 0 and self.CoreSys.ThrottleStateB then
+		throttle = self.CoreSys.ThrottleStateB
 	end
 
-	-- Initialize or update the overspeed timer
-	self.OverspeedTimer = self.OverspeedTimer == 0 and CurTime() or self.OverspeedTimer
-	-- Check if the alarm sound should be active
-	if not self.AlarmSound then self.AlarmSound = true end
-	-- Check if the pedal is released and acknowledged
-	if not self.OverspeedDeadmanRelease and self.IsPressed < 1 then self.OverspeedDeadmanRelease = true end
-	-- Acknowledge the overspeed condition if pedal is released
-	if self.OverspeedDeadmanRelease then
-		self.OverspeedAcknowledged = true
-		self.OverspeedTimer = CurTime() -- Reset the timer on acknowledgment
+	if self.DeadmanTripped and speed < 5 and ( reverserA == 0 and reverserB == 0 ) and throttle == 0 then
+		self.DeadmanTripped = false
+		self.OverSpeed = false
 	end
+end
 
-	-- Check if the speed has been corrected
-	if self.OverspeedAcknowledged and CurTime() - self.OverspeedTimer > 10 then
-		-- If overspeed has not been corrected within 10 seconds, initiate emergency brake
-		-- Apply emergency brake here, if applicable
-		self.OverspeedNotCorrected = true
+function TRAIN_SYSTEM:EmergencyBrake()
+	local indusi = self.Train.INDUSI
+	if self.BrokenConsist then self.DeadmanTripped = true end
+	if self.AlarmTime - CurTime() > 5 then self.DeadmanTripped = true end
+	if indusi and indusi.SPAD then self.DeadmanTripped = true end
+	if self.OverSpeed then self.DeadmanTripped = true end
+end
+
+function TRAIN_SYSTEM:SoundAlarm()
+	local reverserA = self.Train.CoreSys.ReverserA
+	local reverserB = self.Train.CoreSys.ReverserB
+	if reverserA ~= 0 then
+		self.Train:SetNW2Bool( "DeadmanTripped", self.BrokenConsist or self.CabConflict or self.Alarm )
+	elseif reverserB ~= 0 and self.Train.SectionB then
+		self.Train.SectionB:SetNW2Bool( "DeadmanTripped", self.BrokenConsist or self.CabConflict or self.Alarm )
+	else
+		self.Train:SetNW2Bool( "DeadmanTripped", false )
+		if self.Train.SectionB then self.Train.SectionB:SetNW2Bool( "DeadmanTripped", false ) end
 	end
+end
+
+-- Update the system's logic in each frame
+function TRAIN_SYSTEM:Think()
+	if not self.Train.CoreSys then return end
+	-- local variables to save space
+	self.Power = self:HasPower()
+	local train = self.Train
+	if not self.Train.Panel then return end
+	local speed = math.abs( train.Speed )
+	if not speed then return end
+	-- Check if battery is on and MUDeadman conditions are met
+	if self.Power then
+		self.IsPressed = self:IsPressedAcrossTrain()
+		self:BrokenConsistProtect()
+		self:AlarmTimer()
+		self:SoundAlarm()
+		self:EmergencyBrake()
+		self:ResetDeadman()
+		self:Overspeed()
+	end
+end
+
+function TRAIN_SYSTEM:Overspeed()
+	local speed = self.CoreSys.Speed
+	local Vmax = self.Train.SubwayTrain.Vmax
+	if not self.OverSpeed then self.OverSpeed = speed > Vmax end
+end
+
+function TRAIN_SYSTEM:CabConflicting( conflict )
+	local train = self.Train
+	train:SetNW2Bool( "DeadmanAlarmSound", conflict )
+	self.CabConflict = conflict
+	train:SetNW2Bool( "DeadmanTripped", true )
 end
