@@ -116,11 +116,7 @@ function ENT:Initialize()
 	local mat2 = Material( "models/lilly/uf/stations/dfi/display2" )
 	mat:SetTexture( "$basetexture", self.DFI1 )
 	mat2:SetTexture( "$basetexture", self.DFI1 )
-	local function AddEntityHook( ent )
-		hook.Add( "PostDrawHUD", "RenderDFIScreens" .. ent:EntIndex(), function() if IsValid( ent ) then ent:RenderDisplay() end end )
-	end
-
-	hook.Add( "PostDrawHUD", "RenderDFIScreens" .. self:EntIndex(), function() self:RenderDisplay() end )
+	hook.Add( "PostDrawHUD", "RenderDFIScreens" .. self:EntIndex(), self:RenderDisplay() )
 end
 
 function ENT:Think()
