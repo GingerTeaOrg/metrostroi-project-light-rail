@@ -372,6 +372,12 @@ for _, filename in pairs( files ) do
 	include( "uf/IBIS/" .. filename )
 end
 
+files = file.Find( "uf/maps/*.lua", "LUA" )
+for _, filename in pairs( files ) do
+	AddCSLuaFile( "uf/maps/" .. filename )
+	include( "uf/maps/" .. filename )
+end
+
 if not UF.RoutingTable then
 	UF.SwitchTable = {} -- create a list of switches on the map. the individual IDs would be set via toolgun
 	UF.RoutingTable = {} -- manually set routing table, for determining what IBIS Line/Route consists of what switch, where the switch needs to point, and what constitutes left or right 
