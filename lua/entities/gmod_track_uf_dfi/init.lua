@@ -4,7 +4,12 @@ include( "shared.lua" )
 function ENT:Initialize()
     if not UF then return end
     self:DropToFloor()
-    self:SetModel( "models/lilly/uf/stations/dfi.mdl" )
+    if self.VMF and self.VMF.Type == "nopole" then
+        self:SetModel( "models/lilly/uf/stations/dfi_nopole.mdl" )
+    else
+        self:SetModel( "models/lilly/uf/stations/dfi.mdl" )
+    end
+
     self:DropToFloor()
     self.ValidLines = {
         [ "01" ] = true,
@@ -168,7 +173,7 @@ function ENT:ProcessResults()
 
     self.Train1, self.Train2, self.Train3, self.Train4 = unpack( subtables ) -- take apart that table
     if self.Train1 then
-        for k, v in pairs( self.Train1 ) do
+        for _, v in pairs( self.Train1 ) do
             local Train = v.train
             self.Train1Ent = Train
             if not IsValid( self.Train1Ent ) then return end
@@ -183,7 +188,7 @@ function ENT:ProcessResults()
     end
 
     if self.Train2 then
-        for k, v in pairs( self.Train2 ) do
+        for _, v in pairs( self.Train2 ) do
             local Train = v.train
             if not IsValid( Train ) then break end
             self.Train2Ent = Train
@@ -200,7 +205,7 @@ function ENT:ProcessResults()
     end
 
     if self.Train3 then
-        for k, v in pairs( self.Train3 ) do
+        for _, v in pairs( self.Train3 ) do
             local Train = v.train
             if not IsValid( Train ) then break end
             self.Train3Line = string.sub( Train.IBIS.Course, 1, 2 )
@@ -216,7 +221,7 @@ function ENT:ProcessResults()
     end
 
     if self.Train4 then
-        for k, v in pairs( self.Train4 ) do
+        for _, v in pairs( self.Train4 ) do
             local Train = v.train
             if not IsValid( Train ) then break end
             self.Train4Line = string.sub( Train.IBIS.Course, 1, 2 )
@@ -251,9 +256,11 @@ function ENT:ScanForTrains() -- scrape all trains that have been logged into RBL
         return
     end
 
+    local trainpath = {}
     if not self.TrackPosition then return end
-    for k, v in pairs( UF.IBISRegisteredTrains ) do
-        local trainpath = Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ]
+    for k, _ in pairs( UF.IBISRegisteredTrains ) do
+        trainpath = Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ]
+        print( Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ] )
         local trainCourse = k.IBIS.Course
         local route = k.IBIS.Route
         local courseRoute = trainCourse .. "/" .. route

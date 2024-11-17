@@ -116,6 +116,11 @@ function ENT:Initialize()
 	local mat2 = Material( "models/lilly/uf/stations/dfi/display2" )
 	mat:SetTexture( "$basetexture", self.DFI1 )
 	mat2:SetTexture( "$basetexture", self.DFI1 )
+	local function AddEntityHook( ent )
+		hook.Add( "PostDrawHUD", "RenderDFIScreens" .. ent:EntIndex(), function() if IsValid( ent ) then ent:RenderDisplay() end end )
+	end
+
+	hook.Add( "PostDrawHUD", "RenderDFIScreens" .. self:EntIndex(), function() self:RenderDisplay() end )
 end
 
 function ENT:Think()
@@ -161,27 +166,27 @@ function ENT:Think()
 		end
 	elseif self.Theme == "Koeln" or self.Theme == "Hannover" then
 		if string.sub( self:GetNW2String( "Train1Line", "E0" ), 1, 1 ) == "0" then
-			self.LineString1 = string.sub( self:GetNW2String( "Train1Line", "E0" ), 2, 2 )
+			self.Line1String = string.sub( self:GetNW2String( "Train1Line", "E0" ), 2, 2 )
 		elseif string.sub( self:GetNW2String( "Train1Line", "E0" ), 1, 1 ) ~= "0" then
-			self.LineString1 = self:GetNW2String( "Train1Line", "E0" )
+			self.Line1String = self:GetNW2String( "Train1Line", "E0" )
 		end
 
 		if string.sub( self:GetNW2String( "Train2Line", "E0" ), 1, 1 ) == "0" then
-			self.LineString2 = string.sub( self:GetNW2String( "Train2Line", "E0" ), 2, 2 )
+			self.Line2String = string.sub( self:GetNW2String( "Train2Line", "E0" ), 2, 2 )
 		elseif string.sub( self:GetNW2String( "Train2Line", "E0" ), 1, 1 ) ~= "0" then
-			self.LineString2 = self:GetNW2String( "Train2Line", "E0" )
+			self.Line2String = self:GetNW2String( "Train2Line", "E0" )
 		end
 
 		if string.sub( self:GetNW2String( "Train3Line", "E0" ), 1, 1 ) == "0" then
-			self.LineString3 = string.sub( self:GetNW2String( "Train3Line", "E0" ), 2, 2 )
+			self.Line3String = string.sub( self:GetNW2String( "Train3Line", "E0" ), 2, 2 )
 		elseif string.sub( self:GetNW2String( "Train3Line", "E0" ), 1, 1 ) ~= "0" then
-			self.LineString3 = self:GetNW2String( "Train3Line", "E0" )
+			self.Line3String = self:GetNW2String( "Train3Line", "E0" )
 		end
 
 		if string.sub( self:GetNW2String( "Train4Line", "E0" ), 1, 1 ) == "0" then
-			self.LineString4 = string.sub( self:GetNW2String( "Train4Line", "E0" ), 2, 2 )
+			self.Line4String = string.sub( self:GetNW2String( "Train4Line", "E0" ), 2, 2 )
 		elseif string.sub( self:GetNW2String( "Train4Line", "E0" ), 1, 1 ) ~= "0" then
-			self.LineString4 = self:GetNW2String( "Train4Line", "E0" )
+			self.Line4String = self:GetNW2String( "Train4Line", "E0" )
 		end
 	end
 
@@ -189,7 +194,7 @@ function ENT:Think()
 		self.AnnouncementPlayed = true
 		if self.Theme == "Frankfurt" then -- todo implement other themes
 			if self.Train1DestinationString and self.Train1DestinationString ~= "Leerfahrt" and self.Train1DestinationString ~= "PROBEWAGEN NICHT EINSTEIGEN" and self.Train1DestinationString ~= "FAHRSCHULE NICHT EINSTEIGEN" and self.Train1DestinationString ~= "SONDERWAGEN NICHT EINSTEIGEN" and self.Train1DestinationString ~= " " then
-				self:PlayOnceFromPos( "lilly/uf/DFI/frankfurt/" .. self.LineString1 .. " " .. "Richtung" .. " " .. self.Train1DestinationString .. ".mp3", 2, 1, 1, 1, self:GetPos() )
+				self:PlayOnceFromPos( "lilly/uf/DFI/frankfurt/" .. self.Line1String .. " " .. "Richtung" .. " " .. self.Train1DestinationString .. ".mp3", 2, 1, 1, 1, self:GetPos() )
 			else
 				self:PlayOnceFromPos( "lilly/uf/DFI/frankfurt/Bitte Nicht Einsteigen.mp3", 2, 1, 1, 1, self:GetPos() )
 			end
@@ -244,6 +249,7 @@ end
 
 -- function ENT:DrawPost() end
 function ENT:OnRemove()
+	hook.Remove( "RenderDFIScreens" .. self:EntIndex() )
 	if not IsValid( self.Hours ) then return end
 	self.Hours:Remove()
 	self.Minutes:Remove()
