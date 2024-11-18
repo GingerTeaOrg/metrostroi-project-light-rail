@@ -3,9 +3,12 @@ CreateClientConVar( "mplr_camera_jerk_intensity", "7.5", true, true, "How much t
 CreateClientConVar( "mplr_enable_signal_sprite_scaling", "1", true, true, "Enable or disable distance-based scaling of signal sprites, for visibility. On by default.", 0, 1 )
 CreateClientConVar( "mplr_cl_verbose", "1", true, true, "Enable verbose console logging clientside.", 0, 1 )
 CreateClientConVar( "mplr_scrollwheel_sensitivity", "1", true, true, "Set the sensitivity of the scroll wheel throttle.", 0, 10 )
+CreateClientConVar( "mplr_enable_mirrors", "1", true, true, "Enable or disable rear view mirrors on vehicles.", 0, 1 )
+CreateClientConVar( "mplr_lumino_enable", "1", true, true, "Enable or disable rendering the station arrivals displays which may be costly to render.", 0, 1 )
+CreateClientConVar( "mplr_lumino_lod", "3", true, true, "Level of Detail factor for rendering the LED dots on the arrivals displays. Higher equals better.", 1, 3 )
 concommand.Add( "mplr_manual", function()
     --ply, _, args)
     gui.OpenURL( "https://lillywho.github.io" )
 end )
 
-print( "MPLR: Set all the convars!" )
+print( "MPLR: Set all the client convars!" )
