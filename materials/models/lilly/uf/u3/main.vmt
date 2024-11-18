@@ -1,4 +1,6 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "models/lilly/uf/u3/main"
+	$envmap env_cubemap
+	"$envmapmask" "models/lilly/uf/u3/main_envmask"
 }

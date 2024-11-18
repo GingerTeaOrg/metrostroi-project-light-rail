@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/mplr/ruhrbahn/b_1973/coupler_front"
+	"$surfaceprop" "Metal"
+	$normalmap "models/lilly/mplr/ruhrbahn/b_1973/coupler_front_n"
+}
