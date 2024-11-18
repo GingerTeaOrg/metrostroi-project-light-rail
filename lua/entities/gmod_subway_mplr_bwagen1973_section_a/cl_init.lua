@@ -12,6 +12,12 @@ ENT.ButtonMapMPLR[ "IBISScreen" ] = {
 	scale = 0.0311
 }
 
+ENT.ClientProps[ "flap_a" ] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/flap_a.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 0, 0 ),
+}
+
 ENT.ClientProps[ "empty_button" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
 	pos = Vector( -0.1, 0, 0 ),
@@ -1173,7 +1179,7 @@ ENT.ButtonMapMPLR[ "DoorButton8L" ] = {
 }
 
 ENT.ButtonMapMPLR[ "LineRollsign" ] = {
-	pos = Vector( 511.25, -12, 115 ),
+	pos = Vector( 511.25, 12, 115 ),
 	ang = Angle( 0, -90, -90 ),
 	width = 9,
 	height = 9,

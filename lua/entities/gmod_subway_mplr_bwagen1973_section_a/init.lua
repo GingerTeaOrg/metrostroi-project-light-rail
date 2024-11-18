@@ -141,36 +141,6 @@ function ENT:Initialize()
 	self.DriverSeat:SetColor( Color( 0, 0, 0, 0 ) )
 	-- self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
 	-- self.InstructorsSeat:SetColor(Color(0, 0, 0, 0))
-	self.DoorStatesRight = {
-		[ 1 ] = 0,
-		[ 2 ] = 0,
-		[ 3 ] = 0,
-		[ 4 ] = 0,
-		[ 5 ] = 0,
-		[ 6 ] = 0
-	}
-
-	self.DoorStatesLeft = {
-		[ 1 ] = 0,
-		[ 2 ] = 0,
-		[ 3 ] = 0,
-		[ 4 ] = 0,
-		[ 5 ] = 0,
-		[ 6 ] = 0
-	}
-
-	self.DoorsUnlocked = false
-	self.DoorsPreviouslyUnlocked = false
-	self.DoorCloseMoments = {
-		[ 1 ] = 0,
-		[ 2 ] = 0,
-		[ 3 ] = 0,
-		[ 4 ] = 0,
-		[ 5 ] = 0,
-		[ 6 ] = 0
-	}
-
-	self.DoorCloseMomentsCaptured = false
 	self.Speed = 0
 	self.ThrottleState = 0
 	self.ThrottleEngaged = false
@@ -608,7 +578,6 @@ function ENT:CoupledUncoupled()
 end
 
 function ENT:TrainSpawnerUpdate()
-	local tex = "Def_B_1973"
 	self.MiddleBogey.Texture = self:GetNW2String( "Texture" )
 	self:UpdateTextures()
 	self.MiddleBogey:UpdateTextures()
@@ -629,31 +598,36 @@ function ENT:Traction()
 	local rb = self.RearBogey
 	local speed = self.CoreSys.Speed
 	local traction = self:ReadTrainWire( 1 ) * 0.01
-	local braking = traction < 0.01
 	local chopper = self.Chopper.ChopperOutput > 0 and self.Chopper.ChopperOutput / 750 or 0
+	local emergency = self:ReadTrainWire( 10 ) > 0
 	--print(chopper,traction)
 	local P = math.max( 0, 0.04449 + 1.06879 * math.abs( chopper ) - 0.465729 * chopper ^ 2 )
-	if self.Speed < 10 then P = P * ( 1.0 + 0.5 * ( 10.0 - self.Speed ) / 10.0 ) end
-	self.FrontBogey.MotorForce = traction > 0 and 126688.07175 or -138363.606
+	if speed < 10 then P = P * ( 1.0 + 0.5 * ( 10.0 - speed ) / 10.0 ) end
+	self.FrontBogey.MotorForce = traction > 0 and 56688.07175 or 68363.606
 	self.RearBogey.MotorForce = self.FrontBogey.MotorForce
-	if self.Speed > 8 then
-		if traction > 0 then
-			self.FrontBogey.MotorPower = math.abs( chopper )
-		else
-			self.FrontBogey.MotorPower = math.abs( traction )
-		end
-	else
-		if traction > 0 then
-			self.FrontBogey.MotorPower = math.abs( chopper )
-		else
-			self.FrontBogey.MotorPower = 0
-		end
+	if traction > 0 and not emergency then
+		fb.MotorPower = math.abs( chopper )
+	elseif traction <= 0 and speed > 8 and not emergency then
+		fb.MotorPower = traction
+	elseif emergency and speed > 8 then
+		fb.MotorPower = -1
+	elseif speed < 8 and traction <= 0 then
+		fb.MotorPower = 0
 	end
 
 	self.RearBogey.MotorPower = self.FrontBogey.MotorPower
 	rb.Reversed = self:ReadTrainWire( 4 ) > 0
 	fb.Reversed = rb.Reversed
-	fb.BrakeCylinderPressure = ( speed < 8 and braking ) and 5 or 0
+	if speed > 8 and traction < 0 then
+		fb.BrakeCylinderPressure = math.abs( traction * 5 )
+	elseif speed < 8 and traction <= 0 then
+		fb.BrakeCylinderPressure = 6
+	elseif traction > 0 then
+		fb.BrakeCylinderPressure = 0
+	else
+		fb.BrakeCylinderPressure = 0 -- or another default value if needed
+	end
+
 	mb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	rb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	--print(self.FrontBogey.MotorPower, traction, fb.BrakeCylinderPressure, rb.Reversed, self.FrontBogey.MotorForce)

@@ -182,10 +182,22 @@ ENT.ClientProps[ "step_tray4" ] = {
 	hideseat = 0.2
 }
 
+ENT.ClientProps[ "flap_a" ] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/flap_a.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
+}
+
+ENT.ClientProps[ "destination_frame" ] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/destination_frame.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 )
+}
+
 ENT.ClientProps[ "key_ignition" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/key.mdl",
 	pos = Vector( 0, 0, 0 ),
-	ang = Angle( 0, 0, 0 ),
+	ang = Angle( 0, 180, 0 ),
 	nohide = true
 }
 
@@ -201,6 +213,22 @@ ENT.ClientProps[ "mirror_r" ] = {
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 180, 0 ),
 	hideseat = 0.2
+}
+
+ENT.ButtonMapMPLR[ "DestinationRollsignFront" ] = {
+	pos = Vector( -511.25, -20.5, 115 ),
+	ang = Angle( 0, 90, -90 ),
+	width = 33,
+	height = 9,
+	scale = 1
+}
+
+ENT.ButtonMapMPLR[ "LineRollsign" ] = {
+	pos = Vector( -511.25, 12, 115 ),
+	ang = Angle( 0, 90, -90 ),
+	width = 9,
+	height = 9,
+	scale = 1
 }
 
 ENT.ButtonMapMPLR[ "dashboard" ] = {
@@ -911,6 +939,12 @@ function ENT:Initialize()
 	self.KeyTurned = false
 	self.CabWindowL = 0
 	self.CabWindowR = 0
+	self.RollsignModifier1 = 0
+	self.RollsignModifier2 = 0
+	self.RollsignModifier3 = 0
+	self.RollsignModifier4 = 0
+	self.RollsignModifier5 = 0
+	self.RollsignModifier6 = 0
 end
 
 function ENT:Think()
@@ -962,14 +996,21 @@ function ENT:DrawPost()
 		surface.SetMaterial(self.RTMaterial)
 		surface.SetDrawColor(0, 65, 11)
 		surface.DrawTexturedRectRotated(59, 16, 116, 25, 0)
-	end)
-
-	local mat = Material("models/lilly/uf/u2/rollsigns/frankfurt_stock.png")
-	self:DrawOnPanel("Rollsign", function(...)
-		surface.SetDrawColor(color_white)
-		surface.SetMaterial(mat)
-		surface.DrawTexturedRectUV(0, 0, 780, 160, 0, self.ScrollModifier, 1, self.ScrollModifier + 0.015)
 	end)]]
+	local mat = Material( "models/lilly/mplr/rollsigns/b_1973/lines_def.png", "noclamp" )
+	local mat2 = Material( "models/lilly/mplr/rollsigns/b_1973/flank_def.png", "noclamp" )
+	local mat3 = Material( "models/lilly/mplr/rollsigns/b_1973/internal_def.png", "noclamp" )
+	self:DrawOnPanel( "LineRollsign", function( ... )
+		surface.SetDrawColor( color_white )
+		surface.SetMaterial( mat )
+		surface.DrawTexturedRectUV( 1, 1.8, 7.5, 7.6, 0, self.RollsignModifier1 + .04, -1, self.RollsignModifier1 + 0.00 )
+	end )
+
+	self:DrawOnPanel( "DestinationRollsignFront", function( ... )
+		surface.SetDrawColor( color_white )
+		surface.SetMaterial( mat2 )
+		surface.DrawTexturedRectUV( 1, 1.8, 31, 7.6, 0, self.RollsignModifier1, -.7, self.RollsignModifier1 - 1 )
+	end )
 end
 
 function ENT:OnPlay( soundid, location, range, pitch )

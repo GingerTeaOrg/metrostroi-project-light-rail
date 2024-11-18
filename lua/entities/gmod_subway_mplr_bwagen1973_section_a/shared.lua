@@ -11,6 +11,24 @@ ENT.AdminSpawnable = false
 ENT.SkinsType = "B1973"
 ENT.DontAccelerateSimulation = true
 ENT.RenderGroup = 9
+ENT.BlinkersRight = {
+	[ 9 ] = true,
+	[ 11 ] = true
+}
+
+ENT.BlinkersRight = {
+	[ 8 ] = true,
+	[ 10 ] = true
+}
+
+ENT.BrakeLightLeft = {
+	[ 6 ] = true
+}
+
+ENT.BrakeLightRight = {
+	[ 7 ] = true
+}
+
 function ENT:PassengerCapacity()
 	return 108
 end
@@ -229,26 +247,6 @@ ENT.Spawner = {
 			end
 		end
 	},
-	{
-		"Signs",
-		"Rollsign Texture",
-		"List",
-		function( ent )
-			local Announcer = {}
-			for k, v in pairs( UF.BRollsigns or {} ) do
-				Announcer[ k ] = v.name
-			end
-			return Announcer
-		end,
-		nil,
-		function( ent, val, rot, i, wagnum, rclk )
-			if UF.U2Rollsigns and val == 1 then
-				ent:SetNW2Int( "Rollsign", 1 )
-			else
-				ent:SetNW2Int( "Rollsign", val )
-			end
-		end
-	}
 }
 
 ENT.DoorNumberRight = 6
