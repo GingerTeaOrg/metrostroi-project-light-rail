@@ -31,7 +31,7 @@
 		"nopole" : "Without Pole"
 	]
 ]
-@PointClass base(Targetname, Origin ) studioprop("models/lilly/uf/signage/point_contact.mdl") = gmod_track_uf_switch : "Trackside Switch"
+@PointClass base(Targetname, Origin ) studioprop("models/lilly/uf/tram/sgauge/switch_motor.mdl") = gmod_track_uf_switch : "Trackside Switch"
 [
 	DefaultPosition(Choices) : "Default Position" : "Set switch to main/alt by default" : "main" =
 	[
