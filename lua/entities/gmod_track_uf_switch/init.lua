@@ -13,8 +13,14 @@ function ENT:Initialize()
 	self.LastSignalTime = 0
 	self.Left = self.VMF.PositionCorrespondance or "alt"
 	self.TrackSwitches = {}
-	table.insert( self.TrackSwitches, ents.FindByName( self.VMF.Blade1 ) )
-	table.insert( self.TrackSwitches, ents.FindByName( self.VMF.Blade2 ) )
+	for _, v in ipairs( ents.FindByName( self.VMF.Blade1 ) ) do
+		table.insert( self.TrackSwitches, v )
+	end
+
+	for _, v in ipairs( ents.FindByName( self.VMF.Blade2 ) ) do
+		table.insert( self.TrackSwitches, v )
+	end
+
 	self.TrackPos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	self.PairedControllers = {}
 	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
@@ -45,6 +51,7 @@ function ENT:Occupied()
 end
 
 function ENT:Think()
+	PrintTable( self.TrackSwitches )
 	self.TrackPos = self.TrackPos or Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	if not self.ID then self.ID = self.VMF.ID end
 	if not next( self.TrackSwitches ) then return end
