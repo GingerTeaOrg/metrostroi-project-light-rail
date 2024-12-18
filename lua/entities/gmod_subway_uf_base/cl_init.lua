@@ -754,26 +754,28 @@ function ENT:Initialize()
 	self.TunnelCoeff = 0
 	self.StreetCoeff = 0
 	self.Street = 0
-	self:InitSegments()
+	self:InitSegments( self )
 	self.WiperState = 0
 	self.WiperInterval = 0
 	self.WipeDown = false
 	self.Wiped = false
+	--hook.Add( "PostDrawOpaqueRenderables", "MirrorHook" .. self:EntIndex(), function() self:MirrorRender() end )
 end
 
-function ENT:InitSegments()
-	self.SegmentCount = 0
-	self.ParentSection = self:GetNW2Int( "parentSectionIndex", false )
-	self.SectionAIndex = self:GetNW2Int( "SectionAIndex", nil )
-	self.SectionBIndex = self:GetNW2Int( "SectionBIndex", nil )
-	self.SectionCIndex = self:GetNW2Int( "SectionCIndex", nil )
+function ENT:InitSegments( ent )
+	if not ent then ent = self end
+	ent.SegmentCount = 0
+	ent.ParentSection = ent:GetNW2Int( "parentSectionIndex", false )
+	ent.SectionAIndex = ent:GetNW2Int( "SectionAIndex", nil )
+	ent.SectionBIndex = ent:GetNW2Int( "SectionBIndex", nil )
+	ent.SectionCIndex = ent:GetNW2Int( "SectionCIndex", nil )
 	for i = string.byte( 'A' ), string.byte( 'C' ) do
 		local letter = string.char( i )
-		local index = self[ "Section" .. letter .. "Index" ]
+		local index = ent[ "Section" .. letter .. "Index" ]
 		if index and index ~= 0 then
-			self.SegmentCount = self.SegmentCount + 1
-			self[ "Section" .. letter ] = Entity( index )
-			print( "Spawning sections:", self[ "Section" .. letter ] )
+			ent.SegmentCount = ent.SegmentCount + 1
+			ent[ "Section" .. letter ] = Entity( index )
+			print( "Spawning sections:", ent[ "Section" .. letter ] )
 		end
 	end
 end
@@ -798,6 +800,19 @@ function ENT:UpdateTextures()
 			if cabintexture and cabintexture.textures and cabintexture.textures[ tex ] then ent:SetSubMaterial( k - 1, cabintexture.textures[ tex ] ) end
 			if passtexture and passtexture.textures and passtexture.textures[ tex ] then ent:SetSubMaterial( k - 1, passtexture.textures[ tex ] ) end
 			if texture and texture.textures and texture.textures[ tex ] then ent:SetSubMaterial( k - 1, texture.textures[ tex ] ) end
+		end
+	end
+
+	if IsValid( self.MiddleBogey ) and texture and texture.textures and texture.textures[ tex ] then self.MiddleBogey:UpdateTextures() end
+	if IsValid( self.SectionA ) and texture and texture.textures and texture.textures[ tex ] then
+		for k, v in pairs( ent:GetMaterials() ) do
+			self.SectionA:SetSubMaterial( k - 1, texture.textures[ tex ] )
+		end
+	end
+
+	if IsValid( self.SectionB ) and texture and texture.textures and texture.textures[ tex ] then
+		for k, v in pairs( ent:GetMaterials() ) do
+			self.SectionB:SetSubMaterial( k - 1, texture.textures[ tex ] )
 		end
 	end
 end
@@ -842,6 +857,7 @@ function ENT:OnRemove( nfinal )
 
 	self.PassengerEnts = {}
 	self.PassengerEntsStuck = {}
+	hook.Remove( "PostDrawOpaqueRenderables", "MirrorHook" .. self:EntIndex() )
 end
 
 function ENT:CalcAbsolutePosition( pos, ang )
@@ -1029,7 +1045,7 @@ function ENT:Think()
 	if ( GetConVar( "metrostroi_disablecamaccel" ):GetInt() == 0 ) and not seatBackward then
 		self.HeadAcceleration = self:Animate( "accel", ( self:GetNW2Float( "Accel", 0 ) + 1 ) / 2, 0, 1, 4, 1 ) * C_CameraJerk:GetInt()
 	elseif ( GetConVar( "metrostroi_disablecamaccel" ):GetInt() == 0 ) and seatBackward then
-		self.HeadAcceleration = self:Animate( "accel", ( self:GetNW2Float( "Accel", 0 ) + 1 * -1 ) / 2, 0, 1, 4, 1 ) * C_CameraJerk:GetInt()
+		self.HeadAcceleration = self:Animate( "accel", ( ( self:GetNW2Float( "Accel", 0 ) + 1 ) / 2 ) * -1, 0, 1, 4, 1 ) * C_CameraJerk:GetInt()
 	else
 		self.HeadAcceleration = 0
 	end
@@ -1186,12 +1202,12 @@ function ENT:Think()
 			--print(math.Clamp((leftst-10)/40,0,1))
 			--print(Format("%02d %.2f %02d %.2f",leftst,math.Clamp((leftst-30)/20,0,1),rightst,)
 			--[[ if leftst < 30 or rightst < 30 then
-			LocalPlayer():ChatPrint(Format("I AM ON A STREET STATION, %.2f",coeff))
-		elseif coeff > 1.3 then
-			LocalPlayer():ChatPrint(Format("I AM ON A STREET, %.2f",coeff))
-		else
-			LocalPlayer():ChatPrint(Format("I AM ON A STREET WITH WALLS, %.2f",coeff))
-		end--]]
+					LocalPlayer():ChatPrint(Format("I AM ON A STREET STATION, %.2f",coeff))
+				elseif coeff > 1.3 then
+					LocalPlayer():ChatPrint(Format("I AM ON A STREET, %.2f",coeff))
+				else
+					LocalPlayer():ChatPrint(Format("I AM ON A STREET WITH WALLS, %.2f",coeff))
+				end--]]
 			self.TunnelCoeff = math.Clamp( self.TunnelCoeff + ( 0 - self.TunnelCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.StreetCoeff = math.Clamp( self.StreetCoeff + ( ( 0.8 + coeff * 0.2 ) - self.StreetCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.Street = 1
@@ -1200,12 +1216,12 @@ function ENT:Think()
 			--,
 			--(math.Clamp((leftst-30)/20,0,1)+math.Clamp((rightst-30)/20,0,1))*0.6
 			--[[ if (leftst < 30 or rightst < 30) and coeff > 1.2 then
-		LocalPlayer():ChatPrint(Format("I AM ON A STATION L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
-	elseif coeff > 1.3 then
-		LocalPlayer():ChatPrint(Format("I AM IN A BIG TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
-	else
-		LocalPlayer():ChatPrint(Format("I AM IN A TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
-	end--]]
+				LocalPlayer():ChatPrint(Format("I AM ON A STATION L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+			elseif coeff > 1.3 then
+				LocalPlayer():ChatPrint(Format("I AM IN A BIG TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+			else
+				LocalPlayer():ChatPrint(Format("I AM IN A TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+			end--]]
 			self.TunnelCoeff = math.Clamp( self.TunnelCoeff + ( ( 0.4 + coeff * 0.6 ) - self.TunnelCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.StreetCoeff = math.Clamp( self.StreetCoeff + ( ( 0.5 - math.max( 0, self.TunnelCoeff - 0.5 ) ) - self.StreetCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.Street = 0
@@ -1375,12 +1391,12 @@ function ENT:Think()
 				ent:SetPos( self:LocalToWorld( pos ) )
 				ent:SetAngles( Angle( 0, math.random( 0, 360 ), 0 ) )
 				--[[
-			hook.Add("MetrostroiBigLag",ent,function(ent)
-				ent:SetPos(self:LocalToWorld(pos))
-				ent:SetAngles(Angle(0,math.random(0,360),0))
-				--if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
-				--ent.Spawned = true
-			end)]]
+				hook.Add("MetrostroiBigLag",ent,function(ent)
+					ent:SetPos(self:LocalToWorld(pos))
+					ent:SetAngles(Angle(0,math.random(0,360),0))
+					--if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
+					--ent.Spawned = true
+				end)]]
 				ent:SetSkin( math.floor( ent:SkinCount() * math.random() ) )
 				ent:SetModelScale( 0.98 + ( -0.02 + 0.04 * math.random() ), 0 )
 				ent:SetParent( self )
@@ -1846,22 +1862,35 @@ function ENT:HideButton( clientProp, value )
 end
 
 function ENT:ShowHideSmooth( clientProp, value, color )
+	-- If there's an override for this clientProp in the Hidden table, immediately return the value.
 	if self.Hidden.override[ clientProp ] then return value end
+	-- Initialize SmoothHide value for this clientProp if it doesn't exist and the ClientEnt is invalid.
 	if not IsValid( self.ClientEnts[ clientProp ] ) and self.SmoothHide[ clientProp ] then self.SmoothHide[ clientProp ] = 0 end
+	-- If the current SmoothHide value matches the target value and there's no custom color, return early.
 	if self.SmoothHide[ clientProp ] and ( self.SmoothHide[ clientProp ] == value and not color ) then return value end
+	-- Update SmoothHide and set animation state for the clientProp (hidden if value is 0).
 	self.SmoothHide[ clientProp ] = value
 	self.Hidden.anim[ clientProp ] = value == 0
+	-- If value is greater than 0 and the ClientEnt is invalid, attempt to show the clientProp.
+	-- If successful, reset SmoothHide for this clientProp.
 	if value > 0 and not IsValid( self.ClientEnts[ clientProp ] ) then if self:ShowHide( clientProp, true ) then self.SmoothHide[ clientProp ] = nil end end
+	-- If value is 0 and the ClientEnt is valid, attempt to hide the clientProp.
+	-- If successful, reset SmoothHide for this clientProp.
 	if value == 0 and IsValid( self.ClientEnts[ clientProp ] ) then if self:ShowHide( clientProp, false ) then self.SmoothHide[ clientProp ] = nil end end
+	-- If the ClientEnt is valid, adjust its render mode and color.
 	if IsValid( self.ClientEnts[ clientProp ] ) then
+		-- Retrieve the clientProp configuration from ClientProps or ClientPropsOv (overrides).
 		local v = self.ClientPropsOv and self.ClientPropsOv[ clientProp ] or self.ClientProps[ clientProp ]
+		-- Set the render mode to transparent for smooth visibility transitions.
 		self.ClientEnts[ clientProp ]:SetRenderMode( RENDERMODE_TRANSALPHA )
+		-- Adjust the color of the clientProp. Use a custom color if provided, otherwise fallback to default.
 		if color then
 			self.ClientEnts[ clientProp ]:SetColor( ColorAlpha( color, value * 255 ) )
 		else
 			self.ClientEnts[ clientProp ]:SetColor( ColorAlpha( v.color or color_white, value * 255 ) )
 		end
 	end
+	-- Return the updated value for external use.
 	return value
 end
 
@@ -2044,17 +2073,21 @@ hook.Add( "InputMouseApply", "mplr_TrainView", function( cmd, x, y, ang )
 	train.CamAng = ang
 end )
 
-hook.Add( "CalcVehicleView", "mplr_TrainView", function( seat, ply, tbl )
-	--print("running")
-	local train = ply.InMetrostroiTrain
+hook.Add( "CalcVehicleView", "Metrostroi_TrainView", function( seat, ply, tbl )
+	-- Ensure the train entity is valid
+	local train = seat:GetNW2Entity( "TrainEntity", nil )
 	if not IsValid( train ) then return end
-	if seat:GetThirdPersonMode() and train.MirrorCams[ 1 ] then
+	local seatType = seat:GetNW2String( "SeatType" )
+	local mirrorCamsExist = train.MirrorCams and #train.MirrorCams >= 6 -- assuming 6 entries are required
+	-- Ensure MirrorCams are valid and contain at least 6 elements
+	if seat:GetThirdPersonMode() and mirrorCamsExist and type( train.MirrorCams[ 1 ] ) == "Vector" and ( string.lower( seatType ) == "instructor" or string.lower( seatType ) == "driver" ) then
+		-- Calculate angles relative to train
 		local trainAng = tbl.angles - train:GetAngles()
 		if trainAng.y > 180 then trainAng.y = trainAng.y - 360 end
 		if trainAng.y < -180 then trainAng.y = trainAng.y + 360 end
+		-- Depending on angle, use different mirrors
 		if trainAng.y > 0 then
 			train.CamPos = train:LocalToWorld( train.MirrorCams[ 1 ] )
-			print( train.CamPos )
 			train.CamAngles = train:LocalToWorldAngles( train.MirrorCams[ 2 ] )
 			return {
 				origin = train.CamPos,
@@ -2070,25 +2103,26 @@ hook.Add( "CalcVehicleView", "mplr_TrainView", function( seat, ply, tbl )
 				fov = train.MirrorCams[ 6 ],
 			}
 		end
-	elseif train.CurrentCamera > 0 and train.Cameras[ train.CurrentCamera ] then
+		-- Handle the case for in-cab cameras
+	elseif train.CurrentCamera > 0 and train.Cameras and train.Cameras[ train.CurrentCamera ] then
 		local camera = train.Cameras[ train.CurrentCamera ]
 		train.CamPos = train:LocalToWorld( camera[ 1 ] )
 		local tFov = tbl.fov / C_FovDesired:GetFloat() * C_CabFOV:GetFloat()
 		return {
 			origin = train.CamPos,
-			angles = tbl.angles, --+train:LocalToWorldAngles(camera[2]),
+			angles = tbl.angles,
 			fov = tFov,
 		}
+		-- Default view handling
 	else
 		train.CamPos = train:LocalToWorld( train:WorldToLocal( tbl.origin ) + Vector( train.HeadAcceleration, 0, C_CabZ:GetFloat() ) )
 		local tFov = tbl.fov / C_FovDesired:GetFloat() * C_CabFOV:GetFloat()
 		return {
 			origin = train.CamPos,
-			angles = tbl.angles, --target_ang+train.CamAnglesComp,
+			angles = tbl.angles,
 			fov = tFov,
 		}
 	end
-	return
 end )
 
 --------------------------------------------------------------------------------
@@ -2245,6 +2279,36 @@ hook.Add( "Think", "mplr-cabin-panel", function()
 end )
 
 local C_ScrollSensitivity = GetConVar( "mplr_scrollwheel_sensitivity" ):GetFloat()
+local testVal = 0
+hook.Add( "InputMouseApply", "testMouseWheel", function( cmd, x, y, ang )
+	local ply = LocalPlayer()
+	local train, outside = isValidTrainDriver( ply )
+	local val = val or 0
+	local scroll = 0
+	local lastMove = lastMove or 0
+	if not IsValid( train ) then return end
+	if gui.IsConsoleVisible() or gui.IsGameUIVisible() or IsValid( vgui.GetHoveredPanel() ) and not vgui.IsHoveringWorld() and vgui.GetHoveredPanel():GetParent() ~= vgui.GetWorldPanel() then
+		val = 0
+		prevVal = 0
+		lastMove = 0
+		return
+	end
+
+	scroll = cmd:GetMouseWheel()
+	if scroll ~= 0 then
+		val = val + ( scroll * C_ScrollSensitivity )
+		lastMove = RealTime()
+	elseif scroll == 0 and RealTime() - lastMove > 15 then
+		val = 0
+	end
+
+	ply:PrintMessage( HUD_PRINTTALK, val ~= 0 and val or " " )
+	net.Start( "MouseWheelAnalog" )
+	net.WriteEntity( train )
+	net.WriteFloat( val )
+	net.SendToServer()
+end )
+
 --[[hook.Add( "StartCommand" , "mplr-mouseThrottle" , function()
 local ply = LocalPlayer()
 if not IsValid( ply ) then return end
@@ -2378,7 +2442,7 @@ local function handleKeyEvent( ply, key, pressed )
 			end
 
 			if train.OnButtonReleased and button then
-				local tooltip, buttID = nil, button.ID
+				local tooltip, buttID = nil, button.ID -- haha
 				if button.plombed then tooltip, buttID = button.plombed( train ) end
 				train:OnButtonReleased( buttID:gsub( "^.+:", "" ) )
 			end
@@ -2551,11 +2615,16 @@ language.Add( "SBoxLimit_train_limit", "Wagons limit" )
 -- Turn light on or off
 --------------------------------------------------------------------------------
 function ENT:SetLightPower( index, power, brightness )
+	-- If the light is hidden, exit the function
 	if self.HiddenLamps[ index ] then return end
+	-- Retrieve light data (either overridden or default)
 	local lightData = self.LightsOverride[ index ] or self.Lights[ index ]
-	brightness = brightness or 1
+	brightness = brightness or 1 -- Default brightness to 1 if not provided
+	-- Handle 'glow' or 'light' types
 	if lightData[ 1 ] == "glow" or lightData[ 1 ] == "light" then
+		-- Skip if the light is a panel and sprites are not enabled, or if anti-aliasing is required but not enabled
 		if lightData.panel and not self.SpritesEnabled or lightData.aa and self.AAEnabled then return end
+		-- Adjust brightness and manage sprites
 		self.LightBrightness[ index ] = brightness * ( lightData.brightness or 0.5 )
 		if power and self.Sprites[ index ] then return end
 		self.Sprites[ index ] = nil
@@ -2565,9 +2634,10 @@ function ENT:SetLightPower( index, power, brightness )
 		return
 	end
 
+	-- Handle existing glowing lights
 	if power and IsValid( self.GlowingLights[ index ] ) then
 		if lightData[ 1 ] == "headlight" and IsValid( self.GlowingLights[ index ] ) then
-			-- Check if light already glowing
+			-- Check if the brightness needs updating
 			if brightness ~= self.LightBrightness[ index ] then
 				local light = self.GlowingLights[ index ]
 				light:SetBrightness( brightness * ( lightData.brightness or 1.25 ) )
@@ -2575,7 +2645,7 @@ function ENT:SetLightPower( index, power, brightness )
 				self.LightBrightness[ index ] = brightness
 			end
 			return
-		elseif ( lightData[ 1 ] == "glow" ) or ( lightData[ 1 ] == "light" ) then
+		elseif lightData[ 1 ] == "glow" or lightData[ 1 ] == "light" then
 			local brightness = brightness * ( lightData.brightness or 0.5 )
 			if brightness ~= self.LightBrightness[ index ] then
 				local light = self.GlowingLights[ index ]
@@ -2593,16 +2663,16 @@ function ENT:SetLightPower( index, power, brightness )
 		end
 	end
 
+	-- Remove existing glowing light if necessary
 	if IsValid( self.GlowingLights[ index ] ) then self.GlowingLights[ index ]:Remove() end
 	self.GlowingLights[ index ] = nil
 	self.LightBrightness[ index ] = brightness
+	-- Create a new light if power is on
 	if not power then return end
-	-- Create light
 	if lightData[ 1 ] == "light" or lightData[ 1 ] == "glow" then
 		local light = ents.CreateClientside( "gmod_train_uf_sprite" )
 		light:SetPos( self:LocalToWorld( lightData[ 2 ] ) )
-		--light:SetLocalAngles(lightData[3])
-		-- Set parameters
+		-- Set light parameters
 		local brightness = brightness * ( lightData.brightness or 0.5 )
 		light:SetColor( lightData[ 4 ] )
 		light:SetBrightness( brightness )
@@ -2610,14 +2680,11 @@ function ENT:SetLightPower( index, power, brightness )
 		light:SetSize( lightData.scale or 1.0 )
 		light:Set3D( false )
 		self.GlowingLights[ index ] = light
-	elseif ( lightData[ 1 ] == "headlight" ) and ( not lightData.backlight or self.RedLights ) and ( not lightData.panellight or self.OtherLights ) then
+	elseif lightData[ 1 ] == "headlight" and ( not lightData.backlight or self.RedLights ) and ( not lightData.panellight or self.OtherLights ) then
 		local light = ProjectedTexture()
 		light:SetPos( self:LocalToWorld( lightData[ 2 ] ) )
 		light:SetAngles( self:LocalToWorldAngles( lightData[ 3 ] ) )
-		--light:SetParent(self)
-		--light:SetLocalPos(lightData[2])
-		--light:SetLocalAngles(lightData[3])
-		-- Set parameters
+		-- Set parameters for the headlight
 		if lightData.headlight and self.HeadlightShadows or not lightData.headlight and self.OtherShadows then
 			light:SetEnableShadows( ( lightData.shadows or 0 ) > 0 )
 		else
@@ -2635,19 +2702,18 @@ function ENT:SetLightPower( index, power, brightness )
 		if lightData.hfov then light:SetHorizontalFOV( lightData.hfov ) end
 		if lightData.vfov then light:SetVerticalFOV( lightData.vfov or 120 ) end
 		light:SetOrthographic( false )
-		-- Set Brightness
+		-- Set brightness
 		light:SetBrightness( brightness * ( lightData.brightness or 1.25 ) )
 		light:SetColor( lightData[ 4 ] )
 		light:SetTexture( lightData.texture or "effects/flashlight001" )
 		-- Turn light on
-		light:Update() --"effects/flashlight/caustics"
+		light:Update()
 		self.GlowingLights[ index ] = light
 	elseif lightData[ 1 ] == "dynamiclight" then
 		local light = ents.CreateClientside( "gmod_train_uf_dlight" )
 		light:SetParent( self )
 		-- Set position
 		light:SetLocalPos( lightData[ 2 ] )
-		--light:SetLocalAngles(lightData[3])
 		-- Set parameters
 		light:SetDColor( lightData[ 4 ] )
 		light:SetSize( lightData.distance )
@@ -2674,4 +2740,102 @@ function ENT:OnStyk( soundid, location, range, pitch )
 		self:PlayOnce( Format( "b%dstreet_%d%s", pitch, range % 14 + 1, soundid ), "bass", self.StreetCoeff * ( 0.6 - math.min( speed, 1 ) * 0.3 ), 0.9 + math.min( speed, 1 ) * 0.2 )
 	end
 	--RunConsoleCommand("say",str)
+end
+
+function ENT:MirrorRender()
+	if true then return end
+	local ply = LocalPlayer()
+	-- Ensure ClientEnts is valid before proceeding
+	local mirrorLeft = self.ClientEnts and self.ClientEnts[ "Mirror_l" ]
+	local mirrorRight = self.ClientEnts and self.ClientEnts[ "Mirror_r" ]
+	-- Utility function to calculate reflection
+	local function GetReflectedView( mirrorOrigin, mirrorNormal )
+		local playerPos = ply:EyePos()
+		local playerAngles = ply:EyeAngles()
+		-- Calculate the reflection based on player's position
+		local toMirror = mirrorOrigin - playerPos
+		local distToPlane = toMirror:Dot( mirrorNormal )
+		local reflectedPos = playerPos + 2 * mirrorNormal * distToPlane
+		-- Reflect the player's view direction
+		local forward = playerAngles:Forward()
+		local reflectedDir = forward - 2 * mirrorNormal * forward:Dot( mirrorNormal )
+		local reflectedAngles = reflectedDir:Angle()
+		return reflectedPos, reflectedAngles
+	end
+
+	-- Left Mirror Handling
+	if IsValid( mirrorLeft ) then
+		local materials = mirrorLeft:GetMaterials()
+		local mirrorLeftSlot
+		-- Find the material slot for the mirror
+		if materials then
+			for i, matPath in ipairs( materials ) do
+				if string.find( matPath, "rt_target" ) then mirrorLeftSlot = i - 1 end
+			end
+		end
+
+		-- Proceed with rendering only if the slot is valid
+		if mirrorLeftSlot then
+			local rtLeft = GetRenderTarget( "rtLeft", 1024, 512 )
+			render.PushRenderTarget( rtLeft )
+			render.Clear( 0, 0, 0, 255, true, true )
+			local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ 1 ] or Vector( 10, 10, 10 ) )
+			local mirrorAng = self:LocalToWorldAngles( self.MirrorCams[ 2 ] or Angle( 0, 180, 0 ) )
+			local mirrorNormal = self:GetForward()
+			-- Get reflected view
+			local reflectedPos, reflectedAng = GetReflectedView( mirrorOrigin, mirrorNormal )
+			-- Define the view for rendering
+			local leftMirrorView = {
+				origin = reflectedPos,
+				angles = reflectedAng,
+				fov = self.MirrorCams[ 3 ] or 15,
+				znear = 5,
+				zfar = 100
+			}
+
+			-- Render the scene
+			render.RenderView( leftMirrorView )
+			render.PopRenderTarget()
+			-- Apply the render target to the material
+			self:SetSubMaterial( mirrorLeftSlot, "!rtLeft" )
+		end
+	end
+
+	-- Right Mirror Handling
+	if IsValid( mirrorRight ) then
+		local materials = mirrorRight:GetMaterials()
+		local mirrorRightSlot
+		-- Find the material slot for the right mirror
+		if materials then
+			for i, matPath in ipairs( materials ) do
+				if string.find( matPath, "rt_target" ) then mirrorRightSlot = i - 1 end
+			end
+		end
+
+		-- Proceed with rendering only if the slot is valid
+		if mirrorRightSlot then
+			local rtRight = GetRenderTarget( "rtRight", 1024, 512 )
+			render.PushRenderTarget( rtRight )
+			render.Clear( 0, 0, 0, 255, true, true )
+			local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ 4 ] or Vector( 10, 10, 10 ) )
+			local mirrorAng = self:LocalToWorldAngles( self.MirrorCams[ 5 ] or Angle( 0, 180, 0 ) )
+			local mirrorNormal = self:GetForward()
+			-- Get reflected view
+			local reflectedPos, reflectedAng = GetReflectedView( mirrorOrigin, mirrorNormal )
+			-- Define the view for rendering
+			local rightMirrorView = {
+				origin = reflectedPos,
+				angles = reflectedAng,
+				fov = self.MirrorCams[ 6 ] or 15,
+				znear = 5,
+				zfar = 100
+			}
+
+			-- Render the scene
+			render.RenderView( rightMirrorView )
+			render.PopRenderTarget()
+			-- Apply the render target to the material
+			self:SetSubMaterial( mirrorRightSlot, "!rtRight" )
+		end
+	end
 end
