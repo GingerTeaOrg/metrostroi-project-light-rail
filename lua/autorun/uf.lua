@@ -73,6 +73,30 @@ hook.Add( "EntityRemoved", "UFTrains", function( ent )
 	Metrostroi.SpawnedTrains[ ent ] = nil
 end )
 
+-- Define the target entity class
+local targetClass = "gmod_track_uf_dfi" -- Replace with your custom entity's class name
+-- Table to track active hooks for entities
+local activeHooks = {}
+local function CreateEntityHook( entity )
+	local hookName = "PostDrawHUD_Entity_" .. entity:EntIndex()
+	hook.Add( "PostDrawHUD", hookName, function()
+		if not IsValid( entity ) then
+			-- Remove the hook if the entity is no longer valid
+			hook.Remove( "PostDrawHUD", hookName )
+			activeHooks[ hookName ] = nil
+			return
+		end
+
+		-- Call RenderDisplay with the entity as a parameter
+		if entity.RenderDisplay then
+			entity:RenderDisplay( entity ) -- Pass entity as an argument
+		end
+	end )
+
+	-- Track the hook
+	activeHooks[ hookName ] = entity
+end
+
 if SERVER and Metrostroi then
 	hook.Add( "OnEntityCreated", "UFTrains", function( ent )
 		local prefix = "gmod_subway_uf_"
@@ -94,6 +118,21 @@ elseif CLIENT and Metrostroi then
 			Metrostroi.SpawnedTrains[ ent ] = true
 		end
 	end )
+end
+
+if CLIENT then
+	for _, ent in ipairs( ents.GetAll() ) do
+		if ent:GetClass() == "gmod_track_uf_dfi" then timer.Simple( 0, function() if IsValid( ent ) and ent:GetClass() == targetClass then CreateEntityHook( ent ) end end ) end
+	end
+
+	-- Hook to detect when entities are created
+	hook.Add( "OnEntityCreated", "ManageEntityHooks_OnSpawn", function( entity )
+		-- Delay to ensure the entity is fully initialized
+		timer.Simple( 0, function() if IsValid( entity ) and entity:GetClass() == targetClass then CreateEntityHook( entity ) end end )
+	end )
+
+	-- Hook to detect when entities are removed
+	hook.Add( "EntityRemoved", "ManageEntityHooks_OnRemove", function( entity ) if entity:GetClass() == targetClass then RemoveEntityHook( entity ) end end )
 end
 
 UF.IBISAnnouncementFiles = {}
