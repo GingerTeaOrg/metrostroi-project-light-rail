@@ -2,9 +2,11 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 function ENT:Initialize()
 	self:SetModel( "models/lilly/uf/tram/sgauge/switch_motor.mdl" )
-	Metrostroi.DropToFloor( self )
+	--Metrostroi.DropToFloor( self )
+	self.TrackSwitches = {}
 	self.ID = self.VMF.ID
 	self.Queue = {}
+	self.SecondaryQueue = {}
 	-- Initial state of the switch
 	self.AlternateTrack = false
 	self.AlreadyLocked = false
@@ -12,7 +14,9 @@ function ENT:Initialize()
 	self.SignalCaller = {}
 	self.LastSignalTime = 0
 	self.Left = self.VMF.PositionCorrespondance or "alt"
-	self.TrackSwitches = {}
+	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
+	self.IronOverride = false
+	self.IronOverrideTime = 0
 	for _, v in ipairs( ents.FindByName( self.VMF.Blade1 ) ) do
 		table.insert( self.TrackSwitches, v )
 	end
@@ -23,6 +27,7 @@ function ENT:Initialize()
 
 	self.TrackPos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	self.PairedControllers = {}
+	self.ControllerHierarchy = {}
 	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
 	UF.UpdateSignalEntities()
 	hook.Add( "EntityRemoved", "Switching" .. self:EntIndex(), function( ent )
@@ -42,21 +47,19 @@ function ENT:OnRemove()
 	UF.UpdateSignalEntities()
 end
 
-function ENT:Occupied()
-	-- Check if the blades are still occupied by one node length
-	local pos = self.TrackPos
-	if not pos then return end
-	local trackOccupied = UF.IsTrackOccupied( pos.node1, pos.x, pos.forward, "switch" )
-	self.InhibitSwitching = false
-end
-
 function ENT:Think()
-	PrintTable( self.TrackSwitches )
 	self.TrackPos = self.TrackPos or Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	if not self.ID then self.ID = self.VMF.ID end
 	if not next( self.TrackSwitches ) then return end
 	self:Switching()
-	if #self.Queue == 0 then
+	if self.IronOverride and CurTime() - self.IronOverrideTime < 60 then
+		return
+	else
+		self.IronOverride = false
+		self.IronOverrideTime = 0
+	end
+
+	if #self.Queue == 0 and self.SecondaryQueue == 0 and not self.IronOverride then
 		self.AlternateTrack = false
 	else
 		self:TriggerSwitch()
@@ -78,11 +81,18 @@ function ENT:Switching()
 	end
 end
 
+function ENT:ManualSwitching( dir, ply )
+	self.IronOverride = true
+	self.AlternateTrack = dir
+	self.IronOverrideTime = CurTime()
+	ply:PrintMessage( HUD_PRINTTALK, "Selected switch now manually switched and locked for 60 seconds. Switching back manually is also possible." )
+end
+
 function ENT:TriggerSwitch()
 	-- Check if there's a command in the queue
 	if #self.Queue == 0 then
-		self.AlternateTrack = false
-		print( "Empty queue. Bailing to default." )
+		if not self.IronOverride then self.AlternateTrack = false end
+		--print( "Empty queue. Bailing to default." )
 		return
 	end
 
@@ -130,15 +140,64 @@ function ENT:KeyValue( key, value )
 end
 
 function ENT:SwitchingQueue( direction, ent )
+	local function iterateForward( node )
+		if node.next then
+			return iterateForward( node.next )
+		else
+			return node
+		end
+	end
+
+	local function iterateBackward( node )
+		if node.prev then
+			return iterateBackward( node.prev )
+		else
+			return node
+		end
+	end
+
+	local function checkInRange()
+		local inRange
+		for k in pairs( self.PairedControllers ) do
+			local targetPos = Metrostroi.GetPositionOnTrack( k:GetPos() )[ 1 ]
+			local TargetX = targetPos.x
+			local targetNode = targetPos.node1
+			local dir = targetPos.forward
+			local path = targetPos.path
+			if self.TrackPos.path == path then
+				inRange = UF.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < TargetX, "light", TargetX )
+			else
+				if dir then
+					local lastNode = iterateForward( self.TrackPos.node1 )
+					inRange = UF.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
+				else
+					local lastNode = iterateBackward( self.TrackPos.node1 )
+					inRange = UF.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
+				end
+			end
+
+			if inRange then return true end
+		end
+		return false
+	end
+
 	-- Check if the entity is already in the queue
 	if not self.Queue then self.Queue = {} end
 	if next( self.Queue ) then
 		for i, entry in ipairs( self.Queue ) do
-			if entry[ 2 ] == ent then
+			if entry[ 1 ] == ent then
 				-- Entity is in the queue, check if it's still on track
-				local TargetX = Metrostroi.GetPositionOnTrack( ent:GetPos() )[ 1 ].x
-				local trainStillHere = UF.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < TargetX, "light", TargetX )
-				print( trainStillHere )
+				local trainStillHere = checkInRange()
+				-- If train is no longer here, remove it from the queue
+				if not trainStillHere then table.remove( self.Queue, i ) end
+				return
+			end
+		end
+	elseif not next( self.Queue ) and next( self.SecondaryQueue ) then
+		for i, entry in ipairs( self.SecondaryQueue ) do
+			if entry[ 1 ] == ent then
+				-- Entity is in the queue, check if it's still on track
+				local trainStillHere = checkInRange()
 				-- If train is no longer here, remove it from the queue
 				if not trainStillHere then table.remove( self.Queue, i ) end
 				return
@@ -147,6 +206,17 @@ function ENT:SwitchingQueue( direction, ent )
 	else
 		-- If the entity wasn't found in the queue, add it
 		if IsValid( ent ) and direction then table.insert( self.Queue, { ent, direction } ) end
+	end
+end
+
+function ENT:SecondarySwitchingQueue( direction, ent )
+	local tempEnt
+	if IsValid( ent ) then
+		for i in ipairs( self.SecondaryQueue ) do
+			tempEnt = self.SecondaryQueue[ i ][ 1 ]
+		end
+
+		if IsValid( tempEnt ) and tempEnt ~= ent then table.insert( self.SecondaryQueue, { ent, direction } ) end
 	end
 end
 
