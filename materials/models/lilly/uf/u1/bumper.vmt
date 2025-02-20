@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u1/bumper"
+	"$surfaceprop" "Metal"
+	"$surfaceprop2" "Roller"
+}

@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/uf/u1/duewag"
+	"$bumpmap" "models/lilly/uf/u1/duewag-n"
+	"$envmapmask" "models/lilly/uf/u1/duewag-spec"
+}
