@@ -56,9 +56,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.RBLRegisterFailed = false
 	self.RBLRegistered = false
 	self.RBLSignedOff = true
-	self.JustBooted = false
 	self.PowerOn = 0
-	self.IBISBootupComplete = 0
 	self.ColdBoot = true
 	self.ColdBootComplete = false
 	self.FullyBootupMoment = 0
@@ -373,7 +371,7 @@ end
 function TRAIN_SYSTEM:UpdateState()
 	local trainPower = self.Train.BatteryOn == true or self.Train.CoreSys.CircuitBreakerOn == true or self.Train:ReadTrainWire( 6 ) > 0 or false
 	local ibisKey = self.Train:GetNW2Bool( "TurnIBISKey", false )
-	local ibisKeyRequired = self.Train.CoreSys.ibisKeyRequired
+	local ibisKeyRequired = self.Train.IBISKeyRequired
 	-- Function to reset state when device is off
 	local function resetState()
 		--print( "Reset IBIS" )
@@ -389,8 +387,6 @@ function TRAIN_SYSTEM:UpdateState()
 			self.PowerOffMomentRegistered = true -- to simulate the RAM losing data after an amount of time
 			self.PowerOffMoment = CurTime()
 		end
-
-		self.JustBooted = false
 	end
 
 	local function completeReset()
@@ -420,7 +416,6 @@ function TRAIN_SYSTEM:UpdateState()
 		self.CurrentStation = 0
 		self.NextStationString = ""
 		self.NextStation = 0
-		self.JustBooted = false
 		self.PowerOn = 0
 		self.PowerOnMoment = 0
 		self.Destination = 0 -- Destination index number
@@ -436,11 +431,9 @@ function TRAIN_SYSTEM:UpdateState()
 		self.CurrentStationInternal = 0
 	end
 
-	self.PowerOn = ( trainPower and ibisKey and ibisKeyRequired ) or trainPower or false
+	self.PowerOn = ( ibisKeyRequired and ibisKey and trainPower ) or not ibisKeyRequired and trainPower or false
 	-- The last parameters are kept in RAM for a while after the device was powered down. After that, we boot into the complete set-up.
-	if self.PowerOn and CurTime() - self.PowerOffMoment > 240 then
-		self.ColdBoot = true
-	elseif not self.PowerOn and CurTime() - self.PowerOffMoment > 240 then
+	if not self.PowerOn and CurTime() - self.PowerOffMoment > 240 then
 		self.ColdBoot = true
 	elseif self.PowerOn and CurTime() - self.PowerOffMoment < 240 then
 		self.ColdBoot = false
@@ -462,6 +455,17 @@ function TRAIN_SYSTEM:UpdateState()
 				self.ColdBootCompleted = true
 				self.State = 2
 				self.Menu = 1
+			else
+				if self.Course == "    " or self.Course == "     " then
+					self.Menu = 1
+					self.State = 1
+				else
+					if not self.BootupComplete then
+						self.BootupComplete = true
+						self.Menu = 0
+						self.State = 2
+					end
+				end
 			end
 		end
 	else
@@ -687,9 +691,8 @@ function TRAIN_SYSTEM:Menu0()
 		line = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3
 	end
 
-	local currentTime = CurTime()
 	local route = self.Route
-	local routeTable = self.RouteTable[ line ][ route ] or nil
+	local routeTable = self.RouteTable[ line ] and self.RouteTable[ line ][ route ] or nil
 	if self.Triggers[ "Number3" ] then
 		self.CurrentStationInternal = self.CurrentStationInternal + 1
 		self.CurrentStation = routeTable[ self.CurrentStationInternal ]
@@ -976,7 +979,7 @@ end
 TRAIN_SYSTEM.lastTrigger = 0
 function TRAIN_SYSTEM:Play( time )
 	local message = {}
-	local line = " "
+	local line
 	if self.LineLength == 2 then
 		line = self.CourseChar1 .. self.CourseChar2
 	elseif self.LineLength == 3 then
@@ -987,7 +990,6 @@ function TRAIN_SYSTEM:Play( time )
 	local announcementScript = UF.IBISAnnouncementScript[ self.Train:GetNW2Int( "IBIS:AnnouncementScript", 1 ) ]
 	local temp = {}
 	for i = 1, #announcementScript do
-		print( announcementScript[ i ] )
 		if announcementScript[ i ] ~= "station" and type( commonFiles[ announcementScript[ i ] ][ 1 ] ) == "string" then
 			temp = {
 				[ commonFiles[ announcementScript[ i ] ][ 1 ] ] = commonFiles[ announcementScript[ i ] ][ 2 ]
@@ -995,8 +997,13 @@ function TRAIN_SYSTEM:Play( time )
 
 			table.insert( message, i, temp )
 		elseif announcementScript[ i ] == "station" then
+			print( line )
 			temp = UF.IBISAnnouncementMetadata[ self.Train:GetNW2Int( "IBIS:Announcements", 1 ) ][ self.CurrentStation ][ line ][ self.Route ]
-			PrintTable( temp )
+			if not temp then
+				print( "ANNOUNCEMENT CORRUPT" )
+				return
+			end
+
 			for j = 1, #temp do
 				table.insert( message, temp[ j ] )
 			end
