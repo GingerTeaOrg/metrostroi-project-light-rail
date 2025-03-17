@@ -338,13 +338,16 @@ else
 		end )
 	end
 
-	function ENT:PlayOnce( soundid, location, range, pitch, randoff )
+	function ENT:PlayOnce( soundid, location, range, pitch )
 		if self.StopSounds or not self.ClientPropsInitialized or self.CreatingCSEnts then return end
 		if not soundid then ErrorNoHalt( debug.Trace() ) end
+		if not location then location = self.SoundPositions[ soundid ][ 3 ] end
+		if not range then range = self.SoundPositions[ soundid ][ 1 ] end
+		if not pitch then pitch = self.SoundPositions[ soundid ][ 2 ] end
 		-- Emit sound from right location
 		if self.ClientSounds and self.ClientSounds[ soundid ] then
 			local entsound = self.ClientSounds[ soundid ]
-			for i, esnd in ipairs( entsound ) do
+			for _, esnd in ipairs( entsound ) do
 				soundid = esnd[ 2 ]( self, range, location )
 				local soundname = self.SoundNames[ soundid ]
 				if not soundname then
@@ -380,10 +383,10 @@ else
 							if esnd[ 5 ] then snd:Set3DFadeDistance( esnd[ 5 ], esnd[ 6 ] ) end
 							table.insert( ent.BASSSounds, snd )
 							snd:Play()
-							--local siz1,siz2 = snd:Get3DFadeDistance()
-							--debugoverlay.Sphere(snd:GetPos(),4,2,Color(0,255,0),true)
-							--debugoverlay.Sphere(snd:GetPos(),siz1,2,Color(255,0,0,100),false)
-							--debugoverlay.Sphere(snd:GetPos(),siz2,2,Color(0,0,255,100),false)
+							local siz1, siz2 = snd:Get3DFadeDistance()
+							debugoverlay.Sphere( snd:GetPos(), 4, 2, Color( 0, 255, 0 ), true )
+							debugoverlay.Sphere( snd:GetPos(), siz1, 2, Color( 255, 0, 0, 100 ), false )
+							debugoverlay.Sphere( snd:GetPos(), siz2, 2, Color( 0, 0, 255, 100 ), false )
 						end
 					end )
 				end
@@ -542,7 +545,7 @@ function ENT:ScrollThrottle()
 	local scrollCount = 0
 	local scrollResetTime = 0
 	local cmd = ply:GetCurrentCommand()
-	print( cmd:GetMouseWheel() )
+	--print( cmd:GetMouseWheel() )
 	-- Increment scroll count based on mouse wheel input
 	if input.IsMouseDown( MOUSE_WHEEL_UP ) then
 		print( "up" )
