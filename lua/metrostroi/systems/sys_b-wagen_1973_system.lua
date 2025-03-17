@@ -42,6 +42,7 @@ function TRAIN_SYSTEM:Initialize()
     self.ThrottleRateA = 0
     self.ThrottleStateB = 0
     self.ThrottleRateB = 0
+    self.BatteryActivated = false
     self.CircuitBreakerOn = false
     self.PreviousCircuitBreaker = false
     self.PantographRaised = false
@@ -180,6 +181,7 @@ function TRAIN_SYSTEM:Initialize()
 
     self.BatteryState = false
     self.PreviousBatteryState = false
+    self.Speed = 0
 end
 
 -- ==============================================================================================
@@ -214,26 +216,30 @@ end
 -- ==============================================================================================
 function TRAIN_SYSTEM:IgnitionKeyInOutA()
     local t = self.Train
-    local consist = t.WagonList
-    for j = 1, #consist do
-        if j == t then continue end
-        if consist[ j ].CoreSys.IgnitionKeyA or consist[ j ].CoreSys.IgnitionKeyB then
-            t:GetDriverPly():PrintMessage( HUD_PRINTTALK, "You left your ignition key in another cab. Go fetch it!" )
-            return
+    local function consistKey()
+        local consist = t.WagonList
+        if #consist > 1 then
+            for j in ipairs( consist ) do
+                if consist[ j ] ~= t and consist[ j ].CoreSys.IgnitionKeyA or consist[ j ].CoreSys.IgnitionKeyB then
+                    t:GetDriverPly():PrintMessage( HUD_PRINTTALK, "You left your ignition key in another cab. Go fetch it!" )
+                    return false
+                end
+            end
         else
-            consist[ j ].CoreSys.IgnitionKeyAIn = false
-            consist[ j ].CoreSys.IgnitionKeyBIn = false
+            return true
         end
     end
 
-    if self.IgnitionKeyAIn and not self.IgnitionKeyA then
-        self.IgnitionKeyAIn = false
-    elseif not self.IgnitionKeyAIn then
-        self.IgnitionKeyAIn = true
+    local keyOkay = consistKey()
+    if keyOkay then
+        if self.IgnitionKeyAIn and not self.IgnitionKeyA then
+            self.IgnitionKeyAIn = false
+        elseif not self.IgnitionKeyAIn then
+            self.IgnitionKeyAIn = true
+        end
     end
 
     t:SetNW2Bool( "IgnitionKeyIn", self.IgnitionKeyAIn )
-    self.Panel.IgnitionKeyInserted = self.IgnitionKeyAIn and 1 or 0
 end
 
 function TRAIN_SYSTEM:IgnitionKeyOnA()
@@ -286,9 +292,10 @@ function TRAIN_SYSTEM:Mirrors()
 end
 
 function TRAIN_SYSTEM:AllReversersInConsistZero()
+    -- check that only one reverser is ever non-zero. There must not be
     local reverserCount = 0
     if #self.Train.WagonList < 2 then
-        if self.ReverserA ~= 0 and self.ReverserB ~= 0 then
+        if self.ReverserA ~= 0 and self.ReverserB ~= 0 then --if two reversers on the same train are on then we don't even need to check the rest of the consist
             self.Train:SetNW2Bool( "ReverserConflictAlarm", false )
             return false
         else
@@ -297,7 +304,7 @@ function TRAIN_SYSTEM:AllReversersInConsistZero()
         end
     end
 
-    for k, v in pairs( self.Train.WagonList ) do
+    for _, v in pairs( self.Train.WagonList ) do
         if v.CoreSys.ReverserA ~= 0 or v.CoreSys.ReverserB ~= 0 then reverserCount = reverserCount + 1 end
     end
     return reverserCount <= 1
@@ -305,16 +312,27 @@ end
 
 function TRAIN_SYSTEM:EnableTrainHead()
     self.ConflictingHeads = not self:AllReversersInConsistZero()
-    if not self.ConflictingHeads and ( self.ReverserA == 1 or self.ReverserB == 1 ) then self.CircuitBreakerUnlocked = true end
+    self.Train:SetNW2Bool( "ConflictingHeadsAlarm", self.ConflictingHeads )
+    if not self.ConflictingHeads and ( self.ReverserA == 1 or self.ReverserB == 1 ) then self.BatteryUnlocked = true end
+end
+
+function TRAIN_SYSTEM:HVCircuitOn()
+    if self.BatteryActivated and ( self.ReverserA == 1 or self.ReverserB == 1 ) then self.HVCircuit = true end
+end
+
+function TRAIN_SYSTEM:HVCircuitOff()
+    if self.BatteryActivated and ( self.ReverserA == 1 or self.ReverserB == 1 ) then self.HVCircuit = false end
 end
 
 function TRAIN_SYSTEM:BatteryOn()
-    if self.CircuitBreakerUnlocked or self.Train:ReadTrainWire( 7 ) > 0 then self.CircuitBreakerOn = true end
-    self.Train:WriteTrainWire( 7, self.CircuitBreakerOn and 1 or 0 )
+    if self.BatteryUnlocked or self.Train:ReadTrainWire( 7 ) > 0 then self.BatteryActivated = true end
+    self.Train:WriteTrainWire( 7, self.BatteryUnlocked and 1 or 0 )
+    self.Train:SetNW2Bool( "BatteryOn", self.BatteryActivated )
 end
 
 function TRAIN_SYSTEM:BatteryOff()
-    if self.CircuitBreakerUnlocked or self.Train:ReadTrainWire( 7 ) > 0 then self.CircuitBreakerOn = false end
+    if self.BatteryUnlocked or self.Train:ReadTrainWire( 7 ) > 0 then self.BatteryActivated = false end
+    self.Train:SetNW2Bool( "BatteryOn", self.BatteryActivated )
 end
 
 function TRAIN_SYSTEM:ReverserParameters()
@@ -494,7 +512,7 @@ function TRAIN_SYSTEM:BatteryOffForceLightsDark() -- just so we don't have to do
 end
 
 function TRAIN_SYSTEM:StopRequestLoop()
-    for k, v in ipairs( self.StopRequest ) do
+    for _, v in ipairs( self.StopRequest ) do
         if v then
             self.StopRequestDetected = true
             break
@@ -537,9 +555,6 @@ function TRAIN_SYSTEM:PantoFunction()
     if p.PantographOn > 0 and not self.PantographRaised then
         self.Train.PantoUp = true
         self.PantographRaised = true
-    elseif p.PantographOn < 1 and p.PantographOff < 1 and self.PantographRaised then
-        self.Train.PantoUp = self.Train.PantoUp
-        self.PantographRaised = self.PantographRaised
     elseif p.PantographOff > 0 and self.PantographRaised then
         self.Train.PantoUp = false
         self.PantographRaised = false
