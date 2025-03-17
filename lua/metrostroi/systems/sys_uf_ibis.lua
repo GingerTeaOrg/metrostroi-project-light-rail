@@ -1,5 +1,6 @@
 Metrostroi.DefineSystem( "IBIS" )
 TRAIN_SYSTEM.DontAccelerateSimulation = false
+if TURBOSTROI then return end
 function TRAIN_SYSTEM:Initialize()
 	self.Route = " " -- Route index number
 	self.RouteChar1 = "0"
@@ -9,7 +10,9 @@ function TRAIN_SYSTEM:Initialize()
 	self.RoutePrompt1 = " "
 	self.RoutePrompt2 = " "
 	self.RoutePromptFull = " "
-	self.Course = " " -- Course index number, format is LineLineCourseCourse
+	self.PreviousRoute = self.Route
+	self.Course = "    " -- Course index number, format is LineLineCourseCourse or LineLineLineCourseCourse
+	self.PreviousCorse = self.Course
 	self.CourseChar1 = " "
 	self.CourseChar2 = " "
 	self.CourseChar3 = " "
@@ -35,6 +38,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.NextStationString = ""
 	self.NextStation = 0
 	self.Destination = " " -- Destination index number
+	self.PreviousDestination = self.PreviousDestination
 	self.DestinationChar1 = " "
 	self.DestinationChar2 = " "
 	self.DestinationChar3 = " "
@@ -95,7 +99,7 @@ function TRAIN_SYSTEM:Initialize()
 		"Destination", -- 11
 		"Delete", -- 12
 		"Enter", -- 13
-		"ServiceAnnouncements", -- 14
+		"SpecialAnnouncements", -- 14
 		"TimeAndDate" -- 15
 	}
 
@@ -123,27 +127,30 @@ function TRAIN_SYSTEM:Initialize()
 	self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[ self.Train:GetNW2Int( "IBIS:ServiceA", 1 ) ]
 	self.LineLength = self:GetLineLength()
 	self.Debounce = {}
+	for _, v in ipairs( self.TriggerNames ) do
+		self.Debounce[ v ] = 0
+	end
 	--PrintTable( self.LineTable )
 end
 
-TRAIN_SYSTEM.DebounceTime = 1.5
+TRAIN_SYSTEM.DebounceTime = 4
 function TRAIN_SYSTEM:HandleInput()
 	local p = self.Train.Panel
 	local currentTime = CurTime() -- Get the current time
-	for k, v in pairs( self.TriggerNames ) do
-		if p[ v ] and ( p[ v ] > 0 ) ~= self.Triggers[ v ] then
-			-- Check if debounce time has passed
-			if not self.Debounce[ v ] or ( currentTime - self.Debounce[ v ] > self.DebounceTime ) then
-				self.Triggers[ v ] = p[ v ] > 0
+	for _, v in ipairs( self.TriggerNames ) do
+		if p[ v ] and p[ v ] > 0 and self.State > 0 then
+			if not self.Debounce[ v ] or currentTime - self.Debounce[ v ] > self.DebounceTime then
+				self.Triggers[ v ] = true
 				self.Debounce[ v ] = currentTime -- Reset debounce timer
-			else
-				self.Triggers[ v ] = false
 			end
+		elseif p[ v ] and p[ v ] < 1 and self.State > 0 then
+			self.Triggers[ v ] = false
+			self.Debounce[ v ] = nil -- Reset debounce tracking properly
 		end
 	end
 
-	for k, v in pairs( self.NumberKeys ) do
-		if self.Triggers[ k ] and string.match( k, "Number", 1 ) then
+	for k in pairs( self.NumberKeys ) do
+		if self.Triggers[ k ] and string.match( k, "Number" ) then
 			self.NumberKeys[ k ] = true
 		else
 			self.NumberKeys[ k ] = false
@@ -151,7 +158,6 @@ function TRAIN_SYSTEM:HandleInput()
 	end
 end
 
-if TURBOSTROI then return end
 function TRAIN_SYSTEM:Inputs()
 	return { "KeyInput", "Power" }
 end
@@ -368,7 +374,7 @@ function TRAIN_SYSTEM:IBISScreen( Train )
 	return
 end
 
-function TRAIN_SYSTEM:UpdateState()
+function TRAIN_SYSTEM:UpdateState( dT )
 	local trainPower = self.Train.BatteryOn == true or self.Train.CoreSys.CircuitBreakerOn == true or self.Train:ReadTrainWire( 6 ) > 0 or false
 	local ibisKey = self.Train:GetNW2Bool( "TurnIBISKey", false )
 	local ibisKeyRequired = self.Train.IBISKeyRequired
@@ -493,14 +499,14 @@ function TRAIN_SYSTEM:UpdateState()
 				self.CurrentStationInternal = self.CurrentStationInternal - 1
 				self.CurrentStation = self.RouteTable[ self.CourseChar1 .. self.CourseChar2 ][ self.RouteChar1 .. self.RouteChar2 ][ self.CurrentStationInternal ]
 			end
-		elseif self.Triggers[ "ServiceAnnouncements" ] then
+		elseif self.Triggers[ "SpecialAnnouncements" ] then
 			self.Menu = 4
 		elseif self.Triggers[ "9" ] then
 			self:Play( CurTime() )
 		end
 	end
 
-	if self.Menu > 0 then self:ReadDataset() end
+	if self.Menu > 0 then self:ReadDataset( dT ) end
 	-- print(self.State, self.Menu)
 	if self.State == 0 and not self.CANBus and self.PowerOffMomentRegistered and CurTime() - self.PowerOffMoment > 240 then completeReset() end
 	if self.State == 4 and self.Triggers[ "Enter" ] then -- We're in the defect state
@@ -510,8 +516,11 @@ function TRAIN_SYSTEM:UpdateState()
 end
 
 function TRAIN_SYSTEM:Think()
+	self.PrevTime = self.PrevTime or CurTime()
+	self.DeltaTime = CurTime() - self.PrevTime
+	self.PrevTime = CurTime()
 	local Train = self.Train
-	-- if not Train.BatteryOn or not Train.CircuitBreakerOn or Train:ReadTrainWire(7) < 1 then return end -- why run anything when the train is off? fss.
+	-- if not Train.BatteryOn or not Train.CircuitBreakerOn or Train:RearainWire(7) < 1 then return end -- why run anything when the train is off? fss.
 	self.RouteTable = UF.IBISRoutes[ self.Train:GetNW2Int( "IBIS:Routes", 1 ) ]
 	self.DestinationTable = UF.IBISDestinations[ self.Train:GetNW2Int( "IBIS:Destinations", 1 ) ]
 	self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[ self.Train:GetNW2Int( "IBIS:ServiceA", 1 ) ]
@@ -820,9 +829,8 @@ end
 function TRAIN_SYSTEM:Menu2()
 	if self.Menu ~= 2 then return end
 	local line = self.Course:sub( 1, self.LineLength )
-	local currentTime = CurTime()
 	local function returnNumber()
-		for k, v in pairs( self.NumberKeys ) do
+		for k in pairs( self.NumberKeys ) do
 			local number = string.sub( k, 7, 7 )
 			if self.NumberKeys[ k ] then return number end
 		end
@@ -830,26 +838,16 @@ function TRAIN_SYSTEM:Menu2()
 	end
 
 	local input = returnNumber()
-	if input then print( input ) end
-	if input and tonumber( input, 10 ) and not tonumber( self.RoutePrompt, 10 ) then -- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
-		if not self.Debounce[ input ] or ( currentTime - self.Debounce[ input ] > self.DebounceTime ) then
+	if input and tonumber( input, 10 ) and not tonumber( self.RoutePrompt1, 10 ) then -- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+		if self.Debounce[ "Number" .. input ] then
 			-- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
 			self.RoutePrompt1 = self.RoutePrompt2
 			self.RoutePrompt2 = input
-			self.Debounce[ input ] = CurTime()
 		end
 	elseif self.Triggers[ "Delete" ] then
-		if not self.Debounce[ "Delete" ] or ( currentTime - self.Debounce[ "Delete" ] > self.DebounceTime ) then
-			self.RoutePrompt2 = self.RoutePrompt1
-			self.RoutePrompt1 = " "
-			self.Debounce[ "Delete" ] = CurTime()
-		end
-	else
-		self.RoutePrompt1 = self.RoutePrompt1
-		self.RoutePrompt2 = self.RoutePrompt2
-	end
-
-	if self.Triggers[ "Enter" ] then
+		self.RoutePrompt2 = self.RoutePrompt1
+		self.RoutePrompt1 = " "
+	elseif self.Triggers[ "Enter" ] then
 		if self.RoutePrompt1 == " " and tonumber( self.RoutePrompt2, 10 ) then self.RoutePrompt1 = "0" end
 		local Route = self.RoutePrompt1 .. self.RoutePrompt2
 		if self.RouteTable[ line ] then
