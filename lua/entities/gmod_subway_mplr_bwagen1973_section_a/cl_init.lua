@@ -5,23 +5,32 @@ ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
 ENT.ButtonMapMPLR[ "IBISScreen" ] = {
-	pos = Vector( 511.85, -4.1, 74.93 ),
+	pos = Vector( 511.89, -4.5, 74.98 ),
 	ang = Angle( 0, -90, 35 ),
-	width = 123,
+	width = 128,
 	height = 29.9,
-	scale = 0.0311
+	scale = 0.0315
 }
 
 ENT.ClientProps[ "flap_a" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/flap_a.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
+	nohide = true
+}
+
+ENT.ClientProps[ "lzb" ] = {
+	model = "models/lilly/mplr/common/cab/lzb.mdl",
+	pos = Vector( 510.92, 13.54, 73.4 ),
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "empty_button" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
 	pos = Vector( -0.1, 0, 0 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "windows2" ] = {
@@ -51,43 +60,50 @@ ENT.ClientProps[ "windows4" ] = {
 ENT.ClientProps[ "empty_button2" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
 	pos = Vector( -0.1, -7.1, 0 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "empty_button3" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
 	pos = Vector( -0.1, -6.1, 0 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "empty_button4" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
 	pos = Vector( 2.45, -7.1, 0.25 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "empty_button5" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_empty.mdl",
 	pos = Vector( 2.45, -6.1, 0.25 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "headlights_lit" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/headlights_lit.mdl",
 	pos = Vector( 0, 0, 0 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "destination_frame" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/destination_frame.mdl",
 	pos = Vector( 0, 0, 0 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "door_opener" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/door_opener.mdl",
 	pos = Vector( 0, 0, 0 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "door_button" ] = {
@@ -100,27 +116,28 @@ ENT.ClientProps[ "int" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/int-essen.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	hideseat = 0.2
+	nohide = true
 }
 
 ENT.ClientProps[ "seats" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/seats-essen.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	hideseat = 0.2
+	nohide = true
 }
 
 ENT.ClientProps[ "bumper" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/bumper.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	hideseat = 0.2
+	nohide = true
 }
 
 ENT.ClientProps[ "floor" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/floor.mdl",
 	pos = Vector( 0, 0, 0 ),
-	ang = Angle( 0, 0, 0 )
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "door_rr1" ] = {
@@ -412,7 +429,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "DoorsUnlockToggle",
+			ID = "UnlockDoorsToggle",
 			x = 130,
 			y = 62,
 			radius = 10,
@@ -422,7 +439,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 				z = -2.5,
 				ang = 90,
 				anim = true,
-				var = "DoorsUnlock",
+				var = "UnlockDoors",
 				speed = 15,
 				vmin = 0,
 				vmax = 1,
@@ -1179,9 +1196,9 @@ ENT.ButtonMapMPLR[ "DoorButton8L" ] = {
 }
 
 ENT.ButtonMapMPLR[ "LineRollsign" ] = {
-	pos = Vector( 511.25, 12, 115 ),
+	pos = Vector( 511, -11.8, 115 ),
 	ang = Angle( 0, -90, -90 ),
-	width = 9,
+	width = 35,
 	height = 9,
 	scale = 1
 }
@@ -1234,6 +1251,37 @@ ENT.ButtonMapMPLR[ "DestinationRollsignFront" ] = {
 	scale = 1
 }
 
+ENT.ButtonMapMPLR[ "Key" ] = {
+	pos = Vector( 510.5, 27.5, 69.6 ),
+	ang = Angle( 0, -90, 0 ),
+	width = 9,
+	height = 9,
+	scale = 0.1,
+	buttons = {
+		{
+			ID = "IgnitionKeyToggle",
+			x = 5,
+			y = 5,
+			radius = 2,
+			tooltip = "Insert/Remove Ignition Key",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "IgnitionKey",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "key_insert" or "key_out" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
 function ENT:Initialize()
 	self.BaseClass.Initialize( self )
 	self.SectionB = self:GetNWEntity( "SectionB" )
@@ -1245,6 +1293,7 @@ function ENT:Initialize()
 	self.KeyTurned = false
 	self.CabWindowL = 0
 	self.CabWindowR = 0
+	self.IgnitionKeyInserted = false
 	self.Reverser = {
 		[ 0 ] = 0,
 		[ 1 ] = 0.25,
@@ -1256,21 +1305,32 @@ function ENT:Initialize()
 	}
 
 	self.HeadlightsLit = false
+	local lzb = self:GetNW2Bool( "LZBLoad", false )
+	self:ShowHide( "lzb", lzb )
+	self:HidePanel( "lzb_panel", lzb )
 	self:ShowHide( "headlights_lit", self.HeadlightsLit )
-	self:ShowHide( "key_ignition", self.IgnitionKeyInserted )
+	self:ShowHide( "key_ignition", false ) --self.IgnitionKeyInserted )
 	self.ScrollModifier1 = 0
 	self.ScrollModifier2 = 0
+	self.ScrollModifier3 = 0
+	self.ScrollModifier4 = 0
+	self.ScrollModifier5 = 0
+	self.SCrollModifier6 = 0
 end
 
 function ENT:Think()
 	self.BaseClass.Think( self )
+	self.ScrollModifier1 = 0
+	self.ScrollModifier2 = 0
+	self.ScrollModifier3 = 0
+	self.ScrollModifier4 = 0
 	self:Animations()
 	self:SoundsFunc()
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
 	self.BatteryOn = self:GetNW2Bool( "BatteryOn", false )
-	if not IsValid( self.SectionB ) then self.SectionB = Entity( self.SectionBIndex ) end
+	if not IsValid( self.SectionB ) and self.SectionBIndex then self.SectionB = Entity( self.SectionBIndex ) end
 end
 
 function ENT:Animations()
@@ -1280,7 +1340,6 @@ function ENT:Animations()
 	end
 
 	self.Speed = self:GetNW2Int( "Speed", 0 )
-	self.KeyInserted = self:GetNW2Bool( "IgnitionKeyIn", false )
 	self.KeyTurned = self:GetNW2Bool( "IgnitionTurned", false )
 	self:Animate( "drivers_door", self:GetNW2Float( "DriversDoorState", 0 ), 0, 100, 1, 1, 0 )
 	self:Animate( "throttle", self:GetNW2Int( "ThrottleLever", 0.5 ) * 0.01, 0, 100, 50, 9, false )
@@ -1289,8 +1348,9 @@ function ENT:Animations()
 	self.CabWindowR = self:GetNW2Float( "CabWindowR", 0 )
 	-- self:Animate("window_cab_r", self:GetNW2Float("CabWindowR", 0), 0, 100, 50, 9, false)
 	-- self:Animate("window_cab_l", self:GetNW2Float("CabWindowL", 0), 0, 100, 50, 9, false)
-	self:ShowHide( "key_ignition", self.KeyInserted )
-	self:Animate( "key_ignition", self.KeyTurned and 1 or 0, 0, 100, 800, 0, 0 )
+	self.IgnitionKeyInserted = self:GetNW2Bool( "IgnitionKeyIn", false )
+	self:ShowHide( "key_ignition", self.IgnitionKeyInserted )
+	self:Animate( "key_ignition", self.KeyTurned and 0 or 1, 0, 100, 800, 0, 0 )
 	local Door1a = self:GetNW2Float( "Door1a", 0 )
 	local Door12a = self:GetNW2Float( "Door2a", 0 )
 	local Door34a = self:GetNW2Float( "Door3a", 0 )
@@ -1419,7 +1479,7 @@ function ENT:DrawPost()
 	self:DrawOnPanel( "InfoRollsignR", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat3 )
-		surface.DrawTexturedRectUV( 0, 0, 41, 11, 0, self.ScrollModifier1 + .1, -1, self.ScrollModifier1 - .85 )
+		surface.DrawTexturedRectUV( 0, -1, 41, 11, 0, self.ScrollModifier1 + .1, -1, self.ScrollModifier1 - .85 )
 	end )
 
 	self:DrawOnPanel( "InfoRollsignL", function( ... )
@@ -1432,11 +1492,13 @@ function ENT:DrawPost()
 	self:DrawOnPanel( "IBISScreen", function( ... )
 		surface.SetMaterial( self.RTMaterialUF )
 		surface.SetDrawColor( 0, 65, 11 )
-		surface.DrawTexturedRectRotated( 60, 16, 122, 28, 0 )
+		surface.DrawTexturedRectRotated( 60, 16, 129, 30, 0 )
 	end )
 end
 
 function ENT:SoundsFunc()
+	local batteryOn = self:GetNW2Bool( "BatteryOn", false )
+	if not batteryOn then return end
 	local departureAlarm = self:GetNW2Bool( "DepartureAlarm", false )
 	--print( departureAlarm )
 	if departureAlarm then self:PlayOnce( "DepartureConfirmed", "cabin", 1, 1 ) end
