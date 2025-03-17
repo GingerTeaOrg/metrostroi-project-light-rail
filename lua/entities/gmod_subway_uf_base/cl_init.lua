@@ -759,25 +759,37 @@ function ENT:Initialize()
 	self.WiperInterval = 0
 	self.WipeDown = false
 	self.Wiped = false
-	--hook.Add( "PostDrawOpaqueRenderables", "MirrorHook" .. self:EntIndex(), function() self:MirrorRender() end )
+	self.rtLeft = self.rtLeft or GetRenderTarget( "rtLeft" .. self:EntIndex(), 1024, 512 )
+	self.rtRight = self.rtRight or GetRenderTarget( "rtRight" .. self:EntIndex(), 1024, 512 )
+	self.rtMat_l = CreateMaterial( "mirror_l" .. self:EntIndex(), "UnlitGeneric", {
+		[ "$basetexture" ] = self.rtLeft:GetName()
+	} )
+
+	self.rtMat_r = CreateMaterial( "mirror_r" .. self:EntIndex(), "UnlitGeneric", {
+		[ "$basetexture" ] = self.rtRight:GetName()
+	} )
+
+	hook.Add( "PostDrawOpaqueRenderables", "MirrorHook" .. self:EntIndex(), function() self:MirrorRender() end )
 end
 
 function ENT:InitSegments( ent )
-	if not ent then ent = self end
-	ent.SegmentCount = 0
-	ent.ParentSection = ent:GetNW2Int( "parentSectionIndex", false )
-	ent.SectionAIndex = ent:GetNW2Int( "SectionAIndex", nil )
-	ent.SectionBIndex = ent:GetNW2Int( "SectionBIndex", nil )
-	ent.SectionCIndex = ent:GetNW2Int( "SectionCIndex", nil )
-	for i = string.byte( 'A' ), string.byte( 'C' ) do
-		local letter = string.char( i )
-		local index = ent[ "Section" .. letter .. "Index" ]
-		if index and index ~= 0 then
-			ent.SegmentCount = ent.SegmentCount + 1
-			ent[ "Section" .. letter ] = Entity( index )
-			print( "Spawning sections:", ent[ "Section" .. letter ] )
+	timer.Simple( 2, function( ent )
+		if not ent then ent = self end
+		ent.SegmentCount = 0
+		ent.ParentSection = ent:GetNW2Int( "parentSectionIndex", false )
+		ent.SectionAIndex = ent:GetNW2Int( "SectionAIndex", nil )
+		ent.SectionBIndex = ent:GetNW2Int( "SectionBIndex", nil )
+		ent.SectionCIndex = ent:GetNW2Int( "SectionCIndex", nil )
+		for i = string.byte( 'A' ), string.byte( 'C' ) do
+			local letter = string.char( i )
+			local index = ent[ "Section" .. letter .. "Index" ]
+			if index and index ~= 0 then
+				ent.SegmentCount = ent.SegmentCount + 1
+				ent[ "Section" .. letter ] = Entity( index )
+				print( "Spawning sections:", ent[ "Section" .. letter ] )
+			end
 		end
-	end
+	end )
 end
 
 function ENT:UpdateTextures()
@@ -1717,6 +1729,7 @@ end
 function ENT:Draw()
 	-- Draw model
 	self:DrawModel()
+	self:CreateShadow()
 end
 
 function ENT:DrawOnPanel( index, func, overr )
@@ -2390,7 +2403,7 @@ end
 function ENT:HidePanel( kp, hide )
 	if hide and not self.HiddenPanels[ kp ] then
 		self.HiddenPanels[ kp ] = true
-		if self.ButtonMapMPLR[ kp ].props then
+		if self.ButtonMapMPLR[ kp ] and self.ButtonMapMPLR[ kp ].props then
 			for _, v in pairs( self.ButtonMapMPLR[ kp ].props ) do
 				--self.Hidden[v] = true
 				self:ShowHide( v, false, true )
@@ -2743,99 +2756,80 @@ function ENT:OnStyk( soundid, location, range, pitch )
 end
 
 function ENT:MirrorRender()
-	if true then return end
+	if GetConVar( "mplr_enable_mirrors" ):GetInt() <= 0 then return end
 	local ply = LocalPlayer()
-	-- Ensure ClientEnts is valid before proceeding
-	local mirrorLeft = self.ClientEnts and self.ClientEnts[ "Mirror_l" ]
-	local mirrorRight = self.ClientEnts and self.ClientEnts[ "Mirror_r" ]
-	-- Utility function to calculate reflection
+	if not self.ClientEnts or not istable( self.MirrorCams ) or #self.MirrorCams < 6 then return end
+	-- Prevent excessive updates
+	self.LastRenderTime = self.LastRenderTime or 0
+	if SysTime() - self.LastRenderTime < 0.1 then return end
+	self.LastRenderTime = SysTime()
+	local mirrorLeft = self.ClientEnts[ "mirror_l" ]
+	local mirrorRight = self.ClientEnts[ "mirror_r" ]
+	-- Cache materials (prevents excessive GetMaterials calls)
+	self.MirrorMaterials = self.MirrorMaterials or {
+		left = IsValid( mirrorLeft ) and mirrorLeft:GetMaterials() or {},
+		right = IsValid( mirrorRight ) and mirrorRight:GetMaterials() or {}
+	}
+
 	local function GetReflectedView( mirrorOrigin, mirrorNormal )
+		if not mirrorOrigin or not mirrorNormal then return end
 		local playerPos = ply:EyePos()
 		local playerAngles = ply:EyeAngles()
-		-- Calculate the reflection based on player's position
 		local toMirror = mirrorOrigin - playerPos
 		local distToPlane = toMirror:Dot( mirrorNormal )
 		local reflectedPos = playerPos + 2 * mirrorNormal * distToPlane
-		-- Reflect the player's view direction
 		local forward = playerAngles:Forward()
 		local reflectedDir = forward - 2 * mirrorNormal * forward:Dot( mirrorNormal )
 		local reflectedAngles = reflectedDir:Angle()
 		return reflectedPos, reflectedAngles
 	end
 
-	-- Left Mirror Handling
-	if IsValid( mirrorLeft ) then
-		local materials = mirrorLeft:GetMaterials()
-		local mirrorLeftSlot
-		-- Find the material slot for the mirror
+	local function RenderMirror( mirror, camIndex, materialName, rtName, rtMat )
+		if not IsValid( mirror ) then return end
+		-- Use cached materials
+		local materials = self.MirrorMaterials[ materialName ]
+		local mirrorSlot = -1
 		if materials then
 			for i, matPath in ipairs( materials ) do
-				if string.find( matPath, "rt_target" ) then mirrorLeftSlot = i - 1 end
+				if string.find( matPath, "rt_target" ) then
+					mirrorSlot = i - 1
+					break
+				end
 			end
 		end
 
-		-- Proceed with rendering only if the slot is valid
-		if mirrorLeftSlot then
-			local rtLeft = GetRenderTarget( "rtLeft", 1024, 512 )
-			render.PushRenderTarget( rtLeft )
-			render.Clear( 0, 0, 0, 255, true, true )
-			local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ 1 ] or Vector( 10, 10, 10 ) )
-			local mirrorAng = self:LocalToWorldAngles( self.MirrorCams[ 2 ] or Angle( 0, 180, 0 ) )
-			local mirrorNormal = self:GetForward()
-			-- Get reflected view
-			local reflectedPos, reflectedAng = GetReflectedView( mirrorOrigin, mirrorNormal )
-			-- Define the view for rendering
-			local leftMirrorView = {
-				origin = reflectedPos,
-				angles = reflectedAng,
-				fov = self.MirrorCams[ 3 ] or 15,
-				znear = 5,
-				zfar = 100
-			}
-
-			-- Render the scene
-			render.RenderView( leftMirrorView )
-			render.PopRenderTarget()
-			-- Apply the render target to the material
-			self:SetSubMaterial( mirrorLeftSlot, "!rtLeft" )
+		if mirrorSlot == -1 then return end
+		-- Prevent excessive render target creation
+		self[ rtName ] = self[ rtName ] or GetRenderTarget( rtName .. self:EntIndex(), 1024, 512 )
+		-- Prevent excessive material creation
+		if not self[ rtMat ] then
+			self[ rtMat ] = CreateMaterial( materialName .. self:EntIndex(), "UnlitGeneric", {
+				[ "$basetexture" ] = self[ rtName ]:GetName()
+			} )
 		end
+
+		render.PushRenderTarget( self[ rtName ] )
+		render.Clear( 0, 0, 0, 255, true, true )
+		local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ camIndex ] or Vector( 10, 10, 10 ) )
+		local mirrorAng = self:LocalToWorldAngles( self.MirrorCams[ camIndex + 1 ] or Angle( 0, 180, 0 ) )
+		local mirrorNormal = mirrorAng:Forward()
+		local reflectedPos, reflectedAng = GetReflectedView( mirrorOrigin, mirrorNormal )
+		-- Prevent crashes from invalid data
+		if not reflectedPos or not reflectedAng then return end
+		render.RenderView( {
+			origin = reflectedPos,
+			angles = reflectedAng,
+			fov = self.MirrorCams[ camIndex + 2 ] or 15,
+			znear = 5,
+			zfar = 100
+		} )
+
+		render.PopRenderTarget()
+		-- Ensure mirrorSlot is valid
+		if mirrorSlot > -1 then self:SetSubMaterial( mirrorSlot, "!" .. materialName .. self:EntIndex() ) end
 	end
 
-	-- Right Mirror Handling
-	if IsValid( mirrorRight ) then
-		local materials = mirrorRight:GetMaterials()
-		local mirrorRightSlot
-		-- Find the material slot for the right mirror
-		if materials then
-			for i, matPath in ipairs( materials ) do
-				if string.find( matPath, "rt_target" ) then mirrorRightSlot = i - 1 end
-			end
-		end
-
-		-- Proceed with rendering only if the slot is valid
-		if mirrorRightSlot then
-			local rtRight = GetRenderTarget( "rtRight", 1024, 512 )
-			render.PushRenderTarget( rtRight )
-			render.Clear( 0, 0, 0, 255, true, true )
-			local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ 4 ] or Vector( 10, 10, 10 ) )
-			local mirrorAng = self:LocalToWorldAngles( self.MirrorCams[ 5 ] or Angle( 0, 180, 0 ) )
-			local mirrorNormal = self:GetForward()
-			-- Get reflected view
-			local reflectedPos, reflectedAng = GetReflectedView( mirrorOrigin, mirrorNormal )
-			-- Define the view for rendering
-			local rightMirrorView = {
-				origin = reflectedPos,
-				angles = reflectedAng,
-				fov = self.MirrorCams[ 6 ] or 15,
-				znear = 5,
-				zfar = 100
-			}
-
-			-- Render the scene
-			render.RenderView( rightMirrorView )
-			render.PopRenderTarget()
-			-- Apply the render target to the material
-			self:SetSubMaterial( mirrorRightSlot, "!rtRight" )
-		end
-	end
+	-- Render left and right mirrors
+	RenderMirror( mirrorLeft, 1, "left", "rtLeft", "rtMat_l" )
+	RenderMirror( mirrorRight, 4, "right", "rtRight", "rtMat_r" )
 end

@@ -26,6 +26,11 @@ end
 function ENT:CreateSection( pos, ang, ent, parentSection, sectionC, sectionA ) --right now this only is intended for a maximum of eight axle trains. That means, A/B/C sections only.
     ang = ang or Angle( 0, 0, 0 )
     local sectionEnt = ents.Create( ent )
+    sectionEnt:SetPos( self:LocalToWorld( pos ) )
+    sectionEnt:SetAngles( self:GetAngles() + ang )
+    sectionEnt:Spawn()
+    sectionEnt:Activate()
+    sectionEnt:SetOwner( self:GetOwner() )
     if IsValid( parentSection ) and parentSection == sectionA then --if the parent section is an A section then we're only an A/B train so no need for sectionC params
         local index = parentSection:EntIndex()
         local sectionB = sectionEnt
@@ -35,6 +40,18 @@ function ENT:CreateSection( pos, ang, ent, parentSection, sectionC, sectionA ) -
         sectionB:SetNW2Int( "parentSectionIndex", index )
         sectionB:SetNW2Int( "SectionAIndex", index )
         self:SetNW2Int( "SectionBIndex", sectionBIndex )
+        --get original weights
+        local selfPhys = self:GetPhysicsObject()
+        local selfWeight = selfPhys:GetMass()
+        local sectionPhys = sectionEnt:GetPhysicsObject()
+        local sectionWeight = sectionPhys:GetMass()
+        --set weights to maximum, in order to make the joint extra mellow
+        selfPhys:SetMass( 50000 )
+        sectionPhys:SetMass( 50000 )
+        constraint.AdvBallsocket( sectionEnt, self.MiddleBogey, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+        --reset weights
+        selfPhys:SetMass( selfWeight )
+        sectionPhys:SetMass( sectionWeight )
     elseif IsValid( parentSection ) and parentSection == sectionC then
         local index = parentSection:EntIndex()
         if sectionA then
@@ -46,7 +63,18 @@ function ENT:CreateSection( pos, ang, ent, parentSection, sectionC, sectionA ) -
             sectionB:SetNW2Int( "parentSectionIndex", index ) --give section B the parent section C index number
             local sectionBIndex = sectionB:EntIndex() --get section B index number
             self:SetNW2Int( "SectionBIndex", sectionBIndex ) --give parent section C (self) the section B index number
-            --no se
+            --get original weights
+            local selfPhys = self:GetPhysicsObject()
+            local selfWeight = selfPhys:GetMass()
+            local sectionPhys = sectionEnt:GetPhysicsObject()
+            local sectionWeight = sectionPhys:GetMass()
+            --set weights to maximum, in order to make the joint extra mellow
+            selfPhys:SetMass( 50000 )
+            sectionPhys:SetMass( 50000 )
+            constraint.AdvBallsocket( sectionEnt, self.MiddleBogey2, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+            --reset weights
+            selfPhys:SetMass( selfWeight )
+            sectionPhys:SetMass( sectionWeight )
         elseif not sectionA then
             --we're spawning section A
             local sectionA = sectionEnt --define section A
@@ -54,26 +82,21 @@ function ENT:CreateSection( pos, ang, ent, parentSection, sectionC, sectionA ) -
             sectionA:SetNW2Int( "parentSectionIndex", index ) --give sectionA the index number of sectionC for later processing on clientside
             local sectionAIndex = sectionA:EntIndex() --get section A index
             self:SetNW2Int( "SectionAIndex", sectionAIndex ) --give section C (self) index number of section A for later processing
-            -- no B section ops because we're spawning section B
+            --get original weights
+            local selfPhys = self:GetPhysicsObject()
+            local selfWeight = selfPhys:GetMass()
+            local sectionPhys = sectionEnt:GetPhysicsObject()
+            local sectionWeight = sectionPhys:GetMass()
+            --set weights to maximum, in order to make the joint extra mellow
+            selfPhys:SetMass( 50000 )
+            sectionPhys:SetMass( 50000 )
+            constraint.AdvBallsocket( sectionEnt, self.MiddleBogey1, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+            --reset weights
+            selfPhys:SetMass( selfWeight )
+            sectionPhys:SetMass( sectionWeight )
         end
     end
 
-    sectionEnt:SetPos( self:LocalToWorld( pos ) )
-    sectionEnt:SetAngles( self:GetAngles() + ang )
-    sectionEnt:Spawn()
-    sectionEnt:SetOwner( self:GetOwner() )
-    --get original weights
-    local selfPhys = self:GetPhysicsObject()
-    local selfWeight = selfPhys:GetMass()
-    local sectionPhys = sectionEnt:GetPhysicsObject()
-    local sectionWeight = sectionPhys:GetMass()
-    --set weights to maximum, in order to make the joint extra mellow
-    selfPhys:SetMass( 50000 )
-    sectionPhys:SetMass( 50000 )
-    constraint.AdvBallsocket( sectionEnt, not sectionC and self.MiddleBogey or sectionA and self.MiddleBogey2 or self.MiddleBogey, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
-    --reset weights
-    selfPhys:SetMass( selfWeight )
-    sectionPhys:SetMass( sectionWeight )
     table.insert( self.TrainEntities, sectionEnt )
     constraint.NoCollide( self.MiddleBogey, sectionEnt, 0, 0 )
     constraint.NoCollide( self, sectionEnt, 0, 0 )
@@ -81,10 +104,18 @@ function ENT:CreateSection( pos, ang, ent, parentSection, sectionC, sectionA ) -
 end
 
 function ENT:CreateCustomCoupler( pos, ang, forward, typ, a_b )
+    if a_b == "b" then print( IsValid( self.SectionB ) ) end
     -- Create bogey entity
     local coupler = ents.Create( "gmod_train_uf_couple" )
-    coupler:SetPos( self:LocalToWorld( pos ) )
-    coupler:SetAngles( self:GetAngles() + ang )
+    if a_b == "a" then
+        local ent = IsValid( self.SectionA ) and self.SectionA or self
+        coupler:SetPos( ent:LocalToWorld( pos ) )
+        coupler:SetAngles( ent:GetAngles() + ang )
+    elseif a_b == "b" then
+        coupler:SetPos( self.SectionB:LocalToWorld( pos ) )
+        coupler:SetAngles( self.SectionB:GetAngles() + ang )
+    end
+
     coupler.CoupleType = typ
     coupler:Spawn()
     -- Assign ownership
@@ -94,23 +125,13 @@ function ENT:CreateCustomCoupler( pos, ang, forward, typ, a_b )
     coupler:SetNW2Entity( "TrainEntity", self )
     coupler.SpawnPos = pos
     coupler.SpawnAng = ang
-    local index = 1
-    local x = self:WorldToLocal( coupler:LocalToWorld( coupler.CouplingPointOffset ) ).x
-    for i, v in ipairs( self.JointPositions ) do
-        if v > pos.x then
-            index = i + 1
-        else
-            break
-        end
-    end
-
-    table.insert( self.JointPositions, index, x )
-    -- Constraint bogey to the train
+    -- Constraint coupler to the train
     if self.NoPhysics then
-        bogey:SetParent( coupler )
+        coupler:SetParent( coupler )
     else
         if a_b == "a" then
-            constraint.AdvBallsocket( self, coupler, 0, -- bone
+            local ent = IsValid( self.SectionA ) and self.SectionA or self --eight or six axles? the primary ent is self on six axle trains, so mount it to self
+            constraint.AdvBallsocket( ent, coupler, 0, -- bone
                 0, -- bone
                 pos, Vector( 0, 0, 0 ), 1, -- forcelimit
                 1, -- torquelimit
@@ -125,7 +146,9 @@ function ENT:CreateCustomCoupler( pos, ang, forward, typ, a_b )
                 1, -- zfric
                 0, -- rotonly
                 1 )
+
             -- nocollide
+            constraint.Axis( coupler, ent, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, 0, 1, Vector( 0, 0, 1 ), false )
         elseif a_b == "b" then
             constraint.AdvBallsocket( self.SectionB, coupler, 0, -- bone
                 0, -- bone
@@ -142,14 +165,10 @@ function ENT:CreateCustomCoupler( pos, ang, forward, typ, a_b )
                 1, -- zfric
                 0, -- rotonly
                 1 )
-            -- nocollide
-        end
-    end
 
-    if a_b == "a" then
-        constraint.Axis( coupler, self, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, 0, 1, Vector( 0, 0, 1 ), false )
-    elseif a_b == "b" then
-        constraint.Axis( coupler, self.SectionB, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, 0, 1, Vector( 0, 0, 1 ), false )
+            -- nocollide
+            constraint.Axis( coupler, self.SectionB, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, 0, 1, Vector( 0, 0, 1 ), false )
+        end
     end
 
     -- Add to cleanup list
@@ -160,8 +179,24 @@ end
 function ENT:CreateBogeyUF( pos, ang, forward, typ, a_b )
     -- Create bogey entity
     local bogey = ents.Create( "gmod_train_uf_bogey" )
-    bogey:SetPos( self:LocalToWorld( pos ) )
-    bogey:SetAngles( self:GetAngles() + ang )
+    if a_b == "a" then
+        local ent = IsValid( self.SectionA ) and self.SectionA or self
+        bogey:SetPos( ent:LocalToWorld( pos ) )
+        bogey:SetAngles( ent:GetAngles() + ang )
+    elseif a_b == "b" then
+        bogey:SetPos( self.SectionB:LocalToWorld( pos ) )
+        bogey:SetAngles( self.SectionB:GetAngles() + ang )
+    elseif a_b == "c" then
+        bogey:SetPos( self:LocalToWorld( pos ) )
+        bogey:SetAngles( self:GetAngles() + ang )
+    else
+        print( "ERROR: Section Ent to mount to not defined!!" )
+        for _, v in ipairs( self.TrainEntities ) do
+            SafeRemoveEntity( v )
+        end
+        return
+    end
+
     bogey.BogeyType = typ
     bogey.NoPhysics = self.NoPhysics
     bogey:Spawn()
@@ -192,15 +227,17 @@ function ENT:CreateBogeyUF( pos, ang, forward, typ, a_b )
         bogey:SetParent( self )
     else
         if a_b == "a" then
+            local ent = IsValid( self.SectionA ) and self.SectionA or self
             local BogeyPhys = bogey:GetPhysicsObject()
             local BogeyWeight = BogeyPhys:GetMass()
-            local TrainPhys = self:GetPhysicsObject()
+            local TrainPhys = ent:GetPhysicsObject()
             local TrainWeight = TrainPhys:GetMass()
             TrainPhys:SetMass( 50000 )
             BogeyPhys:SetMass( 50000 )
-            constraint.AdvBallsocket( bogey, self, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+            constraint.AdvBallsocket( bogey, ent, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
             TrainPhys:SetMass( TrainWeight )
             BogeyPhys:SetMass( BogeyWeight )
+            if IsValid( self.SectionA ) then constraint.NoCollide( bogey, self.SectionA ) end
             constraint.NoCollide( bogey, self )
         elseif a_b == "b" then
             local BogeyPhys = bogey:GetPhysicsObject()
@@ -213,23 +250,37 @@ function ENT:CreateBogeyUF( pos, ang, forward, typ, a_b )
             TrainPhys:SetMass( TrainWeight )
             BogeyPhys:SetMass( BogeyWeight )
             constraint.NoCollide( bogey, self.SectionB )
-        else
+            constraint.NoCollide( bogey, self )
+        elseif a_b == "c" then
             local BogeyPhys = bogey:GetPhysicsObject()
             local BogeyWeight = BogeyPhys:GetMass()
-            local TrainPhys = self.SectionB:GetPhysicsObject()
+            local TrainPhys = self:GetPhysicsObject()
             local TrainWeight = TrainPhys:GetMass()
             TrainPhys:SetMass( 50000 )
             BogeyPhys:SetMass( 50000 )
-            constraint.AdvBallsocket( bogey, self, 0, 0, Vector( 0, 0, 0 ), pos, 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+            constraint.AdvBallsocket( bogey, self, 0, 0, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ), 0, 0, -0, -0, -180, 0, 0, 180, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
             TrainPhys:SetMass( TrainWeight )
             BogeyPhys:SetMass( BogeyWeight )
             constraint.NoCollide( bogey, self )
+            if IsValid( self.SectionA ) then constraint.NoCollide( bogey, self.SectionA ) end
+            if IsValid( self.SectionB ) then constraint.NoCollide( bogey, self.SectionB ) end
         end
     end
 
     -- Add to cleanup list
     table.insert( self.TrainEntities, bogey )
     return bogey
+end
+
+function ENT:CreateGangway( pos, bone1, bone2, ent1, ent2, typ )
+    local gangway = ents.Create( "prop_ragdoll" )
+    gangway:SetModel( typ )
+    gangway:SetPos( self:LocalToWorld( pos ) )
+    gangway:Spawn()
+    gangway:Activate()
+    constraint.Weld( ent1, gangway, 0, bone1, 0, true, false )
+    constraint.Weld( ent2, gangway, 0, bone2, 0, true, false )
+    table.insert( self.TrainEntities, gangway )
 end
 
 -----------------------------------DUPLICATOR----------------------------------
@@ -1199,6 +1250,11 @@ end )
 function ENT:SetLightPower( index, power, brightness )
     local prevLightData = prevLightData or {}
     local lightData = self.Lights[ index ]
+    if not lightData then
+        print( "ERROR! SetLightPower called on unconfigured light index: " .. index )
+        return
+    end
+
     self.GlowingLights = self.GlowingLights or {}
     self.LightBrightness = self.LightBrightness or {}
     brightness = brightness or 1
@@ -1969,6 +2025,8 @@ end
 
 function ENT:ToggleButton( button )
     button2 = string.gsub( button, "Toggle", "" )
+    print( button2, self.Panel[ button2 ] )
+    if not self.Panel[ button2 ] then return end
     if self.Panel[ button2 ] < 1 then
         self.Panel[ button2 ] = 1
     elseif self.Panel[ button2 ] > 0 then
@@ -2280,6 +2338,69 @@ function ENT:UpdateTextures()
     if cabintexture and cabintexture.postfunc then cabintexture.postfunc( self ) end
     local level = math.random() > 0.95 and 0.7 or math.random() > 0.8 and 0.55 or math.random() > 0.35 and 0.25 or 0
     self:SetNW2Vector( "DirtLevel", math.Clamp( level + math.random() * 0.2 - 0.1, 0, 1 ) )
+    if IsValid( self.SectionB ) then
+        self.SectionB:SetNW2String( "Texture", self:GetNW2String( "Texture" ) )
+        self.SectionB:UpdateTexturesA()
+    end
+
+    if IsValid( self.SectionA ) then
+        self.SectionA:SetNW2String( "Texture", self:GetNW2String( "Texture" ) )
+        self.SectionA:UpdateTexturesA()
+    end
+
+    if IsValid( self.MiddleBogey ) then
+        self.MiddleBogey:SetNW2String( "Texture", self:GetNW2String( "Texture" ) )
+        self.MiddleBogey:UpdateTextures()
+    end
+
+    if IsValid( self.MiddleBoge1 ) then
+        self.MiddleBogey1:SetNW2String( "Texture", self:GetNW2String( "Texture" ) )
+        self.MiddleBogey1:UpdateTextures()
+    end
+
+    if IsValid( self.MiddleBogey2 ) then
+        self.MiddleBogey2:SetNW2String( "Texture", self:GetNW2String( "Texture" ) )
+        self.MiddleBogey2:UpdateTextures()
+    end
+end
+
+function ENT:UpdateTexturesA()
+    local texture = Metrostroi.Skins[ "train" ][ self:GetNW2String( "Texture" ) ]
+    local passtexture = Metrostroi.Skins[ "pass" ][ self:GetNW2String( "PassTexture" ) ]
+    local cabintexture = Metrostroi.Skins[ "cab" ][ self:GetNW2String( "CabTexture" ) ]
+    if texture and texture.func then self:SetNW2String( "Texture", texture.func( self ) ) end
+    if passtexture and passtexture.func then self:SetNW2String( "PassTexture", passtexture.func( self ) ) end
+    if cabintexture and cabintexture.func then self:SetNW2String( "CabTexture", cabintexture.func( self ) ) end
+    self.Texture = self:GetNW2String( "Texture" )
+    self.PassTexture = self:GetNW2String( "PassTexture" )
+    self.CabTexture = self:GetNW2String( "CabTexture" )
+    local texture = Metrostroi.Skins[ "train" ][ self.Texture ]
+    local passtexture = Metrostroi.Skins[ "pass" ][ self.PassTexture ]
+    local cabintexture = Metrostroi.Skins[ "cab" ][ self.CabTexture ]
+    for k in pairs( self:GetMaterials() ) do
+        self:SetSubMaterial( k - 1, "" )
+    end
+
+    for k, v in pairs( self:GetMaterials() ) do
+        local tex = v:gsub( "^.+/", "" )
+        if self.GetAdditionalTextures then
+            local tex = self:GetAdditionalTextures( tex )
+            if tex then
+                self:SetSubMaterial( k - 1, tex )
+                continue
+            end
+        end
+
+        if cabintexture and cabintexture.textures and cabintexture.textures[ tex ] then self:SetSubMaterial( k - 1, cabintexture.textures[ tex ] ) end
+        if passtexture and passtexture.textures and passtexture.textures[ tex ] then self:SetSubMaterial( k - 1, passtexture.textures[ tex ] ) end
+        if texture and texture.textures and texture.textures[ tex ] then self:SetSubMaterial( k - 1, texture.textures[ tex ] ) end
+    end
+
+    if texture and texture.postfunc then texture.postfunc( self ) end
+    if passtexture and passtexture.postfunc then passtexture.postfunc( self ) end
+    if cabintexture and cabintexture.postfunc then cabintexture.postfunc( self ) end
+    local level = math.random() > 0.95 and 0.7 or math.random() > 0.8 and 0.55 or math.random() > 0.35 and 0.25 or 0
+    self:SetNW2Vector( "DirtLevel", math.Clamp( level + math.random() * 0.2 - 0.1, 0, 1 ) )
 end
 
 function ENT:GenerateWagonNumber( func )
@@ -2332,6 +2453,19 @@ if game.SinglePlayer() then
         net.Send( ply )
     end )
 end
+
+util.AddNetworkString( "MouseWheelAnalog" )
+net.Receive( "MouseWheelAnalog", function()
+    local ent = net.ReadEntity()
+    if not ent then return end
+    local mThrottle = net.ReadFloat()
+    local entType = string.match( ent:GetClass(), "section_a" ) == "section_a" and "a" or "b"
+    if entType == "a" then
+        ent.CoreSys.ThrottleMouseRateA = mThrottle
+    elseif entType == "b" and ent.SectionA then
+        ent.SectionA.CoreSys.ThrottleMouseRateB = mThrottle
+    end
+end )
 
 function ENT:Wipe( speed )
     local dT = self.DeltaTime > 0 and self.DeltaTime or 1
