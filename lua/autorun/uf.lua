@@ -6,19 +6,45 @@ if not UF and Metrostroi then
 	UF.TrainClasses = {}
 	UF.IsTrainClass = {}
 	UF.SpawnedTrains = {}
+	UF.Consists = {}
+	UF.CarsByCarNumbers = {}
 	-- Supported train classes
 	UF.TrainSpawnerClasses = {}
 	timer.Simple( 0.05, function()
 		for name in pairs( scripted_ents.GetList() ) do
 			local prefix = "gmod_subway_uf_"
 			local prefix2 = "gmod_subway_mplr_"
-			if string.sub( name, 1, #prefix ) == prefix and scripted_ents.Get( name ).Base == "gmod_subway_base" and not scripted_ents.Get( name ).NoTrain or string.sub( name, 1, #prefix2 ) == prefix2 and scripted_ents.Get( name ).Base == "gmod_subway_base" and not scripted_ents.Get( name ).NoTrain or string.sub( name, 1, #prefix2 ) == prefix2 and scripted_ents.Get( name ).Base == "gmod_subway_uf_base" and not scripted_ents.Get( name ).NoTrain or string.sub( name, 1, #prefix ) == prefix and scripted_ents.Get( name ).Base == "gmod_subway_uf_base" and not scripted_ents.Get( name ).NoTrain then
+			local base = scripted_ents.Get( name ).Base
+			if ( string.sub( name, 1, #prefix ) == prefix or string.sub( name, 1, #prefix2 ) == prefix2 ) and base ~= "gmod_subway_base" and not scripted_ents.Get( name ).NoTrain then
 				table.insert( UF.TrainClasses, name )
 				UF.IsTrainClass[ name ] = true
 			end
 		end
 	end )
 end
+
+hook.Add( "MPLRCouplingCallback", "MPLRDigestConsist", function( ent )
+	local wagonNumber = ent.WagonNumber
+	local function checkTrainInConsist( consist, ent )
+		for k in pairs( consist ) do
+			if ent == k then return true end
+		end
+	end
+
+	local function copyWagonList( consist, ent )
+		local wagonList = ent.WagonList
+		for _, v in ipairs( wagonList ) do
+			UF.Consists[ consist ][ v.WagonNumber ] = true
+		end
+	end
+
+	for k in ipairs( UF.Consists ) do
+		if checkTrainInConsist( k, ent ) then
+			UF.Consists[ k ][ wagonNumber ] = nil
+			copyWagonList( #UF.Consists + 1, ent )
+		end
+	end
+end )
 
 UF.BogeyTypes = UF.BogeyTypes or {} -- bogey models and params
 UF.BogeySounds = UF.BogeySounds or {} -- bogey sounds
@@ -50,7 +76,7 @@ timer.Create( "RBLHousekeeping", 30, 0, function()
 	for name in pairs( ents.GetAll() ) do
 		local prefix = "gmod_subway_uf_"
 		local prefix2 = "gmod_subway_mplr_"
-		if string.sub( name, 1, #prefix ) == prefix and name ~= "gmod_subway_uf_u2_section_b" or string.sub( name, 1, #prefix2 ) == prefix2 then -- fixme: don't hardcode entity names!
+		if string.sub( name, 1, #prefix ) == prefix or string.sub( name, 1, #prefix2 ) == prefix2 then
 			print( "MPLR RBL: Did housekeeping on entity", name )
 			UF.IBISRegisteredTrains[ name ] = name.IBIS.Course
 		end
@@ -73,28 +99,30 @@ hook.Add( "EntityRemoved", "UFTrains", function( ent )
 	Metrostroi.SpawnedTrains[ ent ] = nil
 end )
 
--- Define the target entity class
-local targetClass = "gmod_track_uf_dfi" -- Replace with your custom entity's class name
--- Table to track active hooks for entities
-local activeHooks = {}
-local function CreateEntityHook( entity )
-	local hookName = "PostDrawHUD_Entity_" .. entity:EntIndex()
-	hook.Add( "PostDrawHUD", hookName, function()
-		if not IsValid( entity ) then
-			-- Remove the hook if the entity is no longer valid
-			hook.Remove( "PostDrawHUD", hookName )
-			activeHooks[ hookName ] = nil
-			return
-		end
+if CLIENT then
+	-- Define the target entity class
+	local targetClass = "gmod_track_uf_dfi" -- Replace with your custom entity's class name
+	-- Table to track active hooks for entities
+	local activeHooks = {}
+	local function CreateEntityHook( entity )
+		local hookName = "PostDrawHUD_Entity_" .. entity:EntIndex()
+		hook.Add( "PostDrawHUD", hookName, function()
+			if not IsValid( entity ) then
+				-- Remove the hook if the entity is no longer valid
+				hook.Remove( "PostDrawHUD", hookName )
+				activeHooks[ hookName ] = nil
+				return
+			end
 
-		-- Call RenderDisplay with the entity as a parameter
-		if entity.RenderDisplay then
-			entity:RenderDisplay( entity ) -- Pass entity as an argument
-		end
-	end )
+			-- Call RenderDisplay with the entity as a parameter
+			if entity.RenderDisplay then
+				entity:RenderDisplay( entity ) -- Pass entity as an argument
+			end
+		end )
 
-	-- Track the hook
-	activeHooks[ hookName ] = entity
+		-- Track the hook
+		activeHooks[ hookName ] = entity
+	end
 end
 
 if SERVER and Metrostroi then
@@ -118,21 +146,6 @@ elseif CLIENT and Metrostroi then
 			Metrostroi.SpawnedTrains[ ent ] = true
 		end
 	end )
-end
-
-if CLIENT then
-	for _, ent in ipairs( ents.GetAll() ) do
-		if ent:GetClass() == "gmod_track_uf_dfi" then timer.Simple( 0, function() if IsValid( ent ) and ent:GetClass() == targetClass then CreateEntityHook( ent ) end end ) end
-	end
-
-	-- Hook to detect when entities are created
-	hook.Add( "OnEntityCreated", "ManageEntityHooks_OnSpawn", function( entity )
-		-- Delay to ensure the entity is fully initialized
-		timer.Simple( 0, function() if IsValid( entity ) and entity:GetClass() == targetClass then CreateEntityHook( entity ) end end )
-	end )
-
-	-- Hook to detect when entities are removed
-	hook.Add( "EntityRemoved", "ManageEntityHooks_OnRemove", function( entity ) if entity:GetClass() == targetClass then RemoveEntityHook( entity ) end end )
 end
 
 UF.IBISAnnouncementFiles = {}
