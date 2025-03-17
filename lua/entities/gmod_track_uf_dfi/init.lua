@@ -3,6 +3,7 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 function ENT:Initialize()
     if not UF then return end
+    util.AddNetworkString( "PlayerTrackerDFI" .. self:EntIndex() )
     self:DropToFloor()
     if self.VMF and self.VMF.Type == "nopole" then
         self:SetModel( "models/lilly/uf/stations/dfi_nopole.mdl" )
@@ -40,9 +41,28 @@ function ENT:Initialize()
         [ 4 ] = "Hannover"
     }
 
-    self.CurrentTheme = self.VMF.ThemeName
+    if self.VMF then
+        self.CurrentTheme = self.VMF.ThemeName
+        self.ParentDisplay = self.VMF.ParentDisplay or nil
+    end
+
     self.IgnoredTrains = {}
-    self.ParentDisplay = self.VMF.ParentDisplay or nil
+end
+
+function ENT:GetPVS()
+    local lastMSG = 0
+    local pos = pos or self:GetPos()
+    local playerTab = {}
+    for _, ply in ipairs( player.GetAll() ) do
+        if self:TestPVS( ply ) then table.insert( playerTab, ply ) end
+    end
+
+    if CurTime() - lastMSG > 1 then
+        net.Start( "PlayerTrackerDFI" .. self:EntIndex(), true )
+        net.WriteInt( self:EntIndex() )
+        net.WriteTable( playerTab, true )
+        net.Broadcast()
+    end
 end
 
 local function valueExists( table, value )

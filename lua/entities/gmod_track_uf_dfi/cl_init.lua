@@ -53,6 +53,7 @@ function ENT:Initialize()
 		[ "$selfillum" ] = "1"
 	} )
 
+	--
 	self.Hours = ents.CreateClientProp( "models/lilly/uf/stations/dfi_hands_hours.mdl" )
 	self.Minutes = ents.CreateClientProp( "models/lilly/uf/stations/dfi_hands_minutes.mdl" )
 	self.Hours:SetParent( self )
@@ -112,11 +113,17 @@ function ENT:Initialize()
 	}
 
 	self.Mode = self:GetNW2Int( "Mode", 0 )
-	local mat = Material( "models/lilly/uf/stations/dfi/display" )
-	local mat2 = Material( "models/lilly/uf/stations/dfi/display2" )
-	mat:SetTexture( "$basetexture", self.DFI1 )
-	mat2:SetTexture( "$basetexture", self.DFI1 )
-	hook.Add( "PostDrawHUD", "RenderDFIScreens" .. self:EntIndex(), self:RenderDisplay() )
+	-- Define a unique material name
+	self.DisplayMaterial = CreateMaterial( "display" .. self:EntIndex(), "UnlitGeneric", {
+		[ "$basetexture" ] = self.DFI1:GetName()
+	} )
+
+	self.DisplayMaterial2 = CreateMaterial( "display2" .. self:EntIndex(), "UnlitGeneric", {
+		[ "$basetexture" ] = self.DFI1:GetName()
+	} )
+
+	self:SetSubMaterial( 2, "!display" .. self:EntIndex() )
+	self:SetSubMaterial( 3, "!display2" .. self:EntIndex() )
 end
 
 function ENT:Think()
@@ -220,27 +227,55 @@ function ENT:SubstituteAbbreviation( Input )
 	return output
 end
 
-function ENT:RenderDisplay()
-	--local dist = self:PlayerDistance()
-	--local canSee = self:CanPlayerSee()
-	if not self.RenderTimer then self.RenderTimer = RealTime() end
-	render.PushRenderTarget( self.DFI1, 0, 0, 4096, 912 )
-	render.Clear( 0, 0, 0, 255, true, true )
-	cam.Start2D()
-	if self.Mode == 0 then
-		self:Mode0Disp()
-	elseif self.Mode == 1 then
-		self:Mode1Disp()
-	elseif self.Mode == 2 then
-		self:Mode2Disp()
+function ENT:RenderDisplay( ent )
+	if not ent.Grid then
+		print( "NOGRID" )
+		return
 	end
 
-	cam.End2D()
-	render.PopRenderTarget()
+	print( "RENDERING!", self )
+	if not ent.RenderTimer then ent.RenderTimer = RealTime() end
+	if CurTime() - ent.RenderTimer > 2 then
+		render.PushRenderTarget( ent.DFI1, 0, 0, 4096, 912 )
+		render.Clear( 0, 0, 0, 255, true, true )
+		cam.Start2D()
+		if ent.Mode == 0 then
+			ent:Mode0Disp( ent )
+		elseif ent.Mode == 1 then
+			ent:Mode1Disp( ent )
+		elseif ent.Mode == 2 then
+			ent:Mode2Disp( ent )
+		end
+
+		cam.End2D()
+		render.PopRenderTarget()
+	end
 end
 
 function ENT:Draw()
 	self:DrawModel()
+end
+
+local ownEntIndex = ENT:EntIndex()
+net.Receive( "PlayerTrackerDFI" .. ownEntIndex, function()
+	local entIndex = net.ReadInt()
+	local playerTab = net.ReadTable() -- Read the table of players
+	local ent = Entity( entIndex )
+	for _, v in ipairs( playerTab ) do
+		if v == LocalPlayer() then
+			ent:ManageDrawingHook( true )
+		else
+			ent:ManageDrawingHook( false )
+		end
+	end
+end )
+
+function ENT:ManageDrawingHook( inRange )
+	if inRange then
+		hook.Add( "PostDrawOpaqueRenderables", "RenderDFIScreens" .. self:EntIndex(), function() self:RenderDisplay( self ) end )
+	else
+		hook.Remove( "RenderDFIScreens" .. self:EntIndex() )
+	end
 end
 
 -- function ENT:DrawPost() end
@@ -285,44 +320,48 @@ function ENT:PlayerDistance()
 	return distance
 end
 
-function ENT:drawLED( x, y )
+function ENT:drawLED( x, y, ent )
+	local c_lod = GetConVar( "mplr_lumino_lod" ):GetInt()
+	local lodTab = {
+		[ 1 ] = 6,
+		[ 2 ] = 8,
+		[ 3 ] = 12
+	}
+
+	local effectiveLod = lodTab[ c_lod ]
 	local amberColor = Color( 255, 140, 0 )
-	local distance = self:PlayerDistance()
-	local lod = self:ilerp( 4, 12, distance )
+	--local distance = ent:PlayerDistance()
+	--local lod = ent:ilerp( distance, 10, 20, 4, effectiveLod )
 	surface.SetDrawColor( amberColor )
-	render.SetMaterial( self.LEDMaterial )
-	local cir = self:Circle( 15 + x, 15 + y, ledSize / 2, 8 )
+	render.SetMaterial( ent.LEDMaterial )
+	local cir = ent:Circle( 15 + x, 15 + y, ledSize / 2, effectiveLod )
 	surface.DrawPoly( cir )
 end
 
-function ENT:ilerp( minSeg, maxSeg, distance )
-	local minDist = 200 -- The distance at which LoD starts to decrease
-	local maxDist = 500 -- The distance at which LoD is at its minimum
-	if distance < minDist then
-		return maxSeg
-	elseif distance > maxDist then
-		return minSeg
-	else
-		local t = ( distance - minDist ) / ( maxDist - minDist )
-		return math.abs( Lerp( t, maxSeg, minSeg ) )
-	end
+function ENT:ilerp( value, in_min, in_max, out_min, out_max )
+	-- Ensure we avoid division by zero if in_min == in_max
+	if in_min == in_max then return out_max end
+	-- Scale the input value inversely to a 0-1 range
+	local t = ( value - in_min ) / ( in_max - in_min )
+	-- Invert the normalized value and scale it to the output range
+	return out_max - t * ( out_max - out_min )
 end
 
-function ENT:NewDisplay( msg )
+function ENT:NewDisplay( msg, ent )
 	-- Initialize the starting X position, using ledX or defaulting to 0
 	local startX = ledX or 0
 	-- Retrieve the old message, ensuring it's a table with at least one element, otherwise default to an empty table
 	local oldmsg = type( oldmsg ) == "table" and oldmsg[ 1 ] and oldmsg or {}
 	-- Precompute the maximum rows and columns of the grid for reuse
-	local maxRows = #self.Grid
-	local maxCols = #self.Grid[ 1 ] -- assuming the grid is a rectangle
+	local maxRows = #ent.Grid
+	local maxCols = #ent.Grid[ 1 ] -- assuming the grid is a rectangle
 	-- Precompute the width of an empty character for spacing calculations
 	local emptyCharWidth = #UF.charMatrixSmallThin[ "EMPTY" ][ 1 ]
 	-- If the new message is different from the old one, clear the grid
 	if msg ~= oldmsg then
 		-- Optimized grid clearing using nested loop unrolling
 		for row = 1, maxRows do
-			local gridRow = self.Grid[ row ]
+			local gridRow = ent.Grid[ row ]
 			for col = 1, maxCols, 4 do
 				gridRow[ col ] = 0
 				if col + 1 <= maxCols then gridRow[ col + 1 ] = 0 end
@@ -385,7 +424,7 @@ function ENT:NewDisplay( msg )
 						gridRowIndex = row + y_coordinate
 						-- Ensure the grid row index is within bounds
 						if gridRowIndex > 0 and gridRowIndex <= maxRows then
-							gridRow = self.Grid[ gridRowIndex ]
+							gridRow = ent.Grid[ gridRowIndex ]
 							-- Loop through each column of the character matrix
 							for col = 1, charWidth do
 								-- Calculate the absolute grid column index
@@ -424,13 +463,13 @@ function ENT:NewDisplay( msg )
 	end
 
 	-- Loop through each row of the grid to draw the LEDs
-	for k, gridRow in ipairs( self.Grid ) do
+	for k, gridRow in ipairs( ent.Grid ) do
 		local ledY = ( k + 1 ) * ledSize
 		for i = 1, matrixWidth do
 			-- If the grid cell is 1, draw the LED
 			if gridRow[ i ] == 1 then
 				local ledX = startX + ( i + 1 ) * ledSize
-				self:drawLED( ledX, ledY )
+				ent:drawLED( ledX, ledY, ent )
 			end
 		end
 	end
@@ -439,107 +478,90 @@ function ENT:NewDisplay( msg )
 	oldmsg = msg
 end
 
-function ENT:CanPlayerSee()
-	local player = LocalPlayer() -- Example player entity
-	local entity = self -- Example target entity
-	local viewDir = player:GetAimVector() -- Player's view direction
-	local entityPos = entity:GetPos() -- Entity's position
-	local playerPos = player:EyePos() -- Player's eye position
-	local directionToEntity = ( entityPos - playerPos ):GetNormalized() -- Direction to entity
-	-- Calculate the dot product between view direction and direction to the entity
-	local dotProduct = viewDir:Dot( directionToEntity )
-	-- Get the player's FOV (Field of View)
-	local playerFOV = player:GetFOV() / 2
-	-- Calculate the angle
-	local angle = math.deg( math.acos( dotProduct ) )
-	-- Check if the entity is within the player's FOV and in front of the player
-	return angle <= playerFOV and dotProduct > 0
-end
-
-function ENT:Mode0Disp()
-	if self.Mode ~= 0 then return end
-	local Text = self:GetNW2String( "ModeMessage", "Keine Zugfahrten!" )
+function ENT:Mode0Disp( ent )
+	if ent.Mode ~= 0 then return end
+	local Text = ent:GetNW2String( "ModeMessage", "Keine Zugfahrten!" )
 	if Text == "false" then Text = "Keine Zugfahrten!" end
-	self.TextPosX = math.floor( #self.Grid / 2 ) + #Text
+	ent.TextPosX = math.floor( #ent.Grid / 2 ) + #Text
 	local msg = {
-		[ 1 ] = { 15, { Text, "SmallThin", self.TextPosX } }
+		[ 1 ] = { 15, { Text, "SmallThin", ent.TextPosX } }
 	}
 
-	self:NewDisplay( msg )
+	ent:NewDisplay( msg, ent )
 	return
 end
 
-function ENT:Mode1Disp()
+function ENT:Mode1Disp( ent )
 	-- Mode 1 simply lists four different trains, so we can definitively define where to put all the different elements
 	-- Format: Element = {"string",x}
-	self.LinePosX = 0
-	self.DestPosX = 20
-	self.TimePosX = 186
-	self.Row1 = 0 -- y coordinate for this row
-	self.Row2 = 9 -- y-coordinate for row 2
-	self.Row3 = 18
-	self.Row4 = 27
+	ent.LinePosX = 0
+	ent.DestPosX = 20
+	ent.TimePosX = 186
+	ent.Row1 = 0 -- y coordinate for this row
+	ent.Row2 = 9 -- y-coordinate for row 2
+	ent.Row3 = 18
+	ent.Row4 = 27
 	-- FORMAT: {y-coordinate,{string_to_display,font,x-coordinate_of_string},etc}
 	local msg = {
-		[ 1 ] = { self.Row1, { self.Line1String, "SmallBold", self.LinePosX }, { self.Train1DestinationString, "SmallThin", self.DestPosX }, { self.Train1Time, "SmallBold", self.TimePosX } }
+		[ 1 ] = { ent.Row1, { ent.Line1String, "SmallBold", ent.LinePosX }, { ent.Train1DestinationString, "SmallThin", ent.DestPosX }, { ent.Train1Time, "SmallBold", ent.TimePosX } }
 	}
 
-	local msg2 = { self.Row2, { self.Line2String, "SmallBold", self.LinePosX }, { self.Train2DestinationString, "SmallThin", self.DestPosX }, { self.Train2Time, "SmallBold", self.TimePosX } }
-	local msg3 = { self.Row3, { self.Line3String, "SmallBold", self.LinePosX }, { self.Train3DestinationString, "SmallThin", self.DestPosX }, { self.Train3Time, "SmallBold", self.TimePosX } }
-	local msg4 = { self.Row4, { self.Line4String, "SmallBold", self.LinePosX }, { self.Train4DestinationString, "SmallThin", self.DestPosX }, { self.Train4Time, "SmallBold", self.TimePosX } }
-	if self.Train2Entry then
+	local msg2 = { ent.Row2, { ent.Line2String, "SmallBold", ent.LinePosX }, { ent.Train2DestinationString, "SmallThin", ent.DestPosX }, { ent.Train2Time, "SmallBold", ent.TimePosX } }
+	local msg3 = { ent.Row3, { ent.Line3String, "SmallBold", ent.LinePosX }, { ent.Train3DestinationString, "SmallThin", ent.DestPosX }, { ent.Train3Time, "SmallBold", ent.TimePosX } }
+	local msg4 = { ent.Row4, { ent.Line4String, "SmallBold", ent.LinePosX }, { ent.Train4DestinationString, "SmallThin", ent.DestPosX }, { ent.Train4Time, "SmallBold", ent.TimePosX } }
+	if ent.Train2Entry then
 		table.insert( msg, 2, msg2 )
 	else
 		table.remove( msg, 2 )
 	end
 
-	if self.Train3Entry then
+	if ent.Train3Entry then
 		table.insert( msg, 3, msg3 )
 	else
 		table.remove( msg, 3 )
 	end
 
-	if self.Train4Entry then
+	if ent.Train4Entry then
 		table.insert( msg, 4, msg4 )
 	else
 		table.remove( msg, 4 )
 	end
 
-	self:NewDisplay( msg )
+	ent:NewDisplay( msg, ent )
 end
 
-function ENT:Mode2Disp()
-	local Text = self:GetNW2String( "ModeMessage", "Keine Zugfahrten!" )
-	self.LinePosX = 0
-	if not self.Line1String then return end
-	local str = self.Train1DestinationString
-	local CarCount = self:GetNW2Int( "Train1ConsistLength", 4 )
+function ENT:Mode2Disp( ent )
+	local Text = ent:GetNW2String( "ModeMessage", "Keine Zugfahrten!" )
+	ent.LinePosX = 0
+	if not ent.Line1String then return end
+	local str = ent.Train1DestinationString
+	local CarCount = ent:GetNW2Int( "Train1ConsistLength", 4 )
 	-- I could fix the coordinate formatting, but... Come on. For every state we've got bespoke placements of the different elements on screen. Work smart, not hard!
 	local CarPos = 155
 	local TrackPos = 155
 	local st = "Seckbacher Ldstr."
-	self.DestPosX = 22 --self.Theme == "Essen" and ( 76 - ( DestWidth / 2 ) ) or #UF.charMatrixSmallThin[ string.sub( self.Line1String, 1, 1 ) ][ 1 ] + #UF.charMatrixSmallThin[ string.sub( self.LineString1, 2, 2 ) ][ 1 ] + 8
+	ent.DestPosX = 22 --ent.Theme == "Essen" and ( 76 - ( DestWidth / 2 ) ) or #UF.charMatrixSmallThin[ string.sub( ent.Line1String, 1, 1 ) ][ 1 ] + #UF.charMatrixSmallThin[ string.sub( ent.LineString1, 2, 2 ) ][ 1 ] + 8
 	-- todo implement modular "via" information, listing notable stations along the way: U7 Hausen über Eissporthalle/Festplatz
 	local msg = {}
 	if Text ~= "DontBoard" then
-		msg[ 1 ] = { 0, { self.Line1String, "Headline", self.LinePosX }, { str, "Headline", self.DestPosX } }
+		msg[ 1 ] = { 0, { ent.Line1String, "Headline", ent.LinePosX }, { str, "Headline", ent.DestPosX } }
 		msg[ 2 ] = { 26, { string.rep( "T", CarCount ), "Symbols", CarPos } }
 		msg[ 3 ] = { 33, { "R", "Symbols", TrackPos } }
 	elseif Text == "DontBoard" then
 		local message = "Nicht Einsteigen!"
-		local textPos = math.floor( #self.Grid / 2 ) + #message
+		local textPos = math.floor( #ent.Grid / 2 ) + #message
 		local msg = {
 			[ 1 ] = { 15, { message, "SmallThin", textPos } }
 		}
 	elseif Text == "DestUnknown" then
 		local message = "Auf Zugschild achten!"
-		local textPos = math.floor( #self.Grid / 2 ) + #message
+		local textPos = math.floor( #ent.Grid / 2 ) + #message
 		local msg = {
 			[ 1 ] = { 15, { message, "SmallThin", textPos } }
 		}
 	end
 
-	self:NewDisplay( msg )
+	ent:NewDisplay( msg, ent )
 end
 
 -- Function to draw a character on the LED display
@@ -559,7 +581,7 @@ function ENT:drawCharacter( char, startX, startY, font )
 				local ledX = startX + ( col - 1 ) * ledSize
 				local ledY = startY + ( row - 1 ) * ledSize
 				-- Draw an LED if the matrix element is 1
-				if tonumber( UF.charMatrixSmallThin[ char ][ row ]:sub( col, col ) ) == 1 then self:drawLED( ledX, ledY ) end
+				if tonumber( UF.charMatrixSmallThin[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
 			end
 		end
 	elseif font == "SmallBold" then
@@ -576,7 +598,7 @@ function ENT:drawCharacter( char, startX, startY, font )
 				local ledX = startX + ( col - 1 ) * ledSize
 				local ledY = startY + ( row - 1 ) * ledSize
 				-- Draw an LED if the matrix element is 1
-				if tonumber( UF.charMatrixSmallBold[ char ][ row ]:sub( col, col ) ) == 1 then self:drawLED( ledX, ledY ) end
+				if tonumber( UF.charMatrixSmallBold[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
 			end
 		end
 	else
@@ -587,7 +609,7 @@ function ENT:drawCharacter( char, startX, startY, font )
 				local ledX = startX + ( col - 1 ) * ledSize
 				local ledY = startY + ( row - 1 ) * ledSize
 				-- Draw an LED if the matrix element is 1
-				if tonumber( UF.charMatrixSmallThin[ char ][ row ]:sub( col, col ) ) == 1 then self:drawLED( ledX, ledY ) end
+				if tonumber( UF.charMatrixSmallThin[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
 			end
 		end
 	end
@@ -604,7 +626,7 @@ function ENT:CharacterTest( startX, startY )
 			local ledX = startX + ( col - 1 ) * ledSize
 			local ledY = startY + ( row - 1 ) * ledSize
 			-- Draw an LED if the matrix element is 1
-			if tonumber( UF.charMatrixSymbols[ char ][ row ]:sub( col, col ) ) == 1 then self:drawLED( ledX, ledY ) end
+			if tonumber( UF.charMatrixSymbols[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
 		end
 	end
 end
@@ -629,13 +651,13 @@ function ENT:drawString( str, startX, startY, orientation, font )
 	if font == "SmallThin" then
 		for i = 1, #str do
 			local char = str:sub( i, i )
-			self:drawCharacter( char, startX + xOffset, startY, font )
+			ent:drawCharacter( char, startX + xOffset, startY, font )
 			xOffset = xOffset + ledSize * ( #UF.charMatrixSmallThin[ char ][ 1 ] + #UF.charMatrixSmallThin[ "EMPTY" ][ 1 ] ) -- Add some padding between characters
 		end
 	elseif font == "SmallBold" then
 		for i = 1, #str do
 			local char = str:sub( i, i )
-			self:drawCharacter( char, startX + xOffset, startY, font )
+			ent:drawCharacter( char, startX + xOffset, startY, font )
 			xOffset = xOffset + ledSize * ( #UF.charMatrixSmallBold[ char ][ 1 ] + #UF.charMatrixSmallBold[ "EMPTY" ][ 1 ] ) -- Add some padding between characters
 		end
 	end
