@@ -1,6 +1,73 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
+ENT.KeyMap = {
+	[ KEY_A ] = "ThrottleUp",
+	[ KEY_D ] = "ThrottleDown",
+	[ KEY_H ] = "BellEngageSet",
+	[ KEY_SPACE ] = "DeadmanSet",
+	[ KEY_W ] = "ReverserUpSet",
+	[ KEY_S ] = "ReverserDownSet",
+	[ KEY_P ] = "PantoUpSet",
+	[ KEY_O ] = "DoorsUnlockSet",
+	[ KEY_I ] = "DoorsLockSet",
+	[ KEY_K ] = "DoorsCloseConfirmSet",
+	[ KEY_Z ] = "WarningAnnouncementSet",
+	[ KEY_J ] = "DoorsSelectLeftToggle",
+	[ KEY_L ] = "DoorsSelectRightToggle",
+	[ KEY_B ] = "BatteryToggle",
+	[ KEY_V ] = "HeadlightsToggle",
+	[ KEY_M ] = "Mirror",
+	[ KEY_1 ] = "Throttle10Pct",
+	[ KEY_2 ] = "Throttle20Pct",
+	[ KEY_3 ] = "Throttle30Pct",
+	[ KEY_4 ] = "Throttle40Pct",
+	[ KEY_5 ] = "Throttle50Pct",
+	[ KEY_6 ] = "Throttle60Pct",
+	[ KEY_7 ] = "Throttle70Pct",
+	[ KEY_8 ] = "Throttle80Pct",
+	[ KEY_9 ] = "Throttle90Pct",
+	[ KEY_PERIOD ] = "WarnBlinkToggle",
+	[ KEY_COMMA ] = "BlinkerLeftToggle",
+	[ KEY_PAGEUP ] = "Rollsign1+",
+	[ KEY_PAGEDOWN ] = "Rollsign1-",
+	-- [KEY_0] = "KeyTurnOn",
+	[ KEY_LSHIFT ] = {
+		[ KEY_0 ] = "ReverserInsert",
+		[ KEY_A ] = "ThrottleUpFast",
+		[ KEY_D ] = "ThrottleDownFast",
+		[ KEY_S ] = "ThrottleZero",
+		[ KEY_H ] = "Horn",
+		[ KEY_V ] = "DriverLightToggle",
+		[ KEY_COMMA ] = "BlinkerRightToggle",
+		[ KEY_B ] = "BatteryDisableToggle",
+		[ KEY_PAGEUP ] = "Rollsign+",
+		[ KEY_PAGEDOWN ] = "Rollsign-",
+		[ KEY_O ] = "OpenDoor1Set"
+	},
+	[ KEY_LALT ] = {
+		[ KEY_PAD_1 ] = "Number1Set",
+		[ KEY_PAD_2 ] = "Number2Set",
+		[ KEY_PAD_3 ] = "Number3Set",
+		[ KEY_PAD_4 ] = "Number4Set",
+		[ KEY_PAD_5 ] = "Number5Set",
+		[ KEY_PAD_6 ] = "Number6Set",
+		[ KEY_PAD_7 ] = "Number7Set",
+		[ KEY_PAD_8 ] = "Number8Set",
+		[ KEY_PAD_9 ] = "Number9Set",
+		[ KEY_PAD_0 ] = "Number0Set",
+		[ KEY_PAD_ENTER ] = "EnterSet",
+		[ KEY_PAD_DECIMAL ] = "DeleteSet",
+		[ KEY_PAD_DIVIDE ] = "DestinationSet",
+		[ KEY_PAD_MULTIPLY ] = "SpecialAnnouncementsSet",
+		[ KEY_PAD_MINUS ] = "TimeAndDateSet",
+		[ KEY_V ] = "PassengerLightsSet",
+		[ KEY_D ] = "EmergencyBrakeSet",
+		[ KEY_O ] = "HighFloorSet",
+		[ KEY_I ] = "LowFloorSet"
+	}
+}
+
 function ENT:Initialize()
 	-- Set model and initialize
 	self:SetModel( "models/lilly/uf/pt/section-ab.mdl" )
@@ -10,88 +77,7 @@ function ENT:Initialize()
 	self.DriverSeat = self:CreateSeat( "driver", Vector( 366, 4, 40 ) )
 	self.DriverSeat:SetRenderMode( RENDERMODE_TRANSALPHA )
 	self.DriverSeat:SetColor( Color( 0, 0, 0, 0 ) )
-	self.SectionC = self:GetNW2Entity( "SectionC" )
-	-- Create bogeys
-	self.FrontBogey = self.SectionC.FrontBogey
-	self.SectionBogeyA = self.SectionC.SectionBogeyA
-	self.SectionBogeyB = self.SectionC.SectionBogeyB
-	self.RearBogey = self.SectionC.RearBogey
-	self.FrontCouple = self.SectionC.FrontCouple
-	self.RearCouple = self.SectionC.RearCouple
-	-- self.FrontStepR = self:CreateFoldingSteps("front_r")
-	-- self.RearStepR = self:CreateFoldingSteps("front_r_back")
-	-- self.FrontStepL = self:CreateFoldingSteps("front_l")
-	-- self.RearStepL = self:CreateFoldingSteps("front_l_back")
-	self.ReverserInserted = false
-	-- print("UF: Init Pt Section A/B")
-	-- Initialize key mapping
-	self.KeyMap = {
-		[ KEY_A ] = "ThrottleUp",
-		[ KEY_D ] = "ThrottleDown",
-		[ KEY_H ] = "BellEngageSet",
-		[ KEY_SPACE ] = "DeadmanSet",
-		[ KEY_W ] = "ReverserUpSet",
-		[ KEY_S ] = "ReverserDownSet",
-		[ KEY_P ] = "PantoUpSet",
-		[ KEY_O ] = "DoorsUnlockSet",
-		[ KEY_I ] = "DoorsLockSet",
-		[ KEY_K ] = "DoorsCloseConfirmSet",
-		[ KEY_Z ] = "WarningAnnouncementSet",
-		[ KEY_J ] = "DoorsSelectLeftToggle",
-		[ KEY_L ] = "DoorsSelectRightToggle",
-		[ KEY_B ] = "BatteryToggle",
-		[ KEY_V ] = "HeadlightsToggle",
-		[ KEY_M ] = "Mirror",
-		[ KEY_1 ] = "Throttle10Pct",
-		[ KEY_2 ] = "Throttle20Pct",
-		[ KEY_3 ] = "Throttle30Pct",
-		[ KEY_4 ] = "Throttle40Pct",
-		[ KEY_5 ] = "Throttle50Pct",
-		[ KEY_6 ] = "Throttle60Pct",
-		[ KEY_7 ] = "Throttle70Pct",
-		[ KEY_8 ] = "Throttle80Pct",
-		[ KEY_9 ] = "Throttle90Pct",
-		[ KEY_PERIOD ] = "WarnBlinkToggle",
-		[ KEY_COMMA ] = "BlinkerLeftToggle",
-		[ KEY_PAGEUP ] = "Rollsign1+",
-		[ KEY_PAGEDOWN ] = "Rollsign1-",
-		-- [KEY_0] = "KeyTurnOn",
-		[ KEY_LSHIFT ] = {
-			[ KEY_0 ] = "ReverserInsert",
-			[ KEY_A ] = "ThrottleUpFast",
-			[ KEY_D ] = "ThrottleDownFast",
-			[ KEY_S ] = "ThrottleZero",
-			[ KEY_H ] = "Horn",
-			[ KEY_V ] = "DriverLightToggle",
-			[ KEY_COMMA ] = "BlinkerRightToggle",
-			[ KEY_B ] = "BatteryDisableToggle",
-			[ KEY_PAGEUP ] = "Rollsign+",
-			[ KEY_PAGEDOWN ] = "Rollsign-",
-			[ KEY_O ] = "OpenDoor1Set"
-		},
-		[ KEY_LALT ] = {
-			[ KEY_PAD_1 ] = "Number1Set",
-			[ KEY_PAD_2 ] = "Number2Set",
-			[ KEY_PAD_3 ] = "Number3Set",
-			[ KEY_PAD_4 ] = "Number4Set",
-			[ KEY_PAD_5 ] = "Number5Set",
-			[ KEY_PAD_6 ] = "Number6Set",
-			[ KEY_PAD_7 ] = "Number7Set",
-			[ KEY_PAD_8 ] = "Number8Set",
-			[ KEY_PAD_9 ] = "Number9Set",
-			[ KEY_PAD_0 ] = "Number0Set",
-			[ KEY_PAD_ENTER ] = "EnterSet",
-			[ KEY_PAD_DECIMAL ] = "DeleteSet",
-			[ KEY_PAD_DIVIDE ] = "DestinationSet",
-			[ KEY_PAD_MULTIPLY ] = "SpecialAnnouncementsSet",
-			[ KEY_PAD_MINUS ] = "TimeAndDateSet",
-			[ KEY_V ] = "PassengerLightsSet",
-			[ KEY_D ] = "EmergencyBrakeSet",
-			[ KEY_O ] = "HighFloorSet",
-			[ KEY_I ] = "LowFloorSet"
-		}
-	}
-
+	self.FrontStepR = self:CreateFoldingSteps( "front_r" )
 	self.Lights = {
 		-- Headlight glow
 		-- [1] = { "headlight",      Vector(465,0,-20), Angle(0,0,0), Color(216,161,92), fov = 100, farz=6144,brightness = 4},
@@ -195,36 +181,64 @@ function ENT:Initialize()
 			brightness = 2
 		}
 	}
-	-- self:TrainSpawnerUpdate()
+
+	self.Anims = {}
 end
 
 function ENT:Think()
 	self.BaseClass.Think( self )
-	self.SectionC = self:GetNW2Entity( "SectionC" )
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
 	self.Speed = math.abs( -self:GetVelocity():Dot( self:GetAngles():Forward() ) * 0.06858 )
-	self:SetNW2Int( "Speed", self.Speed * 100 )
-	local sys = self.SectionC.CoreSys
-	if sys.ReverserLeverState == 0 then
-		self:SetNW2Float( "ReverserAnim", 0.25 )
-	elseif sys.ReverserLeverState == 1 then
-		self:SetNW2Float( "ReverserAnim", 0.35 )
-	elseif sys.ReverserLeverState == 2 then
-		self:SetNW2Float( "ReverserAnim", 0.45 )
-	elseif sys.ReverserLeverState == 3 then
-		self:SetNW2Float( "ReverserAnim", 0.55 )
-	elseif sys.ReverserLeverState == -1 then
-		self:SetNW2Float( "ReverserAnim", 0 )
+	local poseValue = self:Animate( "front_r", 0, 0, 100, 1, 1, true )
+	--print( "Pose Value: ", poseValue )
+	-- Apply pose parameter
+	self.FrontStepR:SetPoseParameter( "position", poseValue )
+end
+
+--------------------------------------------------------------------------------
+-- Animation function
+--------------------------------------------------------------------------------
+function ENT:Animate( Prop, targetValue, min, max, speed, damping )
+	local id = Prop
+	local function sign( x )
+		if x > 0 then
+			return 1
+		elseif x < 0 then
+			return -1
+		else
+			return 0
+		end
 	end
 
-	self.Anims = {}
-	self.FrontStepR:SetPoseParameter( "position", self:Animate( "FrontStepR", 0, 0, 100, 1, 10, false ) )
-	self.FrontStepR:Activate()
-	local Phys = self.FrontStepR:GetPhysicsObject()
-	Phys:EnableCollisions()
-	-- print(self.SectionC.CoreSys.ReverserLeverState)
+	if not self.Anims[ id ] then
+		-- Initialize only once
+		self.Anims[ id ] = {
+			val = targetValue,
+			V = 0.0
+		}
+	end
+
+	-- Ensure DeltaTime is not zero
+	if self.DeltaTime <= 0 then
+		self.DeltaTime = 0.016 -- Default to 16ms (60 FPS) if DeltaTime is zero or negative
+	end
+
+	-- Animation logic
+	local currentValue = self.Anims[ id ].val
+	local deltaValue = targetValue - currentValue
+	-- Increase responsiveness by adjusting the factor
+	local interpolationSpeed = speed * self.DeltaTime
+	local dampingFactor = damping * self.DeltaTime
+	local lerpFactor = math.Clamp( interpolationSpeed, 0, 1 )
+	-- Linear interpolation
+	self.Anims[ id ].val = currentValue + deltaValue * lerpFactor
+	-- Apply damping to reduce overshooting
+	self.Anims[ id ].val = self.Anims[ id ].val - ( self.Anims[ id ].val - targetValue ) * dampingFactor
+	-- Clamp and return result
+	local result = math.Clamp( self.Anims[ id ].val, min, max )
+	return result
 end
 
 function ENT:OnButtonRelease( button, ply )
@@ -298,35 +312,45 @@ function ENT:CreateFoldingSteps( pos )
 	if pos == "front_r" then
 		local step = ents.Create( "prop_physics" )
 		step:SetModel( "models/lilly/uf/pt/step_r.mdl" )
-		step:Spawn()
+		step:SetParent( self )
 		step.SpawnPos = self:LocalToWorld( Vector( 0, 0, 0 ) )
 		step:SetPos( self:LocalToWorld( Vector( 237, 0, 0 ) ) )
 		step.SpawnAng = Angle( 0, 0, 0 )
 		step:SetAngles( self:GetAngles() )
+		step:Spawn()
+		step:Activate()
+		local phys = step:GetPhysicsObject()
+		phys:EnableCollisions()
 		constraint.Weld( step, self, 0, 0, 0, true, false )
 		table.insert( self.TrainEntities, step )
-		-- step:SetParent(self)
 		return step
 	elseif pos == "front_r_back" then
 		local step = ents.Create( "prop_physics" )
 		step:SetModel( "models/lilly/uf/pt/step_r_back.mdl" )
+		step:SetParent( self )
 		step.SpawnPos = self:LocalToWorld( Vector( 0, 0, 0 ) )
 		step:SetPos( self:LocalToWorld( Vector( 0, 0, 0 ) ) )
 		step.SpawnAng = Angle( 0, 0, 0 )
 		step:SetAngles( self:GetAngles() )
 		step:Spawn()
+		step:Activate()
+		local phys = step:GetPhysicsObject()
+		phys:EnableCollisions()
 		constraint.Weld( step, self, 0, 0, 0, true, false )
 		table.insert( self.TrainEntities, step )
-		-- step:SetParent(self)
 		return step
 	elseif pos == "front_l" then
 		local step = ents.Create( "prop_physics" )
 		step:SetModel( "models/lilly/uf/pt/step_r.mdl" )
+		step:SetParent( self )
 		step.SpawnPos = self:LocalToWorld( Vector( 667, 0, 0 ) )
 		step:SetPos( self:LocalToWorld( Vector( 430, 0, 0 ) ) )
 		step.SpawnAng = Angle( 0, 180, 0 )
 		step:SetAngles( self:GetAngles() + self:LocalToWorldAngles( Angle( 0, 0, 180 ) ) )
 		step:Spawn()
+		step:Activate()
+		local phys = step:GetPhysicsObject()
+		phys:EnableCollisions()
 		constraint.Weld( step, self, 0, 0, 0, true, false )
 		table.insert( self.TrainEntities, step )
 		-- step:SetParent(self)
@@ -344,39 +368,4 @@ function ENT:CreateFoldingSteps( pos )
 		-- step:SetParent(self)
 		return step
 	end
-end
-
---------------------------------------------------------------------------------
--- Animation function
---------------------------------------------------------------------------------
-function ENT:Animate( clientProp, value, min, max, speed, damping, stickyness )
-	local id = clientProp
-	if not self.Anims[ id ] then
-		self.Anims[ id ] = {}
-		self.Anims[ id ].val = value
-		self.Anims[ id ].V = 0.0
-	end
-
-	if damping == false then
-		local dX = speed * self.DeltaTime
-		if value > self.Anims[ id ].val then self.Anims[ id ].val = self.Anims[ id ].val + dX end
-		if value < self.Anims[ id ].val then self.Anims[ id ].val = self.Anims[ id ].val - dX end
-		if math.abs( value - self.Anims[ id ].val ) < dX then self.Anims[ id ].val = value end
-	else
-		-- Prepare speed limiting
-		local delta = math.abs( value - self.Anims[ id ].val )
-		local max_speed = 1.5 * delta / self.DeltaTime
-		local max_accel = 0.5 / self.DeltaTime
-		-- Simulate
-		local dX2dT = ( speed or 128 ) * ( value - self.Anims[ id ].val ) - self.Anims[ id ].V * ( damping or 8.0 )
-		if dX2dT > max_accel then dX2dT = max_accel end
-		if dX2dT < -max_accel then dX2dT = -max_accel end
-		self.Anims[ id ].V = self.Anims[ id ].V + dX2dT * self.DeltaTime
-		if self.Anims[ id ].V > max_speed then self.Anims[ id ].V = max_speed end
-		if self.Anims[ id ].V < -max_speed then self.Anims[ id ].V = -max_speed end
-		self.Anims[ id ].val = math.max( 0, math.min( 1, self.Anims[ id ].val + self.Anims[ id ].V * self.DeltaTime ) )
-		-- Check if value got stuck
-		if ( math.abs( dX2dT ) < 0.001 ) and stickyness and ( self.DeltaTime > 0 ) then self.Anims[ id ].stuck = true end
-	end
-	return min + ( max - min ) * self.Anims[ id ].val
 end
