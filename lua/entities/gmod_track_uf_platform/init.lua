@@ -70,6 +70,38 @@ function ENT:Initialize()
 
     self:SetNW2Int( "TrainDoorCount", 0 )
     self.DoorUnlockCalled = false
+    if self.PlatformStart and self.PlatformEnd then self:MarkPlatformPathing() end
+end
+
+function ENT:MarkPlatformPathing()
+    local startPos = self.PlatformStart:GetPos()
+    local startAng = self.PlatformStart:GetAngles()
+    local endPos = self.PlatformEnd:GetPos()
+    local endAng = self.PlatformEnd:GetAngles()
+    local startTrackPos = Metrostroi.GetPositionOnTrack( startPos, startAng )
+    local endTrackPos = Metrostroi.GetPositionOnTrack( endPos, endAng )
+    -- Ensure valid track positions with INDUSI
+    if not ( startTrackPos.node1.indusi and endTrackPos.node1.indusi ) then return end
+    -- Recursively mark nodes as part of the station
+    local function markNodes( node, nodeEnd, nextNodeFunc )
+        if node == nodeEnd then
+            node.station = true
+            return
+        end
+
+        node.station = true
+        timer.Simple( 0, function()
+            markNodes( nextNodeFunc( node ), nodeEnd, nextNodeFunc ) -- Prevent locking up
+        end )
+    end
+
+    if startTrackPos.x > endTrackPos.x then
+        -- Traverse backwards on the track
+        markNodes( startTrackPos.node1, endTrackPos.node1, function( node ) return node.prev end )
+    else
+        -- Traverse forwards on the track
+        markNodes( startTrackPos.node1, endTrackPos.node1, function( node ) return node.next end )
+    end
 end
 
 --------------------------------------------------------------------------------
@@ -151,9 +183,9 @@ function ENT:GetDoorState()
     return false
 end
 
-function ENT:CheckDoorRandomness( v )
+function ENT:CheckDoorRandomness( v, left )
     local train = v
-    local randomness = train.DoorRandomness or train.CoreSys.DoorRandomness
+    local randomness = left and train.DoorHandler.DoorRandomnessLeft or train.DoorHandler.DoorRandomnessRight
     for _, value in pairs( randomness ) do
         if value ~= 3 then return false end
     end
@@ -180,7 +212,8 @@ function ENT:Think()
     local BoardTime = 8 + 7
     for k, v in pairs( ents.FindByClass( "gmod_subway_*" ) ) do
         if v.Base ~= "gmod_subway_uf_base" then continue end
-        if not v.MPLR_DoorHandler then continue end
+        if not v.DoorHandler then continue end
+        local doorHandler = v.DoorHandler
         if not IsValid( v ) or v:GetPos():Distance( self:GetPos() ) > self.PlatformStart:Distance( self.PlatformEnd ) then continue end
         local platform_distance = ( ( self.PlatformStart - v:GetPos() ) - ( self.PlatformStart - v:GetPos() ):Dot( self.PlatformNorm ) * self.PlatformNorm ):Length()
         local vertical_distance = math.abs( v:GetPos().z - self.PlatformStart.z )
@@ -194,7 +227,8 @@ function ENT:Think()
         local pop = self:PopulationCount()
         local doors_open = self:CheckDoors( v, left_side )
         if not doors_open and pop > 0 and not self.DoorUnlockCalled then
-            v.MPLR_DoorHandler:RandomUnlock( math.random( 2, doorCount ), left_side and "left" or "right" )
+            v.DoorHandler:RandomUnlock( math.random( 2, doorCount ), left_side and "left" or "right" )
+            print( "Called RandomUnlock on train" )
             self.DoorUnlockCalled = true
         end
 
@@ -212,6 +246,10 @@ function ENT:Think()
         if passengers_can_board then
             -- Find player of the train
             local driver = getTrainDriver( v )
+            local floorHeight, floorHeight2 = v:GetStandingArea()
+            local floorHeight = floorHeight.z
+            self:SetNW2Int( "FloorHeight", floorHeight )
+            self:SetNW2Vector( "TrainPos", v:GetPos() )
             -- Limit train to platform
             train_start = math.max( 0, math.min( 1, train_start ) )
             train_end = math.max( 0, math.min( 1, train_end ) )
@@ -287,22 +325,16 @@ function ENT:Think()
 
             -- Keep list of door positions
             if left_side then
-                for k, vec in pairs( v.LeftDoorPositions ) do
-                    if type( vec ) ~= "Vector" then continue end
-                    local doorHandler = v.MPLR_DoorHandler
-                    if doorHandler.DoorStatesLeft[ k ] < 0.9 then
-                        doorHandler.DoorStatesLeft[ k ] = 0
-                        continue
-                    end
-
-                    boardingDoorList[ k ] = v:LocalToWorld( vec )
+                for i, vec in pairs( v.DoorsLeft ) do
+                    print( i )
+                    if doorHandler.DoorStatesLeft[ i ] > 0.8 then boardingDoorList[ k ] = v:LocalToWorld( vec ) end
                 end
             else
-                for k, vec in pairs( v.RightDoorPositions ) do
+                for i, vec in pairs( v.RightDoorPositions ) do
                     if type( vec ) ~= "Vector" then continue end
-                    local doorHandler = v.MPLR_DoorHandler
-                    if doorHandler.DoorStatesRight[ k ] < 0.9 then
-                        doorHandler.DoorStatesRight[ k ] = 0
+                    local doorHandler = v.DoorHandler
+                    if doorHandler.DoorStatesRight[ i ] < 0.9 then
+                        doorHandler.DoorStatesRight[ i ] = 0
                         continue
                     end
 
@@ -373,11 +405,12 @@ function ENT:Think()
 end
 
 function ENT:CheckDoors( ent, left_side )
-    if not ent.MPLR_DoorHandler then return end
-    local tab = left_side and ent.MPLR_DoorHandler.DoorStatesLeft or ent.MPLR_DoorHandler.DoorStatesRight
+    if not ent.DoorHandler then return end
+    local tab = left_side and ent.DoorHandler.DoorStatesLeft or ent.DoorHandler.DoorStatesRight
+    if not tab then return end
     for _, v in ipairs( tab ) do
         if v > 0.9 then
-            --print( "doors are open!" )
+            print( "doors are open!" )
             return true
         end
     end
@@ -385,9 +418,10 @@ function ENT:CheckDoors( ent, left_side )
 end
 
 function ENT:CountDoors( ent, left_side )
-    if not ent.MPLR_DoorHandler then return end
+    if not ent.DoorHandler then return end
     local count = 0
-    local tab = left_side and ent.MPLR_DoorHandler.DoorStatesLeft or ent.MPLR_DoorHandler.DoorStatesRight
+    local tab = left_side and ent.DoorHandler.DoorStatesLeft or ent.DoorHandler.DoorStatesRight
+    if not tab then return 0 end
     for _, v in ipairs( tab ) do
         if v > 0.9 then
             count = count + 1

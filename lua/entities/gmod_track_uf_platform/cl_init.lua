@@ -47,7 +47,7 @@ local rareModels = {
 }
 
 function ENT:Initialize()
-    self.PassengerSounds = CreateSound( self, Sound( "subway_stations/announces/peoples.mp3" ) )
+    self.PassengerSounds = CreateSound( LocalPlayer(), Sound( "lilly/ambience/station/station.wav" ) )
     self.NonPassengerSounds = CreateSound( self, Sound( "ambient/levels/canals/tunnel_wind_loop1.mp3" ) )
     self.ClientModels = {}
     self.CleanupModels = {}
@@ -162,13 +162,47 @@ function ENT:Think()
     end
 
     self.PlatformDrawn = true
-    if self:GetNW2Bool( "MustPlayAnnounces" ) then
-        self.PassengerSounds:SetSoundLevel( 105 )
+    -- Platform parameters
+    local platformStart = self:GetNW2Vector( "PlatformStart", false )
+    local platformEnd = self:GetNW2Vector( "PlatformEnd", false )
+    local stationCenter = self:GetPos() --self:GetNW2Vector("StationCenter",false)
+    if not platformStart or not platformEnd or not stationCenter or not self:GetNW2Float( "X0", false ) or not self:GetNW2Float( "Sigma", false ) then return end
+    local function calculateBounds( vec1, vec2, vec3, height )
+        local minBounds, maxBounds
+        -- Check if Vec1 and Vec2 are aligned on X or Y axis
+        if vec1.x == vec2.x then
+            -- Aligned on X-axis, extend on Y
+            minBounds = Vector( vec1.x - math.abs( vec3.y - vec1.y ), -- Extend based on Vec3's Y position
+                math.min( vec1.y, vec2.y ), vec1.z )
+
+            maxBounds = Vector( vec1.x + math.abs( vec3.y - vec1.y ), -- Extend based on Vec3's Y position
+                math.max( vec1.y, vec2.y ), vec1.z + height )
+        elseif vec1.y == vec2.y then
+            -- Aligned on Y-axis, extend on X
+            minBounds = Vector( math.min( vec1.x, vec2.x ), vec1.y - math.abs( vec3.x - vec1.x ), -- Extend based on Vec3's X position
+                vec1.z )
+
+            maxBounds = Vector( math.max( vec1.x, vec2.x ), vec1.y + math.abs( vec3.x - vec1.x ), -- Extend based on Vec3's X position
+                vec1.z + height )
+        end
+        return minBounds, maxBounds
+    end
+
+    local minBounds, maxBounds = calculateBounds( platformStart, platformEnd, self:GetPos(), 50 )
+    local function isInRegion( pos, min, max )
+        if not min or not max then return false end
+        return pos.x >= min.x and pos.x <= max.x and pos.y >= min.y and pos.y <= max.y and pos.z >= min.z and pos.z <= max.z
+    end
+
+    local inRange = isInRegion( self:GetPlayerPos(), minBounds, maxBounds )
+    if inRange then
+        self.PassengerSounds:ChangeVolume( 0.01, 2 )
+        self.PassengerSounds:SetSoundLevel( 0 )
         self.PassengerSounds:Play()
-        self.PassengerSounds:SetSoundLevel( 105 )
-        self.PassengerSounds:ChangeVolume( 0.3 )
+        self.PassengerSounds:ChangeVolume( 0.01, 2 )
+        --self.PassengerSounds:SetPos( self:GetPlayerPos() )
     else
-        if self.PassengerSounds:IsPlaying() then self.PassengerSounds:Stop() end
+        self.PassengerSounds:ChangeVolume( 0, 2 )
     end
 
     if self:GetNW2Bool( "MustPlaySpooky" ) then
@@ -180,11 +214,6 @@ function ENT:Think()
         if self.NonPassengerSounds:IsPlaying() then self.NonPassengerSounds:Stop() end
     end
 
-    -- Platform parameters
-    local platformStart = self:GetNW2Vector( "PlatformStart", false )
-    local platformEnd = self:GetNW2Vector( "PlatformEnd", false )
-    local stationCenter = self:GetPos() --self:GetNW2Vector("StationCenter",false)
-    if not platformStart or not platformEnd or not stationCenter or not self:GetNW2Float( "X0", false ) or not self:GetNW2Float( "Sigma", false ) then return end
     -- Platforms with tracks in middle
     local dot = ( stationCenter - platformStart ):Cross( platformEnd - platformStart )
     if dot.z > 0.0 then
@@ -210,15 +239,6 @@ function ENT:Think()
             if in_bounds then
                 -- Model in window
                 if not self.ClientModels[ i ] then
-                    --self.ClientModels[i] = ents.CreateClientProp("models/metrostroi/81-717/reverser.mdl")
-                    --self.ClientModels[i]:SetModel(self.Pool[i].model)
-                    --hook.Add("MetrostroiBigLag",self.ClientModels[i],function(ent)
-                    --    if not self.Pool then return end
-                    --    ent:SetPos(self.Pool[i].pos)
-                    --    ent:SetAngles(self.Pool[i].ang)
-                    --    --if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
-                    --    --ent.Spawned = true
-                    --end)
                     self.ClientModels[ i ] = ClientsideModel( self.Pool[ i ].model, RENDERGROUP_OPAQUE )
                     self.ClientModels[ i ]:SetPos( self.Pool[ i ].pos )
                     self.ClientModels[ i ]:SetAngles( self.Pool[ i ].ang )
@@ -265,13 +285,6 @@ function ENT:Think()
         pos.z = self:GetPos().z
         -- Create clientside model
         local i = math.max( 1, math.min( self:PoolSize(), 1 + math.floor( math.random() * self:PoolSize() + 0.5 ) ) )
-        --local ent = ents.CreateClientProp("models/metrostroi/81-717/reverser.mdl")
-        --ent:SetModel(self.Pool[i].model)
-        --hook.Add("MetrostroiBigLag",ent,function(ent)
-        --    ent:SetPos(pos)
-        --    --if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
-        --    --ent.Spawned = true
-        --end)
         local ent = ClientsideModel( self.Pool[ i ].model, RENDERGROUP_OPAQUE )
         ent:SetPos( pos )
         ent:SetSkin( math.floor( ent:SkinCount() * self.Pool[ i ].skin ) )
@@ -302,12 +315,15 @@ function ENT:Think()
         -- Get pos and target in XY plane
         local pos = v.ent:GetPos()
         local target = v.target
+        local floorHeight = self:GetNW2Int( "FloorHeight", 0 )
+        local trainPos = self:GetNW2Vector( "TrainPos", Vector( 0, 0, 0 ) ).z
+        local heightDelta = self:GetPos().z > trainPos and 0 or floorHeight
         pos.z = 0
-        --target.z = 0
+        target.z = 0
         -- Find direction in which pedestrians must walk
         local targetDir = ( target - pos ):GetNormalized()
         -- Make it go along the platform if too far
-        local distance = pos:Distance( target )
+        local distance = pos:Distance2D( target )
         if distance > 192 then
             local platformDir = ( platformEnd - platformStart ):GetNormalized()
             local projection = targetDir:Dot( platformDir )
@@ -321,6 +337,7 @@ function ENT:Think()
         v.ent:SetPos( v.ent:GetPos() + targetDir * math.min( threshold, speed * self.DeltaTime ) )
         -- Rotate pedestrian
         v.ent:SetAngles( targetDir:Angle() + Angle( 0, 180, 0 ) )
+        if distance < 3 * threshold then v.ent:SetPos( v.ent:GetPos() + targetDir * math.min( threshold, speed * self.DeltaTime ) + ( targetDir + Vector( 0, 0, heightDelta ) ) * math.min( threshold, speed * self.DeltaTime ) ) end
         -- Delete if reached the target point
         if distance < 2 * threshold or LocalPlayer():GetPos().z - v.ent:GetPos().z > 500 then
             v.ent:Remove()
@@ -344,6 +361,10 @@ function ENT:Think()
         --else v.target = new_target
         --end
     end
+end
+
+function ENT:GetPlayerPos()
+    return LocalPlayer():GetPos()
 end
 
 --------------------------------------------------------------------------------
