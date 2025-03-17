@@ -6,7 +6,7 @@ function ENT:Initialize()
     self.PantoHeight = 0
     self.PantoRaised = false
     self.FirstRaise = true
-    self.PantoHeight = self:GetNWVector( "PantoHeight", Vector( 0, 0, 0 ) )
+    self.PantoHeight = self:GetNW2Float( "PantoHeight", 0 )
     self.PantoHeightTab = {}
     self.SoundPlayed = false
     self.Sounds = {}
@@ -14,49 +14,24 @@ end
 
 function ENT:Think()
     if IsValid( self:GetNW2Entity( "TrainEntity" ) ) then self.Train = self:GetNW2Entity( "TrainEntity" ) end
+    self.PantoHeight = self:GetNW2Float( "PantoHeight", 0 )
     self.PantoRaised = self.Train:GetNW2Bool( "PantoUp", false )
     self.PrevTime = self.PrevTime or CurTime()
     self.DeltaTime = CurTime() - self.PrevTime
     self.PrevTime = CurTime()
-    local offset = self:GetNW2Int( "AnimOffset", 0 )
-    if self.PantoRaised == true then
-        self.PantoHeight = self:GetNWFloat( "PantoHeight", 0 )
-        if not self.PantoMomentRegistered then
-            self.PantoMomentRegistered = true
-            self.PantoMoment = CurTime()
-        end
-
-        if self.SoundPlayed == false and CurTime() - self.PantoMoment > ( ( self.PantoHeight / 118 * 100 ) / 100 ) * ( 1.5 + offset ) then --calculate the current percentage of the panto pased on the maximum extension. Extending the panto to full takes 1.5sec, calculate how long it takes at every height.
-            self.SoundPlayed = true
-            self:PlayOnceFromPos( "plonk", "lilly/uf/common/panto_applied.mp3", 2, 1, 0, 2, self:GetPos() + Vector( 0, 0, self.PantoHeight ) )
-        end
-    elseif self.PantoRaised == false then
-        self.PantoHeight = 0
-        self.SoundPlayed = false
-        self.FirstRaise = true
-        self.PantoMomentRegistered = false
-    end
-
     self.PantoHeight = math.Round( self.PantoHeight, 2 )
     self:Draw()
     --print(self.PantoHeight.z)
 end
 
 function ENT:Draw()
-    self:DrawModel()
-    local offset = self:GetNW2Int( "AnimOffset", 0 )
-    --self:Debug()
-    if self.PantoRaised == true then
-        if self.FirstRaise == true then
-            self:SetPoseParameter( "position", self:Animate( "1", self.PantoHeight / ( 119 + offset ), 0, 100, 1.5, 2, 0 ) )
-        else
-            self:SetPoseParameter( "position", self:Animate( "1", self.PantoHeight / ( 119 + offset ), 0, 100, 1.6, 1, 1 ) )
-        end
-    else
-        self:SetPoseParameter( "position", self:Animate( "1", 0, 0, 100, 0.1, 0, 1 ) )
-        self.FirstRaise = true
+    local function lerp( x, in_min, in_max, out_min, out_max )
+        return out_min + ( x - in_min ) * ( out_max - out_min ) / ( in_max - in_min )
     end
 
+    self:DrawModel()
+    local lerped = lerp( self.PantoHeight, 0, 135, 0, 1 )
+    self:SetPoseParameter( "position", self:Animate( "1", lerped, 0, 100, 1.6, 1, 1 ) )
     self:InvalidateBoneCache()
 end
 

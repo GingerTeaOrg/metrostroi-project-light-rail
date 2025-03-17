@@ -1,35 +1,25 @@
-AddCSLuaFile("cl_init.lua")
-AddCSLuaFile("shared.lua")
-include("shared.lua")
-
-util.AddNetworkString("uf_contact")
-
-
-
-
+AddCSLuaFile( "cl_init.lua" )
+AddCSLuaFile( "shared.lua" )
+include( "shared.lua" )
+util.AddNetworkString( "uf_contact" )
+game.AddParticles( "particles/electrical_fx.PCF" )
+PrecacheParticleSystem( "electrical_arc_01" )
 function ENT:SetParameters()
-    local type = self.Types[self.PantoType or "diamond"]
-    self:SetModel(type[1] or "models/lilly/uf/panto_diamond.mdl")
+    local type = self.Types[ self.PantoType or "diamond" ]
+    self:SetModel( type[ 1 ] or "models/lilly/uf/panto_diamond.mdl" )
 end
 
 function ENT:Initialize()
     self:SetParameters()
-    
-    self:PhysicsInit(SOLID_VPHYSICS)
-    self:SetMoveType(MOVETYPE_VPHYSICS)
-    self:SetSolid(SOLID_VPHYSICS)
-    
-
+    self:PhysicsInit( SOLID_VPHYSICS )
+    self:SetMoveType( MOVETYPE_VPHYSICS )
+    self:SetSolid( SOLID_VPHYSICS )
     --[[if IsValid(self:GetPhysicsObject()) then
         self:GetPhysicsObject():SetNoCollide(true)
     end]]
-
     self.Raised = false
-
     self.Height = 0
     self.Voltage = 600
-    self.ContactStates = { false, false }
-    self.NextStates = { false }
     --self.PantoPos = WorldToLocal(self:GetPos())
     self.VoltageDrop = 0
     self.DropByPeople = 0
@@ -40,100 +30,110 @@ function ENT:Initialize()
     self.SoundPlayed = false
 end
 
-
-function ENT:TriggerInput(iname, value)
+function ENT:TriggerInput( iname, value )
     if iname == "Raise" then self.PantographRaised = value end
 end
 
 function ENT:Think()
-    self.BaseClass.Think(self)
-
-    self:SetNW2Int("AnimOffset",self.Types["diamond"][4])
+    self.BaseClass.Think( self )
+    self:SetNW2Int( "AnimOffset", self.Types[ "diamond" ][ 4 ] )
     -- Update timing
     self.PrevTime = self.PrevTime or CurTime()
-    self.DeltaTime = (CurTime() - self.PrevTime)
+    self.DeltaTime = CurTime() - self.PrevTime
     self.PrevTime = CurTime()
-
-    if self.Train.PantoUp == true then
-        
-
-        self:CheckVoltage(self.DeltaTime)
-    end
+    if self.Train.PantoUp == true then self:CheckVoltage( self.DeltaTime ) end
 end
 
-
-function ENT:CheckContact(pos,dir)
-    local result = util.TraceHull({
-        start = pos,
-        endpos = pos + dir * 117,
+function ENT:CheckContact( pos )
+    local position = self:GetPos()
+    local dir = self:GetUp()
+    local result = util.TraceHull( {
+        start = position,
+        endpos = position + dir * 135,
         mask = MASK_SHOT_HULL,
-        filter = { self }, --filter out the panto itself
-        mins = Vector( -26,-26,0 ),--box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
-        maxs = Vector(26,26,4),
-    })
-    
-    if not result.Hit then self:SetNWFloat("PantoHeight",117) return end --if nothing touches the panto, it can spring to maximum freely
-    self:SetNW2Bool("HitWire",result.Hit)
-    local PhysObj = self:GetPhysicsObject()
-    local pantoheight = PhysObj:WorldToLocalVector(result.HitPos+Vector(0,0,math.abs(pos.z))) - PhysObj:WorldToLocalVector(pos+Vector(0,0,math.abs(pos.z)))
+        filter = {
+            self --filter out the panto itself
+        },
+        mins = Vector( -26, -26, 0 ), --box should be 48 units wide and 120 units tall, in order to detect the full range of where catenary can be
+        maxs = Vector( 26, 26, 4 ),
+    } )
+
+    if not result.Hit then --if nothing touches the panto, it can spring to maximum freely
+        self:SetNW2Float( "PantoHeight", 135 )
+        return
+    end
+
+    self:SetNW2Bool( "HitWire", result.Hit )
+    local pantoheight = self:WorldToLocal( result.HitPos ) --- PhysObj:WorldToLocalVector( pos + Vector( 0, 0, math.abs( pos.z ) ) )
     --print(pantoheight.z)
     --print("traceorigin",PhysObj:WorldToLocalVector(pos),"hitpos",PhysObj:WorldToLocalVector(result.HitPos),"calculated height diff",pantoheight.z)
-    self:SetNWFloat("PantoHeight",pantoheight.z)
+    self:SetNW2Float( "PantoHeight", pantoheight.z )
     local traceEnt = result.Entity
-
-    if IsValid(traceEnt) and traceEnt:GetClass() == "player" and UF.Voltage > 40 then --if the player hits the bounding box, unalive them
+    if IsValid( traceEnt ) and traceEnt:GetClass() == "player" and UF.Voltage > 40 then --if the player hits the bounding box, unalive them
         local pPos = traceEnt:GetPos()
-        util.BlastDamage(traceEnt,traceEnt,pPos,64,3.0*UF.Voltage)
+        util.BlastDamage( traceEnt, traceEnt, pPos, 100, 3.0 * UF.Voltage )
         local effectdata = EffectData()
-        effectdata:SetOrigin(pPos + Vector(0,0,-16+math.random()*(40+0)))
-        util.Effect("cball_explode",effectdata,true,true)
-        sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
+        effectdata:SetOrigin( pPos + Vector( 0, 0, -16 + math.random() * ( 40 + 0 ) ) )
+        util.Effect( "cball_explode", effectdata, true, true )
+        sound.Play( "ambient/energy/zap" .. math.random( 1, 3 ) .. ".mp3", pPos, 75, math.random( 100, 150 ), 1.0 )
+        local rnd = math.random( 1, 11 )
+        local msg = {
+            [ 1 ] = "Player %s tried to lick the pantograph! Dummy!",
+            [ 2 ] = "Player %s tried to give the pantograph a hug! Dummy!",
+            [ 3 ] = "Player %s tried to become one with the pantograph! How zen!",
+            [ 4 ] = "Player %s just found out what Mister Ohm liked to do in his free time!",
+            [ 5 ] = "Player %s noticed a slight tingling sensation and an extreme sense of death!",
+            [ 6 ] = "Player %s tried to subway surf!",
+            [ 7 ] = "Who has ascended to the realm of Electron? Why, it's %s!",
+            [ 8 ] = "%s just checked the voltage. It's %s V!",
+            [ 9 ] = "%s will stick to energy drinks from now on instead.",
+            [ 10 ] = "%s, deus Juppiter volt, uh I mean, vult tuum mortem. That's right, it's Latin. Look it up!",
+            [ 11 ] = "%s used Thunderbolt. They hit themself in confusion. It was very effective!"
+        }
+
+        local list = player.GetHumans()
+        for _, v in ipairs( list ) do
+            if traceEnt:Health() == 0 then v:PrintMessage( HUD_PRINTTALK, string.format( msg[ rnd ], traceEnt:GetPlayerInfo().name, UF.Voltage ) ) end
+        end
         return false --don't return anything because... I mean, a human body is a conductor, just not a very good one
-    elseif result.Hit and UF.Voltage > 40 then --randomly create some sparks if we're hitting catenary, with a 12% chance
-        if self.Train.Speed >= 5 and math.random(0,100) >= 80 then
+    elseif result.Hit and traceEnt:GetClass() == "prop_static" and UF.Voltage > 40 then
+        --randomly create some sparks if we're hitting catenary, with a 12% chance
+        if self.Train.Speed >= 5 and math.random( 0, 100 ) >= 80 then
             local pPos = result.HitPos
-            local effectdata = EffectData()
-            effectdata:SetOrigin(pPos + Vector(0,math.random(-2,2),0))
-            util.Effect("StunstickImpact",effectdata,true,true)
-            sound.Play("ambient/energy/zap"..math.random(1,3)..".mp3",pPos,75,math.random(100,150),1.0)
+            ParticleEffect( "electrical_arc_01", pPos, result.Normal:Angle(), self )
+            sound.Play( "ambient/energy/zap" .. math.random( 1, 3 ) .. ".mp3", pPos, 75, math.random( 100, 150 ), 1.0 )
         end
         return result.Hit, traceEnt --yes, we are touching catenary
     end
-
 end
 
-
-function ENT:CheckVoltage(dT)
-    local C_mplr_train_requirewire = GetConVar("mplr_train_requirewire")
+function ENT:CheckVoltage( dT )
+    local C_mplr_train_requirewire = GetConVar( "mplr_train_requirewire" )
+    local supported = C_mplr_train_requirewire:GetInt() > 0
     -- Check contact states
-    if (CurTime() - self.CheckTimeout) <= 0.25 then return end
-    self.CheckTimeout = CurTime()
-    local supported = C_mplr_train_requirewire:GetInt() > 0 and UF.MapHasFullSupport()
-
-    
-    
-    local hit, hitEnt = self:CheckContact(self:GetPos(),self:GetUp())
-    if not IsValid(hitEnt) then self.Voltage = 0 return end
-    if hitEnt:GetClass() == "prop_static" and string.gmatch(hitEnt:GetModel(), "overhead_wire") == "overhead_wire" then
-        self.Voltage = UF.Voltage
-    else
+    if ( CurTime() - self.CheckTimeout ) <= 0.25 then return end
+    local hit, hitEnt = self:CheckContact()
+    if ( not IsValid( hitEnt ) or not hit ) and supported then
         self.Voltage = 0
+        return
     end
 
+    local model = string.match( hitEnt:GetModel(), "overhead_wire", 1 )
+    if not supported or hitEnt:GetClass() == "prop_static" and model then self.Voltage = UF.Voltage end
+    self.CheckTimeout = CurTime()
 end
 
 function ENT:Debug()
-    
-    self:SetNWVector("mins",PhysObj:WorldToLocalVector(Vector( -2,-24,1 )))
-    self:SetNWVector("maxs",PhysObj:WorldToLocalVector(Vector(2,24,3)))
+    self:SetNWVector( "mins", PhysObj:WorldToLocalVector( Vector( -2, -24, 1 ) ) )
+    self:SetNWVector( "maxs", PhysObj:WorldToLocalVector( Vector( 2, 24, 3 ) ) )
 end
 
-function ENT:AcceptInput(inputName, activator, called, data)
+function ENT:AcceptInput( inputName, activator, called, data )
     if inputName == "OnFeederIn" then
-        self.Feeder = tonumber(data)
-        if self.Feeder and not UF.Voltages[self.Feeder] then
-            UF.Voltages[self.Feeder] = 0
-            UF.Currents[self.Feeder] = 0
+        self.Feeder = tonumber( data )
+        if self.Feeder and not UF.Voltages[ self.Feeder ] then
+            UF.Voltages[ self.Feeder ] = 0
+            UF.Currents[ self.Feeder ] = 0
         end
     elseif inputName == "OnFeederOut" then
         self.Feeder = nil
