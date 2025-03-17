@@ -148,6 +148,21 @@ elseif CLIENT and Metrostroi then
 	end )
 end
 
+if CLIENT then
+	for _, ent in ipairs( ents.GetAll() ) do
+		if ent:GetClass() == "gmod_track_uf_dfi" then timer.Simple( 0, function() if IsValid( ent ) and ent:GetClass() == targetClass then CreateEntityHook( ent ) end end ) end
+	end
+
+	-- Hook to detect when entities are created
+	hook.Add( "OnEntityCreated", "ManageEntityHooks_OnSpawn", function( entity )
+		-- Delay to ensure the entity is fully initialized
+		timer.Simple( 0, function() if IsValid( entity ) and entity:GetClass() == targetClass then CreateEntityHook( entity ) end end )
+	end )
+
+	-- Hook to detect when entities are removed
+	hook.Add( "EntityRemoved", "ManageEntityHooks_OnRemove", function( entity ) if entity:GetClass() == targetClass then RemoveEntityHook( entity ) end end )
+end
+
 UF.IBISAnnouncementFiles = {}
 UF.IBISAnnouncementScript = {}
 UF.IBISCommonFiles = {}
