@@ -46,7 +46,7 @@
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
 	Blade1(target_destination) : "Blade 1"
 	Blade2(target_destination) : "Blade 2"
-	AllowSwitchingIron(choices) : "Allow to be switched manually" : 0 : 0 =
+	AllowSwitchingIron(choices) : "Allow to be switched manually by the switching iron" : 0 : 0 =
 	[
     		0 : "No"
     		1 : "Yes"
@@ -59,10 +59,11 @@
 		"main" : "Main"
 		"alt" : "Alt"
 	]
-	PositionCorrespondance(Choices) : "Position" : "Select whether open or closed corresponds to left" : "main" =
+	SecondaryAutomaticSwitching(Choices) : "Automatic Switching" : "no" : "Select whether this trigger is intended as a lower priority trigger and which way it should trigger" =
 	[
-		"main" : "Main"
-		"alt" : "Alt"
+		"no" : "none"
+		"left" : "Left"
+		"right" : "Right"
 	]
 	Invisible(choices) : "Invisible" : 0 =
 	[
@@ -71,12 +72,4 @@
 	]
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
 	SwitchEnt(target_name_or_class) : "Entity to associate with"
-	PairedControllerLeft(target_name_or_class) : "Entity to associate with on left position"
-	PairedControllerRight(target_name_or_class) : "Entity to associate with on right position"
-	PositionCorrespondanceOppositeDir(Choices) : "If the trigger is on the 'dull' end of the point, which position should we switch to if in range?" : "main" : "main" =
-	[
-		"main" : "Main"
-		"alt" : "Alt"
-		"none" : "None (Ignore)"
-	]
 ]
