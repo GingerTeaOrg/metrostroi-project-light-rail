@@ -243,6 +243,14 @@ function ENT:SignalAspect( aspect )
         self:ClientSprites( pos_r, self.SpriteSize, Color( 200, 0, 0 ), false )
         --self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0,alpha_rr), true)
         self:ClientSprites( pos_rr, self.SpriteSize, Color( 200, 0, 0 ), true )
+    elseif aspect == "H3" then
+        self:ClientSprites( pos_o, self.SpriteSize, Color( 204, 116, 0 ), true )
+        --self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0,self.AlphaGreen), true)
+        self:ClientSprites( pos_g, self.SpriteSize, Color( 27, 133, 0 ), false )
+        --self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0,self.AlphaRed), true)
+        self:ClientSprites( pos_r, self.SpriteSize, Color( 200, 0, 0 ), false )
+        --self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0,alpha_rr), true)
+        self:ClientSprites( pos_rr, self.SpriteSize, Color( 200, 0, 0 ), true )
     elseif aspect == "Sh3d" then
         local blinkTime = blinkTime or 0
         local lensOn = false
