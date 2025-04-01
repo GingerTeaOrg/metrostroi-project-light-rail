@@ -17,7 +17,8 @@ function ENT:Initialize()
     self:SetColor( Color( 0, 0, 0, 0 ) )
     self.TrackPosition = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
     self.Node = self.TrackPosition.node1
-    self.SpeedLimit = 0
+    self.SpeedLimit = self:GetNW2Int("SpeedLimit", - 1)
+    self.AllowMultiOccupancy = self:GetNW2Bool("AllowMultiOccupancy", false) 
     self.Left = self.Left or false
     self.Name1 = self.Name1 or " "
     self.Name2 = self.Name2 or " "
