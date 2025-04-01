@@ -39,7 +39,7 @@ function ENT:Initialize()
     } )
 
     self.Aspect = "H0"
-    self.PreviousAspect = ""
+    self.PreviousAspect = "H0"
 end
 
 net.Receive( "mplr-signal", function()
