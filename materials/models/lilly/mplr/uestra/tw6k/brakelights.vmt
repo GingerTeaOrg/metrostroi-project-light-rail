@@ -1,4 +1,5 @@
-"LightmappedGeneric"
+"VertexLitGeneric"
 {
 	"$basetexture" "models/lilly/mplr/uestra/tw6k/brakelights"
+	$surfaceprop Plastic
 }
