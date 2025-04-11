@@ -10,9 +10,9 @@
 		"no" : "No"
 		"yes" : "Yes"
 	]
-	StepsType(choices) : "Are steps required on this station, and which" : 0 : 0 =
+	StepsType(choices) : "Are steps required on this station, and which" : 0 : "Some stations have not received any platform upgrades and may require trains that support folding steps. Passengers will not board if steps aren't available or extended." =
 	[
-    		0 : "No"
+    		0 : "Completely High Floor"
     		1 : "Medium"
 		2 : "Street Level"
 	]
@@ -25,7 +25,7 @@
 	PlatformEnd(target_destination) : "End of the platform (departure side)"
 	ParentDisplay(target_destination) : "Entity that this display should be subordinate to"
 	ThemeName(string) : "Theme" : "Frankfurt" : "Set the display's city theme which alters its behaviour. Essen, Frankfurt, Duesseldorf, Hannover"
-	Type(Choices) : "Type" : "Select whether the display spawns with a pole or not" : "pole" =
+	Type(Choices) : "Type" : "pole" : "Select whether the display spawns mounted on a pole or not" =
 	[
 		"pole" : "With Pole"
 		"nopole" : "Without Pole"
@@ -33,12 +33,12 @@
 ]
 @PointClass base(Targetname, Origin ) studioprop("models/lilly/uf/tram/sgauge/switch_motor.mdl") = gmod_track_uf_switch : "Trackside Switch"
 [
-	DefaultPosition(Choices) : "Default Position" : "Set switch to main/alt by default" : "main" =
+	DefaultPosition(Choices) : "Default Position" : "main" : "Set switch to main/alt by default" =
 	[
 		"main" : "Main"
 		"alt" : "Alt"
 	]
-	PositionCorrespondance(Choices) : "Position Correspondance" : "Which Position Corresponds to Left setting" : "main" =
+	PositionCorrespondance(Choices) : "Position Correspondance" : "main" : "Which Position Corresponds to Left setting" =
 	[
 		"main" : "Main"
 		"alt" : "Alt"
@@ -46,7 +46,12 @@
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
 	Blade1(target_destination) : "Blade 1"
 	Blade2(target_destination) : "Blade 2"
-	AllowSwitchingIron(choices) : "Allow to be switched manually by the switching iron" : 0 : 0 =
+	AllowSwitchingIron(choices) : "Allow to be switched manually by the switching iron" : 0 : "Some switches are prototypically not switchable with the iron, so disable it here as needed." =
+	[
+    		0 : "No"
+    		1 : "Yes"
+	]
+	ReverseTrackOrientationLogic(choices) : "Reverse the direction the entity scans for branching tracks" : 0 : "This is so that if the entity turns out to never find its branching paths, you are able to reverse the direction it scans" =
 	[
     		0 : "No"
     		1 : "Yes"
@@ -71,5 +76,5 @@
     		1 : "Yes"
 	]
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
-	SwitchEnt(target_name_or_class) : "Entity to associate with"
+	SwitchEnt(target_name_or_class) : "Switch Entity to associate with"
 ]
