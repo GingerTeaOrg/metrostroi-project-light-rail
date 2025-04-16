@@ -22,7 +22,7 @@
     "lint_spaceBetweenParens": true,
     "lint_spaceBetweenBrackets": true,
     "lint_spaceBetweenBraces": true,
-    "lint_ignoreFiles": [],
+    "lint_ignoreFiles": ["lua/uf/cl_util.lua"],
     "lint_spaceBeforeComma": true,
     "lint_spaceAfterComma": true,
     "lint_maxLineLength": 0,

@@ -15,7 +15,10 @@ if CLIENT then
         }
     }
 
-    TOOL.ClientConVar[ "signal_type" ] = "Overground_Large"
+    TOOL.ClientConVar[ "sign_type" ] = "speed_60"
+    TOOL.ClientConVar[ "sign_vertical_offset" ] = "0"
+    TOOL.ClientConVar[ "sign_horizontal_offset" ] = "0"
+    TOOL.ClientConVar[ "sign_left" ] = "0"
 end
 
 if SERVER then
@@ -25,9 +28,9 @@ end
 
 function TOOL:Initialize()
     if CLIENT then
-        CreateClientConVar( "uf_signalling_sign_type", "Overground_Large" )
-        CreateClientConVar( "uf_signalling_sign_vertical_offset", "0", true )
-        CreateClientConVar( "uf_signalling_sign_horizontal_offset", "0", true )
+        CreateClientConVar( "uf_signs_sign_type", "speed_60" )
+        CreateClientConVar( "uf_signs_sign_vertical_offset", "0", true )
+        CreateClientConVar( "uf_signs_sign_horizontal_offset", "0", true )
         hook.Add( "PostDrawOpaqueRenderables", "DrawSignalWireframe", function()
             local player = LocalPlayer()
             local trace = player:GetEyeTrace()
@@ -50,11 +53,11 @@ end
 function TOOL.BuildCPanel( panel )
     local tool = tool or {}
     local basePath = "models/lilly/uf/signage/"
-    CreateClientConVar( "uf_signalling_sign_type", "Overground_Large" )
-    CreateClientConVar( "uf_signalling_sign_left", "0", true )
-    CreateClientConVar( "uf_signalling_sign_vertical_offset", "0", true )
-    CreateClientConVar( "uf_signalling_sign_horizontal_offset", "0", true )
-    CreateClientConVar( "uf_signalling_sign_rotation", "0", true )
+    CreateClientConVar( "uf_signs_sign_type", "speed_60" )
+    CreateClientConVar( "uf_signs_sign_left", "0", true )
+    CreateClientConVar( "uf_signs_sign_vertical_offset", "0", true )
+    CreateClientConVar( "uf_signs_sign_horizontal_offset", "0", true )
+    CreateClientConVar( "uf_signs_sign_rotation", "0", true )
     tool.Settings = tool.Settings or {}
     -- Header for signal settings
     panel:AddControl( "Header", {
@@ -78,7 +81,7 @@ function TOOL.BuildCPanel( panel )
         button.DoClick = function()
             LocalPlayer():EmitSound( "buttons/button3.wav" )
             modelPreview:SetModel( basePath .. modelPath )
-            RunConsoleCommand( "uf_signalling_sign_type", basePath .. modelPath )
+            RunConsoleCommand( "uf_signs_sign_type", basePath .. modelPath )
         end
     end
 
@@ -97,7 +100,7 @@ function TOOL.BuildCPanel( panel )
     rotationSlider:SetMax( 75 )
     rotationSlider:SetDecimals( 0 )
     rotationSlider:SetValue( rotation ) -- Initial rotation value
-    rotationSlider.OnValueChanged = function( value ) RunConsoleCommand( "uf_signalling_sign_rotation", tostring( value:GetValue() ) ) end
+    rotationSlider.OnValueChanged = function( value ) RunConsoleCommand( "uf_signs_sign_rotation", tostring( value:GetValue() ) ) end
     panel:AddPanel( rotationSlider )
     local leftCheckBox = panel:AddControl( "Checkbox", {
         Label = "Mount signal left or right hand side of track? (checked for left)",
@@ -106,25 +109,25 @@ function TOOL.BuildCPanel( panel )
     -- Fixing the OnChange for checkbox
     leftCheckBox.OnChange = function( self, bVal )
         local arg = bVal and 1 or 0
-        RunConsoleCommand( "uf_signalling_sign_left", tostring( arg ) )
+        RunConsoleCommand( "uf_signs_sign_left", tostring( arg ) )
     end
 
     local horizontalSlider = vgui.Create( "DNumSlider", panel )
     horizontalSlider:SetText( "Sign Prop Horizontal Offset" )
-    horizontalSlider:SetMin( -200 )
-    horizontalSlider:SetMax( 200 )
+    horizontalSlider:SetMin( -400 )
+    horizontalSlider:SetMax( 400 )
     horizontalSlider:SetDecimals( 1 )
     horizontalSlider:SetValue( rotation ) -- Initial rotation value
-    horizontalSlider.OnValueChanged = function( value ) RunConsoleCommand( "uf_signalling_sign_horizontal_offset", tostring( value:GetValue() ) ) end
+    horizontalSlider.OnValueChanged = function( value ) RunConsoleCommand( "uf_signs_sign_horizontal_offset", tostring( value:GetValue() ) ) end
     panel:AddPanel( horizontalSlider )
     -------------------------------------------------
     local verticalSlider = vgui.Create( "DNumSlider", panel )
     verticalSlider:SetText( "Sign Prop Vertical Offset" )
-    verticalSlider:SetMin( -200 )
-    verticalSlider:SetMax( 200 )
+    verticalSlider:SetMin( -400 )
+    verticalSlider:SetMax( 400 )
     verticalSlider:SetDecimals( 1 )
     verticalSlider:SetValue( rotation ) -- Initial rotation value
-    verticalSlider.OnValueChanged = function( value ) RunConsoleCommand( "uf_signalling_sign_vertical_offset", tostring( value:GetValue() ) ) end
+    verticalSlider.OnValueChanged = function( value ) RunConsoleCommand( "uf_signs_sign_vertical_offset", tostring( value:GetValue() ) ) end
     panel:AddPanel( verticalSlider )
     -- Instructions
     panel:AddControl( "Label", {
@@ -137,7 +140,7 @@ function TOOL.BuildCPanel( panel )
 end
 
 -- Function to create the signal entity
-function TOOL:LeftClick( trace )
+function TOOL:LeftClick()
     if SERVER then
         self.Settings = ServerSettings
         --PrintTable( self.Settings, 1 )
@@ -148,13 +151,17 @@ function TOOL:LeftClick( trace )
             filter = { ply }
         } )
 
-        local signType = GetConVar( "uf_signalling_sign_type" ):GetString()
-        local rotation = GetConVar( "uf_signalling_sign_rotation" ):GetInt()
-        local left = GetConVar( "uf_signalling_sign_left" ):GetInt() > 0
-        local horizontal = GetConVar( "uf_signalling_sign_horizontal_offset" ):GetInt()
-        local vertical = GetConVar( "uf_signalling_sign_vertical_offset" ):GetInt()
+        local signType = self:GetClientInfo( "sign_type" )
+        local rotation = self:GetClientNumber( "sign_rotation", 0 )
+        local left = self:GetClientBool( "sign_left" )
+        local horizontal = self:GetClientNumber( "sign_horizontal_offset" )
+        local vertical = self:GetClientNumber( "sign_vertical_offset" )
         local ent = ents.Create( "gmod_track_mplr_sign" )
-        if not IsValid( ent ) then return false end
+        if not IsValid( ent ) then
+            print( "Sign Entity not valid!!" )
+            return false
+        end
+
         ent.Type = signType
         ent:SetNW2Int( "Horizontal", horizontal )
         ent:SetNW2Int( "Vertical", vertical )
@@ -232,14 +239,14 @@ function TOOL:Think()
             return
         end
 
-        local signType = GetConVar( "uf_signalling_sign_type" ):GetString()
+        local signType = GetConVar( "uf_signs_sign_type" ):GetString()
         local modelName = signType or "models/error.mdl"
         if not modelName then
             print( "No model sent, bailing out of preview function" )
             return
         end
 
-        local rotation = GetConVar( "uf_signalling_sign_rotation" ):GetInt()
+        local rotation = GetConVar( "uf_signs_sign_rotation" ):GetInt()
         -- Spawn preview model if it doesn't exist
         if not IsValid( self.PreviewModel ) then
             self.PreviewModel = ClientsideModel( modelName, RENDERGROUP_OPAQUE )
@@ -247,9 +254,9 @@ function TOOL:Think()
             self.PreviewModel:SetModel( modelName )
         end
 
-        local left = GetConVar( "uf_signalling_sign_left" ):GetInt() > 0
-        local horizontal = GetConVar( "uf_signalling_sign_horizontal_offset" ):GetInt()
-        local vertical = GetConVar( "uf_signalling_sign_vertical_offset" ):GetInt()
+        local left = GetConVar( "uf_signs_sign_left" ):GetInt() > 0
+        local horizontal = GetConVar( "uf_signs_sign_horizontal_offset" ):GetInt()
+        local vertical = GetConVar( "uf_signs_sign_vertical_offset" ):GetInt()
         local offset = left and -60 or 60 -- Y-axis offset
         local horizontalOffset = offset + horizontal
         local delta = Vector( 0, horizontalOffset, vertical )
@@ -264,7 +271,7 @@ function TOOL:Think()
         self.PreviewModel:SetAngles( angleToPlayer + Angle( 0, -90, 0 ) + Angle( 0, rotation, 0 ) )
         self.PreviewModel:SetModel( modelName )
         self.PreviewModel:SetRenderMode( RENDERMODE_TRANSCOLOR )
-        self.PreviewModel:SetColor( Color( 255, 255, 255, 200 ) )
+        self.PreviewModel:SetColor( Color( 255, 255, 255, 161 ) )
         self.PreviewModel:SetNoDraw( false )
     end
 end

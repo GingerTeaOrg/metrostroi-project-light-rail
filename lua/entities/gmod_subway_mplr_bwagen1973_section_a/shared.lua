@@ -54,12 +54,23 @@ function ENT:InitializeSounds()
 		"lilly/uf/u2/insidecab/Bell_end.mp3"
 	}
 
+	self.SoundPositions[ "bell_in" ] = { 800, 1e9, Vector( 480, -20, 50 ), 1 }
+	-----------------------------------------------------------------------------
 	self.SoundNames[ "Cruise" ] = { "lilly/mplr/b-wagen_common/cruise.mp3" }
 	self.SoundPositions[ "Cruise" ] = { 800, 1e9, Vector( 240, 0, 50 ), 1 }
 	self.SoundNames[ "DepartureConfirmed" ] = { "lilly/mplr/common/departure_ready.wav" }
 	self.SoundPositions[ "DepartureConfirmed" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
+	self.SoundNames[ "DepartureConfirmed2" ] = { "lilly/mplr/b80c_firstgen/departure_bell_1.wav" }
+	self.SoundPositions[ "DepartureConfirmed2" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
+	self.SoundNames[ "DepartureConfirmed3" ] = { "lilly/mplr/b80c_firstgen/departure_bell_2.wav" }
+	self.SoundPositions[ "DepartureConfirmed3" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
+	self.SoundNames[ "brake_hiss" ] = { "lilly/mplr/b80c_firstgen/brake_hiss.wav" }
+	self.SoundPositions[ "brake_hiss" ] = { 800, 1e9, Vector( 350, 0, 50 ), 1 }
+	self.SoundNames[ "chopper" ] = { "lilly/mplr/b80c_firstgen/chopper.wav" }
+	self.SoundPositions[ "chopper" ] = { 800, 1e9, Vector( 350, 0, 50 ), 1 }
+	self.SoundNames[ "key_insert" ] = { "lilly/mplr/b-wagen_common/key_insert.wav" }
+	self.SoundPositions[ "key_insert" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
 	-----------------------------------------------------------------------------------------
-	self.SoundPositions[ "bell_in" ] = { 800, 1e9, Vector( 480, -20, 50 ), 1 }
 	self.SoundNames[ "IBIS_beep" ] = { "lilly/uf/IBIS/beep.mp3" }
 	self.SoundPositions[ "IBIS_beep" ] = { 1100, 1e9, Vector( 412, -12, 55 ), 5 }
 	self.SoundNames[ "IBIS_bootup" ] = { "lilly/uf/IBIS/startup_chime.mp3" }
@@ -74,21 +85,39 @@ function ENT:InitializeSounds()
 	self.SoundPositions[ "key_insert" ] = { 1100, 1e9, Vector( 480, 36, 70 ), 1 }
 end
 
-ENT.Cameras = { { Vector( 500, -50, 90 ), Angle( 0, -170, 0 ), "Train.UF_U2.OutTheWindowRight" }, { Vector( 500, 50, 90 ), Angle( 0, 170, 0 ), "Train.UF_U2.OutTheWindowLeft" }, { Vector( 300, 6, 100 ), Angle( 0, 180 + 5, 0 ), "Train.UF_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 100 ), Angle( 0, 0, 0 ), "Train.UF_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 480, -5, 100 ), Angle( 0, -180, 0 ), "Train.UF.RouteList" }, { Vector( 530, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.UF_U2.Bogey" }, { Vector( 505, -7, 80 ), Angle( 35, 0, 0 ), "Train.UF.IBIS" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.UF.Panto" } }
+ENT.Cameras = { { Vector( 500, -50, 90 ), Angle( 0, -170, 0 ), "Train.UF.OutTheWindowRight" }, { Vector( 500, 50, 90 ), Angle( 0, 170, 0 ), "Train.UF_U2.OutTheWindowLeft" }, { Vector( 300, 6, 100 ), Angle( 0, 180 + 5, 0 ), "Train.UF_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 100 ), Angle( 0, 0, 0 ), "Train.UF_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 480, -5, 100 ), Angle( 0, -180, 0 ), "Train.UF.RouteList" }, { Vector( 530, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.UF_U2.Bogey" }, { Vector( 505, -7, 80 ), Angle( 35, 0, 0 ), "Train.UF.IBIS" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.UF.Panto" } }
 ENT.LeftDoorPositions = {}
 ENT.RightDoorPositions = {}
 ENT.SectionADoors = {
-	[ 1 ] = Vector( 330.889, -46.4148, 35.3841 ),
-	[ 2 ] = Vector( 88.604, -46.4148, 35.3841 ),
-	[ 7 ] = Vector( 330.889, 46.4148, 35.3841 ),
-	[ 8 ] = Vector( 88.604, 46.4148, 35.3841 )
+	[ 1 ] = true,
+	[ 2 ] = true,
+	[ 7 ] = true,
+	[ 8 ] = true
 }
 
 ENT.SectionBDoors = {
-	[ 3 ] = Vector( -330.889, -46.4148, 35.3841 ),
-	[ 4 ] = Vector( -88.604, -46.4148, 35.3841 ),
-	[ 5 ] = Vector( -330.889, 46.4148, 35.3841 ),
-	[ 6 ] = Vector( -88.604, 46.4148, 35.3841 )
+	[ 3 ] = true,
+	[ 4 ] = true,
+	[ 5 ] = true,
+	[ 6 ] = true
+}
+
+ENT.DoorsRight = {
+	[ 1 ] = Vector( 330.889, -46.4148, 35.3841 ),
+	[ 2 ] = Vector( 330.889, -46.4148, 35.3841 ),
+	[ 3 ] = Vector( 88.604, -46.4148, 35.3841 ),
+	[ 4 ] = Vector( -330.889, -46.4148, 35.3841 ),
+	[ 5 ] = Vector( -88.604, -46.4148, 35.3841 ),
+	[ 6 ] = Vector( -88.604, -46.4148, 35.3841 ),
+}
+
+ENT.DoorsLeft = {
+	[ 1 ] = Vector( -330.889, 46.4148, 35.3841 ),
+	[ 2 ] = Vector( -330.889, 46.4148, 35.3841 ),
+	[ 3 ] = Vector( -88.604, 46.4148, 35.3841 ),
+	[ 4 ] = Vector( 330.889, 46.4148, 35.3841 ),
+	[ 5 ] = Vector( 88.604, 46.4148, 35.3841 ),
+	[ 6 ] = Vector( 88.604, 46.4148, 35.3841 )
 }
 
 ENT.StepsLow = true
@@ -96,6 +125,16 @@ ENT.StepsMedium = true
 ENT.StopRequest = true
 ENT.Bidirectional = true
 ENT.DoorsUnlockToggle = true
+ENT.BlinkersLeft = {
+	[ 58 ] = true,
+	[ 48 ] = true
+}
+
+ENT.BlinkersRight = {
+	[ 49 ] = true,
+	[ 59 ] = true
+}
+
 ENT.MirrorCams = { Vector( 540, 60, 100 ), Angle( 1, 180, 0 ), 50, Vector( 540, -60, 100 ), Angle( 1, 180, 0 ), 50 }
 function ENT:InitializeSystems()
 	self:LoadSystem( "DeadmanUF", "Duewag_Deadman" )
@@ -106,7 +145,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem( "INDUSI", "mplr_INDUSI_scanner" )
 	self:LoadSystem( "IBIS" )
 	self:LoadSystem( "Announcer", "uf_announcer" )
-	self:LoadSystem( "MPLR_DoorHandler" )
+	self:LoadSystem( "DoorHandler", "MPLR_DoorHandler" )
 	self:LoadSystem( "Blinkers" )
 	-- self:LoadSystem("duewag_electric")
 end
@@ -116,7 +155,8 @@ ENT.SubwayTrain = {
 	Name = "B-Wagen Series 1973",
 	WagType = 0,
 	Manufacturer = "Duewag",
-	Section = "A"
+	Section = "A",
+	Vmax = 100
 }
 
 ENT.AnnouncerPositions = { { Vector( 293, 44, 102 ) }, { Vector( 293, -44, 102 ) } }
@@ -127,6 +167,7 @@ ENT.Spawner = {
 	interim = "gmod_subway_mplr_bwagen1973_section_a",
 	Metrostroi.Skins.GetTable( "Texture", "Spawner.Texture", false, "train" ),
 	Metrostroi.Skins.GetTable( "Texture", "Spawner.Texture", false, "cab" ),
+	{ "LZBEnable", "Spawner.B1973.LZBEnable", "Boolean", false, function( ent, val, rot ) ent:SetNW2Bool( "LZBLoad", val and not rot or not val and rot ) end },
 	{
 		"IBISData",
 		"IBIS Line Index",

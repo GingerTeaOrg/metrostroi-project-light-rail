@@ -1,8 +1,10 @@
 ENT.Type = "anim"
+ENT.Base = "base_gmodentity"
 ENT.PrintName = "Signalling Element"
 ENT.Category = "Metrostroi: Project Light Rail"
 ENT.Spawnable = true
 ENT.AdminOnly = true
+ENT.AutomaticFrameAdvance = true
 ENT.PhysgunDisabled = true
 ENT.Lenses = {
     R = Color( 200, 0, 0 ),

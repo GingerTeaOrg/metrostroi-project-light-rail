@@ -7,8 +7,7 @@ local MaxWagons = 0
 local MaxWagonsOnPlayer = 0
 local Settings = {
 	Train = 1,
-	WagNum = 3,
-	AutoCouple = true,
+	WagNum = 1,
 }
 
 ENT.Settings = Settings
@@ -20,7 +19,7 @@ end
 local function LoadConCMD()
 	Settings = util.JSONToTable( file.Read( "MPLR_train_spawner.txt", "DATA" ) ) or Settings
 	if not Settings[ Settings.Train ] then Settings[ Settings.Train ] = {} end
-	PrintTable( Settings )
+	--PrintTable( Settings )
 end
 
 local Pos = 0
@@ -581,7 +580,7 @@ local function createFrame()
 		tbl = table.Copy( Settings[ Settings.Train ] )
 		tbl.Train = Settings.Train
 		tbl.AutoCouple = Settings.AutoCouple
-		tbl.WagNum = Settings.WagNum or 1
+		tbl.WagNum = 1
 		net.Start( "train_spawner_uf_open" )
 		net.WriteTable( tbl )
 		net.SendToServer()

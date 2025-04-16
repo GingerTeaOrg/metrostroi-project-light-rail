@@ -2469,6 +2469,8 @@ end )
 
 function ENT:Wipe( speed )
     local dT = self.DeltaTime > 0 and self.DeltaTime or 1
+    local factor = speed == 1 and 0.05 or speed == 2 and 0.25 or speed == 3 and 0.45
+    if not factor or factor == 0 then return end
     local function wipeOnce( dT, factor )
         local wipeDown = self.WipeDown
         if self.WiperState < 1 and not self.WipeDown then
@@ -2494,20 +2496,20 @@ function ENT:Wipe( speed )
 
     if speed == 1 then
         if not self.Wiped then
-            self.Wiped = wipeOnce( dT, 0.05 )
+            self.Wiped = wipeOnce( dT, factor )
             self.WipeInterval = CurTime()
-        elseif self.Wiped and CurTime() - self.WipeInterval > 5 then
+        elseif self.Wiped and self.WipeInterval and CurTime() - self.WipeInterval > 5 or not self.WipeInterval then
             self.Wiped = false
         end
     elseif speed == 2 then
         if not self.Wiped then
-            self.Wiped = wipeOnce( dT, 0.25 )
+            self.Wiped = wipeOnce( dT, factor )
         elseif self.Wiped then
             self.Wiped = false
         end
     elseif speed == 3 then
         if not self.Wiped then
-            self.Wiped = wipeOnce( dT, 0.45 )
+            self.Wiped = wipeOnce( dT, factor )
         elseif self.Wiped then
             self.Wiped = false
         end

@@ -14,3 +14,18 @@ end
 function ENT:OnRemove()
 	if IsValid( self.Sign ) then self.Sign:Remove() end
 end
+
+net.Receive( "RespawnSign", function() ENT.InPVS = net.ReadBool() end )
+function ENT:Think()
+	if not IsValid( self.Sign ) and self.InPVS then
+		self.Sign:Remove()
+		local offset = self:LocalToWorld( ( self.Left and Vector( 0, -60, 0 ) or Vector( 0, 60, 0 ) ) + Vector( 0, self.Horizontal, self.Vertical ) )
+		self.Sign:SetPos( offset )
+		self.Sign:SetAngles( self:GetAngles() - Angle( 0, 90, 0 ) )
+		self.Sign:Spawn()
+	end
+end
+
+function ENT:Draw()
+	--dummy function to bypass drawing the error model
+end

@@ -6,15 +6,15 @@ ENT.Types = {
     [ "u5" ] = { "models/lilly/uf/u5/bogey.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, -3.3 ), Vector( 4.3, 63, -3.3 ) },
     [ "u2joint" ] = { "models/lilly/uf/u2/jointbogey.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
     [ "b_motor" ] = { "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl", Vector( 0, 0.0, -1.5 ), Angle( 0, 0, 0 ), "models/lilly/mplr/b_wheelset.mdl", Vector( 0, -61, -14 ), Vector( 0, 61, -15 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
-    [ "b_joint" ] = { "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl", Vector( 0, 0.0, -1.5 ), Angle( 0, 0, 0 ), "models/lilly/mplr/b_wheelset.mdl", Vector( 0, -61, -28 ), Vector( 0, 61, -15 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
+    [ "b_joint" ] = { "models/lilly/mplr/bogeys/b-wagen/joint_bogey.mdl", Vector( 0, 0.0, -1.5 ), Angle( 0, 0, 0 ), "models/lilly/mplr/b_wheelset.mdl", Vector( 0, -61, -28 ), Vector( 0, 61, -15 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
     [ "u3joint" ] = { "models/lilly/uf/u3/jointbogey.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
     [ "duewag_motor" ] = { "models/lilly/uf/bogey/duewag_motor.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, -3.3 ), Vector( 4.3, 63, -3.3 ) },
-    [ "pt" ] = { "models/lilly/uf/ptb/ptbogey.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, -3.3 ), Vector( 4.3, 63, -3.3 ) },
+    [ "pt" ] = { "models/lilly/uf/bogey/duewag_motor.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, -3.3 ), Vector( 4.3, 63, -3.3 ) },
     [ "def" ] = { "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -28 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, -3.3 ), Vector( 4.3, 63, -3.3 ) }
 }
 
 function ENT:SetParameters()
-    local typ = UF.BogeyTypes[ self.BogeyType or "def" ]
+    local typ = self.Types[ self.BogeyType or "def" ]
     self:SetModel( typ and typ[ 1 ] or "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl" )
     self.BogeyOffset = typ and typ[ 7 ]
 end
@@ -303,9 +303,12 @@ end
 
 function ENT:UpdateTextures()
     if texture and texture.func then self:SetNW2String( "Texture", texture.func( self ) ) end
-    -- self.Texture = self:GetNW2String("Texture")
+    if passtexture and passtexture.func then self:SetNW2String( "PassTexture", passtexture.func( self ) ) end
+    if cabintexture and cabintexture.func then self:SetNW2String( "CabTexture", cabintexture.func( self ) ) end
+    self.Texture = self:GetNW2String( "Texture" )
+    self.PassTexture = self:GetNW2String( "PassTexture" )
+    self.CabTexture = self:GetNW2String( "CabTexture" )
     local texture = Metrostroi.Skins[ "train" ][ self.Texture ]
-    -- print(Metrostroi.Skins["train"][self.Texture])
     for k in pairs( self:GetMaterials() ) do
         self:SetSubMaterial( k - 1, "" )
     end
@@ -316,7 +319,6 @@ function ENT:UpdateTextures()
             local tex = self:GetAdditionalTextures( tex )
             if tex then
                 self:SetSubMaterial( k - 1, tex )
-                -- print("test")
                 continue
             end
         end
@@ -325,6 +327,4 @@ function ENT:UpdateTextures()
     end
 
     if texture and texture.postfunc then texture.postfunc( self ) end
-    local level = math.random() > 0.95 and 0.7 or math.random() > 0.8 and 0.55 or math.random() > 0.35 and 0.25 or 0
-    self:SetNW2Vector( "DirtLevel", math.Clamp( level + math.random() * 0.2 - 0.1, 0, 1 ) )
 end

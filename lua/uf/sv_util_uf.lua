@@ -22,6 +22,31 @@ local function consumeFromFeeder( inCurrent, inFeeder )
     end
 end
 
+util.AddNetworkString( "RBLTriggerClientRequest" )
+util.AddNetworkString( "RBLSendToClient" )
+--format: multiline
+net.Receive(
+    "RBLTriggerClientRequest", 
+    function( ply, cmd, args )
+        local line = net.ReadFloat()
+        local ply = net.ReadPlayer()
+        local arg = net.ReadFloat()
+        if not arg then
+            net.Start( "RBLSendToClient" )
+            net.WriteBool( false ) --hasArgument
+            net.WriteTable( UF.IBISRegisteredTrains )
+            net.Send( ply )
+        elseif arg then
+            local result = UF.IBISRegisteredTrains[ arg ]
+            if result then
+                net.Start( "RBLSendToClient" )
+                net.WriteBool( true ) --hasArgument
+                net.WriteBool( true ) --found match in table
+            end
+        end
+    end
+)
+
 local prevTime
 --[[hook.Add("Think", "UF_ElectricConsumptionThink", function()
     -- Change in time
@@ -233,3 +258,21 @@ end
 
 function UF.VoltageChanged()
 end
+
+-- format: multiline
+hook.Add(
+    "PlayerEnteredVehicle", 
+    "MPLRPlayerTrain", 
+    function( ply, veh )
+        ply.InMPLRTrain = IsValid( veh:GetNW2Entity( "TrainEntity" ) ) and veh:GetNW2Entity( "TrainEntity" ).Base == "gm_subway_uf_base"
+    end
+)
+
+-- format: multiline
+hook.Add(
+    "PlayerLeaveVehicle", 
+    "MPLRPlayerTrain", 
+    function( ply, veh )
+        ply.InMPLRTrain = false
+    end
+)

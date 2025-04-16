@@ -1,8 +1,8 @@
 include( "shared.lua" )
 -- Bogey-related sounds
 ENT.SoundNames = {}
-ENT.SoundNames[ "u2_1" ] = "lilly/uf/bogeys/u2/motor_primary.wav"
-ENT.SoundNames[ "u2_2" ] = "lilly/uf/bogeys/u2/motor_secondary_test.wav"
+ENT.SoundNames[ "u2_1" ] = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_primary.mp3"
+ENT.SoundNames[ "u2_2" ] = "lilly/uf/bogeys/u2/test/downpitch/engine_loop_combined.mp3"
 --ENT.SoundNames["u2_3"]  = "lilly/uf/u2/overhaul/u2_engine_secondary.mp3"
 ENT.SoundNames[ "u3_1" ] = "lilly/uf/bogeys/u2/motor_primary.wav"
 ENT.SoundNames[ "u3_2" ] = "lilly/uf/u3/chopper1.mp3"
@@ -107,7 +107,7 @@ function ENT:Initialize()
     self.MotorPowerSound = 0
     self.PlayTime = { 0, 0 }
     self.SmoothAngleDelta = 0
-    self.CurrentBrakeSqueal = 0
+    self.CurrselfBrakeSqueal = 0
     self:ReinitializeSounds()
 end
 
@@ -126,8 +126,19 @@ function ENT:Think()
     self.PrevTime = self.PrevTime or RealTime() - 0.33
     self.DeltaTime = RealTime() - self.PrevTime
     self.PrevTime = RealTime()
-    -- Get interesting parameters
     local train = self:GetNW2Entity( "TrainEntity" )
+    local soundFunc = train.MotorSoundFunc
+    if soundFunc then
+        soundFunc( self )
+    else
+        self:DefaultSoundFunc()
+    end
+
+    self:FlangeSqueal()
+end
+
+function ENT:DefaultSoundFunc()
+    -- Get interesting parameters
     local soundsmul = 1
     --[[local streetC,tunnelC = 1,0
     if IsValid(train) then
@@ -209,15 +220,15 @@ function ENT:Think()
             local volume = brakeSqueal * squealVolume * math.Clamp( 1 - ( speed - 2 ) / 3, 0, 1 )
             self:SetSoundState( "brakea_loop1", volume * ( 1 - secondSqueal * 0.5 ) * 0.4, squealPitch, false, 75 )
             self:SetSoundState( "brakea_loop2", volume * secondSqueal * 0.4, squealPitch, false, 75 )
-        elseif self.CurrentBrakeSqueal > 0 then
+        elseif self.CurrselfBrakeSqueal > 0 then
             self:SetSoundState( "brakea_loop1", 0, 0 )
             self:SetSoundState( "brakea_loop2", 0, 0 )
         end
 
-        self.CurrentBrakeSqueal = brakeSqueal
+        self.CurrselfBrakeSqueal = brakeSqueal
     else
         local brakeSqueal1 = math.max( 0.0, math.min( 2, self:GetNW2Float( "BrakeSqueal1" ) ) )
-        if not self.SquealVolume or brakeSqueal1 <= 0 and self.CurrentBrakeSqueal > 0 or self.SquealType ~= self:GetNW2Int( "SquealType", 1 ) then
+        if not self.SquealVolume or brakeSqueal1 <= 0 and self.CurrselfBrakeSqueal > 0 or self.SquealType ~= self:GetNW2Int( "SquealType", 1 ) then
             self.SquealType = self:GetNW2Int( "SquealType", 1 )
             self.SquealSound1 = "brake_loop" .. self.SquealType
             self.SquealVolume = self.SquealType == 1 and 0.2 or 1
@@ -255,9 +266,13 @@ function ENT:Think()
             end
         end
 
-        self.CurrentBrakeSqueal = brakeSqueal1
+        self.CurrselfBrakeSqueal = brakeSqueal1
     end
+end
 
+function ENT:FlangeSqueal()
+    local speed = self:GetSpeed()
+    local soundsmul = 1
     -- Generate procedural landscape thingy
     local a = self:GetPos().x
     local b = self:GetPos().y

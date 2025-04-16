@@ -8,7 +8,7 @@ ENT.Instructions = ""
 ENT.Category = "Metrostroi: Project Light Rail"
 ENT.PrintName = "Duewag U2"
 ENT.Spawnable = false
-ENT.AdminSpawnable = true
+ENT.AdminSpawnable = false
 ENT.SkinsType = "U2h"
 ENT.DontAccelerateSimulation = true
 function ENT:PassengerCapacity()
@@ -183,34 +183,6 @@ function ENT:InitializeSounds()
 end
 
 ENT.AnnouncerPositions = { { Vector( 420, -38.2, 80 ) }, { Vector( 420, 38.2, 80 ) } }
-ENT.DoorVectorsLeft = {
-	[ 1 ] = Vector( -360, 45.1, 22.5 ),
-	[ 2 ] = Vector( -118, 45.1, 22.5 ),
-	[ 3 ] = Vector( 118, 45.1, 22.5 ),
-	[ 4 ] = Vector( 360, 45.1, 22.5 )
-}
-
-ENT.DoorVectorsRight = {
-	[ 1 ] = Vector( 360, -45.1, 22.5 ),
-	[ 2 ] = Vector( 118, -45.1, 22.5 ),
-	[ 3 ] = Vector( -118, -45, 22.5 ),
-	[ 4 ] = Vector( -360, -45.1, 22.5 )
-}
-
-ENT.LeftDoorPositions = {
-	[ 1 ] = Vector( -360, 45.1, 22.5 ),
-	[ 2 ] = Vector( -118, 45.1, 22.5 ),
-	[ 3 ] = Vector( 118, 45.1, 22.5 ),
-	[ 4 ] = Vector( 360, 45.1, 22.5 )
-}
-
-ENT.RightDoorPositions = {
-	[ 1 ] = Vector( 360, -45.1, 22.5 ),
-	[ 2 ] = Vector( 118, -45.1, 22.5 ),
-	[ 3 ] = Vector( -118, -45, 22.5 ),
-	[ 4 ] = Vector( -360, -45.1, 22.5 )
-}
-
 ENT.DoorNumberRight = 4
 ENT.DoorNumberLeft = 4
 ENT.SectionADoors = {
@@ -227,18 +199,35 @@ ENT.SectionBDoors = {
 	[ 6 ] = Vector( -88.604, 46.4148, 35.3841 )
 }
 
+ENT.DoorsLeft = {
+	[ 1 ] = true,
+	[ 2 ] = true,
+	[ 3 ] = true,
+	[ 4 ] = true,
+}
+
+ENT.DoorsRight = {
+	[ 1 ] = true,
+	[ 2 ] = true,
+	[ 3 ] = true,
+	[ 4 ] = true,
+}
+
+ENT.RequireDepartureAcknowledge = true
 ENT.Bidirectional = true
-ENT.Cameras = { { Vector( 400, -55, 90 ), Angle( 0, -170, 0 ), "Train.UF_U2.OutTheWindowRight" }, { Vector( 400, 55, 90 ), Angle( 0, 170, 0 ), "Train.UF_U2.OutTheWindowLeft" }, { Vector( 300, 6, 90 ), Angle( 0, 180 + 5, 0 ), "Train.UF_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 90 ), Angle( 0, 0, 0 ), "Train.UF_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 388, -30, 80 ), Angle( 0, -90, 0 ), "Train.UF_U2.RouteList" }, { Vector( 388, 0, 120 ), Angle( 0, -180, 0 ), "Train.UF_U2.Rollsign" }, { Vector( 450, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.UF_U2.Bogey" }, { Vector( 413, -11, 62 ), Angle( 35, -46, 0 ), "Train.UF_U2.IBIS" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.UF_U2.IBISKey" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.UF_U2.Panto" } }
-ENT.MirrorCams = { Vector( 441, 72, 15 ), Angle( 1, 180, 0 ), 15, Vector( 441, -72, 15 ), Angle( 1, 180, 0 ), 18 }
+ENT.Cameras = { { Vector( 413, -11, 62 ), Angle( 35, -46, 0 ), "Train.UF_U2.IBIS" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.UF_U2.IBISKey" }, { Vector( 400, -55, 90 ), Angle( 0, -170, 0 ), "Train.UF_U2.OutTheWindowRight" }, { Vector( 400, 55, 90 ), Angle( 0, 170, 0 ), "Train.UF_U2.OutTheWindowLeft" }, { Vector( 300, 6, 90 ), Angle( 0, 180 + 5, 0 ), "Train.UF_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 90 ), Angle( 0, 0, 0 ), "Train.UF_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 388, -30, 80 ), Angle( 0, -90, 0 ), "Train.UF_U2.RouteList" }, { Vector( 388, 0, 120 ), Angle( 0, -180, 0 ), "Train.UF_U2.Rollsign" }, { Vector( 450, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.UF_U2.Bogey" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.UF_U2.IBISKey" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.UF_U2.Panto" } }
+ENT.MirrorCams = { Vector( 441, 72, 100 ), Angle( 1, 180, 0 ), 30, Vector( 441, -72, 100 ), Angle( 1, 180, 0 ), 30 }
+ENT.MirrorRight = true
 function ENT:InitializeSystems()
 	self:LoadSystem( "CoreSys", "Duewag_U2" )
-	self:LoadSystem( "DeadmanUF", "Duewag_Deadman" )
+	self:LoadSystem( "Deadman", "Duewag_Deadman" )
 	self:LoadSystem( "IBIS" )
 	self:LoadSystem( "Announcer", "uf_announcer" )
 	self:LoadSystem( "Duewag_Battery" )
 	self:LoadSystem( "Panel", "U2_panel" )
 	self:LoadSystem( "Resistorbank" )
-	self:LoadSystem( "MPLR_DoorHandler" )
+	self:LoadSystem( "DoorHandler", "MPLR_DoorHandler" )
+	self:LoadSystem( "Blinkers" )
 	-- self:LoadSystem("duewag_electric")
 end
 
@@ -246,9 +235,11 @@ ENT.SubwayTrain = {
 	Type = "U2",
 	Name = "U2h",
 	WagType = 0,
-	Manufacturer = "Duewag"
+	Manufacturer = "Duewag",
+	Vmax = 80
 }
 
+ENT.Bidirectional = true
 ENT.AnnouncerPositions = { { Vector( 293, 44, 102 ) }, { Vector( 293, -44, 102 ) } }
 function ENT:DeltaTimeGen()
 	ENT.PrevTime = ENT.PrevTime or RealTime()
@@ -257,6 +248,25 @@ function ENT:DeltaTimeGen()
 	return ENT.DeltaTime
 end
 
+ENT.IBISKeyRequired = true
+ENT.BlinkersLeft = {
+	[ 58 ] = true,
+	[ 48 ] = true
+}
+
+ENT.BlinkersRight = {
+	[ 49 ] = true,
+	[ 59 ] = true
+}
+
+ENT.DoorsUnlockedLamp = {
+	[ 42 ] = true
+}
+
+---------------------------
+ENT.BrakeLightLeft = 57
+ENT.BrakeLightRight = 56
+---------------------------
 ENT.NumberRanges = { { 303, 364 } }
 ENT.Spawner = {
 	model = { "models/lilly/uf/u2/u2h.mdl", "models/lilly/uf/u2/u2hb.mdl", "models/lilly/uf/u2/u2-cabfront.mdl" },
@@ -265,15 +275,15 @@ ENT.Spawner = {
 	Metrostroi.Skins.GetTable( "Texture", "Spawner.Texture", false, "train" ),
 	Metrostroi.Skins.GetTable( "Texture", "Spawner.Texture", false, "cab" ),
 	--[[spawnfunc = function(i,tbls,tblt)
-        local WagNum = tbls.WagNum
-        if WagNum > 1 then
-			WagNum = 1
-			return WagNum
-			return "gmod_subway_uf_u2_section_a"
-		else
-			return "gmod_subway_uf_u2_section_a"
-		end
-    end,]]
+	local WagNum = tbls.WagNum
+	if WagNum > 1 then
+		WagNum = 1
+		return WagNum
+		return "gmod_subway_uf_u2_section_a"
+	else
+		return "gmod_subway_uf_u2_section_a"
+	end
+end,]]
 	{ "RetroMode", "Spawner.U2.RetroMode", "Boolean", false, function( ent, val, rot ) ent:SetNW2Bool( "RetroMode", val and not rot or not val and rot ) end },
 	{ "Old Mirror", "Spawner.U2.OldMirror", "Boolean", true, function( ent, val, rot ) ent:SetNW2Bool( "OldMirror", val and not rot or not val and rot ) end },
 	-- {"San Diego","Spawner.U2.San Diego","Boolean",false,function(ent,val,rot) ent:SetNW2Bool("SanDiego",val and not rot or not val and rot) end},
@@ -454,5 +464,37 @@ if CLIENT then
 				end
 			end )
 		end
+	end
+end
+
+function ENT:RollsignTracker()
+	if CLIENT then
+		local targetPos = self:GetNW2Float( "RollsignPos", 0 )
+		if not targetPos then return end
+		-- Set the desired scroll speed (units per second)
+		local scrollSpeed = 0.005 -- Adjust this value for faster or slower scrolling
+		-- Use SysTime() to avoid frame-rate dependency, but pause when game pauses
+		if not self.LastUpdate then self.LastUpdate = SysTime() end
+		-- Calculate time delta
+		local currentTime = SysTime()
+		local timeDelta = currentTime - self.LastUpdate
+		self.LastUpdate = currentTime
+		-- Check if game is paused (frame time is close to 0)
+		if FrameTime() > 0 then
+			-- Calculate the scroll movement based on timeDelta
+			if targetPos > self.RollsignPos then
+				self.RollsignPos = self.RollsignPos + scrollSpeed * timeDelta
+				self.RollsignPos = math.Clamp( self.RollsignPos, 0, targetPos )
+			elseif targetPos < self.RollsignPos then
+				self.RollsignPos = self.RollsignPos - scrollSpeed * timeDelta
+				self.RollsignPos = math.Clamp( self.RollsignPos, targetPos, 1 )
+			end
+		end
+		--print( self.RollsignPos )
+	end
+
+	if SERVER then
+		--print( self.RollsignPos )
+		self:SetNW2Float( "RollsignPos", self.RollsignPos )
 	end
 end

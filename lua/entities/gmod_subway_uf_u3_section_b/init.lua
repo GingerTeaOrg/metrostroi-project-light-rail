@@ -289,8 +289,6 @@ function ENT:Initialize()
         --[4] = 3, -- Reverser F<->B
 		--[21] = 20, --Blinkers
 	}]]
-	self:SetNW2String( "Texture", self.ParentTrain:GetNW2String( "Texture" ) .. "_b" )
-	self:TrainSpawnerUpdate()
 	self.InteractionZones = {
 		{
 			ID = "Button1b",
@@ -1058,20 +1056,6 @@ function ENT:OnButtonRelease( button, ply )
 		self:SetPackedBool( "BOStrab", true )
 		--self:SetPackedBool("BOStrab",false)
 	end
-end
-
-function ENT:TrainSpawnerUpdate()
-	--local num = self.WagonNumber
-	--math.randomseed(num+400)
-	--self.RearCouple:SetParameters()
-	--local tex = "Def_U2"
-	--self:UpdateTextures()
-	--self:UpdateLampsColors()
-	--self.RearCouple.CoupleType = "U2"
-	--self:SetNW2String("Texture", self.ParentTrain:GetNW2String("Texture"))
-	--self:SetNW2String("Texture", self.ParentTrain:GetNW2String("Texture").."_b")
-	self:SetNW2String( "Texture", self.ParentTrain:GetNW2String( "Texture" ) .. "_b" )
-	self:UpdateTextures()
 end
 
 function ENT:Think()

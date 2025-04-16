@@ -26,6 +26,12 @@ function ENT:Initialize()
 	end
 
 	self.TrackPos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+	timer.Simple( 15, function()
+		self.TrackPos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+		local reversePosition = self.VMF.ReverseTrackOrientationLogic and tonumber( self.VMF.ReverseTrackOrientationLogic, 10 ) > 0 or true
+		self.Forward = self.TrackPos.forward and reversePosition and false or not self.TrackPos.forward and reversePosition and true or self.TrackPos.forward and not reversePosition and true or not self.TrackPos.forward and not reversePosition and false
+	end )
+
 	self.PairedControllers = {}
 	self.ControllerHierarchy = {}
 	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
@@ -40,7 +46,21 @@ function ENT:Initialize()
 	end )
 
 	self.Paths = {}
-	self.Paths = self:GetBranchingPaths()
+	if next( Metrostroi.Paths ) then
+		self.Paths = self:GetBranchingPaths()
+	else
+		timer.Simple( 20, function()
+			print( "Searching branching paths for switch:", self )
+			self.Paths = self:GetBranchingPaths()
+		end )
+
+		timer.Simple( 15, function()
+			if next( self.Paths ) then
+				if not UF.SwitchBranches then UF.SwitchBranches = {} end
+				UF.SwitchBranches[ self ] = self.Paths
+			end
+		end )
+	end
 end
 
 function ENT:OnRemove()
@@ -67,6 +87,7 @@ function ENT:Think()
 
 	-- Process logic
 	self:NextThink( CurTime() + 1.0 )
+	return true
 end
 
 function ENT:Switching()
@@ -221,29 +242,54 @@ function ENT:SecondarySwitchingQueue( direction, ent )
 end
 
 function ENT:GetBranchingPaths()
-	local pos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )
-	local current_path = pos[ 1 ].path.id
-	local adjacent_paths = {}
+	if not next( Metrostroi.Paths ) then -- if the paths table isn't populated yet, just start a timer to call this function again and exit
+		timer.Simple( 10, self:GetBranchingPaths() )
+		return
+	end
+
+	local pos = UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ] -- query our position on the pathing system
+	local current_path = pos.path.id --this is our main path
+	local adjacent_paths = {} -- initialise the paths next to us
 	local paths = {}
-	-- Extract adjacent paths from branches
-	local function collectBranchPaths( node )
-		if node.branches then
-			for _, branch in pairs( node.branches ) do
-				local branch_path = branch[ 2 ] and branch[ 2 ].path
-				if branch_path and branch_path ~= current_path then table.insert( adjacent_paths, branch_path ) end
+	local forward = self.Forward -- are we facing upward or downward on the x coordinate?
+	local function traverseNodesToBranch( node, forwards, limit ) -- got forward or backward a few nodes to see if there's a branching path to be found
+		local nodesTraversed = 0 -- initialise how many nodes we've been through so that we don't continue on forever
+		while node and nodesTraversed < limit do
+			if node.connectedPaths then
+				print( "Switch entity:", self, "found branch! Exiting!" )
+				return node
 			end
+
+			node = forwards and node.next or node.prev
+			print( "Found no branch. Continuing on. Next node:", node )
+			if not node then return end
+			for k, v in pairs( node ) do
+				print( k, v )
+			end
+
+			nodesTraversed = nodesTraversed + 1
+		end
+		return node
+	end
+
+	local function collectBranchPaths( node ) --
+		if not node then return end
+		if node.connectedPaths and next( node.connectedPaths ) then
+			adjacent_paths = node.connectedPaths
+		else
+			local traversedNode = traverseNodesToBranch( node, forward, 3 )
+			if traversedNode then collectBranchPaths( traversedNode ) end
 		end
 	end
 
 	-- Add current path and branches from node1 and node2
-	collectBranchPaths( pos[ 1 ].node1 )
-	collectBranchPaths( pos[ 1 ].node2 )
+	collectBranchPaths( pos.node1 )
+	-- collectBranchPaths(pos.node2)
 	-- Output results
 	print( "Current Path:", current_path )
 	print( "Adjacent Paths:" )
-	paths[ current_path ] = true
-	for i, adj_path in ipairs( adjacent_paths ) do
-		paths[ adj_path.id ] = true
+	for id, node in pairs( adjacent_paths ) do
+		print( id )
 	end
-	return paths
+	return adjacent_paths
 end

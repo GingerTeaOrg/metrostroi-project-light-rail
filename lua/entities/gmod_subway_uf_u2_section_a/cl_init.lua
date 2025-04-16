@@ -4,7 +4,6 @@ ENT.ClientProps = {}
 ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
-ENT.MirrorCams = { Vector( 441, 72, 15 ), Angle( 1, 180, 0 ), 15, Vector( 441, -72, 15 ), Angle( 1, 180, 0 ), 18 }
 ENT.Lights = {
 	-- Headlight glow
 	[ 1 ] = {
@@ -342,7 +341,7 @@ ENT.ClientProps[ "drivers_door" ] = {
 	nohide = true
 }
 
-ENT.ClientProps[ "Mirror" ] = {
+ENT.ClientProps[ "Mirror_r" ] = {
 	model = "models/lilly/uf/u2/mirror.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
@@ -358,7 +357,7 @@ ENT.ClientProps[ "Speedo" ] = {
 
 function ENT:Mirror()
 	local old = self:GetNW2Bool( "OldMirror", false )
-	local mirror = self.ClientProps[ "Mirror" ]
+	local mirror = self.ClientProps[ "Mirror_r" ]
 	mirror.model = old and "models/lilly/uf/u2/mirror_vintage.mdl" or "models/lilly/uf/u2/mirror.mdl"
 end
 
@@ -399,7 +398,7 @@ ENT.ClientProps[ "reverser" ] = {
 	model = "models/lilly/uf/u2/cab/reverser_lever.mdl",
 	pos = Vector( -0.1, -0.25, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	hideseat = 0.2
+	nohide = true
 }
 
 ENT.ClientProps[ "blinds_l" ] = {
@@ -811,8 +810,6 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 				speed = 4,
 				min = 0,
 				max = 1,
-				var = "Ventilation",
-				speed = 1,
 				vmin = 0,
 				vmax = 1,
 				sndvol = 0.5,
@@ -912,13 +909,14 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 			x = 149,
 			y = 90.4,
 			radius = 10,
-			tooltip = "Toggle High Beam",
+			tooltip = "Toggle Headlights On/Off/Highbeam",
 			model = {
 				model = "models/lilly/uf/u2/cab/battery_switch.mdl",
 				z = -3,
 				ang = 45,
 				anim = true,
-				var = "Highbeam",
+				var = "HeadlightStatus",
+				getfunc = function( ent ) return ent:GetNW2Float( "HeadlightStatus" ) == 0 and 0.5 or ent:GetNW2Float( "HeadlightStatus" ) == 0.5 and 0 or ent:GetNW2Float( "HeadlightStatus" ) == 1 and 1 or 0.5 end,
 				speed = 5,
 				vmin = 0,
 				vmax = 1,
@@ -948,7 +946,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 			x = 118.5,
 			y = 90.4,
 			radius = 10,
-			tooltip = "Automat On",
+			tooltip = "Automat On (Main HV Breaker)",
 			model = {
 				model = "models/lilly/uf/u2/cab/button_bulge_green.mdl",
 				z = -5,
@@ -970,7 +968,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 			x = 118.5,
 			y = 57,
 			radius = 10,
-			tooltip = "Automat Off",
+			tooltip = "Automat Off (Main HV Breaker)",
 			model = {
 				model = "models/lilly/uf/u2/cab/button_bulge_red.mdl",
 				z = -5,
@@ -1031,16 +1029,16 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 			}
 		},
 		{
-			ID = "HeadlightsToggle",
+			ID = "InteriourLightsToggle",
 			x = 22,
 			y = 19,
 			radius = 10,
-			tooltip = "Enable Headlights",
+			tooltip = "Toggle Interiour Lighting",
 			model = {
 				model = "models/lilly/uf/u2/cab/battery_switch.mdl",
 				z = 0,
 				ang = 45,
-				var = "Headlights",
+				var = "InteriourLights",
 				speed = 5,
 				vmin = 0,
 				vmax = 1,
@@ -1416,16 +1414,16 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 			}
 		},
 		{
-			ID = "DoorsUnlockSet",
+			ID = "UnlockDoorsSet",
 			x = 396.4,
 			y = 57.7,
 			radius = 10,
-			tooltip = "Toggle doors unlocked",
+			tooltip = "Toggle doors unlock",
 			model = {
 				model = "models/lilly/uf/u2/cab/button_indent_red.mdl",
 				z = -5,
 				ang = 180,
-				var = "DoorsUnlock",
+				var = "UnlockDoors",
 				speed = 20,
 				vmin = 0,
 				vmax = 1,
@@ -1446,7 +1444,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 				model = "models/lilly/uf/u2/cab/battery_switch.mdl",
 				z = -2.5,
 				ang = 45,
-				getfunc = function( ent ) return ent.DoorSwitchStates[ ent:GetNW2String( "DoorSideUnlocked", "None" ) ] end,
+				getfunc = function( ent ) return ent:GetPackedBool( "DoorsSelectLeft", false ) and 1 or ent:GetPackedBool( "DoorsSelectRight", false ) and 0 or 0.5 end,
 				var = "DoorSideSelect",
 				speed = 5,
 				vmin = 0,
@@ -2028,7 +2026,7 @@ ENT.ButtonMapMPLR[ "Left" ] = {
 				z = -3,
 				ang = 0,
 				var = "ReduceBrake",
-				speed = 1,
+				speed = 10,
 				vmin = 0,
 				vmax = 1,
 				sndvol = 1,
@@ -2049,7 +2047,6 @@ ENT.RTMaterialUF = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
 
 function ENT:Draw()
 	self.BaseClass.Draw( self )
-	self:UpdateWagonNumber()
 end
 
 function ENT:DrawPost()
@@ -2064,11 +2061,11 @@ function ENT:DrawPost()
 	self:DrawOnPanel( "Rollsign", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat )
-		surface.DrawTexturedRectUV( 0, 0, 780, 160, 0, self.ScrollModifier, 1, self.ScrollModifier + 0.015 )
+		surface.DrawTexturedRectUV( 0, 0, 780, 160, 0, self.RollsignPos, 1, self.RollsignPos + 0.015 )
 	end )
 end
 
-function ENT:OnPlay( soundid, location, range, pitch )
+function ENT:OnPlay( soundid, location )
 	if location == "stop" then
 		if IsValid( self.Sounds[ soundid ] ) then
 			self.Sounds[ soundid ]:Pause()
@@ -2079,81 +2076,81 @@ function ENT:OnPlay( soundid, location, range, pitch )
 end
 
 function ENT:UpdateWagonNumber()
-	for i = 0, 3 do
-		-- self:ShowHide("TrainNumberL"..i,i<count)
-		-- self:ShowHide("TrainNumberR"..i,i<count)
-		-- if i< count then
-		local leftNum, middleNum, rightNum = self.ClientEnts[ "carnumber1" ], self.ClientEnts[ "carnumber2" ], self.ClientEnts[ "carnumber3" ]
-		local intnum1, intnum2, intnum3 = self.ClientEnts[ "carnumber1int" ], self.ClientEnts[ "carnumber2int" ], self.ClientEnts[ "carnumber3int" ]
-		local num1 = tonumber( string.sub( self:GetNW2Int( "WagonNumber" ), 1, 1 ), 10 )
-		local num2 = tonumber( string.sub( self:GetNW2Int( "WagonNumber" ), 2, 2 ), 10 )
-		local num3 = tonumber( string.sub( self:GetNW2Int( "WagonNumber" ), 3, 3 ), 10 )
-		if IsValid( intnum1 ) then
-			if num1 < 1 then
-				intnum1:SetSkin( 10 )
-			else
-				intnum1:SetSkin( num1 )
-			end
-		end
-
-		if IsValid( intnum2 ) then
-			if num2 < 1 then
-				intnum2:SetSkin( 0 )
-			else
-				intnum2:SetSkin( num2 )
-			end
-		end
-
-		if IsValid( intnum3 ) then
-			if num3 < 1 then
-				intnum3:SetSkin( 10 )
-			else
-				intnum3:SetSkin( num3 )
-			end
-		end
-
-		if IsValid( leftNum ) then
-			if num1 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
-				leftNum:SetSkin( 10 )
-			elseif num1 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
-				leftNum:SetSkin( 11 )
-			elseif num1 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
-				leftNum:SetSkin( num1 + 10 )
-			else
-				leftNum:SetSkin( num1 )
-			end
-		end
-
-		if IsValid( middleNum ) then
-			if num2 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
-				middleNum:SetSkin( 10 )
-			elseif num2 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
-				middleNum:SetSkin( 11 )
-			elseif num2 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
-				middleNum:SetSkin( num2 + 10 )
-			else
-				middleNum:SetSkin( num2 )
-			end
-		end
-
-		if IsValid( rightNum ) then
-			if num3 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
-				rightNum:SetSkin( 10 )
-			elseif num3 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
-				rightNum:SetSkin( 11 )
-			elseif num3 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
-				rightNum:SetSkin( num3 + 10 )
-			else
-				rightNum:SetSkin( num3 )
-			end
+	-- self:ShowHide("TrainNumberL"..i,i<count)
+	-- self:ShowHide("TrainNumberR"..i,i<count)
+	-- if i< count then
+	local leftNum, middleNum, rightNum = self.ClientEnts[ "carnumber1" ], self.ClientEnts[ "carnumber2" ], self.ClientEnts[ "carnumber3" ]
+	local intnum1, intnum2, intnum3 = self.ClientEnts[ "carnumber1int" ], self.ClientEnts[ "carnumber2int" ], self.ClientEnts[ "carnumber3int" ]
+	local num1 = tonumber( string.sub( self:GetNW2Int( "WagonNumber" ), 1, 1 ), 10 )
+	local num2 = tonumber( string.sub( self:GetNW2Int( "WagonNumber" ), 2, 2 ), 10 )
+	local num3 = tonumber( string.sub( self:GetNW2Int( "WagonNumber" ), 3, 3 ), 10 )
+	if IsValid( intnum1 ) then
+		if num1 < 1 then
+			intnum1:SetSkin( 10 )
+		else
+			intnum1:SetSkin( num1 )
 		end
 	end
+
+	if IsValid( intnum2 ) then
+		if num2 < 1 then
+			intnum2:SetSkin( 0 )
+		else
+			intnum2:SetSkin( num2 )
+		end
+	end
+
+	if IsValid( intnum3 ) then
+		if num3 < 1 then
+			intnum3:SetSkin( 10 )
+		else
+			intnum3:SetSkin( num3 )
+		end
+	end
+
+	if IsValid( leftNum ) then
+		if num1 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+			leftNum:SetSkin( 10 )
+		elseif num1 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+			leftNum:SetSkin( 11 )
+		elseif num1 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
+			leftNum:SetSkin( num1 + 10 )
+		else
+			leftNum:SetSkin( num1 )
+		end
+	end
+
+	if IsValid( middleNum ) then
+		if num2 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+			middleNum:SetSkin( 10 )
+		elseif num2 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+			middleNum:SetSkin( 11 )
+		elseif num2 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
+			middleNum:SetSkin( num2 + 10 )
+		else
+			middleNum:SetSkin( num2 )
+		end
+	end
+
+	if IsValid( rightNum ) then
+		if num3 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+			rightNum:SetSkin( 10 )
+		elseif num3 < 1 and self:GetNW2String( "Texture" ) ~= "OrEbSW" then
+			rightNum:SetSkin( 11 )
+		elseif num3 > 0 and self:GetNW2String( "Texture" ) == "OrEbSW" then
+			rightNum:SetSkin( num3 + 10 )
+		else
+			rightNum:SetSkin( num3 )
+		end
+	end
+
+	if IsValid( self.SectionB ) and self.SectionB.UpdateWagonNumber then self.SectionB:UpdateWagonNumber() end
 end
 
 function ENT:Initialize()
 	self.BaseClass.Initialize( self )
+	self.RollsignPos = 0
 	self.ScrollModifier = 0
-	self.SectionB = self:GetNWEntity( "U2b" )
 	self.IBIS = self:CreateRT( "IBIS", 512, 128 )
 	self.DoorSwitchStates = {
 		[ "Left" ] = 1,
@@ -2199,18 +2196,19 @@ function ENT:Initialize()
 	self.BatterySwitch = 0.5
 	self:ShowHide( "reverser", true )
 	self:ShowHide( "reverser", false )
-	self:UpdateWagonNumber()
-	-- self.SectionB:UpdateWagonNumber()
+	-- 
 	self.Rollsign = Material( self:GetNW2String( "Rollsign", "models/lilly/uf/u2/rollsigns/frankfurt_stock.png" ) )
+	if not IsValid( self.SectionB ) then self.BaseClass.InitSegments( self ) end
+	self:UpdateWagonNumber()
 end
 
 function ENT:Think()
 	self.BaseClass.Think( self )
 	self:Mirror()
+	self:Animations()
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
-	self.SectionB = self:GetNWEntity( "U2b" )
 	if self:GetNW2String( "Texture", "" ) == "SVB" then
 		self:ShowHide( "carnumber1", false )
 		self:ShowHide( "carnumber2", false )
@@ -2258,24 +2256,6 @@ function ENT:Think()
 	end
 
 	self.Speed = self:GetNW2Int( "Speed" )
-	local RetroMode = self:GetNW2Bool( "RetroMode", false )
-	local OldMirror = self:GetNW2Bool( "OldMirror", false )
-	--[[if not RetroMode and not OldMirror then
-		self:ShowHide("Mirror_vintage", false)
-		self:ShowHide("Mirror", true)
-		if IsValid(self.SectionB) then
-			self.SectionB:ShowHide("Mirror_vintage", false)
-			self.SectionB:ShowHide("Mirror", true)
-		end
-	elseif RetroMode and not OldMirror or self:GetNW2Bool("OldMirror", false) == true
-				and self:GetNW2Bool("RetroMode", false) == false or self:GetNW2Bool("OldMirror", false) == true and self:GetNW2Bool("RetroMode", false) == true then
-		self:ShowHide("Mirror", false)
-		self:ShowHide("Mirror_vintage", true)
-		if IsValid(self.SectionB) then
-			self.SectionB:ShowHide("Mirror", false)
-			self.SectionB:ShowHide("Mirror_vintage", true)
-		end
-	end]]
 	if self:GetPackedBool( "FlickBatterySwitchOn", false ) == true then
 		self.BatterySwitch = 1
 	elseif self:GetPackedBool( "FlickBatterySwitchOff", false ) == true then
@@ -2284,11 +2264,11 @@ function ENT:Think()
 		self.BatterySwitch = 0.5
 	end
 
-	self:Animate( "Mirror", self:GetNW2Float( "Mirror", 0 ), 0, 100, 17, 1, 0 )
-	self:Animate( "Mirror_vintage", self:GetNW2Float( "Mirror", 0 ), 0, 100, 17, 1, 0 )
+	self:Animate( "Mirror_r", self:GetNW2Float( "Mirror_r", 0 ), 0, 100, 17, 1, 0 )
 	self:Animate( "drivers_door", self:GetNW2Float( "DriversDoorState", 0 ), 0, 100, 1, 1, 0 )
 	self:Animate( "blinds_l", self:GetNW2Float( "Blinds", 0 ), 0, 100, 50, 9, 0 )
 	self:ShowHide( "RetroEquipment", self:GetNW2Bool( "RetroMode", false ) )
+	if IsValid( self.SectionB ) then self.SectionB:ShowHide( "RetroEquipment", self:GetNW2Bool( "RetroMode", false ) ) end
 	self.ThrottleStateAnim = self:GetNW2Float( "ThrottleStateAnim", 0 )
 	if self.ThrottleStateAnim >= 0.5 then
 		self:Animate( "Throttle", self.ThrottleStateAnim, -45, 45, 50, 8, false )
@@ -2327,10 +2307,10 @@ function ENT:Think()
 	self:Animate( "IBISkey", self:GetNW2Bool( "TurnIBISKey", false ) == true and 0 or 1, 0, 100, 800, 0, 0 )
 	self:ShowHide( "reverser", self:GetNW2Bool( "ReverserInsertedA", false ) )
 	-----------------------------------------------------------------------
-	local Door1a = math.Clamp( self:GetNWFloat( "Door12a" ), 0, 1 )
-	local Door2a = math.Clamp( self:GetNWFloat( "Door34a" ), 0, 1 )
-	local Door3b = self:GetNWFloat( "Door56b" )
-	local Door4b = self:GetNWFloat( "Door78b" )
+	local Door1a = self:GetNW2Float( "Door1a", 1 )
+	local Door2a = self:GetNW2Float( "Door2a", 1 )
+	local Door3b = self:GetNW2Float( "Door3a", 1 )
+	local Door4b = self:GetNW2Float( "Door4a", 1 )
 	self:Animate( "Door_fr2", Door1a, 0, 100, 100, 10, 0 )
 	self:Animate( "Door_fr1", Door1a, 0, 100, 100, 10, 0 )
 	self:Animate( "Door_rr2", Door2a, 0, 100, 100, 10, 0 )
@@ -2355,6 +2335,7 @@ function ENT:Think()
 
 	----print(self.CamshaftMadeSound)
 	self:ShowHide( "headlights_on", self:GetPackedBool( "Headlights", false ), 0 )
+	if IsValid( self.SectionB ) then self.SectionB:ShowHide( "headlights_on", self:GetPackedBool( "Headlights", false ), 0 ) end
 	if self:GetNW2Bool( "BlinkerShineLeft", false ) == true then
 		self:SetLightPower( 11, true )
 	else
@@ -2364,14 +2345,10 @@ function ENT:Think()
 	self.SpeedoAnim = math.Clamp( self:GetNW2Int( "Speed" ), 0, 80 ) / 100 * 1.5
 	self:Animate( "Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0 )
 	-- self:Animate("Throttle", 0, -45, 45, 3, false, false)
-	local alarm = self:GetNW2Bool( "DoorCloseAlarm", false )
+	local alarm = self:GetNW2Bool( "DepartureAlarm", false )
 	self:SetSoundState( "DoorsCloseAlarm", alarm and 80 or 0, 1 )
-	if self:GetNW2Bool( "DeadmanAlarmSound", false ) == true or self:GetNW2Bool( "TractionAppliedWhileStillNoDeadman", false ) == true then
-		self:SetSoundState( "Deadman", 1, 1 )
-	else
-		self:SetSoundState( "Deadman", 0, 1 )
-	end
-
+	local deadman = self:GetNW2Bool( "DeadmanAlarmSound", false )
+	self:SetSoundState( "Deadman", deadman and 1 or 0, 1 )
 	self.VoltAnim = self:GetNWFloat( "BatteryCharge", 0 ) / 46
 	self:Animate( "Voltage", self.VoltAnim, 0, 100, 1, 0, false )
 	self.AmpAnim = self:GetNWFloat( "Amps", 0 ) / 0.5 * 100
@@ -2431,7 +2408,6 @@ function ENT:Think()
 			self:SetSoundState( "Fan3", 0, 1, 1 )
 		end
 
-		local DoorsUnlocked = self:GetNW2Bool( "DoorsUnlocked", false )
 		if self:GetNW2Bool( "IBISBootupComplete", false ) == true and self:GetNW2Bool( "IBISChime", false ) == true and self.IBISBootCompleted == false then
 			self.IBISBootCompleted = true
 			self:PlayOnce( "IBIS_bootup", Vector( 412, -12, 55 ), 0.4, 1 )
@@ -2463,118 +2439,50 @@ function ENT:Think()
 
 	self:SetLightPower( 9, true )
 	self:SetLightPower( 10, true )
-	if self:GetPackedBool( "Headlights", false ) == true then
-		if self:GetPackedBool( "Headlights", false ) == true then
+	local headlights = self:GetNW2Float( "HeadlightStatus", 0 )
+	if self.Lights then
+		if headlights > 0 then
+			self:SetLightPower( 1, false )
+			self:SetLightPower( 2, false )
+			self:SetLightPower( 4, false )
+			self:SetLightPower( 5, false )
+			self.Lights[ 1 ][ "farz" ] = 600
+			self.Lights[ 2 ][ "farz" ] = 600
 			self:SetLightPower( 1, true )
 			self:SetLightPower( 2, true )
 			self:SetLightPower( 4, false )
 			self:SetLightPower( 5, false )
-		elseif self:GetPackedBool( "Headlights", false ) == false then
+		elseif headlights > 0.5 then
 			self:SetLightPower( 1, false )
 			self:SetLightPower( 2, false )
-		elseif self:GetPackedBool( "Taillights" ) == true then
-			self:SetLightPower( 1, false )
-			self:SetLightPower( 2, false )
-			self:SetLightPower( 4, true )
-			self:SetLightPower( 5, true )
-		elseif self:GetPackedBool( "Taillights" ) == false and self:GetPackedBool( "Headlights", false ) == true then
+			self:SetLightPower( 4, false )
+			self:SetLightPower( 5, false )
+			self.Lights[ 1 ][ "farz" ] = 800
+			self.Lights[ 2 ][ "farz" ] = 800
 			self:SetLightPower( 1, true )
 			self:SetLightPower( 2, true )
-			self:SetLightPower( 4, false, 100 )
-			self:SetLightPower( 5, false, 100 )
+			self:SetLightPower( 4, false )
+			self:SetLightPower( 5, false )
+		else
+			self:SetLightPower( 1, false )
+			self:SetLightPower( 2, false )
+			self:SetLightPower( 4, false )
+			self:SetLightPower( 5, false )
 		end
-	elseif self:GetPackedBool( "Headlights", false ) == false then
-		self:SetLightPower( 1, false )
-		self:SetLightPower( 2, false )
-	elseif self:GetPackedBool( "Taillights" ) == true then
-		self:SetLightPower( 1, false )
-		self:SetLightPower( 2, false )
-		self:SetLightPower( 4, true )
-		self:SetLightPower( 5, true )
 	end
-
-	if self:GetNW2Bool( "Braking", false ) == true then
-		self:SetLightPower( 4, true )
-		self:SetLightPower( 5, true )
-	else
-		self:SetLightPower( 4, false )
-		self:SetLightPower( 5, false )
-	end
-
-	local dT = self.DeltaTime
-	local nxt = 35
-	----print(self.Speed)
-	local rollingi = math.min( 1, self.TunnelCoeff + math.Clamp( ( self.StreetCoeff - 0.82 ) / 0.3, 0, 1 ) )
-	local rollings = math.max( self.TunnelCoeff * 0.6, self.StreetCoeff )
-	local rol10 = math.Clamp( self.Speed / 15, 0, 1 ) * ( 1 - math.Clamp( ( self.Speed - 18 ) / 35, 0, 1 ) )
-	local rol10p = Lerp( ( self.Speed - 15 ) / 14, 0.6, 0.78 )
-	local rol40 = math.Clamp( ( self.Speed - 18 ) / 35, 0, 1 ) * ( 1 - math.Clamp( ( self.Speed - 55 ) / 40, 0, 1 ) )
-	local rol40p = Lerp( ( self.Speed - 15 ) / 66, 0.6, 1.3 )
-	local rol70 = math.Clamp( ( self.Speed - 55 ) / 20, 0, 1 ) -- *(1-math.Clamp((self.Speed-72)/5,0,1))
-	local rol70p = Lerp( ( self.Speed - 55 ) / 27, 0.78, 1.15 )
-	local rolling1 = self.Speed / 10
-	local rolling2 = self.Speed / 40
-	-- self:SetSoundState("rumb1"    ,rol10*rollings,rol10p+0.9) --15
-	-- self:SetSoundState("Cruise",rol40*rollings,rol40p) --57
-	-- self:SetSoundState("rumb1",0 or rol40*rollings,rol40p) --57
-	-- self:SetSoundState("Cruise"  ,rol70*rollings,rol70p) --70
-	-- self:U2SoundEngine()
-	self:ScrollTracker()
 end
 
-UF.GenerateClientProps()
 function ENT:U2SoundEngine()
 	self:SetSoundState( "Cruise", Lerp( self.Speed, 0, 1 ), 1, 1, 1 )
 	self:SetSoundState( "rumb1", Lerp( self.Speed, 0, 1 ), 1, 1, 1 )
 end
 
-function ENT:SetSoundState2( sound, volume, pitch, name, level )
-	if not self.Sounds[ sound ] then
-		if self.SoundNames[ name or sound ] and ( not wheels or IsValid( self:GetNW2Entity( "TrainWheels" ) ) ) then
-			self.Sounds[ sound ] = CreateSound( wheels and self:GetNW2Entity( "TrainWheels" ) or self, Sound( self.SoundNames[ name or sound ] ) )
-		else
-			return
-		end
-	end
-
-	local snd = self.Sounds[ sound ]
-	if ( volume <= 0 ) or ( pitch <= 0 ) then
-		if snd:IsPlaying() then
-			snd:ChangeVolume( 0.0, 0 )
-			snd:Stop()
-		end
-		return
-	end
-
-	local pch = math.floor( math.max( 0, math.min( 255, 100 * pitch ) ) )
-	local vol = math.max( 0, math.min( 255, 2.55 * volume ) ) + ( 0.001 / 2.55 ) + ( 0.001 / 2.55 ) * math.random()
-	if name ~= false and not snd:IsPlaying() or name == false and snd:GetVolume() == 0 then
-		-- if not self.Playing[sound] or name~=false and not snd:IsPlaying() or name==false and snd:GetVolume()==0 then
-		if level and snd:GetSoundLevel() ~= level then
-			snd:Stop()
-			snd:SetSoundLevel( level )
-		end
-
-		snd:PlayEx( vol, pch + 1 )
-	end
-
-	-- snd:SetDSP(22)
-	snd:ChangeVolume( vol, 0 )
-	snd:ChangePitch( pch + 1, 0 )
-	-- snd:SetDSP(22)
-end
-
-function ENT:ScrollTracker()
-	local rollsignTarget = self:GetNW2Float( "RollsignModifier", 0 )
-	if rollsignTarget > self.ScrollModifier then
-		self.ScrollModifier = self.ScrollModifier + 0.00005 + FrameTime() * 0.001
-		self.ScrollModifier = math.Clamp( self.ScrollModifier, 0, 1 )
-	elseif rollsignTarget < self.ScrollModifier then
-		self.ScrollModifier = self.ScrollModifier - 0.00005 + FrameTime() * 0.001
-		self.ScrollModifier = math.Clamp( self.ScrollModifier, 0, 1 )
-	end
+function ENT:Animations()
+	self:RollsignTracker()
 end
 
 function ENT:OnAnnouncer( volume )
 	return self:GetPackedBool( "AnnPlay" ) and volume or 0
 end
+
+UF.GenerateClientProps()

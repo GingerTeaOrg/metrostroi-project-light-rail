@@ -12,7 +12,7 @@ function ENT:Initialize()
     self:SetNW2String( "Aspect", self.Aspect )
     self.Angle = self.Angle or Angle( 0, 0, 0 )
     self:SetNW2Angle( "WorldAngle", self.Angle )
-    self:SetModel( "models/error.mdl" )
+    self:SetModel( "models/props_trainstation/payphone_reciever001a.mdl" )
     self:SetRenderMode( RENDERMODE_TRANSALPHA )
     self:SetColor( Color( 0, 0, 0, 0 ) )
     self.TrackPosition = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
@@ -24,8 +24,10 @@ function ENT:Initialize()
     self.Routes = self.Routes or {}
     if self.Name1 and self.Name1 ~= " " then self:SetNW2String( "Name1", self.Name1 ) end
     if self.Name2 and self.Name2 ~= " " then self:SetNW2String( "Name2", self.Name2 ) end
+    self.LastPVSTracking = 0
 end
 
+util.AddNetworkString( "RespawnSignal" )
 function ENT:UpdateSignalAspect()
     for k, _ in pairs( UF.SignalBlocks ) do
         local CurrentBlock = UF.SignalBlocks[ k ]
@@ -75,10 +77,33 @@ function ENT:GetSpeedLimit()
 end
 
 function ENT:Think()
-    self:UpdateSignalAspect()
+    print( "thinking" )
+    --self:UpdateSignalAspect()
     self:SetNW2String( "Type", self.SignalType )
     self:SetNW2String( "Aspect", self.Aspect )
-    self:NextThink( CurTime() + 0.25 )
+    self:PVSTracking()
+    self:NextThink( CurTime() + 1 )
+    return true
+end
+
+function ENT:PVSTracking()
+    print( "pvstracking" )
+    if CurTime() - self.LastPVSTracking > 1 then return end
+    local rF = RecipientFilter( false ) -- TODO: test if this needs to be reliable or unreliable
+    local pvsTab = next( pvsTab ) and pvsTab or {}
+    local plyTab = player.GetAll()
+    for _, ply in ipairs( plyTab ) do
+        pvsTab[ ply ] = self:TestPVS( ply )
+    end
+
+    for ply, bool in pairs( pvsTab ) do
+        if bool then rF:AddPlayer( ply ) end
+    end
+
+    net.Start( "RespawnSignal" )
+    net.WriteBool( true )
+    net.Send( rF )
+    self.LastPVSTracking = CurTime()
 end
 
 --Net functions

@@ -153,7 +153,7 @@ function TOOL:Think()
                 e.GetDirtLevel = function() return 0.25 end
             end
 
-            hook.Add( "Think", self.GhostEntities[ 1 ], function() if not IsValid( self.Owner:GetActiveWeapon() ) or self.Owner:GetActiveWeapon():GetClass() ~= "gmod_tool" or GetConVar( "gmod_toolmode" ):GetString() ~= "gm_ufspawner" then self:OnRemove() end end )
+            hook.Add( "Think", self.GhostEntities[ 1 ], function() if not IsValid( self:GetOwner():GetActiveWeapon() ) or self.Owner:GetActiveWeapon():GetClass() ~= "gmod_tool" or GetConVar( "gmod_toolmode" ):GetString() ~= "gm_ufspawner" then self:OnRemove() end end )
             local oldOR = self.GhostEntities[ 1 ].OnRemove
             self.GhostEntities[ 1 ].OnRemove = function( ent )
                 hook.Remove( "Think", ent )
@@ -168,7 +168,8 @@ end
 
 function TOOL:SetSettings( ent, ply, i, inth )
     local rot = false
-    if i > 1 then rot = i == self.tbl.WagNum and true or math.random() > 0.5 end
+    --if i > 1 then rot = i == self.tbl.WagNum and true or math.random() > 0.5 end
+    self.tbl.WagNum = 1
 end
 
 local function SetValue( ent, id, val )
@@ -204,7 +205,13 @@ function TOOL:SpawnWagon( trace )
 
             --nil,self:GetOwner():GetNW2Bool("mplr_train_spawner_rev") and Angle(0,180,0) or Angle(0,0,0)) --Create a first entity in queue
             if ent then
-                undo.Create( self.Train.Spawner.head or self.Train.ClassName )
+                local maker = self.Train.SubwayTrain[ "Manufacturer" ]
+                local model = self.Train.SubwayTrain[ "Name" ]
+                if maker and model then
+                    undo.Create( maker .. " " .. model )
+                else
+                    undo.Create( self.Train.ClassName )
+                end
             else
                 self:GetOwner():LimitHit( "spawner_wrong_pos" )
                 return false

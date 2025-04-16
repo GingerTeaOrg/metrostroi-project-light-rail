@@ -1,15 +1,13 @@
-ENT.Type            = "anim"
-
-ENT.PrintName       = "Train Wheels"
-ENT.Author          = ""
-ENT.Contact         = ""
-ENT.Purpose         = ""
-ENT.Instructions    = ""
-
-ENT.Spawnable       = false
-ENT.AdminSpawnable  = false
-
-physenv.AddSurfaceData([[
+ENT.Type = "anim"
+ENT.PrintName = "Train Wheels"
+ENT.Author = ""
+ENT.Contact = ""
+ENT.Purpose = ""
+ENT.Instructions = ""
+ENT.PhysicsSounds = false
+ENT.Spawnable = false
+ENT.AdminSpawnable = false
+physenv.AddSurfaceData( [[
 "gmod_silent"
 {
 
@@ -38,4 +36,4 @@ physenv.AddSurfaceData([[
 	"scraperough"	"null"
 	"scrapesmooth"	"null"
 }
-]])
+]] )

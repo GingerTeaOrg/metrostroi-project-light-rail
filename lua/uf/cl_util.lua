@@ -50,7 +50,6 @@ function UF.GenerateClientProps()
 		if not panel.buttons then continue end
 		if not panel.props then panel.props = {} end
 		for name, buttons in pairs( panel.buttons ) do
-			--if reti > 8 then reti=0; ret=ret.."\n" end
 			if buttons.tooltipFunc then
 				local func = buttons.tooltipFunc
 				buttons.tooltipState = function( ent )
@@ -499,6 +498,66 @@ function UF.MakeSpriteTexture( path, isSprite )
 		return UF.SpriteCache2[ path ]
 	end
 end
+
+function UF.CheckKurs( Linie, ply, arg )
+	if not arg then arg = 0.0 end
+	net.Start( "RBLTriggerClientRequest" )
+	net.WriteFloat( Linie )
+	net.WritePlayer( ply )
+	net.WriteFloat( arg )
+	net.SendToServer()
+end
+
+--format: multiline
+net.Receive(
+	"RBLSendToClient", 
+	function( len, ply )
+		if ply ~= LocalPlayer() then return end
+		local hasArgument = net.ReadBool()
+		if not hasArgument then
+			local tab = net.ReadTable( false )
+			UF.PrintValuesToChat( tab, ply )
+		else
+			local alreadyTaken = net.ReadBool()
+			if alreadyTaken then
+				ply:PrintMessage( HUD_PRINTTALK, "The specified circulation ID has already been taken. Please try another." )
+			else
+				ply:PrintMessage( HUD_PRINTTALK, "The specified circulation ID is free to be used." )
+			end
+		end
+	end
+)
+
+function UF.PrintValuesToChat( t, ply )
+	if #t > 5 then
+		ply:PrintMessage( HUD_PRINTTALK, "The table is too long. Please enable the developer console to see the output." )
+		for _, v in pairs( t ) do
+			MsgN( v )
+		end
+	end
+
+	for _, v in pairs( t ) do
+		ply:PrintMessage( HUD_PRINTTALK, v )
+	end
+end
+
+-- format: multiline
+hook.Add(
+	"OnPlayerChat", 
+	"MPLR_RBL", 
+	function( ply, strText, bTeam, bDead )
+		local response = ""
+		if bDead then return end
+		strText = string.lower( strText )
+		local command, command2 = "!mplr_rbl", "/mplr_rbl"
+		local notSilent = not string.match( string.sub( strText, 1, 1 ), "/" )
+		if not string.match( strText, command ) and not string.match( strText, command2 ) then return end
+		local message = string.sub( strText, #command + 1, #strText )
+		local line = tonumber( message, 10 )
+		UF.CheckKurs( line, ply, arg )
+		return not notSilent
+	end
+)
 
 -- format: multiline
 UF.charMatrixSmallThin = {

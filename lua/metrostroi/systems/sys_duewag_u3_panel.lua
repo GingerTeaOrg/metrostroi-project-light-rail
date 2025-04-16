@@ -32,7 +32,7 @@ function TRAIN_SYSTEM:Initialize()
         bass = true
     } )
 
-    self.Train:LoadSystem( "DoorsUnlock", "Relay", "Switch", {
+    self.Train:LoadSystem( "UnlockDoors", "Relay", "Switch", {
         bass = true
     } )
 
@@ -41,14 +41,6 @@ function TRAIN_SYSTEM:Initialize()
     } )
 
     self.Train:LoadSystem( "DoorsCloseConfirm", "Relay", "Switch", {
-        bass = true
-    } )
-
-    self.Train:LoadSystem( "DoorsSelectRight", "Relay", "Switch", {
-        bass = true
-    } )
-
-    self.Train:LoadSystem( "DoorsSelectLeft", "Relay", "Switch", {
         bass = true
     } )
 
@@ -191,14 +183,15 @@ function TRAIN_SYSTEM:Initialize()
     self.SetPointRight = 0
     self.SetPointLeft = 0
     self.ThrowCoupler = 0
-    self.DoorsUnlock = 0
+    self.UnlockDoors = 0
     self.DoorCloseSignal = 0
     self.Parralel = 1
     self.Headlights = 0
     self.DoorsSelectLeft = 0
     self.DoorsSelectRight = 0
+    self.DeadmanPedal = 0
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return { "Wiper", "BlinkerRight", "BlinkerLeft", "WarnBlink", "Microphone", "Bell", "Horn", "WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn", "PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Headlights" }
+    return { "DeadmanPedal", "Wiper", "BlinkerRight", "BlinkerLeft", "WarnBlink", "Microphone", "Bell", "Horn", "WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn", "PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "UnlockDoors", "DoorCloseSignal", "Headlights" }
 end

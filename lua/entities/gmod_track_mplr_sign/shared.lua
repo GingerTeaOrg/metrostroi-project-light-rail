@@ -25,6 +25,7 @@ ENT.Types = {
 	[ "Speed 10km/h" ] = "speed_10",
 	[ "Speed 20km/h" ] = "speed_20",
 	[ "Speed 30km/h" ] = "speed_30",
+	[ "Speed 30km/h Rotten" ] = "speed_30_rotten",
 	[ "Speed 40km/h" ] = "speed_40",
 	[ "Speed 50km/h" ] = "speed_50",
 	[ "Speed 60km/h" ] = "speed_60",

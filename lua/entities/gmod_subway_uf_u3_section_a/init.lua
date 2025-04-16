@@ -263,45 +263,20 @@ ENT.Lights = {
     }
 }
 
+-- Initialize key mapping
 ENT.SyncTable = { "Wiper", "BlinkerRight", "BlinkerLeft", "WarnBlink", "Microphone", "Bell", "Horn", "WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn", "PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Headlights" }
 function ENT:Initialize()
     self:SetModel( "models/lilly/uf/u3/u3_a.mdl" )
     self.BaseClass.Initialize( self )
     self:SetPos( self:GetPos() + Vector( 0, 0, 10 ) ) -- set to 200 if one unit spawns in ground
     -- Create seat entities
-    self.DriverSeat = self:CreateSeat( "driver", Vector( 450, 24, 48 ) )
+    self.DriverSeat = self:CreateSeat( "driver", Vector( 448, 24, 48 ) )
     self.InstructorsSeat = self:CreateSeat( "instructor", Vector( 395, -20, 10 ), Angle( 0, 90, 0 ), "models/vehicles/prisoner_pod_inner.mdl" )
     -- self.HelperSeat = self:CreateSeat("instructor",Vector(505,-25,55))
     self.DriverSeat:SetRenderMode( RENDERMODE_TRANSALPHA )
     self.DriverSeat:SetColor( Color( 0, 0, 0, 0 ) )
     self.InstructorsSeat:SetRenderMode( RENDERMODE_TRANSALPHA )
     self.InstructorsSeat:SetColor( Color( 0, 0, 0, 0 ) )
-    self.DoorStatesRight = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0
-    }
-
-    self.DoorStatesLeft = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0
-    }
-
-    self.DoorsUnlocked = false
-    self.DoorsPreviouslyUnlocked = false
-    self.RandomnessCalulated = false
-    self.DepartureConfirmed = true
-    self.DoorCloseMoments = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0
-    }
-
-    self.DoorCloseMomentsCaptured = false
     self.Speed = 0
     self.ThrottleState = 0
     self.ThrottleEngaged = false
@@ -354,13 +329,6 @@ function ENT:Initialize()
     self.Blinker = "Off"
     self.LastTriggerTime = 0
     self:SetNW2String( "BlinkerDirection", "none" )
-    self.DoorRandomness = {
-        [ 1 ] = -1,
-        [ 2 ] = -1,
-        [ 3 ] = -1,
-        [ 4 ] = -1
-    }
-
     -- self.Lights = {}
     self.DoorSideUnlocked = "None"
     self.RollsignModifier = 0
@@ -379,14 +347,50 @@ function ENT:Initialize()
         [ 31 ] = 32
     }
 
-    self.DoorOpenMoments = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0
+    -- departure clear lamp
+    self.InteractionZones = {
+        {
+            ID = "Button1a",
+            Pos = Vector( 396.884, -51, 50.5 ),
+            Radius = 16
+        },
+        {
+            ID = "Button2a",
+            Pos = Vector( 326.89, -50, 49.5253 ),
+            Radius = 16
+        },
+        {
+            ID = "Button3a",
+            Pos = Vector( 152.116, -50, 49.5253 ),
+            Radius = 16
+        },
+        {
+            ID = "Button4a",
+            Pos = Vector( 84.6012, -50, 49.5253 ),
+            Radius = 16
+        },
+        {
+            ID = "Button8b",
+            Pos = Vector( 396.884, 51, 50.5 ),
+            Radius = 16
+        },
+        {
+            ID = "Button7b",
+            Pos = Vector( 326.89, 50, 49.5253 ),
+            Radius = 16
+        },
+        {
+            ID = "Button6b",
+            Pos = Vector( 152.116, 50, 49.5253 ),
+            Radius = 16
+        },
+        {
+            ID = "Button5b",
+            Pos = Vector( 84.6012, 50, 49.5253 ),
+            Radius = 16
+        }
     }
 
-    -- Initialize key mapping
     self.KeyMap = {
         [ KEY_A ] = "ThrottleUp",
         [ KEY_D ] = "ThrottleDown",
@@ -440,7 +444,7 @@ function ENT:Initialize()
             [ KEY_9 ] = "Throttle90-Pct",
             [ KEY_P ] = "PantographLowerSet",
             [ KEY_MINUS ] = "RemoveIBISKey",
-            [ KEY_PAD_MINUS ] = "IBISkeyInsertSet"
+            [ KEY_PAD_MINUS ] = "IBISkeyInsertSet",
         },
         [ KEY_LALT ] = {
             [ KEY_PAD_1 ] = "Number1Set",
@@ -460,52 +464,8 @@ function ENT:Initialize()
             [ KEY_PAD_MINUS ] = "TimeAndDateSet",
             [ KEY_V ] = "PassengerLightsSet",
             [ KEY_D ] = "EmergencyBrakeSet",
-            [ KEY_N ] = "Parrallel"
-        }
-    }
-
-    -- departure clear lamp
-    self.InteractionZones = {
-        {
-            ID = "Button1a",
-            Pos = Vector( 396.884, -51, 50.5 ),
-            Radius = 16
+            [ KEY_N ] = "Parrallel",
         },
-        {
-            ID = "Button2a",
-            Pos = Vector( 326.89, -50, 49.5253 ),
-            Radius = 16
-        },
-        {
-            ID = "Button3a",
-            Pos = Vector( 152.116, -50, 49.5253 ),
-            Radius = 16
-        },
-        {
-            ID = "Button4a",
-            Pos = Vector( 84.6012, -50, 49.5253 ),
-            Radius = 16
-        },
-        {
-            ID = "Button8b",
-            Pos = Vector( 396.884, 51, 50.5 ),
-            Radius = 16
-        },
-        {
-            ID = "Button7b",
-            Pos = Vector( 326.89, 50, 49.5253 ),
-            Radius = 16
-        },
-        {
-            ID = "Button6b",
-            Pos = Vector( 152.116, 50, 49.5253 ),
-            Radius = 16
-        },
-        {
-            ID = "Button5b",
-            Pos = Vector( 84.6012, 50, 49.5253 ),
-            Radius = 16
-        }
     }
 end
 
@@ -515,21 +475,10 @@ function ENT:Think( dT )
     self.DeltaTime = CurTime() - self.PrevTime
     self.PrevTime = CurTime()
     self.Speed = math.abs( self:GetVelocity():Dot( self:GetAngles():Forward() ) * 0.06858 )
-    if self.FrontCouple.CoupledEnt ~= nil then
-        self:SetNW2Bool( "AIsCoupled", true )
-    else
-        self:SetNW2Bool( "AIsCoupled", false )
-    end
-
-    if self.RearCouple.CoupledEnt ~= nil then
-        self:SetNW2Bool( "BIsCoupled", true )
-    else
-        self:SetNW2Bool( "BIsCoupled", false )
-    end
-
     self:SetNW2Float( "BatteryCharge", self.Duewag_Battery.Voltage )
     self:Traction()
-    --self:Wipe( 2 )
+    self:Wipe( 0 )
+    --self:Wipe( 0 )
 end
 
 function ENT:Traction()
@@ -540,11 +489,11 @@ function ENT:Traction()
     local speed = self.CoreSys.Speed
     local traction = self:ReadTrainWire( 1 ) * 0.01
     local braking = traction < 0.01
-    local chopper = self.Chopper.ChopperOutput > 0 and self.Chopper.ChopperOutput / 750 or 0
+    local chopper = self.Chopper.ChopperOutput > 0 and self.Chopper.ChopperOutput / 600 or 0
     --print(chopper,traction)
     local P = math.max( 0, 0.04449 + 1.06879 * math.abs( chopper ) - 0.465729 * chopper ^ 2 )
     if self.Speed < 10 then P = P * ( 1.0 + 0.5 * ( 10.0 - self.Speed ) / 10.0 ) end
-    self.FrontBogey.MotorForce = traction > 0 and 126688.07175 or -138363.606
+    self.FrontBogey.MotorForce = traction > 0 and 66688.07175 or -78363.606
     self.RearBogey.MotorForce = self.FrontBogey.MotorForce
     if self.Speed > 8 then
         if traction > 0 then
@@ -575,7 +524,15 @@ function ENT:OnButtonPress( button, ply )
     if button == "PassengerUndergroundSet" then self.Panel.PassengerUnderground = 1 end
     if button == "SetPointLeftSet" then self.Panel.SetPointLeft = 1 end
     if button == "SetPointRightSet" then self.Panel.SetPointRight = 1 end
-    ----THROTTLE CODE -- Initial Concept credit Toth Peter
+    if button == "Throttle10Pct" then self.CoreSys.ThrottleStateA = 10 end
+    if button == "Throttle20Pct" then self.CoreSys.ThrottleStateA = 20 end
+    if button == "Throttle30Pct" then self.CoreSys.ThrottleStateA = 30 end
+    if button == "Throttle40Pct" then self.CoreSys.ThrottleStateA = 40 end
+    if button == "Throttle50Pct" then self.CoreSys.ThrottleStateA = 50 end
+    if button == "Throttle60Pct" then self.CoreSys.ThrottleStateA = 60 end
+    if button == "Throttle70Pct" then self.CoreSys.ThrottleStateA = 70 end
+    if button == "Throttle80Pct" then self.CoreSys.ThrottleStateA = 80 end
+    if button == "Throttle90Pct" then self.CoreSys.ThrottleStateA = 90 end
     if self.CoreSys.ThrottleRateA == 0 then
         if button == "ThrottleUp" then self.CoreSys.ThrottleRateA = 3 end
         if button == "ThrottleDown" then self.CoreSys.ThrottleRateA = -3 end
@@ -586,46 +543,16 @@ function ENT:OnButtonPress( button, ply )
         if button == "ThrottleDownFast" then self.CoreSys.ThrottleRateA = -10 end
     end
 
+    if button == "ThrottleZero" then self.CoreSys.ThrottleStateA = 0 end
     if self.CoreSys.ThrottleRateA == 0 then
         if button == "ThrottleUpReallyFast" then self.CoreSys.ThrottleRateA = 20 end
         if button == "ThrottleDownReallyFast" then self.CoreSys.ThrottleRateA = -20 end
     end
 
-    if button == "Door1Set" then
-        self.Door1 = true
-        self.Panel.Door1 = 1
-    end
-
-    if self.CoreSys.ThrottleRateA == 0 then
-        if button == "ThrottleZero" then self.CoreSys.ThrottleStateA = 0 end
-        if self:GetNW2Bool( "EmergencyBrake", false ) == true then self:SetNW2Bool( "EmergencyBrake", false ) end
-    end
-
-    if button == "Throttle10Pct" then self.CoreSys.ThrottleStateA = 10 end
-    if button == "Throttle20Pct" then self.CoreSys.ThrottleStateA = 20 end
-    if button == "Throttle30Pct" then self.CoreSys.ThrottleStateA = 30 end
-    if button == "Throttle40Pct" then self.CoreSys.ThrottleStateA = 40 end
-    if button == "Throttle50Pct" then self.CoreSys.ThrottleStateA = 50 end
-    if button == "Throttle60Pct" then self.CoreSys.ThrottleStateA = 60 end
-    if button == "Throttle70Pct" then self.CoreSys.ThrottleStateA = 70 end
-    if button == "Throttle80Pct" then self.CoreSys.ThrottleStateA = 80 end
-    if button == "Throttle90Pct" then self.CoreSys.ThrottleStateA = 90 end
-    if button == "Throttle10-Pct" then self.CoreSys.ThrottleStateA = -10 end
-    if button == "Throttle20-Pct" then self.CoreSys.ThrottleStateA = -20 end
-    if button == "Throttle30-Pct" then self.CoreSys.ThrottleStateA = -30 end
-    if button == "Throttle40-Pct" then self.CoreSys.ThrottleStateA = -40 end
-    if button == "Throttle50-Pct" then self.CoreSys.ThrottleStateA = -50 end
-    if button == "Throttle60-Pct" then self.CoreSys.ThrottleStateA = -60 end
-    if button == "Throttle70-Pct" then self.CoreSys.ThrottleStateA = -70 end
-    if button == "Throttle80-Pct" then self.CoreSys.ThrottleStateA = -80 end
-    if button == "Throttle90-Pct" then self.CoreSys.ThrottleStateA = -90 end
-    if button == "PantographRaiseSet" then
-        self.Panel.PantographRaise = 1
-        if self.CoreSys.BatteryOn == true then
-            self.PantoUp = true
-            self:SetNW2Bool( "PantoUp", true )
-            if self:ReadTrainWire( 6 ) > 0 then self:WriteTrainWire( 17, 0 ) end
-        end
+    if button == "PantographRaiseSet" and self.CoreSys.BatteryOn == true then
+        self.PantoUp = true
+        self:SetNW2Bool( "PantoUp", true )
+        if self:ReadTrainWire( 6 ) > 0 then self:WriteTrainWire( 17, 0 ) end
     end
 
     if button == "PantographLowerSet" then
@@ -690,42 +617,34 @@ function ENT:OnButtonPress( button, ply )
         end
     end
 
-    if button == "ReverserDownSet" then
-        if not self.CoreSys.ThrottleEngaged and self.CoreSys.ReverserInsertedA == true then
-            -- self.ReverserLeverState = self.ReverserLeverState - 1
-            math.Clamp( self.CoreSys.ReverserLeverStateA, -1, 3 )
-            -- self.CoreSys:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-            self.CoreSys.ReverserLeverStateA = self.CoreSys.ReverserLeverStateA - 1
-            self.CoreSys.ReverserLeverStateA = math.Clamp( self.CoreSys.ReverserLeverStateA, -1, 3 )
-            -- PrintMessage(HUD_PRINTTALK,self.CoreSys.ReverserLeverStateA)
+    if button == "ReverserDownSet" and not self.CoreSys.ThrottleEngaged and self.CoreSys.ReverserInsertedA == true then
+        -- self.ReverserLeverState = self.ReverserLeverState - 1
+        math.Clamp( self.CoreSys.ReverserLeverStateA, -1, 3 )
+        -- self.CoreSys:TriggerInput("ReverserLeverState",self.ReverserLeverState)
+        self.CoreSys.ReverserLeverStateA = self.CoreSys.ReverserLeverStateA - 1
+        self.CoreSys.ReverserLeverStateA = math.Clamp( self.CoreSys.ReverserLeverStateA, -1, 3 )
+        -- PrintMessage(HUD_PRINTTALK,self.CoreSys.ReverserLeverStateA)
+    end
+
+    if self.CoreSys.ReverserLeverStateB == 0 and self.CoreSys.ReverserLeverStateA == 0 and button == "ReverserInsert" then
+        if self.CoreSys.ReverserInsertedB and not self.CoreSys.ReverserInsertedA then
+            self.CoreSys.ReverserInsertedA = true
+            self.CoreSys.ReverserInsertedB = false
+        elseif not self.CoreSys.ReverserInsertedB and self.CoreSys.ReverserInsertedA then
+            self.CoreSys.ReverserInsertedA = false
+        elseif not self.CoreSys.ReverserInsertedB and not self.CoreSys.ReverserInsertedA then
+            self.CoreSys.ReverserInsertedA = true
         end
     end
 
-    if self.CoreSys.ReverserLeverStateB == 0 and self.CoreSys.ReverserLeverStateA == 0 then
-        if button == "ReverserInsert" then
-            if self.CoreSys.ReverserInsertedB and not self.CoreSys.ReverserInsertedA then
-                self.CoreSys.ReverserInsertedA = true
-                self.CoreSys.ReverserInsertedB = false
-            elseif not self.CoreSys.ReverserInsertedB and self.CoreSys.ReverserInsertedA then
-                self.CoreSys.ReverserInsertedA = false
-            elseif not self.CoreSys.ReverserInsertedB and not self.CoreSys.ReverserInsertedA then
-                self.CoreSys.ReverserInsertedA = true
-            end
-        end
+    if button == "BatteryOnSet" and self.BatteryOn == false and self.CoreSys.ReverserLeverStateA == 1 then
+        self.BatteryOn = true
+        self.Duewag_Battery:TriggerInput( "Charge", 1.3 )
     end
 
-    if button == "BatteryOnSet" then
-        if self.BatteryOn == false and self.CoreSys.ReverserLeverStateA == 1 then
-            self.BatteryOn = true
-            self.Duewag_Battery:TriggerInput( "Charge", 1.3 )
-        end
-    end
-
-    if button == "BatteryDisableSet" then
-        if self.BatteryOn == true and self.CoreSys.ReverserLeverStateA == 1 then
-            self.BatteryOn = false
-            self.Duewag_Battery:TriggerInput( "Charge", 0 )
-        end
+    if button == "BatteryDisableSet" and self.BatteryOn == true and self.CoreSys.ReverserLeverStateA == 1 then
+        self.BatteryOn = false
+        self.Duewag_Battery:TriggerInput( "Charge", 0 )
     end
 
     if button == "DeadmanSet" then
@@ -826,27 +745,10 @@ function ENT:OnButtonPress( button, ply )
         end
     end
 
-    if button == "Button1a" then
-        if self.DoorSideUnlocked == "Right" then if self.DoorRandomness[ 1 ] == 0 then self.DoorRandomness[ 1 ] = 3 end end
-        self.Panel.Button1a = 1
-    end
-
-    if button == "Button2a" then
-        if self.DoorSideUnlocked == "Right" then self.DoorRandomness[ 1 ] = 3 end
-        self.Panel.Button2a = 1
-    end
-
-    if button == "Button3a" then
-        if self.DoorSideUnlocked == "Right" then self.DoorRandomness[ 2 ] = 3 end
-        self.Panel.Button3a = 1
-    end
-
-    if button == "Button4a" then
-        if self.DoorSideUnlocked == "Right" then self.DoorRandomness[ 2 ] = 3 end
-        self.Panel.Button4a = 1
-        -- print(self.DoorRandomness[2])
-    end
-
+    if button == "Button1a" then if self.DoorSideUnlocked == "Right" then if self.DoorRandomness[ 1 ] == 0 then self.DoorRandomness[ 1 ] = 3 end end end
+    if button == "Button2a" then self.DoorRandomness[ 1 ] = 3 end
+    if button == "Button3a" then self.DoorRandomness[ 2 ] = 3 end
+    if button == "Button4a" then self.DoorRandomness[ 2 ] = 3 end
     if button == "Button8b" then if self.DoorSideUnlocked == "Left" then self.DoorRandomness[ 4 ] = 3 end end
     if button == "Button7b" then if self.DoorSideUnlocked == "Left" then self.DoorRandomness[ 4 ] = 3 end end
     if button == "Button6b" then if self.DoorSideUnlocked == "Left" then self.DoorRandomness[ 3 ] = 3 end end
@@ -930,180 +832,15 @@ function ENT:OnButtonPress( button, ply )
         end
     end
 
-    if button == "ComplaintSet" then self:SetNW2Bool( "Microphone", true ) end
-    if button == "ComplaintSet" then self:SetNW2Bool( "Microphone", false ) end
-    if button == "DestinationSet" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self:SetNW2Bool( "IBISKeyBeep", true )
-            self.IBIS:Trigger( "Destination", RealTime() )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number0Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number0", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "DeleteSet" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Delete", RealTime() )
-            -- self.IBIS:Trigger(nil)
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number1Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number1", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number2Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number2", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number3Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number3", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number4Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number4", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number5Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number5", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number6Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number6", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number7Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number7", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number8Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number8", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "Number9Set" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Number9", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "EnterSet" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "Enter", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
-    if button == "ServiceAnnouncementSet" then
-        if self.IBISKeyRegistered == false then
-            self.IBISKeyRegistered = true
-            self.IBIS:Trigger( "ServiceAnnouncements", RealTime() )
-            self:SetNW2Bool( "IBISKeyBeep", true )
-        else
-            self.IBIS:Trigger( nil )
-            self:SetNW2Bool( "IBISKeyBeep", false )
-        end
-    end
-
     if button == "ReduceBrakeSet" then self.Panel.ReduceBrake = 1 end
 end
 
 function ENT:OnButtonRelease( button, ply )
+    local throttle = self.Throttle
+    local p = self.Panel
+    local sys = self.CoreSys
     self:HackButtonRelease( button )
-    if button == "CycleIBISKey" then
-        if self.CoreSys.IBISKeyA == false and self.CoreSys.IBISKeyATurned == false then
-            self.CoreSys.IBISKeyA = true
-        elseif self.CoreSysIBISKeyA == true and self.CoreSys.IBISKeyATurned == false then
-            self.CoreSys.IBISKeyA = true
-            self.CoreSys.IBISKeyATurned = true
-        elseif self.CoreSysIBISKeyA == true and self.CoreSys.IBISKeyATurned == true then
-            self.CoreSys.IBISKeyA = true
-            self.CoreSys.IBISKeyATurned = false
-        end
-    end
-
+    if button == "ThrottleUpFast" or button == "ThrottleDownFast" or button == "ThrottleDown" or button == "ThrottleUp" then sys.ThrottleRateA = 0 end
     if button == "ReduceBrakeSet" then self.Panel.ReduceBrake = 0 end
     if button == "PassengerOvergroundSet" then self.Panel.PassengerOverground = 0 end
     if button == "PassengerUndergroundSet" then self.Panel.PassengerUnderground = 0 end
@@ -1116,8 +853,6 @@ function ENT:OnButtonRelease( button, ply )
     if button == "Door1Set" then self.Panel.Door1 = 0 end
     if button == "PantographRaiseSet" then self.Panel.PantographRaise = 0 end
     if button == "ThrowCouplerSet" then self.Panel.ThrowCoupler = 0 end
-    if ( button == "ThrottleUp" and self.CoreSys.ThrottleRateA > 0 ) or ( button == "ThrottleDown" and self.CoreSys.ThrottleRateA < 0 ) then self.CoreSys.ThrottleRateA = 0 end
-    if ( button == "ThrottleUpFast" and self.CoreSys.ThrottleRateA > 0 ) or ( button == "ThrottleDownFast" and self.CoreSys.ThrottleRateA < 0 ) then self.CoreSys.ThrottleRateA = 0 end
     if button == "Rollsign+" then
         self:SetNW2Bool( "Rollsign+", false )
         self.ScrollMoment = CurTime()

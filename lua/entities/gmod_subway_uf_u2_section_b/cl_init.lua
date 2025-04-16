@@ -150,7 +150,6 @@ end
 function ENT:Initialize()
 	self.BaseClass.Initialize( self )
 	self.IBIS = self:CreateRT( "IBIS2", 512, 128 )
-	self.SectionA = self:GetNW2Entity( "SectionA" )
 	self.Bogeys = {}
 	self.DoorSwitchStates = {
 		[ "Left" ] = 1,
@@ -171,7 +170,6 @@ function ENT:Initialize()
 
 	self.SpeedoAnim = 0
 	self.ThrottleLastEngaged = 0
-	if IsValid( self.SectionA ) then self:UpdateWagonNumber() end
 	self.BatterySwitch = 0.5
 end
 
@@ -1367,7 +1365,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 			}
 		},
 		{
-			ID = "DoorsUnlockSet",
+			ID = "UnlockDoorButton",
 			x = 396.4,
 			y = 57.7,
 			radius = 10,
@@ -1435,7 +1433,6 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 
 function ENT:Draw()
 	self.BaseClass.Draw( self )
-	self:UpdateWagonNumber()
 end
 
 function ENT:DrawPost()

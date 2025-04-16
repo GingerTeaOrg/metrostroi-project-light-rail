@@ -12,35 +12,8 @@ function ENT:Initialize()
 	self.DriverSeat:SetColor( Color( 0, 0, 0, 0 ) )
 	-- self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
 	-- self.InstructorsSeat:SetColor(Color(0, 0, 0, 0))
-	self.DoorStatesRight = {
-		[ 1 ] = 0,
-		[ 2 ] = 0,
-		[ 3 ] = 0,
-		[ 4 ] = 0,
-		[ 5 ] = 0,
-		[ 6 ] = 0
-	}
-
-	self.DoorStatesLeft = {
-		[ 1 ] = 0,
-		[ 2 ] = 0,
-		[ 3 ] = 0,
-		[ 4 ] = 0,
-		[ 5 ] = 0,
-		[ 6 ] = 0
-	}
-
 	self.DoorsUnlocked = false
 	self.DoorsPreviouslyUnlocked = false
-	self.DoorCloseMoments = {
-		[ 1 ] = 0,
-		[ 2 ] = 0,
-		[ 3 ] = 0,
-		[ 4 ] = 0,
-		[ 5 ] = 0,
-		[ 6 ] = 0
-	}
-
 	self.DoorCloseMomentsCaptured = false
 	self.Speed = 0
 	self.ThrottleState = 0

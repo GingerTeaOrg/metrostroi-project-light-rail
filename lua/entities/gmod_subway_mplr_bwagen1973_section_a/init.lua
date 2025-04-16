@@ -2,7 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.BogeyDistance = 780
-ENT.SyncTable = { "IgnitionKey", "IgnitionKeyInserted", "UncouplingKey", "ParrallelMotors", "Deadman", "DoorsUnlock", "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "Door1", "DoorsForceOpen", "DoorsForceClose", "MirrorLeft", "MirrorRight", "SwitchLeft", "SwitchRight", "Battery", "BatteryDisable", "PantographOn", "PantographOff", "Headlights", "HazardBlink", "DriverLight", "BlinkerRight", "BlinkerLeft", "StepsHigh", "StepsLow", "StepsLowest", "Bell", "Horn", "WiperConstantSet", "WiperIntervalSet", "WindowWasherSet", "EmergencyBrakeDisable" }
+ENT.SyncTable = { "IgnitionKey", "IgnitionKeyOn", "IgnitionKeyOff", "UncouplingKey", "ParrallelMotors", "Deadman", "UnlockDoors", "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "Door1", "DoorsForceOpen", "DoorsForceClose", "MirrorLeft", "MirrorRight", "SwitchLeft", "SwitchRight", "Battery", "BatteryDisable", "PantographOn", "PantographOff", "Headlights", "HazardBlink", "DriverLight", "BlinkerRight", "BlinkerLeft", "StepsHigh", "StepsLow", "StepsLowest", "Bell", "Horn", "WiperConstantSet", "WiperIntervalSet", "WindowWasherSet", "EmergencyBrakeDisable" }
 ENT.InteractionZones = {
 	{
 		ID = "DoorButton3L",
@@ -53,84 +53,7 @@ ENT.TrainWireCrossConnections = {
 	[ 31 ] = 32
 }
 
-ENT.KeyMap = {
-	[ KEY_A ] = "ThrottleUp",
-	[ KEY_D ] = "ThrottleDown",
-	[ KEY_F ] = "ReduceBrake",
-	[ KEY_H ] = "BellSet",
-	[ KEY_SPACE ] = "DeadmanSet",
-	[ KEY_W ] = "ReverserUpSet",
-	[ KEY_S ] = "ReverserDownSet",
-	[ KEY_P ] = "PantographOnSet",
-	[ KEY_O ] = "DoorsUnlockToggle",
-	[ KEY_I ] = "DoorsForceCloseSet",
-	[ KEY_K ] = "DoorsCloseConfirmSet",
-	[ KEY_Z ] = "WarningAnnouncementSet",
-	[ KEY_J ] = "DoorsSelectLeftToggle",
-	[ KEY_L ] = "DoorsSelectRightToggle",
-	[ KEY_B ] = "BatterySet",
-	[ KEY_V ] = "HeadlightsToggle",
-	[ KEY_M ] = "MirrorLeftToggle",
-	[ KEY_1 ] = "Throttle10Pct",
-	[ KEY_2 ] = "Throttle20Pct",
-	[ KEY_3 ] = "Throttle30Pct",
-	[ KEY_4 ] = "Throttle40Pct",
-	[ KEY_5 ] = "Throttle50Pct",
-	[ KEY_6 ] = "Throttle60Pct",
-	[ KEY_7 ] = "Throttle70Pct",
-	[ KEY_8 ] = "Throttle80Pct",
-	[ KEY_9 ] = "Throttle90Pct",
-	[ KEY_0 ] = "IgnitionKeyOn",
-	[ KEY_PERIOD ] = "BlinkerRightToggle",
-	[ KEY_COMMA ] = "BlinkerLeftToggle",
-	[ KEY_PAD_MINUS ] = "IBISkeyTurnSet",
-	[ KEY_LSHIFT ] = {
-		[ KEY_O ] = "DoorsForceOpenSet",
-		[ KEY_0 ] = "IgnitionKeyToggle",
-		[ KEY_A ] = "ThrottleUpFast",
-		[ KEY_D ] = "ThrottleDownFast",
-		[ KEY_S ] = "ThrottleZero",
-		[ KEY_H ] = "HornSet",
-		[ KEY_V ] = "DriverLightToggle",
-		[ KEY_COMMA ] = "WarnBlinkToggle",
-		[ KEY_B ] = "BatteryDisableSet",
-		[ KEY_M ] = "MirrorRightToggle",
-		[ KEY_PAGEUP ] = "Rollsign+",
-		[ KEY_PAGEDOWN ] = "Rollsign-",
-		[ KEY_1 ] = "Throttle10-Pct",
-		[ KEY_2 ] = "Throttle20-Pct",
-		[ KEY_3 ] = "Throttle30-Pct",
-		[ KEY_4 ] = "Throttle40-Pct",
-		[ KEY_5 ] = "Throttle50-Pct",
-		[ KEY_6 ] = "Throttle60-Pct",
-		[ KEY_7 ] = "Throttle70-Pct",
-		[ KEY_8 ] = "Throttle80-Pct",
-		[ KEY_9 ] = "Throttle90-Pct",
-		[ KEY_P ] = "PantographOffSet",
-	},
-	[ KEY_LALT ] = {
-		[ KEY_PAD_1 ] = "Number1Set",
-		[ KEY_PAD_2 ] = "Number2Set",
-		[ KEY_PAD_3 ] = "Number3Set",
-		[ KEY_PAD_4 ] = "Number4Set",
-		[ KEY_PAD_5 ] = "Number5Set",
-		[ KEY_PAD_6 ] = "Number6Set",
-		[ KEY_PAD_7 ] = "Number7Set",
-		[ KEY_PAD_8 ] = "Number8Set",
-		[ KEY_PAD_9 ] = "Number9Set",
-		[ KEY_PAD_0 ] = "Number0Set",
-		[ KEY_PAD_ENTER ] = "EnterSet",
-		[ KEY_PAD_DECIMAL ] = "DeleteSet",
-		[ KEY_PAD_DIVIDE ] = "DestinationSet",
-		[ KEY_PAD_MULTIPLY ] = "SpecialAnnouncementsSet",
-		[ KEY_PAD_MINUS ] = "TimeAndDateSet",
-		[ KEY_V ] = "PassengerLightsSet",
-		[ KEY_D ] = "EmergencyBrakeSet",
-		[ KEY_N ] = "Parrallel",
-		[ KEY_0 ] = "IgnitionKeyOff"
-	}
-}
-
+--[ KEY_0 ] = "IgnitionKeyOff"
 function ENT:Initialize()
 	self:SetModel( "models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl" )
 	self.BaseClass.Initialize( self )
@@ -155,8 +78,7 @@ function ENT:Initialize()
 	self.RearCouple = self:CreateCustomCoupler( Vector( -475, 0, 30 ), Angle( 0, 180, 0 ), true, "b", "b" )
 	self.RearCoupler = self.RearCouple
 	self.RearBogey = self:CreateBogeyUF( Vector( -390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "b" )
-	self.Panto = self:CreatePanto( Vector( 36.5, 0, 135 ), Angle( 0, 180, 0 ), "einholm" )
-	self.PantoUp = false
+	self.Panto = self:CreatePanto( Vector( 36.5, 0, 135 ), Angle( 0, 0, 0 ), "einholm" )
 	self.FrontBogey:SetNWInt( "MotorSoundType", 0 )
 	self.MiddleBogey:SetNWInt( "MotorSoundType", 0 )
 	self.RearBogey:SetNWInt( "MotorSoundType", 0 )
@@ -354,83 +276,6 @@ function ENT:Initialize()
 		}
 	}
 
-	-- Initialize key mapping
-	self.KeyMap = {
-		[ KEY_A ] = "ThrottleUp",
-		[ KEY_D ] = "ThrottleDown",
-		[ KEY_F ] = "ReduceBrake",
-		[ KEY_H ] = "BellSet",
-		[ KEY_SPACE ] = "DeadmanSet",
-		[ KEY_W ] = "ReverserUpSet",
-		[ KEY_S ] = "ReverserDownSet",
-		[ KEY_P ] = "PantographOnSet",
-		[ KEY_O ] = "DoorsUnlockToggle",
-		[ KEY_I ] = "DoorsLockSet",
-		[ KEY_K ] = "DoorsCloseConfirmSet",
-		[ KEY_Z ] = "WarningAnnouncementSet",
-		[ KEY_J ] = "DoorsSelectLeftToggle",
-		[ KEY_L ] = "DoorsSelectRightToggle",
-		[ KEY_B ] = "BatterySet",
-		[ KEY_V ] = "HeadlightsToggle",
-		[ KEY_1 ] = "Throttle10Pct",
-		[ KEY_2 ] = "Throttle20Pct",
-		[ KEY_3 ] = "Throttle30Pct",
-		[ KEY_4 ] = "Throttle40Pct",
-		[ KEY_5 ] = "Throttle50Pct",
-		[ KEY_6 ] = "Throttle60Pct",
-		[ KEY_7 ] = "Throttle70Pct",
-		[ KEY_8 ] = "Throttle80Pct",
-		[ KEY_9 ] = "Throttle90Pct",
-		[ KEY_0 ] = "IgnitionKeyOn",
-		[ KEY_PERIOD ] = "BlinkerRightToggle",
-		[ KEY_COMMA ] = "BlinkerLeftToggle",
-		[ KEY_PAD_MINUS ] = "IBISkeyTurnSet",
-		[ KEY_LSHIFT ] = {
-			[ KEY_0 ] = "IgnitionKeyToggle",
-			[ KEY_A ] = "ThrottleUpFast",
-			[ KEY_D ] = "ThrottleDownFast",
-			[ KEY_S ] = "ThrottleZero",
-			[ KEY_H ] = "HornSet",
-			[ KEY_V ] = "DriverLightToggle",
-			[ KEY_COMMA ] = "WarnBlinkToggle",
-			[ KEY_B ] = "BatteryDisableSet",
-			[ KEY_PAGEUP ] = "Rollsign+",
-			[ KEY_PAGEDOWN ] = "Rollsign-",
-			[ KEY_O ] = "Door1Set",
-			[ KEY_1 ] = "Throttle10-Pct",
-			[ KEY_2 ] = "Throttle20-Pct",
-			[ KEY_3 ] = "Throttle30-Pct",
-			[ KEY_4 ] = "Throttle40-Pct",
-			[ KEY_5 ] = "Throttle50-Pct",
-			[ KEY_6 ] = "Throttle60-Pct",
-			[ KEY_7 ] = "Throttle70-Pct",
-			[ KEY_8 ] = "Throttle80-Pct",
-			[ KEY_9 ] = "Throttle90-Pct",
-			[ KEY_P ] = "PantographOffSet",
-		},
-		[ KEY_LALT ] = {
-			[ KEY_PAD_1 ] = "Number1Set",
-			[ KEY_PAD_2 ] = "Number2Set",
-			[ KEY_PAD_3 ] = "Number3Set",
-			[ KEY_PAD_4 ] = "Number4Set",
-			[ KEY_PAD_5 ] = "Number5Set",
-			[ KEY_PAD_6 ] = "Number6Set",
-			[ KEY_PAD_7 ] = "Number7Set",
-			[ KEY_PAD_8 ] = "Number8Set",
-			[ KEY_PAD_9 ] = "Number9Set",
-			[ KEY_PAD_0 ] = "Number0Set",
-			[ KEY_PAD_ENTER ] = "EnterSet",
-			[ KEY_PAD_DECIMAL ] = "DeleteSet",
-			[ KEY_PAD_DIVIDE ] = "DestinationSet",
-			[ KEY_PAD_MULTIPLY ] = "SpecialAnnouncementsSet",
-			[ KEY_PAD_MINUS ] = "TimeAndDateSet",
-			[ KEY_V ] = "PassengerLightsSet",
-			[ KEY_D ] = "EmergencyBrakeSet",
-			[ KEY_N ] = "Parrallel",
-			[ KEY_0 ] = "IgnitionKeyOff"
-		}
-	}
-
 	self.InteractionZones = {
 		{
 			ID = "Button1a",
@@ -473,6 +318,89 @@ function ENT:Initialize()
 			Radius = 16
 		}
 	}
+
+	self.KeyMap = {
+		[ KEY_A ] = "ThrottleUp",
+		[ KEY_D ] = "ThrottleDown",
+		[ KEY_F ] = "ReduceBrake",
+		[ KEY_H ] = "BellSet",
+		[ KEY_SPACE ] = "DeadmanSet",
+		[ KEY_W ] = "ReverserUpSet",
+		[ KEY_S ] = "ReverserDownSet",
+		[ KEY_P ] = "PantographOnSet",
+		[ KEY_O ] = "UnlockDoorsToggle",
+		[ KEY_I ] = "DoorsForceCloseSet",
+		[ KEY_K ] = "DoorsCloseConfirmSet",
+		[ KEY_Z ] = "WarningAnnouncementSet",
+		[ KEY_J ] = "DoorsSelectLeftToggle",
+		[ KEY_L ] = "DoorsSelectRightToggle",
+		[ KEY_B ] = "BatterySet",
+		[ KEY_V ] = "HeadlightsToggle",
+		[ KEY_M ] = "MirrorLeftToggle",
+		[ KEY_1 ] = "Throttle10Pct",
+		[ KEY_2 ] = "Throttle20Pct",
+		[ KEY_3 ] = "Throttle30Pct",
+		[ KEY_4 ] = "Throttle40Pct",
+		[ KEY_5 ] = "Throttle50Pct",
+		[ KEY_6 ] = "Throttle60Pct",
+		[ KEY_7 ] = "Throttle70Pct",
+		[ KEY_8 ] = "Throttle80Pct",
+		[ KEY_9 ] = "Throttle90Pct",
+		[ KEY_0 ] = "IgnitionKeyOn",
+		[ KEY_PERIOD ] = "BlinkerRightToggle",
+		[ KEY_COMMA ] = "BlinkerLeftToggle",
+		[ KEY_PAD_MINUS ] = "IBISkeyTurnSet",
+		[ KEY_LSHIFT ] = {
+			[ KEY_O ] = "DoorsForceOpenSet",
+			[ KEY_0 ] = "IgnitionKeyToggle",
+			[ KEY_A ] = "ThrottleUpFast",
+			[ KEY_D ] = "ThrottleDownFast",
+			[ KEY_S ] = "ThrottleZero",
+			[ KEY_H ] = "HornSet",
+			[ KEY_V ] = "DriverLightToggle",
+			[ KEY_COMMA ] = "WarnBlinkToggle",
+			[ KEY_B ] = "BatteryDisableSet",
+			[ KEY_M ] = "MirrorRightToggle",
+			[ KEY_PAGEUP ] = "Rollsign+",
+			[ KEY_PAGEDOWN ] = "Rollsign-",
+			[ KEY_1 ] = "Throttle10-Pct",
+			[ KEY_2 ] = "Throttle20-Pct",
+			[ KEY_3 ] = "Throttle30-Pct",
+			[ KEY_4 ] = "Throttle40-Pct",
+			[ KEY_5 ] = "Throttle50-Pct",
+			[ KEY_6 ] = "Throttle60-Pct",
+			[ KEY_7 ] = "Throttle70-Pct",
+			[ KEY_8 ] = "Throttle80-Pct",
+			[ KEY_9 ] = "Throttle90-Pct",
+			[ KEY_P ] = "PantographOffSet",
+		},
+		[ KEY_LALT ] = {
+			[ KEY_PAD_1 ] = "Number1Set",
+			[ KEY_PAD_2 ] = "Number2Set",
+			[ KEY_PAD_3 ] = "Number3Set",
+			[ KEY_PAD_4 ] = "Number4Set",
+			[ KEY_PAD_5 ] = "Number5Set",
+			[ KEY_PAD_6 ] = "Number6Set",
+			[ KEY_PAD_7 ] = "Number7Set",
+			[ KEY_PAD_8 ] = "Number8Set",
+			[ KEY_PAD_9 ] = "Number9Set",
+			[ KEY_PAD_0 ] = "Number0Set",
+			[ KEY_PAD_ENTER ] = "EnterSet",
+			[ KEY_PAD_DECIMAL ] = "DeleteSet",
+			[ KEY_PAD_DIVIDE ] = "DestinationSet",
+			[ KEY_PAD_MULTIPLY ] = "SpecialAnnouncementsSet",
+			[ KEY_PAD_MINUS ] = "TimeAndDateSet",
+			[ KEY_V ] = "PassengerLightsSet",
+			[ KEY_D ] = "EmergencyBrakeSet",
+			[ KEY_N ] = "ParrallelSet",
+			[ KEY_R ] = "CircuitBreakerSet",
+			[ KEY_T ] = "CircuitBreakerUnSet",
+			[ KEY_0 ] = "IgnitionKeyOff"
+		}
+	}
+
+	self.BrakeHiss = false
+	self.CompressorOn = false
 end
 
 function ENT:Think( dT )
@@ -483,6 +411,8 @@ function ENT:Think( dT )
 	self.FrontCoupler = self.FrontCouple
 	self.RearCoupler = self.RearCouple
 	self:Traction()
+	self:Sounds()
+	print( self.CoreSys.IgnitionKeyAIn )
 end
 
 function ENT:SetButton( button )
@@ -496,7 +426,7 @@ end
 function ENT:OnButtonPress( button )
 	self:HackButtonPress( button )
 	local toggle = string.find( button, "Toggle", 1 ) ~= nil
-	if button and toggle then
+	if button and toggle and button ~= "IgnitionKeyToggle" then
 		self:ToggleButton( button )
 	else
 		self:SetButton( button )
@@ -504,15 +434,15 @@ function ENT:OnButtonPress( button )
 
 	local sys = self.CoreSys
 	local panel = self.Panel
-	local doorHandler = self.MPLR_DoorHandler
+	local doorHandler = self.DoorHandler
 	if button == "IgnitionKeyOn" then sys:IgnitionKeyOnA() end
 	if button == "IgnitionKeyOff" then sys:IgnitionKeyOffA() end
 	if button == "IgnitionKeyToggle" then sys:IgnitionKeyInOutA() end
 	if button == "ReverserUpSet" then sys:ReverserUpA() end
 	if button == "ReverserDownSet" then sys:ReverserDownA() end
 	if sys.ThrottleRateA == 0 and sys.ReverserA ~= 1 then
-		if button == "ThrottleUp" then sys.ThrottleRateA = 3 end
-		if button == "ThrottleDown" then sys.ThrottleRateA = -3 end
+		if button == "ThrottleUp" then sys.ThrottleRateA = 2 end
+		if button == "ThrottleDown" then sys.ThrottleRateA = -2 end
 		if button == "ThrottleUpFast" then sys.ThrottleRateA = 8 end
 		if button == "ThrottleDownFast" then sys.ThrottleRateA = -8 end
 	end
@@ -554,12 +484,10 @@ function ENT:OnButtonPress( button )
 		end
 	end
 
-	if button == "DoorsForceOpenSet" then
-		local right = panel.DoorsSelectRight > 0
-		local tab = right and doorHandler.DoorRandomnessRight or doorHandler.DoorRandomnessLeft
-		for k, _ in ipairs( tab ) do
-			tab[ k ] = 3
-		end
+	if button == "CircuitBreakerSet" then
+		sys:HVCircuitOn()
+	elseif button == "CircuitBreakerUnSet" then
+		sys:HVCircuitOff()
 	end
 end
 
@@ -593,6 +521,7 @@ end
 
 function ENT:Traction()
 	if not IsValid( self.FrontBogey ) and not IsValid( self.RearBogey ) then return end
+	if not self.CoreSys.HVCircuit then return end
 	local fb = self.FrontBogey
 	local mb = self.MiddleBogey
 	local rb = self.RearBogey
@@ -619,7 +548,7 @@ function ENT:Traction()
 	rb.Reversed = self:ReadTrainWire( 4 ) > 0
 	fb.Reversed = rb.Reversed
 	if speed > 8 and traction < 0 then
-		fb.BrakeCylinderPressure = math.abs( traction * 5 )
+		fb.BrakeCylinderPressure = math.abs( traction * 2.5 )
 	elseif speed < 8 and traction <= 0 then
 		fb.BrakeCylinderPressure = 6
 	elseif traction > 0 then
@@ -631,4 +560,7 @@ function ENT:Traction()
 	mb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	rb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	--print(self.FrontBogey.MotorPower, traction, fb.BrakeCylinderPressure, rb.Reversed, self.FrontBogey.MotorForce)
+end
+
+function ENT:Sounds()
 end

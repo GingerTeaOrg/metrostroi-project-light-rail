@@ -17,7 +17,7 @@ end
 function ENT:Think()
 	local function executeSwitching( line, route, isOverride, train, isAutomaticOverride )
 		local routeCommand = line and UF.RoutingTable[ line .. route ] and UF.RoutingTable[ line .. route ][ self.SwitchID ] or nil --get the routing command from the table
-		print( "exec" )
+		--print( "exec" )
 		if isAutomaticOverride and IsValid( train ) then
 			print( "Automatic Override" )
 			self.TargetEnt:SecondarySwitchingQueue( isOverride, self )
@@ -65,7 +65,7 @@ function ENT:Think()
 			return inRange, _, trainDetected
 		elseif dir then
 			local lastNode = lastNode or iterateForward( self.TrackPos.node1 )
-			print( lastNode.x, self.TrackPos.x, self.TrackPos.path.id )
+			--print( lastNode.x, self.TrackPos.x, self.TrackPos.path.id )
 			inRange, _, trainDetected = UF.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, dir, "light", lastNode.x )
 			return inRange, _, trainDetected
 		elseif not dir then

@@ -4,12 +4,9 @@
 -- Copyright (C) 2013-2018 Metrostroi Team & FoxWorks Aerospace s.r.o.
 -- Contains proprietary code. See license.txt for additional information.
 --------------------------------------------------------------------------------
-Metrostroi.DefineSystem("Duewag_Battery")
-
+Metrostroi.DefineSystem( "Duewag_Battery" )
 TRAIN_SYSTEM.DontAccelerateSimulation = true
-
 function TRAIN_SYSTEM:Initialize()
-
 	-- Battery parameters
 	self.ElementCapacity = 50 -- A*hour
 	self.ElementCount = 36
@@ -21,20 +18,27 @@ function TRAIN_SYSTEM:Initialize()
 	self.Charging = 0
 end
 
-function TRAIN_SYSTEM:Inputs() return {"Charge"} end
-function TRAIN_SYSTEM:Outputs() return {"Capacity", "Charge", "Voltage"} end
-function TRAIN_SYSTEM:TriggerInput(name, value) if name == "Charge" then self.Charging = value end end
-function TRAIN_SYSTEM:Think(dT)
+function TRAIN_SYSTEM:Inputs()
+	return { "Charge" }
+end
 
+function TRAIN_SYSTEM:Outputs()
+	return { "Capacity", "Charge", "Voltage" }
+end
+
+function TRAIN_SYSTEM:TriggerInput( name, value )
+	if name == "Charge" then self.Charging = value end
+end
+
+function TRAIN_SYSTEM:Think( dT )
 	-- Calculate discharge
 	self.Current = 0 -- theoretically possible to calculate, but would necessitate electrical schematics to calculate the bottom line electrical consumption of all LV devices
 	-- print(self.Train.Panel["V1"])
-	self.Charge = math.min(self.Capacity, self.Charge + self.Charging * dT)
-
+	self.Charge = math.min( self.Capacity, self.Charge + self.Charging * dT )
 	-- Calculate battery voltage
 	if self.Train.CoreSys.CircuitOn and self.Train.CoreSys.CircuitOn > 0 or self.Train.CoreSys.BatteryOn then
-		self.Voltage = 24 * (self.Charge / self.Capacity)
+		self.Voltage = 24 * ( self.Charge / self.Capacity )
 	else
-		self.Voltage = 24 * (self.Charge / self.Capacity) + (self.Charging > 0 and 24 or 0)
+		self.Voltage = 24 * ( self.Charge / self.Capacity ) + ( self.Charging > 0 and 24 or 0 )
 	end
 end

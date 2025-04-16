@@ -4,20 +4,26 @@
 -- Z Offset for rerailing bogeys
 local bogeyOffset = 31
 local TRACK_GAUGE = 56 --Distance between rails
-local TRACK_WIDTH = 2.2 --Width of a single rail
-local TRACK_HEIGHT = 14 --Height of a single rail
+local TRACK_WIDTH = 2.26 --Width of a single rail
+local TRACK_HEIGHT = 3.24 --Height of a single rail
 local TRACK_CLEARANCE = 160 --Vertical space above the rails that will always be clear of world, also used as rough estimation of train height
 --------------------------------------------------------------------------------
 local TRACK_SINGLERAIL = ( TRACK_GAUGE + TRACK_WIDTH ) / 2
-local function dirdebug( v1, v2 )
-	debugoverlay.Line( v1, v1 + v2 * 30, 10, Color( 255, 0, 0 ), true )
+local function dirdebug( pos, dir, color )
+	if not pos or not dir then
+		print( "No debug data received" )
+		return
+	end
+
+	debugoverlay.Line( pos, pos + dir, 5, color or Color( 255, 255, 255 ), true )
 end
 
 -- Takes datatable from getTrackData
 local function debugtrackdata( data )
-	dirdebug( data.centerpos, data.forward )
-	dirdebug( data.centerpos, data.right )
-	dirdebug( data.centerpos, data.up )
+	-- Assuming data has centerpos, forward, right, up
+	dirdebug( data.centerpos, data.forward * 50, Color( 0, 255, 0 ) ) -- Forward in green
+	dirdebug( data.centerpos, data.right * 50, Color( 255, 0, 0 ) ) -- Right in red
+	dirdebug( data.centerpos, data.up * 50, Color( 0, 0, 255 ) ) -- Up in blue
 end
 
 -- Helper for commonly used trace
@@ -25,7 +31,7 @@ local function traceWorldOnly( pos, dir, col )
 	local tr = util.TraceLine( {
 		start = pos,
 		endpos = pos + dir,
-		mask = MASK_NPCWORLDSTATIC
+		mask = MASK_PLAYERSOLID --MASK_NPCWORLDSTATIC
 	} )
 
 	debugoverlay.Line( tr.StartPos, tr.HitPos, 10, col or Color( 0, 0, 255 ), true )
@@ -77,11 +83,12 @@ local function getTrackData( pos, forward )
 	debugoverlay.Cross( pos, 5, 10, Color( 255, 0, 255 ), true ) -- Starting position cross
 	local tr = traceWorldOnly( pos, Vector( 0, 0, -500 ) )
 	if not tr or not tr.Hit then return false end
-	debugoverlay.Line( tr.StartPos, tr.HitPos, 10, Color( 0, 255, 0 ), true ) -- Line showing the trace
-	debugoverlay.Cross( tr.HitPos, 5, 10, Color( 255, 0, 0 ), true ) -- Hit position cross
 	local updir = tr.HitNormal
 	local floor = tr.HitPos + updir * ( TRACK_HEIGHT * 0.9 )
 	local right = forward:Cross( updir )
+	dirdebug( tr.HitPos, updir, Color( 0, 0, 255 ) ) -- 'up' direction in blue
+	dirdebug( floor, trackright, Color( 255, 0, 0 ) ) -- 'right' direction in red
+	dirdebug( floor, trackforward, Color( 0, 255, 0 ) ) -- 'forward' direction in green
 	-- Trace right
 	tr = traceWorldOnly( floor, right * 500 )
 	if not tr or not tr.Hit then return false end
@@ -118,10 +125,12 @@ UF.RerailGetTrackData = getTrackData
 -- Helper function that tries to find trackdata at -z or -ent:Up()
 local function getTrackDataBelowEnt( ent )
 	local forward = ent:GetAngles():Forward()
+	dirdebug( ent:GetPos(), forward ) -- Visualize initial forward vector
 	local tr = traceWorldOnly( ent:GetPos(), Vector( 0, 0, -500 ) )
-	if tr.Hit then
-		local td = getTrackData( tr.HitPos, forward )
-		if td then return td end
+	local td = getTrackData( tr.HitPos, forward )
+	if td then
+		debugtrackdata( td ) -- Visualize track data below entity
+		return td
 	end
 
 	local tr = traceWorldOnly( ent:GetPos(), ent:GetAngles():Up() * -500 )

@@ -14,9 +14,42 @@ ENT.SubwayTrain = {
 	Type = "U3",
 	Name = "U3",
 	WagType = 0,
-	Manufacturer = "Duewag"
+	Manufacturer = "Duewag",
+	Vmax = 80
 }
 
+ENT.DoorNumberRight = 4
+ENT.DoorNumberLeft = 4
+ENT.SectionADoors = {
+	[ 1 ] = Vector( 330.889, -46.4148, 35.3841 ),
+	[ 2 ] = Vector( 88.604, -46.4148, 35.3841 ),
+	[ 7 ] = Vector( 330.889, 46.4148, 35.3841 ),
+	[ 8 ] = Vector( 88.604, 46.4148, 35.3841 )
+}
+
+ENT.SectionBDoors = {
+	[ 3 ] = Vector( -330.889, -46.4148, 35.3841 ),
+	[ 4 ] = Vector( -88.604, -46.4148, 35.3841 ),
+	[ 5 ] = Vector( -330.889, 46.4148, 35.3841 ),
+	[ 6 ] = Vector( -88.604, 46.4148, 35.3841 )
+}
+
+ENT.DoorsLeft = {
+	[ 1 ] = true,
+	[ 2 ] = true,
+	[ 3 ] = true,
+	[ 4 ] = true,
+}
+
+ENT.DoorsRight = {
+	[ 1 ] = true,
+	[ 2 ] = true,
+	[ 3 ] = true,
+	[ 4 ] = true,
+}
+
+ENT.RequireDepartureAcknowledge = true
+ENT.Bidirectional = true
 ENT.NumberRanges = { { 451, 477 } }
 ENT.Spawner = {
 	model = { "models/lilly/uf/u3/u3_a.mdl", "models/lilly/uf/u3/u3_b.mdl" },
@@ -26,7 +59,7 @@ ENT.Spawner = {
 }
 
 ENT.Cameras = { { Vector( 400, -55, 90 ), Angle( 0, -170, 0 ), "Train.UF_U3.OutTheWindowRight" }, { Vector( 400, 55, 90 ), Angle( 0, 170, 0 ), "Train.UF_U3.OutTheWindowLeft" }, { Vector( 300, 6, 90 ), Angle( 0, 180 + 5, 0 ), "Train.UF_U3.PassengerStanding" }, { Vector( 70.5 + 10, 6, 90 ), Angle( 0, 0, 0 ), "Train.UF_U3.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 388, -30, 80 ), Angle( 0, -90, 0 ), "Train.UF_U3.RouteList" }, { Vector( 450, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.UF_U3.Bogey" }, { Vector( 413, -11, 62 ), Angle( 35, -46, 0 ), "Train.UF_U3.IBIS" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.UF_U3.IBISKey" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.UF_U3.Panto" } }
-ENT.MirrorCams = { Vector( 441, 72, 15 ), Angle( 1, 180, 0 ), 15, Vector( 441, -72, 15 ), Angle( 1, 180, 0 ), 15 }
+ENT.MirrorCams = { Vector( 441, 72, 110 ), Angle( 1, 180, 0 ), 15, Vector( 441, -72, 110 ), Angle( 1, 180, 0 ), 15 }
 function ENT:InitializeSystems()
 	self:LoadSystem( "CoreSys", "Duewag_U3" )
 	self:LoadSystem( "DeadmanUF", "Duewag_Deadman" )
@@ -35,9 +68,13 @@ function ENT:InitializeSystems()
 	self:LoadSystem( "Duewag_Battery" )
 	self:LoadSystem( "Panel", "U3_panel" )
 	self:LoadSystem( "Chopper" )
-	self:LoadSystem( "MPLR_DoorHandler" )
+	self:LoadSystem( "DoorHandler", "MPLR_DoorHandler" )
 	self:LoadSystem( "Blinkers" )
 	-- self:LoadSystem("duewag_electric")
+end
+
+function ENT:GetStandingArea()
+	return Vector( 350, -20, 25 ), Vector( 60, 20, 25 ) -- TWEAK: NEEDS TESTING INGAME
 end
 
 function ENT:InitializeSounds()
@@ -214,4 +251,5 @@ ENT.SectionBDoors = {
 	[ 6 ] = Vector( -88.604, 46.4148, 35.3841 )
 }
 
+ENT.RequireDepartureAcknowledge = true
 ENT.Bidirectional = true

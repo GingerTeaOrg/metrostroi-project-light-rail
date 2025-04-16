@@ -99,18 +99,16 @@ end
 function ENT:Think()
 	self.BaseClass.Think( self )
 	self:Animate( "reverser", self:GetNW2Float( "ReverserAnim", 0.25 ), 0, 100, 50, 9, false )
-	self:Animate( "step_r", 1, 0, 1, 1, 0, false )
+	self:Animate( "step_r", 1, 1, 1, 1, 0, false )
 	self:ShowHide( "reverser", self:GetNW2Bool( "ReverserInserted", false ), 0 )
 	if self:GetNW2Bool( "Rollsign1Scroll+", false ) == true then
 		self.ScrollModifier1 = self.ScrollModifier1 + 0.02
 	elseif self:GetNW2Bool( "Rollsign1Scroll-", false ) == true then
 		self.ScrollModifier1 = self.ScrollModifier1 - 0.02
-	else
-		self.ScrollModifier1 = self.ScrollModifier1
 	end
 
 	self.ScrollModifier = 0.172
-	self.ScrollModifier1 = 0.005
+	self.ScrollModifier1 = 0.026
 end
 
 function ENT:Draw()

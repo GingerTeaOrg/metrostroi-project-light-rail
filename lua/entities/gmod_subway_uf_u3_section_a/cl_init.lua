@@ -552,7 +552,6 @@ end
 
 function ENT:Initialize()
 	self.BaseClass.Initialize( self )
-	self.SectionB = self:GetNWEntity( "U2b" )
 	self.IBIS = self:CreateRT( "IBIS", 512, 128 )
 	self.Locked = 0
 	self.EngineSNDConfig = {}
@@ -635,19 +634,10 @@ function ENT:Think()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
 	self.ScrollModifier = 0.548
-	self:ShowHide( "reverser", self:GetNW2Bool( "ReverserInsertedA", false ) )
 	local Door12a = math.Clamp( self:GetNW2Float( "Door12a" ), 0, 1 )
 	local Door34a = math.Clamp( self:GetNW2Float( "Door34a" ), 0, 1 )
 	local Door56b = self:GetNW2Float( "Door56b" )
 	local Door78b = self:GetNW2Float( "Door78b" )
-	self.ThrottleStateAnim = self:GetNW2Float( "ThrottleStateAnim", 0 )
-	if self.ThrottleStateAnim >= 0.5 then
-		self:Animate( "Throttle", self.ThrottleStateAnim, -45, 45, 50, 8, false )
-	elseif self.ThrottleStateAnim <= 0.5 then
-		self:Animate( "Throttle", math.Clamp( self.ThrottleStateAnim, 0.09, 1 ), -45, 45, 50, 8, false )
-	end
-
-	self:Animate( "reverser", self:GetNW2Float( "ReverserAnimate" ), 0, 100, 50, 9, false )
 end
 
 function ENT:OnAnnouncer( volume )
@@ -671,9 +661,23 @@ function ENT:SoundRoutine()
 end
 
 function ENT:Animations()
+	function lerp( value, minInput, maxInput, minOutput, maxOutput )
+		-- Clamp the value to the range [minInput, maxInput]
+		if value < minInput then value = minInput end
+		if value > maxInput then value = maxInput end
+		-- Normalize the input value to a range between 0 and 1
+		local normalizedValue = ( value - minInput ) / ( maxInput - minInput )
+		-- Interpolate to the output range
+		local interpolatedValue = minOutput + normalizedValue * ( maxOutput - minOutput )
+		return interpolatedValue
+	end
+
+	local throttleFloat = self:GetNW2Float( "ThrottleStateA", 0.5 )
+	self.ThrottleStateAnim = lerp( throttleFloat, -100, 100, 0, 1 )
+	self:Animate( "Throttle", self.ThrottleStateAnim, -45, 45, 50, 8, false )
 	self.SpeedoAnim = math.Clamp( self:GetNW2Int( "Speed" ), 0, 80 ) / 100 * 1.5
 	self:Animate( "Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0 )
-	self:ShowHide( "reverser", self:GetNW2Bool( "ReverserInsertedB", false ) )
+	self:ShowHide( "reverser", self:GetNW2Bool( "ReverserInsertedA", false ) )
 	self:Animate( "reverser", self:GetNW2Float( "ReverserAnimate", 0.5 ), 0, 100, 50 )
 	self.CabWindowL = self:GetNW2Float( "CabWindowL", 0 )
 	self.CabWindowR = self:GetNW2Float( "CabWindowR", 0 )
@@ -686,8 +690,6 @@ function ENT:Animations()
 	end
 
 	self:Animate( "Mirror", self:GetNW2Float( "Mirror", 0 ), 0, 100, 17, 1, 0 )
-	self:Animate( "Mirror_vintage", self:GetNW2Float( "Mirror", 0 ), 0, 100, 17, 1, 0 )
-	self:ShowHide( "RetroEquipment", self:GetNW2Bool( "RetroMode", false ) )
 	self:Animate( "Door_fr2", self:GetNW2Float( "Door12a" ), 0, 100, 50, 0, 0 )
 	self:Animate( "Door_fr1", self:GetNW2Float( "Door12a" ), 0, 100, 50, 0, 0 )
 	self:Animate( "Door_rr2", self:GetNW2Float( "Door34a" ), 0, 100, 50, 0, 0 )
@@ -697,11 +699,4 @@ function ENT:Animations()
 	self:Animate( "Door_rl2", self:GetNW2Float( "Door56b" ), 0, 100, 50, 0, 0 )
 	self:Animate( "Door_rl1", self:GetNW2Float( "Door56b" ), 0, 100, 50, 0, 0 )
 	self:Animate( "wipers", self:GetNW2Float( "WiperState" ), 0, 100, 100, 12, 0 ) --clientProp, value, min, max, speed, damping, stickyness, name
-	if self:GetNW2Bool( "RetroMode", false ) == false then
-		self:ShowHide( "Mirror_vintage", false )
-		self:ShowHide( "Mirror", true )
-	elseif self:GetNW2Bool( "RetroMode", false ) == true then
-		self:ShowHide( "Mirror", false )
-		self:ShowHide( "Mirror_vintage", true )
-	end
 end

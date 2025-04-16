@@ -27,6 +27,7 @@ function TRAIN_SYSTEM:Initialize()
     self.PantoUp = false
     self.BatteryStartUnlock = false
     self.BatteryOn = false
+    self.AutomatOn = false
     self.CabLights = 0
     self.HeadLights = 0
     self.StopLights = 0
@@ -34,8 +35,8 @@ function TRAIN_SYSTEM:Initialize()
     self.ReverserInserted = false
     self.ReverserInsertedA = false
     self.ReverserInsertedB = false
-    self.ReverserLeverStateA = 0 -- for the reverser lever setting. -1 is reverse, 0 is neutral, 1 is startup, 2 is single unit, 3 is multiple unit
-    self.ReverserLeverStateB = 0
+    self.ReverserA = 0 -- for the reverser lever setting. -1 is reverse, 0 is neutral, 1 is startup, 2 is single unit, 3 is multiple unit
+    self.ReverserB = 0
     self.ReverserState = 0 -- internal registry for forwards, neutral, backwards
     self.VZ = false -- multiple unit mode
     self.VE = false -- single unit mode
@@ -51,7 +52,9 @@ function TRAIN_SYSTEM:Initialize()
     self.ThrottleStateA = 0
     self.ThrottleStateB = 0
     self.ThrottleRateA = 0
+    self.ThrottleMouseRateA = 0
     self.ThrottleRateB = 0
+    self.ThrottleMouseRateB = 0
     self.ThrottleCutOut = 0
     self.DynamicBraking = false -- First stage of braking
     self.TrackBrake = false -- Electromagnetic brake
@@ -78,45 +81,12 @@ function TRAIN_SYSTEM:Initialize()
     self.CurrentResistors = 0
     self.EngagedResistors = 0
     self.PreviousResistors = 0
-    self.switchingMomentRegistered = false
+    self.SwitchingMomentRegistered = false
     self.SwitchingMoment = 0
     self.CurrentTraction = 0
     self.PreviousTraction = 0
-    self.DoorStatesRight = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0,
-    }
-
-    self.DoorStatesLeft = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0,
-    }
-
-    self.DoorOpenMoments = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0,
-    }
-
-    self.DoorCloseMoments = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0,
-    }
-
-    self.DoorLockSignalMoment = 0
-    self.DoorRandomness = {
-        [ 1 ] = 0,
-        [ 2 ] = 0,
-        [ 3 ] = 0,
-        [ 4 ] = 0,
-    }
+    self.Headlights = 0
+    self.MainBreaker = false
 end
 
 if CLIENT then return end
@@ -141,28 +111,44 @@ function TRAIN_SYSTEM:WriteTrainWire( wire, value )
 end
 
 --------------------------------------------------------------------------------
-function TRAIN_SYSTEM:Think( Train, dT )
+function TRAIN_SYSTEM:MouseThrottleA( val )
+    self.ThrottleMouseRateA = val
+end
+
+function TRAIN_SYSTEM:MouseThrottleB( val )
+    self.ThrottleMouseRateB = val
+end
+
+function TRAIN_SYSTEM:BreakerOn()
+    if self.BatteryOn then self.MainBreaker = true end
+end
+
+function TRAIN_SYSTEM:BreakerOff()
+    if self.BatteryOn then self.MainBreaker = false end
+end
+
+function TRAIN_SYSTEM:Think( dT )
     local t = self.Train
     self:TriggerInput()
     self:TriggerOutput()
     t.Resistorbank:Engine()
     self:MUHandler()
+    self:ReverserAorB()
     -- print(self.ReverserState,self.Traction,self.Train)
     self.Speed = self.Train.Speed
     -- PrintMessage(HUD_PRINTTALK,self.ResistorBank)
     self.PrevTime = self.PrevTime or RealTime() - 0.33
     self.DeltaTime = RealTime() - self.PrevTime
     self.PrevTime = RealTime()
-    local dT = self.DeltaTime
     -- Control Throttles in A or B independently, but....
-    self.ThrottleStateA = self.ThrottleStateA + self.ThrottleRateA
+    self.ThrottleStateA = self.ThrottleStateA + self.ThrottleRateA + self.ThrottleMouseRateA
     self.ThrottleStateA = math.Clamp( self.ThrottleStateA, -100, 100 )
-    self.ThrottleStateB = self.ThrottleStateB
+    self.ThrottleStateB = self.ThrottleStateB + self.ThrottleRateB + self.ThrottleMouseRateB
     self.ThrottleStateB = math.Clamp( self.ThrottleStateB, -100, 100 )
     -- only pass on the actual value if the respective reverser is engaged 
-    if self.ReverserLeverStateA > 0 or self.ReverserLeverStateA < 0 then
+    if self.ReverserA > 0 or self.ReverserA < 0 then
         self.ThrottleState = self.ThrottleStateA
-    elseif self.ReverserLeverStateB > 0 or self.ReverserLeverStateB < 0 then
+    elseif self.ReverserB > 0 or self.ReverserB < 0 then
         self.ThrottleState = self.ThrottleStateB
     end
 
@@ -188,33 +174,32 @@ function TRAIN_SYSTEM:Think( Train, dT )
     -- Is the throttle engaged? We need to know that for a few things!
     self.ThrottleEngaged = self.ThrottleState ~= 0
     self.Train:SetNW2Bool( "ThrottleEngaged", self.ThrottleEngaged )
-    self.ReverserLeverStateA = math.Clamp( self.ReverserLeverStateA, -1, 3 )
-    self.ReverserLeverStateB = math.Clamp( self.ReverserLeverStateB, -1, 3 )
+    self.ReverserA = math.Clamp( self.ReverserA, -1, 4 )
+    self.ReverserB = math.Clamp( self.ReverserB, -1, 4 )
     self.Train:WriteTrainWire( 7, ( self.BatteryOn or self.Train:ReadTrainWire( 6 ) > 0 ) and 1 or 0 )
     local values = {
-        [ 1 ] = 0.4,
         [ 0 ] = 0.25,
-        [ 3 ] = 0.8,
+        [ 1 ] = 0.4,
         [ 2 ] = 0.7,
+        [ 3 ] = 0.8,
+        [ 4 ] = 1,
         [ -1 ] = 0
     }
 
-    self.Train.SectionB:SetNW2Float( "ReverserAnimate", values[ self.ReverserLeverStateB ] or 0 )
-    self.Train:SetNW2Float( "ReverserAnimate", values[ self.ReverserLeverStateA ] or 0 )
-    self.Train.SectionB:SetNW2Int( "ReverserLever", self.ReverserLeverStateB )
+    self.Train.SectionB:SetNW2Float( "ReverserAnimate", values[ self.ReverserB ] or 0 )
+    self.Train:SetNW2Float( "ReverserAnimate", values[ self.ReverserA ] or 0 )
     -- Only on the * Setting of the reverser lever should the battery turn on, or the MU wire and the battery wire
     self.BatteryOn = self.Train:ReadTrainWire( 6 ) > 0 and self.Train:ReadTrainWire( 7 ) > 0 or ( self.BatteryStartUnlock and self.Train:GetNW2Bool( "BatteryOn", false ) ) or self.BatteryOn
+    local powerAvailable = self.MainBreaker and self.BatteryOn
     -- if the battery is on, we can command the pantograph
-    self.PantoUp = ( self.Train:GetNW2Bool( "BatteryOn", false ) == true and self.Train:GetNW2Bool( "PantoUp" ) ) or ( self.Train:ReadTrainWire( 17 ) > 0 and self.Train:ReadTrainWire( 6 ) > 0 )
+    self.PantoUp = self.Train:GetNW2Bool( "BatteryOn", false ) == true and self.Train:GetNW2Bool( "PantoUp" )
     self.Train:SetNW2Bool( "ReverserInsertedA", self.ReverserInsertedA )
     self.Train:SetNW2Bool( "ReverserInsertedB", self.ReverserInsertedB )
     self.Train:TriggerInput( "DriversWrenchPresent", ( self.ReverserInsertedA or self.ReverserInsertedB ) and 1 or 0 )
     self.EmergencyBrake = self.Train:GetNW2Bool( "EmergencyBrake", false )
     self.Train:SetNW2Float( "BlinkerStatus", self.Train.Panel.BlinkerLeft > 0 and 1 or ( self.Train.Panel.BlinkerRight > 0 and self.Train.Panel.BlinkerLeft < 1 ) and 0 or 0.5 )
-    self.ReverserState = self.ReverserLeverStateA > 0 and 1 or self.ReverserLeverStateA < 0 and -1 or 0
-    self.Train:WriteTrainWire( 12, ( self.Train.DeadmanUF.IsPressed > 0 and self.Train:ReadTrainWire( 6 ) > 0 and ( self.ReverserLeverStateA ~= 0 or self.ReverserLeverStateB ~= 0 ) ) and 1 or 0 )
-    self.Train:WriteTrainWire( 6, ( self.VZ == true and self.Train:ReadTrainWire( 6 ) < 1 ) and 1 or ( self.ReverserLeverStateA == 2 or self.ReverserLeverStateB == 2 ) and 1 or 0 )
-    self.TractionConditionFulfilled = ( self.Train:ReadTrainWire( 12 ) > 0 and self.Train:ReadTrainWire( 6 ) > 0 ) and true or ( self.VE and self.Train.DeadmanUF.IsPressed > 0 ) and true or false
+    self.Train:WriteTrainWire( 12, ( self.Train.Deadman.IsPressed and self.Train:ReadTrainWire( 6 ) > 0 and ( self.ReverserA ~= 0 or self.ReverserB ~= 0 ) ) and 1 or 0 )
+    self.TractionConditionFulfilled = powerAvailable and ( self.Train:ReadTrainWire( 6 ) > 0 and self.Train:ReadTrainWire( 7 ) > 0 ) and ( self.VE and self.Train.Deadman.IsPressed ) and true or false
     self.Traction = math.Clamp( self.ThrottleState * 0.01, -1, 1 )
     self.Train:WriteTrainWire( 1, self.Traction )
     self.Train:WriteTrainWire( 10, self.EmergencyBrake == true and 1 or 0 )
@@ -226,37 +211,37 @@ function TRAIN_SYSTEM:MUHandler()
         [ 3 ] = true,
     }
 
-    self.VZ = self.VZ or self.Train:ReadTrainWire( 6 ) > 0 and ( self.ReverserLeverStateA == 0 and self.ReverserLeverStateB == 0 ) or self.Train:ReadTrainWire( 6 ) > 1
-    self.VE = self.VE or not self.VZ or ( VEStates[ self.ReverserLeverStateA ] or VEStates[ self.ReverserLeverStateB ] )
+    self.VZ = self.VZ or self.Train:ReadTrainWire( 6 ) > 0 and ( self.ReverserA == 0 and self.ReverserB == 0 ) or self.Train:ReadTrainWire( 6 ) > 1
+    self.VE = self.VE or not self.VZ or ( VEStates[ self.ReverserA ] or VEStates[ self.ReverserB ] )
     ---------------------------------------------------------------------------------------------------------
-    if self.ReverserLeverStateB == 0 then
-        if self.ReverserLeverStateA == -1 then
+    if self.ReverserB == 0 then
+        if self.ReverserA == -1 then
             self.ReverserState = -1
-        elseif self.ReverserLeverStateA == 1 or self.ReverserLeverStateA == 0 then
+        elseif self.ReverserA == 1 or self.ReverserA == 0 then
             self.ReverserState = 0
             self.BatteryStartUnlock = true
-        elseif self.ReverserLeverStateA == 2 or self.ReverserLeverStateA == 3 then
+        elseif self.ReverserA == 2 or self.ReverserA == 3 then
             self.ReverserState = 1
         end
-    elseif self.ReverserLeverStateA == 0 then
-        if self.ReverserLeverStateB == 1 then
+    elseif self.ReverserA == 0 then
+        if self.ReverserB == 1 then
             self.ReverserState = 0
             self.BatteryStartUnlock = true
-        elseif self.ReverserLeverStateB == -1 or self.ReverserLeverStateB == 2 then
+        elseif self.ReverserB == -1 or self.ReverserB == 2 then
             self.ReverserState = 1
             self.BatteryStartUnlock = false
-        elseif self.ReverserLeverStateB == 3 then
+        elseif self.ReverserB == 3 then
             self.ReverserState = -1
             self.BatteryStartUnlock = false
-        elseif self.ReverserLeverStateB == 0 then
+        elseif self.ReverserB == 0 then
             self.ReverserState = 0
             self.BatteryStartUnlock = false
         end
     end
 
-    self.Train:WriteTrainWire( 3, self.ReverserLeverStateA == 2 and self.ReverserInsertedA and 1 or self.ReverserLeverStateB == 2 and self.ReverserInsertedB and 0 or 0 )
-    self.Train:WriteTrainWire( 4, self.ReverserLeverStateA == 2 and self.ReverserInsertedA and 0 or self.ReverserLeverStateB == 2 and self.ReverserInsertedB and 1 or 0 )
-    self.Train:WriteTrainWire( 6, ( self.ReverserLeverStateA == 2 or self.ReverserLeverStateB == 2 ) and 1 or 0 )
+    self.Train:WriteTrainWire( 3, self.ReverserA == 2 and self.ReverserInsertedA and 1 or self.ReverserB == 2 and self.ReverserInsertedB and 0 or 0 )
+    self.Train:WriteTrainWire( 4, self.ReverserA == 2 and self.ReverserInsertedA and 0 or self.ReverserB == 2 and self.ReverserInsertedB and 1 or 0 )
+    self.Train:WriteTrainWire( 6, ( self.ReverserA == 2 or self.ReverserB == 2 ) and 1 or 0 )
     ---------------------------------------------------------------------------------------
     -- if the emergency brake is pulled high
     if self.Train:ReadTrainWire( 10 ) > 0 then
@@ -282,12 +267,6 @@ function TRAIN_SYSTEM:MUHandler()
     end
 
     if CurTime() - self.FanTimer > 5 and self.Speed < 5 then self.Train:SetNW2Bool( "Fans", false ) end
-    if self.BatteryOn == false or self.Train:ReadTrainWire( 7 ) < 1 then
-        self.Train:WriteTrainWire( 3, 0 )
-        self.Train:WriteTrainWire( 4, 0 )
-        self.Train:WriteTrainWire( 6, 0 )
-    end
-
     self.Train.PantoUp = self.Train.PantoUp or self.Train:ReadTrainWire( 6 ) > 0 and self.Train:ReadTrainWire( 17 ) > 0
     if self.Train.PantoUp == true then
         if self.Train:ReadTrainWire( 6 ) > 0 then self.Train:WriteTrainWire( 17, 1 ) end
@@ -300,35 +279,21 @@ function TRAIN_SYSTEM:MUHandler()
     -- print(self.Train:GetNW2Bool("Fans"))
 end
 
-function TRAIN_SYSTEM:Blink( enable, left, right )
-    local t = self.Train
-    local sectionB = t.SectionB
-    local tailblink = IsValid( t.RearCouple.CoupledEnt ) and self:ReadTrainWire( 6 ) > 0
-    if t.BatteryOn == true or t:ReadTrainWire( 6 ) > 0 then
-        if not enable then
-            t.BlinkerOn = false
-            t.LastTriggerTime = CurTime()
-        elseif CurTime() - t.LastTriggerTime > 0.4 then
-            t.BlinkerOn = not t.BlinkerOn
-            t.LastTriggerTime = CurTime()
-        end
-
-        t:SetLightPower( 58, t.BlinkerOn and left )
-        t:SetLightPower( 48, t.BlinkerOn and left )
-        t:SetLightPower( 59, t.BlinkerOn and right )
-        t:SetLightPower( 49, t.BlinkerOn and right )
-        t:SetLightPower( 38, t.BlinkerOn and right or left and t.BlinkerOn )
-        t:SetLightPower( 56, t.BlinkerOn and left and right )
-        t:SetLightPower( 57, t.BlinkerOn and left and right )
-        sectionB:SetLightPower( 148, t.BlinkerOn and left )
-        sectionB:SetLightPower( 158, t.BlinkerOn and left )
-        sectionB:SetLightPower( 159, t.BlinkerOn and right )
-        sectionB:SetLightPower( 149, t.BlinkerOn and right )
-        sectionB:SetLightPower( 66, t.BlinkerOn and left and right )
-        sectionB:SetLightPower( 67, t.BlinkerOn and left and right )
-        t:SetLightPower( 48, t.BlinkerOn and left )
-        t:SetLightPower( 58, t.BlinkerOn and left )
-        t:SetLightPower( 59, t.BlinkerOn and right )
-        t:SetNW2Bool( "BlinkerTick", t.BlinkerOn ) -- one tick sound for the blinker relay
+function TRAIN_SYSTEM:ReverserAorB()
+    if self.ReverserA ~= 0 then
+        self.ReverserState = self.ReverserA > 0 and 1 or self.ReverserA < 0 and -1 or 0
+    elseif self.ReverserB ~= 0 then
+        self.ReverserState = self.ReverserB > 0 and -1 or self.ReverserB < 0 and 1 or 0
     end
+end
+
+function TRAIN_SYSTEM:HeadlightsFunc()
+    if self.Headlights < 1 then
+        self.Headlights = self.Headlights + 0.5
+    else
+        self.Headlights = 0
+    end
+
+    self.Train:SetNW2Float( "HeadlightStatus", self.Headlights )
+    self.Train:SetNW2Int( "ReverserInternal", self.ReverserStatus )
 end

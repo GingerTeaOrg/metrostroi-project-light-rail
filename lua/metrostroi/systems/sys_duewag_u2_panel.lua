@@ -8,7 +8,7 @@ function TRAIN_SYSTEM:Initialize()
         bass = true
     } )
 
-    self.Train:LoadSystem( "Deadman", "Relay", "Switch", {
+    self.Train:LoadSystem( "DeadmanPedal", "Relay", "Switch", {
         bass = true
     } )
 
@@ -16,7 +16,7 @@ function TRAIN_SYSTEM:Initialize()
         bass = true
     } )
 
-    self.Train:LoadSystem( "DoorsUnlock", "Relay", "Switch", {
+    self.Train:LoadSystem( "UnlockDoors", "Relay", "Switch", {
         bass = true
     } )
 
@@ -25,14 +25,6 @@ function TRAIN_SYSTEM:Initialize()
     } )
 
     self.Train:LoadSystem( "DoorsCloseConfirm", "Relay", "Switch", {
-        bass = true
-    } )
-
-    self.Train:LoadSystem( "DoorsSelectRight", "Relay", "Switch", {
-        bass = true
-    } )
-
-    self.Train:LoadSystem( "DoorsSelectLeft", "Relay", "Switch", {
         bass = true
     } )
 
@@ -239,6 +231,12 @@ function TRAIN_SYSTEM:Initialize()
         bass = true
     } )
 
+    self.Train:LoadSystem( "UnlockDoorButton", "Relay", "Switch", {
+        bass = true
+    } )
+
+    self.UnlockDoorButton = 0
+    self.DeadmanPedal = 0
     self.Button1a = 0
     self.Button2a = 0
     self.Button3a = 0
@@ -287,7 +285,7 @@ function TRAIN_SYSTEM:Initialize()
     self.SetPointRight = 0
     self.SetPointLeft = 0
     self.ThrowCoupler = 0
-    self.DoorsUnlock = 0
+    self.UnlockDoors = 0
     self.DoorCloseSignal = 0
     self.Parralel = 1
     self.Headlights = 0
@@ -296,5 +294,5 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return { "Wiper", "BlinkerRight", "BlinkerLeft", "WarnBlink", "Microphone", "BellEngage", "Horn", "WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn", "PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "DoorsUnlock", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination", "Delete", "Route", "DateAndTime", "SpecialAnnouncements", "Headlights" }
+    return { "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "DeadmanPedal", "Wiper", "BlinkerRight", "BlinkerLeft", "WarnBlink", "Microphone", "BellEngage", "Horn", "WarningAnnouncement", "PantographRaise", "PantographLower", "DoorsCloseConfirm", "PassengerLightsOn", "PassengerLightsOff", "SetHoldingBrake", "ReleaseHoldingBrake", "DoorsCloseConfirm", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination", "Delete", "Route", "DateAndTime", "SpecialAnnouncements", "Headlights" }
 end

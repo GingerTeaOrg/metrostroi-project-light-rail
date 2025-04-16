@@ -1,11 +1,19 @@
 Metrostroi.DefineSystem( "mplr_INDUSI_scanner" )
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 function TRAIN_SYSTEM:Initialize()
-	self.ValidScanKeys = { "speed_forward", "speed_backward", "lights_on", "lights_off", "signal_danger_forward", "signal_danger_backward" }
+	-- format: multiline
+	self.ValidScanKeys = {
+		"speed_forward",
+		"speed_backward",
+		"lights_on",
+		"lights_off",
+		"signal_danger_forward",
+		"signal_danger_backward"
+	}
 end
 
 function TRAIN_SYSTEM:Think( dT )
-	local direction = self.Train.CoreSys.ReverserState >= 0
+	local direction = self.Train.CoreSys.ReverserA >= 0
 	local train = self.Train
 	local deadman = self.Train.Deadman
 	local speed = math.abs( self.Train.CoreSys.Speed )
@@ -21,7 +29,7 @@ function TRAIN_SYSTEM:Think( dT )
 
 	self.SpeedLimitForward = self.ScanLocation and self.ScanLocation.node1.speed_forward or nil
 	self.SpeedLimitBackward = self.ScanLocation and self.ScanLocation.node1.speed_backward or nil
-	self.PassedSignal = Metrostroi.SignalEntitiesForNode[ self.ScanLocation.node1 ] or Metrostroi.SignalEntitiesForNode[ self.ScanLocation.node2 ]
+	self.PassedSignal = UF.SignalEntitiesForNode[ self.ScanLocation.node1 ] or UF.SignalEntitiesForNode[ self.ScanLocation.node2 ]
 	if IsValid( self.PassedSignal ) then
 		self.SignalTrackPos = IsValid( self.PassedSignal ) or self.PassedSignal.TrackPosition or nil
 		self.SPAD = IsValid( self.PassedSignal ) and ( self.SignalTrackPos.forward and self.ScanLocation.x > self.SignalTrackPos.x ) or ( not self.SignalTrackPos.forward and self.ScanLocation.x < self.SignalTrackPos.x ) and self.ScanLocation.path == self.SignalTrackPos.path
@@ -36,10 +44,10 @@ end
 function TRAIN_SYSTEM:ArmDisarmINDUSI()
 	fb = self.Train.FrontBogey
 	rb = self.Train.RearBogey
-	fbPos = Metrostroi.GetPositionOnTrack( fb:GetPos(), fb:GetAngles() )
-	rbPos = Metrostroi.GetPositionOnTrack( rb:GetPos(), rb:GetAngles() )
-	if not rbPos and not fbPos or not next( Metrostroi.Paths ) then return end
-	fbArm1 = fbPos.node1.indusi
-	rbArm2 = rbPos.node1.indusi
+	fbPos = Metrostroi.GetPositionOnTrack( fb:GetPos(), fb:GetAngles() )[ 1 ]
+	rbPos = Metrostroi.GetPositionOnTrack( rb:GetPos(), rb:GetAngles() )[ 1 ]
+	if not next( Metrostroi.Paths ) then return end
+	fbArm1 = fbPos and fbPos.node1.indusi
+	rbArm2 = rbPos and rbPos.node1.indusi
 	return fbArm1 or rbArm2
 end

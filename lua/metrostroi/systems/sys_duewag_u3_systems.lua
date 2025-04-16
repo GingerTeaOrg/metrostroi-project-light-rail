@@ -35,7 +35,6 @@ function TRAIN_SYSTEM:Initialize()
     self.HeadLights = 0
     self.StopLights = 0
     self.FanTimer = 0
-    self.ReverserInserted = false
     self.ReverserInsertedA = false
     self.ReverserInsertedB = false
     self.ReverserLeverStateA = 0 -- for the reverser lever setting. -1 is reverse, 0 is neutral, 1 is startup, 2 is single unit, 3 is multiple unit
@@ -90,13 +89,18 @@ end
 --------------------------------------------------------------------------------
 function TRAIN_SYSTEM:Think( dT )
     local train = self.Train
+    self:Reverser( train )
+    self:ThrottleAgent( train )
     -- print(self.ReverserState,self.Traction,self.Train)
     self.Speed = math.abs( train:GetVelocity():Dot( train:GetAngles():Forward() ) * 0.06858 )
+    -- only pass on the actual value if the respective reverser is engaged 
+end
+
+function TRAIN_SYSTEM:ThrottleAgent( train )
     self.ThrottleStateA = self.ThrottleStateA + self.ThrottleRateA
     self.ThrottleStateA = math.Clamp( self.ThrottleStateA, -100, 100 )
     self.ThrottleStateB = self.ThrottleStateB
     self.ThrottleStateB = math.Clamp( self.ThrottleStateB, -100, 100 )
-    -- only pass on the actual value if the respective reverser is engaged 
     local cabA = self.ReverserLeverStateA > 0 or self.ReverserLeverStateA < 0
     local cabB = self.ReverserLeverStateB > 0 or self.ReverserLeverStateB < 0
     if cabA then
@@ -104,4 +108,23 @@ function TRAIN_SYSTEM:Think( dT )
     elseif cabB then
         self.ThrottleState = self.ThrottleStateB
     end
+
+    train:SetNW2Float( "ThrottleStateA", self.ThrottleStateA )
+    train:WriteTrainWire( 1, self.ThrottleState )
+end
+
+function TRAIN_SYSTEM:Reverser( train )
+    train:SetNW2Bool( "ReverserInsertedA", self.ReverserInsertedA )
+    train:SetNW2Bool( "ReverserInsertedB", self.ReverserInsertedB )
+    local values = {
+        [ 1 ] = 0.4,
+        [ 0 ] = 0.25,
+        [ 3 ] = 0.8,
+        [ 2 ] = 0.7,
+        [ -1 ] = 0
+    }
+
+    local reversed = self.ReverserLeverStateA < 0 or self.ReverserLeverStateB > 0
+    train:WriteTrainWire( 4, reversed and 1 or 0 )
+    train:SetNW2Float( "ReverserAnimate", values[ self.ReverserLeverStateA ] )
 end

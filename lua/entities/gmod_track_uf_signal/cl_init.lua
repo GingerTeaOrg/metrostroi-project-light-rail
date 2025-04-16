@@ -17,19 +17,14 @@ function ENT:OnRemove()
 end
 
 function ENT:Initialize()
-    local function init2()
-        print( "RUNNING CL INIT HOOK!!!!" )
-        self.Left = self:GetNW2Bool( "Left", false )
-        self.Pos = self:GetPos()
-        self.PositionModifier = ( self.Left and Vector( 0, 20, 0 ) or Vector( 0, -20, 0 ) ) + self.Pos
-        self:CreateSignalModel()
-    end
-
     self.SignalType = self:GetNW2String( "Type", "Overground_Large" )
     util.PrecacheModel( self.SignalType )
     self.Name1 = self:GetNW2String( "Name1", "ER" )
     self.Name2 = self:GetNW2String( "Name2", "ER" )
-    timer.Simple( 1, function() init2() end )
+    self.Left = self:GetNW2Bool( "Left", false )
+    self.Pos = self:GetPos()
+    self.PositionModifier = ( self.Left and Vector( 0, 20, 0 ) or Vector( 0, -20, 0 ) ) + self.Pos
+    self:CreateSignalModel()
     self.RT = CreateMaterial( "bg", "VertexLitGeneric", {
         [ "$basetexture" ] = "color/white",
         [ "$model" ] = 1,
@@ -40,6 +35,7 @@ function ENT:Initialize()
 
     self.Aspect = "H0"
     self.PreviousAspect = ""
+    self.InPVS = false
 end
 
 net.Receive( "mplr-signal", function()
@@ -48,14 +44,25 @@ net.Receive( "mplr-signal", function()
     ent.Routes = net.ReadTable()
 end )
 
+net.Receive( "RespawnSignal", function()
+    local ent = net.ReadEntity()
+    print( "nethook" )
+    ent.InPVS = net.ReadBool()
+end )
+
 function ENT:Think()
     local CurTime = CurTime()
-    --print( self.SignalModel:GetPos() )
-    --self.SignalModel:SetAngles( self:GetAngles() + )
-    self:SetNextClientThink( CurTime + 0.0333 )
     self.PrevTime = self.PrevTime or RealTime()
     self.DeltaTime = RealTime() - self.PrevTime
     self.PrevTime = RealTime()
+    if not IsValid( self.SignalModel ) and self.InPVS then
+        self.SignalModel:Remove()
+        local offset = self:LocalToWorld( ( self.Left and Vector( 0, -60, 0 ) or Vector( 0, 60, 0 ) ) + Vector( 0, self.Horizontal, self.Vertical ) )
+        self.SignalModel:SetPos( offset )
+        self.SignalModel:SetAngles( self:GetAngles() - Angle( 0, 90, 0 ) )
+        self.SignalModel:Spawn()
+    end
+
     if not self.Name then
         if self.Sent and ( CurTime - self.Sent ) > 0 then self.Sent = nil end
         if not self.Sent then
@@ -69,6 +76,7 @@ function ENT:Think()
 
     self.Aspect = self:GetNW2String( "Aspect", "H0" )
     self.SignalType = self:GetNW2String( "Type" )
+    self:SetNextClientThink( CurTime + 0.0333 )
 end
 
 hook.Add( "PostDrawOpaqueRenderables", "MyEntityDrawHook", function()
@@ -81,7 +89,6 @@ hook.Add( "PostDrawOpaqueRenderables", "MyEntityDrawHook", function()
 end )
 
 function ENT:Draw()
-    -- Draw model
     if not self.SignalModel then return end
     local ang = self.SignalModel:LocalToWorldAngles( Angle( 0, 90, 90 ) )
     local pos, pos2, rectangle = self:PrintSignalName( self.SignalType )

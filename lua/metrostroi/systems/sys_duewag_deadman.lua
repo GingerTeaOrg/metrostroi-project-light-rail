@@ -7,8 +7,9 @@ function TRAIN_SYSTEM:Initialize()
 	self.Alarm = 0
 	self.AlarmSound = false
 	self.AlarmTime = 0
+	self.TractionWithoutDeadman = false
 	self.KeyBypass = false
-	self.AlarmTimeRecorded = false
+	self.AlarmTime = 0
 	self.TrainHasReset = false
 	self.EmergencyShutOff = false
 	self.DeadmanTripped = false
@@ -44,12 +45,12 @@ function TRAIN_SYSTEM:IsPressedAcrossTrain()
 	local pressed
 	if pB then
 		if sys.ReverserA ~= 0 then
-			pressed = p.Deadman > 0
+			pressed = p.DeadmanPedal > 0
 		elseif sys.ReverserB ~= 0 then
 			pressed = pB.Deadman > 0
 		end
 	else
-		pressed = p.Deadman > 0
+		pressed = p.DeadmanPedal > 0
 	end
 
 	if MU then
@@ -61,7 +62,7 @@ end
 
 function TRAIN_SYSTEM:BrokenConsistProtect()
 	if self.Train.SubwayTrain.Type ~= "U2" then return end
-	local speed = self.CoreSys.Speed
+	local speed = self.Train.CoreSys.Speed
 	local consistLength = #self.Train.WagonList
 	local reverserA = self.Train.CoreSys.ReverserA
 	local reverserB = self.Train.CoreSys.ReverserB
@@ -74,26 +75,25 @@ function TRAIN_SYSTEM:BrokenConsistProtect()
 end
 
 function TRAIN_SYSTEM:AlarmTimer()
-	local time
-	if not self.IsPressed then
-		if not time then time = CurTime() end
-		if CurTime() - time > 3 then self.Alarm = true end
+	local speed = self.Train.CoreSys.Speed
+	if not self.IsPressed and speed > 5 then
+		self.Alarm = true
 	elseif self.IsPressed and not self.DeadmanTripped then
 		self.Alarm = false
 	end
 end
 
 function TRAIN_SYSTEM:ResetDeadman()
-	local speed = self.CoreSys.Speed
+	local speed = self.Train.CoreSys.Speed
 	local reverserA = self.Train.CoreSys.ReverserA
 	local reverserB = self.Train.CoreSys.ReverserB
 	local throttle
-	if self.CoreSys.ThrottleState then
-		throttle = self.CoreSys.ThrottleState
-	elseif self.CoreSys.ReverserA ~= 0 and self.CoreSys.ThrottleStateA then
-		throttle = self.CoreSys.ThrottleStateA
-	elseif self.CoreSys.ReverserB ~= 0 and self.CoreSys.ThrottleStateB then
-		throttle = self.CoreSys.ThrottleStateB
+	if self.Train.CoreSys.ThrottleState then
+		throttle = self.Train.CoreSys.ThrottleState
+	elseif self.Train.CoreSys.ReverserA ~= 0 and self.Train.CoreSys.ThrottleStateA then
+		throttle = self.Train.CoreSys.ThrottleStateA
+	elseif self.Train.CoreSys.ReverserB ~= 0 and self.Train.CoreSys.ThrottleStateB then
+		throttle = self.Train.CoreSys.ThrottleStateB
 	end
 
 	if self.DeadmanTripped and speed < 5 and ( reverserA == 0 and reverserB == 0 ) and throttle == 0 then
@@ -105,21 +105,41 @@ end
 function TRAIN_SYSTEM:EmergencyBrake()
 	local indusi = self.Train.INDUSI
 	if self.BrokenConsist then self.DeadmanTripped = true end
-	if self.AlarmTime - CurTime() > 5 then self.DeadmanTripped = true end
+	if self.AlarmTime - CurTime() > 3 then self.DeadmanTripped = true end
 	if indusi and indusi.SPAD then self.DeadmanTripped = true end
 	if self.OverSpeed then self.DeadmanTripped = true end
+	self.Train:WriteTrainWire( 8, self.DeadmanTripped and 1 or 0 )
+end
+
+function TRAIN_SYSTEM:TractionAlarm()
+	local reverserA = self.Train.CoreSys.ReverserA
+	local reverserB = self.Train.CoreSys.ReverserB
+	local throttle = reverserA ~= 0 and self.Train.CoreSys.ThrottleStateA or self.Train.CoreSys.ThrottleStateB
+	local time
+	local trainIsStopped = true
+	if ( reverserA ~= 0 or reverserB ~= 0 ) and throttle > 0 and not self.IsPressed and trainIsStopped then
+		time = not time and CurTime() or time
+		self.TractionWithoutDeadman = true
+		trainIsStopped = false
+	else
+		time = nil
+		self.TractionWithoutDeadman = false
+		trainIsStopped = true
+	end
+
+	if time and CurTime() - time > 2 then self.DeadmanTripped = true end
 end
 
 function TRAIN_SYSTEM:SoundAlarm()
 	local reverserA = self.Train.CoreSys.ReverserA
 	local reverserB = self.Train.CoreSys.ReverserB
 	if reverserA ~= 0 then
-		self.Train:SetNW2Bool( "DeadmanTripped", self.BrokenConsist or self.CabConflict or self.Alarm )
+		self.Train:SetNW2Bool( "DeadmanAlarmSound", self.BrokenConsist or self.CabConflict or self.Alarm or self.TractionWithoutDeadman )
 	elseif reverserB ~= 0 and self.Train.SectionB then
-		self.Train.SectionB:SetNW2Bool( "DeadmanTripped", self.BrokenConsist or self.CabConflict or self.Alarm )
+		self.Train.SectionB:SetNW2Bool( "DeadmanAlarmSound", self.BrokenConsist or self.CabConflict or self.Alarm or self.TractionWithoutDeadman )
 	else
-		self.Train:SetNW2Bool( "DeadmanTripped", false )
-		if self.Train.SectionB then self.Train.SectionB:SetNW2Bool( "DeadmanTripped", false ) end
+		self.Train:SetNW2Bool( "DeadmanAlarmSound", false )
+		if self.Train.SectionB then self.Train.SectionB:SetNW2Bool( "DeadmanAlarmSound", false ) end
 	end
 end
 
@@ -136,6 +156,7 @@ function TRAIN_SYSTEM:Think()
 	if self.Power then
 		self.IsPressed = self:IsPressedAcrossTrain()
 		self:BrokenConsistProtect()
+		self:TractionAlarm()
 		self:AlarmTimer()
 		self:SoundAlarm()
 		self:EmergencyBrake()
@@ -145,14 +166,11 @@ function TRAIN_SYSTEM:Think()
 end
 
 function TRAIN_SYSTEM:Overspeed()
-	local speed = self.CoreSys.Speed
+	local speed = self.Train.CoreSys.Speed
 	local Vmax = self.Train.SubwayTrain.Vmax
 	if not self.OverSpeed then self.OverSpeed = speed > Vmax end
 end
 
 function TRAIN_SYSTEM:CabConflicting( conflict )
-	local train = self.Train
-	train:SetNW2Bool( "DeadmanAlarmSound", conflict )
 	self.CabConflict = conflict
-	train:SetNW2Bool( "DeadmanTripped", true )
 end

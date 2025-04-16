@@ -26,7 +26,7 @@ function ENT:PassengerCapacity()
 	return 81
 end
 
-ENT.MirrorCams = { Vector( -441, 72, 150 ), Angle( 1, -180, 0 ), 15, Vector( -441, -72, 150 ), Angle( 1, -180, 0 ), 15 }
+ENT.MirrorCams = { Vector( -441, 72, 100 ), Angle( 1, 180, 0 ), 15, Vector( -441, -72, 100 ), Angle( 1, 180, 0 ), 15 }
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds( self )
 	self.SoundNames[ "bell" ] = {

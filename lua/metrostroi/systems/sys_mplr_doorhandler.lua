@@ -193,10 +193,7 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 	self:PrevUnlock( left, right, self.DoorUnlockState > 0 )
 	self:DoorNW2()
 	-------------------------
-	if p.DoorsForceClose then
-		if not self.DoorsForceClose and p.DoorsForceClose > 1 then self.DoorsForceClose = true end
-		if self.DoorsForceClose and p.DoorsForceClose < 1 then self.DoorsForceClose = self.TrainHasDoorsClosed end
-	end
+	if p.DoorsForceClose and p.DoorsForceClose > 1 then self:DoorsForceClose( left, right ) end
 end
 
 function TRAIN_SYSTEM:ForceDoorOpen()
@@ -622,22 +619,15 @@ function TRAIN_SYSTEM:PrevUnlock( left, right, unlocked )
 	end
 end
 
-function TRAIN_SYSTEM:ForceClose( left, right, dT )
-	local IRGates = self:IRIS( true, left, right )
-	local doors = right and self.DoorStatesRight or left and self.DoorStatesLeft
-	local function DecrementDoorStates( doorStates, IRGates, right, dT )
-		local stuck, stuckWhich = self:DoorStuck()
-		for i, v in ipairs( doorStates ) do
-			local currentDoorBlocked = stuck and stuckWhich == i
-			--start closing doors if the IR sensor isn't blocked
-			if not ( IRGates[ i ] or currentDoorBlocked ) then doorStates[ i ] = math.Clamp( v - 0.55 * dT, 0, 1 ) end
-			if right then
-				self.DoorRandomnessRight[ i ] = 0
-			else
-				self.DoorRandomnessLeft[ i ] = 0
-			end
+function TRAIN_SYSTEM:ForceClose( left, right )
+	self.DoorCloseMomentsCalculated = true
+	if right then
+		for k in ipairs( self.DoorCloseMomentsRight ) do
+			self.DoorCloseMomentsRight[ k ] = 0
+		end
+	elseif left then
+		for k in ipairs( self.DoorCloseMomentsLeft ) do
+			self.DoorCloseMomentsLeft[ k ] = 0
 		end
 	end
-
-	DecrementDoorStates( doors, IRGates, right, dT )
 end

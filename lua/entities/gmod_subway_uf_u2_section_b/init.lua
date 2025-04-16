@@ -2,18 +2,309 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.BogeyDistance = 650 -- Needed for gm trainspawner
----------------------------------------------------
--- Defined train information                      
--- Types of wagon(for wagon limit system):
--- 0 = Head or intherim                           
--- 1 = Only head                                     
--- 2 = Only intherim                                
----------------------------------------------------
-ENT.SubwayTrain = {
-	Type = "U2h",
-	Name = "U2h section B",
-	WagType = 0,
-	Manufacturer = "Duewag",
+ENT.InteractionZones = {
+	{
+		ID = "Button1b",
+		Pos = Vector( 396.884, 51, 50.5 ),
+		Radius = 16,
+	},
+	{
+		ID = "Button2b",
+		Pos = Vector( 326.89, 50, 49.5253 ),
+		Radius = 16,
+	},
+	{
+		ID = "Button3b",
+		Pos = Vector( 152.116, 50, 49.5253 ),
+		Radius = 16,
+	},
+	{
+		ID = "Button4b",
+		Pos = Vector( 84.6012, 50, 49.5253 ),
+		Radius = 16,
+	},
+	{
+		ID = "Button5a",
+		Pos = Vector( -84.712746, -50.660839, 49.731411 ),
+		Radius = 16,
+	},
+	{
+		ID = "Button6a",
+		Pos = Vector( -152.081543, -50.660969, 49.797302 ),
+		Radius = 16,
+	},
+	{
+		ID = "Button7a",
+		Pos = Vector( -326.835022, -50.661758, 49.759453 ),
+		Radius = 16,
+	},
+	{
+		ID = "Button8a",
+		Pos = Vector( -396.827484, -48.789711, 49.787682 ),
+		Radius = 16,
+	},
+}
+
+ENT.Lights = {
+	[ 50 ] = {
+		-- cab light 1
+		"light",
+		Vector( -406, 39, 98 ),
+		Angle( 90, 0, 0 ),
+		Color( 227, 197, 160 ),
+		brightness = 0.6,
+		scale = 0.5,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 60 ] = {
+		-- cab light 2
+		"light",
+		Vector( -406, -39, 98 ),
+		Angle( 90, 0, 0 ),
+		Color( 227, 197, 160 ),
+		brightness = 0.6,
+		scale = 0.5,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 51 ] = {
+		-- headlight left
+		"light",
+		Vector( -425.464, 40, 28 ),
+		Angle( 0, 0, 0 ),
+		Color( 216, 161, 92 ),
+		brightness = 0.6,
+		scale = 1.5,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 52 ] = {
+		-- headlight right
+		"light",
+		Vector( -425.464, -40, 28 ),
+		Angle( 0, 0, 0 ),
+		Color( 216, 161, 92 ),
+		brightness = 0.6,
+		scale = 1.5,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 53 ] = {
+		-- headlight top
+		"light",
+		Vector( -425.464, 0, 111 ),
+		Angle( 0, 0, 0 ),
+		Color( 226, 197, 160 ),
+		brightness = 0.9,
+		scale = 0.45,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 54 ] = {
+		-- tail light left
+		"light",
+		Vector( -425.464, 31.5, 25 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 0, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 55 ] = {
+		-- tail light right
+		"light",
+		Vector( -425.464, -31.5, 25 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 0, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 56 ] = {
+		-- brake lights
+		"light",
+		Vector( -426, 31.2, 31 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 102, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 57 ] = {
+		-- brake lights
+		"light",
+		Vector( -426, -31.2, 31 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 102, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 58 ] = {
+		-- indicator top left
+		"light",
+		Vector( -327, 52, 74 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 100, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 59 ] = {
+		-- indicator top right
+		"light",
+		Vector( -327, -52, 74 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 102, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 48 ] = {
+		-- indicator bottom left
+		"light",
+		Vector( -327, 52, 68 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 100, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 49 ] = {
+		-- indicator bottom right
+		"light",
+		Vector( -327, -52, 68 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 102, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 30 ] = {
+		"light",
+		Vector( -397, 49, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- door button front left 1
+	[ 31 ] = {
+		"light",
+		Vector( -326.738, 49, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- door button front left 2
+	[ 32 ] = {
+		"light",
+		Vector( -151.5, 49, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- door button front left 3
+	[ 33 ] = {
+		"light",
+		Vector( -83.7, 49, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- door button front left 4
+	[ 34 ] = {
+		"light",
+		Vector( -396.884, -51, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- door button front right 1
+	[ 35 ] = {
+		"light",
+		Vector( -326.89, -51, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- door button front right 2
+	[ 36 ] = {
+		"light",
+		Vector( -152.116, -51, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- door button front right 3
+	[ 37 ] = {
+		"light",
+		Vector( -85, -51, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- door button front right 4
+	[ 38 ] = {
+		"light",
+		Vector( -416.20, 6, 54 ),
+		Angle( 0, 0, 0 ),
+		Color( 0, 90, 59 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- indicator indication lamp in cab
+	[ 39 ] = {
+		"light",
+		Vector( -415.617, 18.8834, 54.8 ),
+		Angle( 0, 0, 0 ),
+		Color( 252, 247, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- battery discharge lamp in cab
+	[ 40 ] = {
+		"light",
+		Vector( -415.617, 12.4824, 54.9 ),
+		Angle( 0, 0, 0 ),
+		Color( 0, 130, 99 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- clear for departure lamp
+	[ 41 ] = {
+		"light",
+		Vector( -415.656, -2.45033, 54.55 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 0, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	-- doors unlocked lamp
+	[ 42 ] = {
+		"light",
+		Vector( -415.656, 14.6172, 54.55 ),
+		Angle( 0, 0, 0 ),
+		Color( 27, 57, 141 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	}
 }
 
 ENT.SyncTable = { "ReduceBrake", "Highbeam", "SetHoldingBrake", "DoorsLock", "DoorsUnlock", "PantographRaise", "PantographLower", "Headlights", "WarnBlink", "Microphone", "BellEngage", "Horn", "WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination", "Delete", "Route", "DateAndTime", "SpecialAnnouncements" }
@@ -22,16 +313,6 @@ function ENT:Initialize()
 	self:SetModel( "models/lilly/uf/u2/u2hb.mdl" )
 	self.BaseClass.Initialize( self )
 	self:SetPos( self:GetPos() + Vector( 0, 0, 0 ) )
-	self.CabEnabled = false
-	self.BatteryOn = false
-	self.BlinkerLeft = false
-	self.BlinkerRight = false
-	self.BlinkerHazard = false
-	self.ThrottleState = 0
-	self.ThrottleEngaged = false
-	self.ReverserState = 0
-	self.ReverserEngaged = 0
-	self.DoorSideUnlocked = "None"
 	self.DriverSeat = self:CreateSeat( "driver", Vector( -395, -15, 34 ), Angle( 0, 180, 0 ) )
 	-- Initialize key mapping
 	self.KeyMap = {
@@ -109,264 +390,15 @@ function ENT:Initialize()
 		},
 	}
 
-	self.RearCouple = self.SectionA.RearCouple
+	if self.SectionA then self.IBIS = self.SectionA.IBIS end
 	undo.Create( self.ClassName )
 	undo.AddEntity( self )
 	undo.SetPlayer( self:GetOwner() )
 	undo.SetCustomUndoText( "Undone a train" )
 	undo.Finish()
 	--self.Wheels = self.FrontBogey.Wheels
-	self.Lights = {
-		[ 61 ] = {
-			"light",
-			Vector( -426.5, 40, 28 ),
-			Angle( 0, 0, 0 ),
-			Color( 226, 197, 160 ),
-			brightness = 0.9,
-			scale = 1.5,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--headlight 1
-		[ 62 ] = {
-			"light",
-			Vector( -426.5, -40, 28 ),
-			Angle( 0, 0, 0 ),
-			Color( 226, 197, 160 ),
-			brightness = 0.9,
-			scale = 1.5,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--headlight 2
-		[ 63 ] = {
-			"light",
-			Vector( -426.5, 0, 111 ),
-			Angle( 0, 0, 0 ),
-			Color( 226, 197, 160 ),
-			brightness = 0.9,
-			scale = 0.45,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--headlight 3
-		[ 64 ] = {
-			"light",
-			Vector( -425.44, -30.9657, 25.6195 ),
-			Angle( 0, 0, 0 ),
-			Color( 255, 0, 0 ),
-			brightness = 0.9,
-			scale = 0.1,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--tail light left
-		[ 65 ] = {
-			"light",
-			Vector( -425.44, 30.9657, 25.6195 ),
-			Angle( 0, 0, 0 ),
-			Color( 255, 0, 0 ),
-			brightness = 0.9,
-			scale = 0.1,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--tail light right
-		[ 66 ] = {
-			"light",
-			Vector( -425.44, -30.9657, 31.5 ),
-			Angle( 0, 0, 0 ),
-			Color( 255, 102, 0 ),
-			brightness = 0.9,
-			scale = 0.1,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--brake light left
-		[ 67 ] = {
-			"light",
-			Vector( -425.44, 30.9657, 31.5 ),
-			Angle( 0, 0, 0 ),
-			Color( 255, 102, 0 ),
-			brightness = 0.9,
-			scale = 0.1,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--brake light right
-		[ 158 ] = {
-			"light",
-			Vector( -327, 52, 74 ),
-			Angle( 0, 0, 0 ),
-			Color( 255, 100, 0 ),
-			brightness = 0.9,
-			scale = 0.1,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--indicator top left
-		[ 159 ] = {
-			"light",
-			Vector( -327, -52, 74 ),
-			Angle( 0, 0, 0 ),
-			Color( 255, 102, 0 ),
-			brightness = 0.9,
-			scale = 0.1,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--indicator top right
-		[ 148 ] = {
-			"light",
-			Vector( -327, 52, 68 ),
-			Angle( 0, 0, 0 ),
-			Color( 255, 100, 0 ),
-			brightness = 0.9,
-			scale = 0.1,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--indicator bottom left
-		[ 149 ] = {
-			"light",
-			Vector( -327, -52, 68 ),
-			Angle( 0, 0, 0 ),
-			Color( 255, 102, 0 ),
-			brightness = 0.9,
-			scale = 0.1,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--indicator bottom right
-		[ 30 ] = {
-			"light",
-			Vector( -397.343, 51, 49.7 ),
-			Angle( 0, 0, 0 ),
-			Color( 9, 142, 0 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--door button front left 1
-		[ 31 ] = {
-			"light",
-			Vector( -326.738, 51, 49.7 ),
-			Angle( 0, 0, 0 ),
-			Color( 9, 142, 0 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--door button front left 2
-		[ 32 ] = {
-			"light",
-			Vector( -151.5, 51, 49.7 ),
-			Angle( 0, 0, 0 ),
-			Color( 9, 142, 0 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--door button front left 3
-		[ 33 ] = {
-			"light",
-			Vector( -83.7, 51, 49.7 ),
-			Angle( 0, 0, 0 ),
-			Color( 9, 142, 0 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--door button front left 4
-		[ 34 ] = {
-			"light",
-			Vector( -396.884, -51, 49.7 ),
-			Angle( 0, 0, 0 ),
-			Color( 9, 142, 0 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--door button front right 1
-		[ 35 ] = {
-			"light",
-			Vector( -326.89, -51, 49.7 ),
-			Angle( 0, 0, 0 ),
-			Color( 9, 142, 0 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--door button front right 2
-		[ 36 ] = {
-			"light",
-			Vector( -152.116, -51, 49.7 ),
-			Angle( 0, 0, 0 ),
-			Color( 9, 142, 0 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--door button front right 3
-		[ 37 ] = {
-			"light",
-			Vector( -84.6012, -51, 49.7 ),
-			Angle( 0, 0, 0 ),
-			Color( 9, 142, 0 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-		--door button front right 4
-		[ 38 ] = {
-			"light",
-			Vector( -416.20, 6, 54 ),
-			Angle( 0, 0, 0 ),
-			Color( 0, 90, 59 ),
-			brightness = 1,
-			scale = 0.025,
-			texture = "sprites/light_glow02.vmt"
-		},
-	}
-
-	--indicator indication lamp in cab
-	self.BrakePressure = 0
 	self.DriverSeat:SetRenderMode( RENDERMODE_TRANSALPHA )
 	self.DriverSeat:SetColor( Color( 0, 0, 0, 0 ) )
-	self:SetNW2String( "Texture", self.SectionA:GetNW2String( "Texture" ) .. "_b" )
-	self:TrainSpawnerUpdate()
-	self.U2SectionA = self:GetNW2Entity( "U2a" )
-	self.InteractionZones = {
-		{
-			ID = "Button1b",
-			Pos = Vector( 396.884, 51, 50.5 ),
-			Radius = 16,
-		},
-		{
-			ID = "Button2b",
-			Pos = Vector( 326.89, 50, 49.5253 ),
-			Radius = 16,
-		},
-		{
-			ID = "Button3b",
-			Pos = Vector( 152.116, 50, 49.5253 ),
-			Radius = 16,
-		},
-		{
-			ID = "Button4b",
-			Pos = Vector( 84.6012, 50, 49.5253 ),
-			Radius = 16,
-		},
-		{
-			ID = "Button5a",
-			Pos = Vector( -84.712746, -50.660839, 49.731411 ),
-			Radius = 16,
-		},
-		{
-			ID = "Button6a",
-			Pos = Vector( -152.081543, -50.660969, 49.797302 ),
-			Radius = 16,
-		},
-		{
-			ID = "Button7a",
-			Pos = Vector( -326.835022, -50.661758, 49.759453 ),
-			Radius = 16,
-		},
-		{
-			ID = "Button8a",
-			Pos = Vector( -396.827484, -48.789711, 49.787682 ),
-			Radius = 16,
-		},
-	}
 end
 
 function ENT:OnButtonPress( button, ply )
@@ -403,8 +435,22 @@ function ENT:OnButtonPress( button, ply )
 
 	if button == "PassengerOvergroundSet" then self.Panel.PassengerOverground = 1 end
 	if button == "PassengerUndergroundSet" then self.Panel.PassengerUnderground = 1 end
-	if button == "SetPointLeftSet" then self.Panel.SetPointLeft = 1 end
-	if button == "SetPointRightSet" then self.Panel.SetPointRight = 1 end
+	if button == "SetPointLeftSet" then
+		if self.IBIS.Override == "left" then
+			self.IBIS:OverrideSwitching( nil )
+		else
+			self.IBIS.Override = "left"
+		end
+	end
+
+	if button == "SetPointRightSet" then
+		if self.IBIS.Override == "right" then
+			self.IBIS:OverrideSwitching( nil )
+		else
+			self.IBIS.Override = "right"
+		end
+	end
+
 	----THROTTLE CODE -- Initial Concept credit Toth Peter
 	if self.SectionA.CoreSys.ThrottleRateB == 0 then
 		if button == "ThrottleUp" then self.SectionA.CoreSys.ThrottleRateB = 3 end
@@ -504,10 +550,10 @@ function ENT:OnButtonPress( button, ply )
 	if button == "ReverserUpSet" then
 		if not self.SectionA.CoreSys.ThrottleEngaged then
 			if self.SectionA.CoreSys.ReverserInsertedB == true then
-				self.SectionA.CoreSys.ReverserLeverStateB = self.SectionA.CoreSys.ReverserLeverStateB + 1
-				self.SectionA.CoreSys.ReverserLeverStateB = math.Clamp( self.SectionA.CoreSys.ReverserLeverStateB, -1, 3 )
+				self.SectionA.CoreSys.ReverserB = self.SectionA.CoreSys.ReverserB + 1
+				self.SectionA.CoreSys.ReverserB = math.Clamp( self.SectionA.CoreSys.ReverserB, -1, 3 )
 				--self.SectionA.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-				--PrintMessage(HUD_PRINTTALK,self.SectionA.CoreSys.ReverserLeverStateB)
+				--PrintMessage(HUD_PRINTTALK,self.SectionA.CoreSys.ReverserB)
 			end
 		end
 	end
@@ -515,15 +561,15 @@ function ENT:OnButtonPress( button, ply )
 	if button == "ReverserDownSet" then
 		if not self.SectionA.CoreSys.ThrottleEngaged and self.SectionA.CoreSys.ReverserInsertedB == true then
 			--self.ReverserLeverState = self.ReverserLeverState - 1
-			math.Clamp( self.SectionA.CoreSys.ReverserLeverStateB, -1, 3 )
+			math.Clamp( self.SectionA.CoreSys.ReverserB, -1, 3 )
 			--self.SectionA.Duewag_U2:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-			self.SectionA.CoreSys.ReverserLeverStateB = self.SectionA.CoreSys.ReverserLeverStateB - 1
-			self.SectionA.CoreSys.ReverserLeverStateB = math.Clamp( self.SectionA.CoreSys.ReverserLeverStateB, -1, 3 )
-			--PrintMessage(HUD_PRINTTALK,self.SectionA.CoreSys.ReverserLeverStateB)
+			self.SectionA.CoreSys.ReverserB = self.SectionA.CoreSys.ReverserB - 1
+			self.SectionA.CoreSys.ReverserB = math.Clamp( self.SectionA.CoreSys.ReverserB, -1, 3 )
+			--PrintMessage(HUD_PRINTTALK,self.SectionA.CoreSys.ReverserB)
 		end
 	end
 
-	if self.SectionA.CoreSys.ReverserLeverStateB == 0 and self.SectionA.CoreSys.ReverserLeverStateA == 0 then
+	if self.SectionA.CoreSys.ReverserB == 0 and self.SectionA.CoreSys.ReverserA == 0 then
 		if button == "ReverserInsert" then
 			if self.SectionA.CoreSys.ReverserInsertedB and not self.SectionA.CoreSys.ReverserInsertedA then
 				self.SectionA.CoreSys.ReverserInsertedA = false
@@ -539,7 +585,7 @@ function ENT:OnButtonPress( button, ply )
 
 	if button == "BatteryToggle" then
 		self:SetPackedBool( "FlickBatterySwitchOn", true )
-		if self.SectionA.BatteryOn == false and self.SectionA.CoreSys.ReverserLeverStateB == 1 then
+		if self.SectionA.BatteryOn == false and self.SectionA.CoreSys.ReverserB == 1 then
 			self.SectionA.BatteryOn = true
 			self.SectionA.Duewag_Battery:TriggerInput( "Charge", 1.3 )
 			self.SectionA:SetNW2Bool( "BatteryOn", true )
@@ -548,7 +594,7 @@ function ENT:OnButtonPress( button, ply )
 	end
 
 	if button == "BatteryDisableToggle" then
-		if self.SectionA.BatteryOn == true and self.SectionA.CoreSys.ReverserLeverStateB == 1 then
+		if self.SectionA.BatteryOn == true and self.SectionA.CoreSys.ReverserB == 1 then
 			self.SectionA.BatteryOn = false
 			self.SectionA.Duewag_Battery:TriggerInput( "Charge", 0 )
 			self.SectionA:SetNW2Bool( "BatteryOn", false )
@@ -628,12 +674,12 @@ function ENT:OnButtonPress( button, ply )
 			self.SectionA.DoorSideUnlocked = "None"
 		end
 
-		if self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight > 0 then
-			self.Panel.DoorsLeft = 0
-			self.Panel.DoorsRight = 0
-		elseif self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight < 1 then
-			self.Panel.DoorsLeft = 1
-			self.Panel.DoorsRight = 0
+		if self.Panel.DoorsSelectLeft < 1 and self.Panel.DoorsSelectRight > 0 then
+			self.Panel.DoorsSelectLeft = 0
+			self.Panel.DoorsSelectRight = 0
+		elseif self.Panel.DoorsSelectLeft < 1 and self.Panel.DoorsSelectRight < 1 then
+			self.Panel.DoorsSelectLeft = 1
+			self.Panel.DoorsSelectRight = 0
 		end
 	end
 
@@ -644,32 +690,32 @@ function ENT:OnButtonPress( button, ply )
 			self.SectionA.DoorSideUnlocked = "None"
 		end
 
-		if self.Panel.DoorsLeft > 0 and self.Panel.DoorsRight < 1 then
-			self.Panel.DoorsLeft = 0
-			self.Panel.DoorsRight = 0
-		elseif self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight < 1 then
-			self.Panel.DoorsLeft = 0
-			self.Panel.DoorsRight = 1
+		if self.Panel.DoorsSelectLeft > 0 and self.Panel.DoorsSelectRight < 1 then
+			self.Panel.DoorsSelectLeft = 0
+			self.Panel.DoorsSelectRight = 0
+		elseif self.Panel.DoorsSelectLeft < 1 and self.Panel.DoorsSelectRight < 1 then
+			self.Panel.DoorsSelectLeft = 0
+			self.Panel.DoorsSelectRight = 1
 		end
 	end
 
 	if button == "Button5a" then
-		if self.SectionA.DoorSideUnlocked == "Right" then if self.SectionA.DoorRandomness[ 3 ] == 0 then self.SectionA.DoorRandomness[ 3 ] = 3 end end
+		if self.SectionA.DoorHandler.DoorUnlockState == 2 then if self.SectionA.DoorRandomness[ 3 ] == 0 then self.SectionA.DoorRandomness[ 3 ] = 3 end end
 		self.Panel.Button1a = 1
 	end
 
 	if button == "Button6a" then
-		if self.SectionA.DoorSideUnlocked == "Right" then if self.SectionA.DoorRandomness[ 3 ] == 0 then self.SectionA.DoorRandomness[ 3 ] = 3 end end
+		if self.SectionA.DoorHandler.DoorUnlockState == 2 then if self.SectionA.DoorRandomness[ 3 ] == 0 then self.SectionA.DoorRandomness[ 3 ] = 3 end end
 		self.Panel.Button2a = 1
 	end
 
 	if button == "Button7a" then
-		if self.SectionA.DoorSideUnlocked == "Right" then if self.SectionA.DoorRandomness[ 4 ] == 0 then self.SectionA.DoorRandomness[ 4 ] = 3 end end
+		if self.SectionA.DoorHandler.DoorUnlockState == 2 then if self.SectionA.DoorRandomness[ 4 ] == 0 then self.SectionA.DoorRandomness[ 4 ] = 3 end end
 		self.Panel.Button3a = 1
 	end
 
 	if button == "Button8a" then
-		if self.SectionA.DoorSideUnlocked == "Right" then if self.SectionA.DoorRandomness[ 4 ] == 0 then self.SectionA.DoorRandomness[ 4 ] = 3 end end
+		if self.SectionA.DoorHandler.DoorUnlockState == 2 then if self.SectionA.DoorRandomness[ 4 ] == 0 then self.SectionA.DoorRandomness[ 4 ] = 3 end end
 		self.Panel.Button4a = 1
 		--print(self.DoorRandomness[2])
 	end
@@ -726,12 +772,12 @@ function ENT:OnButtonPress( button, ply )
 			self.DoorSideUnlocked = self.DoorSideUnlocked
 		end
 
-		if self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight > 0 then
-			self.Panel.DoorsLeft = 0
-			self.Panel.DoorsRight = 0
-		elseif self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight < 1 then
-			self.Panel.DoorsLeft = 1
-			self.Panel.DoorsRight = 0
+		if self.Panel.DoorsSelectLeft < 1 and self.Panel.DoorsSelectRight > 0 then
+			self.Panel.DoorsSelectLeft = 0
+			self.Panel.DoorsSelectRight = 0
+		elseif self.Panel.DoorsSelectLeft < 1 and self.Panel.DoorsSelectRight < 1 then
+			self.Panel.DoorsSelectLeft = 1
+			self.Panel.DoorsSelectRight = 0
 		end
 	end
 
@@ -744,12 +790,12 @@ function ENT:OnButtonPress( button, ply )
 			self.DoorSideUnlocked = "None"
 		end
 
-		if self.Panel.DoorsLeft > 0 and self.Panel.DoorsRight < 1 then
-			self.Panel.DoorsLeft = 0
-			self.Panel.DoorsRight = 0
-		elseif self.Panel.DoorsLeft < 1 and self.Panel.DoorsRight < 1 then
-			self.Panel.DoorsLeft = 0
-			self.Panel.DoorsRight = 1
+		if self.Panel.DoorsSelectLeft > 0 and self.Panel.DoorsSelectRight < 1 then
+			self.Panel.DoorsSelectLeft = 0
+			self.Panel.DoorsSelectRight = 0
+		elseif self.Panel.DoorsSelectLeft < 1 and self.Panel.DoorsSelectRight < 1 then
+			self.Panel.DoorsSelectLeft = 0
+			self.Panel.DoorsSelectRight = 1
 		end
 	end
 
@@ -1121,13 +1167,13 @@ function ENT:OnButtonRelease( button, ply )
 end
 
 function ENT:TrainSpawnerUpdate()
-	self:SetNW2String( "Texture", self.SectionA:GetNW2String( "Texture" ) .. "_b" )
 	self:UpdateTextures()
 end
 
 function ENT:Think()
 	self.BaseClass.Think( self )
 	self.Speed = self.SectionA.Speed
+	if not self.IBIS then self.IBIS = self.SectionA.IBIS end
 	self:SetNW2Int( "Speed", self.Speed )
 	if self.SectionA:GetNW2Bool( "RetroMode", false ) == true then self:SetModel( "models/lilly/uf/u2/u2_vintage_b.mdl" ) end
 	self:SetNW2String( "DoorSideUnlocked", self.DoorSideUnlocked )
