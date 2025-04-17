@@ -17,6 +17,8 @@ function ENT:Initialize()
 	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
 	self.IronOverride = false
 	self.IronOverrideTime = 0
+	self.Locked = true
+	self.PreviousState = self.AlternateTrack
 	for _, v in ipairs( ents.FindByName( self.VMF.Blade1 ) ) do
 		table.insert( self.TrackSwitches, v )
 	end
@@ -79,26 +81,38 @@ function ENT:Think()
 		self.IronOverrideTime = 0
 	end
 
-	if #self.Queue == 0 and self.SecondaryQueue == 0 and not self.IronOverride then
-		self.AlternateTrack = false
-	else
-		self:TriggerSwitch()
-	end
-
+	if #self.Queue > 0 then self:TriggerSwitch() end
 	-- Process logic
 	self:NextThink( CurTime() + 1.0 )
 	return true
 end
 
 function ENT:Switching()
-	if self.AlternateTrack then
+	if self.PreviousState ~= self.AlternateTrack then self.Locked = false end
+	if self.Locked then
+		for _, v in ipairs( self.TrackSwitches ) do
+			v:Fire( "Lock", "", 0, self, self )
+		end
+	else
+		for _, v in ipairs( self.TrackSwitches ) do
+			v:Fire( "Unlock", "", 0, self, self )
+		end
+	end
+
+	if self.AlternateTrack and not self.Locked then
 		for _, v in ipairs( self.TrackSwitches ) do
 			v:Fire( "Open", "", 0, self, self )
 		end
-	elseif not self.AlternateTrack then
+
+		self.Locked = true
+		self.PreviousState = self.AlternateTrack
+	elseif not self.AlternateTrack and not self.Locked then
 		for _, v in ipairs( self.TrackSwitches ) do
 			v:Fire( "Close", "", 0, self, self )
 		end
+
+		self.Locked = true
+		self.PreviousState = self.AlternateTrack
 	end
 end
 
