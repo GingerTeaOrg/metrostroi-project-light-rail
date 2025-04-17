@@ -96,7 +96,9 @@ UF.AddIBISDestinations( "Demo", {
     [ 001 ] = "Borsigallee",
     [ 002 ] = "Katernberger Str",
     [ 003 ] = "Dom/Römer",
-    [ 004 ] = "Zoo"
+    [ 004 ] = "Zoo",
+    [ 005 ] = "Höhenstr",
+    [ 006 ] = "Nordwest-Zentrum"
 } )
 
 UF.AddIBISAnnouncementScript( "Demo", {
