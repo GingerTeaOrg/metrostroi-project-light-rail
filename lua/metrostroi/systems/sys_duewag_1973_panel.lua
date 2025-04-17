@@ -54,6 +54,14 @@ function TRAIN_SYSTEM:Initialize()
 		bass = true
 	} )
 
+	self.Train:LoadSystem( "CircuitBreakerUn", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "CircuitBreaker", "Relay", "Switch", {
+		bass = true
+	} )
+
 	self.Train:LoadSystem( "SwitchLeft", "Relay", "Switch", {
 		bass = true
 	} )
@@ -240,6 +248,8 @@ function TRAIN_SYSTEM:Initialize()
 		bass = true
 	} )
 
+	self.CircuitBreaker = 0
+	self.CircuitBreakerUn = 0
 	self.HazardBlink = 0
 	self.IgnitionKey = 0
 	self.IgnitionKeyOn = 0
@@ -281,5 +291,5 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 function TRAIN_SYSTEM:Outputs()
-	return { "Automat", "IgnitionKey", "IgnitionKeyInserted", "UncouplingKey", "ParrallelMotors", "DeadmanPedal", "AnnouncementPlaying", "UnlockDoors", "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "Door1", "DoorsForceOpen", "DoorsForceClose", "MirrorLeft", "MirrorRight", "SwitchLeft", "SwitchRight", "BreakerOn", "BreakerOff", "PantographOn", "PantographOff", "Headlights", "HazardBlink", "DriverLight", "BlinkerLeft", "BlinkerRight", "StepsHigh", "StepsLow", "StepsLowest", "Bell", "Horn", "ThrowCoupler", "WiperConstant", "WiperIntervalSet", "WindowWasherSet", "EmergencyBrakeDisable", "Number1", "Number2", "Number3", "Number4", "Number5", "Number6", "Number7", "Number8", "Number9", "Number0", "Enter", "Delete", "Destination", "SpecialAnnouncements", "DateAndTime", "AnnouncerPlaying", "Button1a", "Button2a", "Button3a", "Button4a", "Button5a", "Button6a", "Button7a", "Button8a" }
+	return { "CircuitBreaker", "CircuitBreakerUn", "Automat", "IgnitionKey", "IgnitionKeyInserted", "UncouplingKey", "ParrallelMotors", "DeadmanPedal", "AnnouncementPlaying", "UnlockDoors", "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "Door1", "DoorsForceOpen", "DoorsForceClose", "MirrorLeft", "MirrorRight", "SwitchLeft", "SwitchRight", "BreakerOn", "BreakerOff", "PantographOn", "PantographOff", "Headlights", "HazardBlink", "DriverLight", "BlinkerLeft", "BlinkerRight", "StepsHigh", "StepsLow", "StepsLowest", "Bell", "Horn", "ThrowCoupler", "WiperConstant", "WiperIntervalSet", "WindowWasherSet", "EmergencyBrakeDisable", "Number1", "Number2", "Number3", "Number4", "Number5", "Number6", "Number7", "Number8", "Number9", "Number0", "Enter", "Delete", "Destination", "SpecialAnnouncements", "DateAndTime", "AnnouncerPlaying", "Button1a", "Button2a", "Button3a", "Button4a", "Button5a", "Button6a", "Button7a", "Button8a" }
 end

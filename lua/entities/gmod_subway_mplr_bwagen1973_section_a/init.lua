@@ -2,7 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.BogeyDistance = 780
-ENT.SyncTable = { "IgnitionKey", "IgnitionKeyOn", "IgnitionKeyOff", "UncouplingKey", "ParrallelMotors", "Deadman", "UnlockDoors", "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "Door1", "DoorsForceOpen", "DoorsForceClose", "MirrorLeft", "MirrorRight", "SwitchLeft", "SwitchRight", "Battery", "BatteryDisable", "PantographOn", "PantographOff", "Headlights", "HazardBlink", "DriverLight", "BlinkerRight", "BlinkerLeft", "StepsHigh", "StepsLow", "StepsLowest", "Bell", "Horn", "WiperConstantSet", "WiperIntervalSet", "WindowWasherSet", "EmergencyBrakeDisable" }
+ENT.SyncTable = { "IgnitionKey", "IgnitionKeyOn", "IgnitionKeyOff", "UncouplingKey", "ParrallelMotors", "Deadman", "UnlockDoors", "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "Door1", "DoorsForceOpen", "DoorsForceClose", "MirrorLeft", "MirrorRight", "SwitchLeft", "SwitchRight", "Battery", "BatteryDisable", "PantographOn", "PantographOff", "Headlights", "HazardBlink", "DriverLight", "BlinkerRight", "BlinkerLeft", "StepsHigh", "StepsLow", "StepsLowest", "Bell", "Horn", "WiperConstantSet", "WiperIntervalSet", "WindowWasherSet", "EmergencyBrakeDisable", "CircuitBreaker", "CircuitBreakerUn" }
 ENT.InteractionZones = {
 	{
 		ID = "DoorButton3L",

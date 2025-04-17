@@ -363,7 +363,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "BatterySet",
+			ID = "CircuitBreakerSet",
 			x = 85,
 			y = 62,
 			radius = 10,
@@ -373,7 +373,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 				z = -2.5,
 				ang = 90,
 				anim = true,
-				var = "Battery",
+				var = "CircuitBreaker",
 				speed = 15,
 				vmin = 0,
 				vmax = 1,
@@ -385,7 +385,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "BatteryDisableSet",
+			ID = "CircuitBreakerUnSet",
 			x = 100,
 			y = 62,
 			radius = 10,
@@ -395,7 +395,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 				z = -2.5,
 				ang = 90,
 				anim = true,
-				var = "CircuitOff",
+				var = "CircuitBreakerUn",
 				speed = 15,
 				vmin = 0,
 				vmax = 1,
