@@ -13,6 +13,7 @@ local function tableInit()
 	UF.SwitchEntitiesByID = {}
 	UF.SwitchPathIDsByDirection = {}
 	UF.ActiveRoutes = {}
+	UF.ConflictingRoutes = {}
 	UF.SignalBlocks = {}
 	UF.StationEntsByIndex = {}
 	UF.SignalEntityPositions = {}

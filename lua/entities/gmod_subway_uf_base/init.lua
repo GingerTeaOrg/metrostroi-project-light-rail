@@ -451,6 +451,28 @@ function ENT:Initialize()
     self.Wiped = false
 end
 
+util.AddNetworkString( "mplr-sound-inside-tracker" )
+function ENT:IsPlyInsideTrain()
+    -- Ensure tracking table exists
+    self.PlayerInsideTrainTracker = self.PlayerInsideTrainTracker or {}
+    -- Get bounding box in local space
+    local physBBox1, physBBox2 = self:GetCollisionBounds()
+    -- Convert bounding box to world space
+    local worldMin = self:LocalToWorld( physBBox1 )
+    local worldMax = self:LocalToWorld( physBBox2 )
+    -- Track players inside bounding box
+    for _, ply in ipairs( player.GetAll() ) do
+        local pos = ply:GetPos()
+        self.PlayerInsideTrainTracker[ ply ] = pos:WithinAABox( worldMin, worldMax )
+    end
+
+    -- Broadcast tracking data to clients
+    net.Start( "mplr-sound-inside-tracker" )
+    net.WriteEntity( self )
+    net.WriteTable( self.PlayerInsideTrainTracker )
+    net.Broadcast()
+end
+
 function ENT:GetWagonNumber()
     return self.WagonNumber or self:EntIndex()
 end

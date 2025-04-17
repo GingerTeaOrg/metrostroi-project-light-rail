@@ -2755,6 +2755,13 @@ function ENT:OnStyk( soundid, location, range, pitch )
 	--RunConsoleCommand("say",str)
 end
 
+net.Receive( "mplr-sound-inside-tracker", function()
+	local trainEnt = net.ReadEntity()
+	local trackerTable = net.ReadTable()
+	if not IsValid( trainEnt ) then return end
+	ent.PlyIsInTrain = trackerTable[ LocalPlayer() ] or false
+end )
+
 function ENT:MirrorRender()
 	if GetConVar( "mplr_enable_mirrors" ):GetInt() <= 0 then return end
 	local ply = LocalPlayer()
