@@ -1,0 +1,2 @@
+The files contained in this folder alongside the corresponding systems files as well as models, sounds and textures are licensed under CreativeCommons-Attribution-NonCommercial-ShareAlike.
+On top of the terms of the above license, it is prohibited to use the aforementioned components of this work to train AI models.
