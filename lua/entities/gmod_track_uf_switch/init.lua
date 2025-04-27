@@ -291,12 +291,11 @@ function ENT:GetBranchingPaths()
 		if not node then return end
 		local branchingPath = node.branches and node.branches[ 1 ][ 2 ].path.id
 		local branchingNode = node.branches and node.branches[ 1 ][ 2 ]
-		if node.branches then
+		--[[if node.branches then
 			for k, v in pairs( node.branches[ 1 ][ 2 ] ) do
 				print( k, v )
 			end
-		end
-
+		end]]
 		local myPath = pos.path.id
 		if branchingPath then
 			adjacent_paths = {
