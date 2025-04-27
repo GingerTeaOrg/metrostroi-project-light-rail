@@ -269,7 +269,7 @@ function ENT:GetBranchingPaths()
 	local function traverseNodesToBranch( node, forwards, limit ) -- got forward or backward a few nodes to see if there's a branching path to be found
 		local nodesTraversed = 0 -- initialise how many nodes we've been through so that we don't continue on forever
 		while node and nodesTraversed < limit do
-			if node.connectedPaths then
+			if node.branches then
 				print( "Switch entity:", self, "found branch! Exiting!" )
 				return node
 			end
@@ -286,10 +286,23 @@ function ENT:GetBranchingPaths()
 		return node
 	end
 
+	-- pos.node1.branches[1][2].path
 	local function collectBranchPaths( node ) --
 		if not node then return end
-		if node.connectedPaths and next( node.connectedPaths ) then
-			adjacent_paths = node.connectedPaths
+		local branchingPath = node.branches and node.branches[ 1 ][ 2 ].path.id
+		local branchingNode = node.branches and node.branches[ 1 ][ 2 ]
+		if node.branches then
+			for k, v in pairs( node.branches[ 1 ][ 2 ] ) do
+				print( k, v )
+			end
+		end
+
+		local myPath = pos.path.id
+		if branchingPath then
+			adjacent_paths = {
+				[ myPath ] = pos.node1,
+				[ branchingPath ] = branchingNode
+			}
 		else
 			local traversedNode = traverseNodesToBranch( node, forward, 3 )
 			if traversedNode then collectBranchPaths( traversedNode ) end
@@ -303,7 +316,7 @@ function ENT:GetBranchingPaths()
 	print( "Current Path:", current_path )
 	print( "Adjacent Paths:" )
 	for id, node in pairs( adjacent_paths ) do
-		print( id )
+		print( id, node.id )
 	end
 	return adjacent_paths
 end

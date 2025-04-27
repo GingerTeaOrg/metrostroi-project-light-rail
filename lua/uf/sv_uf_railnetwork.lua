@@ -5,21 +5,30 @@
 --- The CC license applies to any function where source code has not been copied and/or modified from Metrostroi,	---
 --- and where only function calls to Metrostroi functions are used.													---
 --- Whichever functions have been taken from Metrostroi source code rather than been reimplemented, are subject		--- 
---- to the Metrostroi license terms, courtesy of FoxWorks Aerospace													---
+--- to the Metrostroi license terms, courtesy of FoxWorks Aerospace	.												---
 -----------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------
 local function tableInit()
-	UF.SignalEntitiesByNode = {}
-	UF.SwitchEntitiesByID = {}
-	UF.SwitchPathIDsByDirection = {}
-	UF.ActiveRoutes = {}
-	UF.ConflictingRoutes = {}
-	UF.SignalBlocks = {}
-	UF.StationEntsByIndex = {}
-	UF.SignalEntityPositions = {}
-	UF.SignalStates = {}
-	UF.SignageEntsByNode = {}
-	UF.SwitchBranches = {}
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	---- As opposed to Metrostroi, we split signalling entities up into Switches, Signals and Signage. This is to make querying tables a little easier, allowing for simple implicit understanding of entity types. ----
+	---- This avoids things like having to iterate over nested tables, continuing or exiting loops if the current index is not the type we're looking for, etc.													    ----
+	---- On top of this, we are also registering station entities by nodes, in preparation for LZB (ATC). 																										    ----
+	---- Where stations are is a vital piece of information for pathfinding and may allow for other enhancements further down the line (haha, down the line, geddit?).											    ----
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	UF.SignalEntitiesByNode = {} -- 		-- Query this table by entering a given node, get a signal entity returned if present
+	UF.SwitchEntitiesByNode = {} --			-- Query this table by entering a given node, get a switch entity returned if present
+	UF.SwitchEntitiesByID = {} --			-- Query this table by entering a given Switch ID number and get a switch returned
+	UF.SwitchPathIDsByDirection = {} -- 	-- This table saves the Path IDs that a given switch is sitting at, in order to query which way it is pointing.
+	UF.Fahrstrassen = {} -- 				-- This table is a total list of a map's "Farhstraßen" (routes in English). 
+	UF.ConflictingFahrstrassen = {} --		-- This table is a list of Fahrstraßen and with which they conflict with. This table is queried in order to determine whether two active Fahrstraßen should result in one signal showing danger (H0 or F0) to let the other signal show (H1 or F1)
+	UF.ActiveFahrstrassen = {} -- 			-- This table notes which Fahrstraßen are currently active. This is important in cases such as one Fahrstraße being active and another being in conflict with the other, so we don't activate the latter conflicting one until the former Fahrstraße has been released.
+	UF.SignalBlocks = {} -- 				-- This table holds static signal blocks which
+	UF.StationEntsByIndex = {} --			-- Query this table by entering a given station index ID, get a station entity returned
+	UF.SignalEntityPositions = {} --		-- Signal entity Vectors, just in case it'll be useful ¯\_(ツ)_/¯
+	UF.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by end or name
+	UF.SignageEntsByNode = {} --			-- Query this table by entering a given node, get a signage entity returned if present
 end
 
 if Metrostroi.Paths then
@@ -599,6 +608,8 @@ local function addLookup( node )
 end
 
 function UF.LoadTracks( name )
+	-- This function has been copied and adapted from Metrostroi. Querying the branches table of regular Metrostroi is a bit tedious,
+	-- so I added something that I find more intuitive.
 	--[[
         Loads and processes railway track path data from a file associated with the given map name.
         Builds a spatial lookup and a path data structure for use in track simulation or editing.
@@ -739,22 +750,23 @@ function UF.Load( name, keep_signs )
 	end
 
 	name = name or game.GetMap()
-	UF.LoadTracks( name )
+	--UF.LoadTracks( name )
 	-- Initialize stations list
 	-- Print info
 	-- UF.PrintStatistics()
 	-- Ignore updates to prevent created/removed switches from constantly updating table of positions
 	Metrostroi.IgnoreEntityUpdates = true
 	UF.LoadSignalling( name, keep_signs )
+	UF.LoadRoutes( name )
 	timer.Simple( 0.05, function()
 		-- No more ignoring updates
 		Metrostroi.IgnoreEntityUpdates = false
-		-- Load ARS entities
+		-- Load Signal entities
 		UF.UpdateSignalEntities()
 		-- Load switches
 		UF.UpdateSwitchEntities()
 		UF.UpdateStations()
-		UF.ConstructDefaultSignalBlocks()
+		--UF.ConstructDefaultSignalBlocks()
 		if not ents.FindByClass( "gmod_mplr_signalserver" ) then
 			Server = ents.Create( "gmod_mplr_signalserver" )
 			Server.Model = UF.ServerModel or nil
@@ -764,6 +776,10 @@ function UF.Load( name, keep_signs )
 			print( "MPLR: Spawned central signalling server" )
 		end
 	end )
+end
+
+function UF.LoadRoutes( name )
+	local routes = getFile( "project_light_rail_data/routing_%s", name, "Route" ) or {}
 end
 
 local function printTable( table, indent )
