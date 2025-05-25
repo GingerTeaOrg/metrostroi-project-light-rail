@@ -5,9 +5,7 @@
 </div>
 
 <details open align="center"> 
-<summary><h2>Social links</h2>  <img src="https://cdn-icons-png.flaticon.com/512/1232/1232859.png" width="40"></summary>
 
-[![Linkedin Badge](https://img.shields.io/badge/linkedin-profile-blue?style=for-the-badge&logo=LinkedIn)]()
 
 </details>
 
