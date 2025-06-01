@@ -1,18 +1,12 @@
 <div align="center">
-<img src="https://github.com/user-attachments/assets/5a54bbf3-13aa-4bee-a550-e0ce69a08ebb" width="350"/>
+<img src="https://github.com/user-attachments/assets/5a54bbf3-13aa-4bee-a550-e0ce69a08ebb" width="512"/>
 <h1>Metrostroi: Project Light Rail</h1>
 <h3>Metrostroi but make it German Stadtbahn!</h3>
 </div>
 
-<details open align="center"> 
-
-
-</details>
-
-<details close align="center"> 
 <summary><h2>Languages</h2>  <img src="https://cdn-icons-png.flaticon.com/512/1230/1230137.png?w=826&t=st=1669474578~exp=1669475178~hmac=4ddfe461bba8521890670e6434d6b475a3f6f36c0dcee7a55c306110d5fcf1de" width="30"></summary>
 
-<img src="https://img.shields.io/badge/HLVL-Lua-green?style=for-the-badge&logo=Lua&logoColor=blue"/><br/>
+<img src="https://img.shields.io/badge/HLVL-GLua-green?style=for-the-badge&logo=Lua&logoColor=blue"/><br/>
 
 </details>
 
