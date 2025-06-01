@@ -51,17 +51,10 @@ end
 
 function ENT:GetPVS()
     local lastMSG = 0
-    local pos = pos or self:GetPos()
-    local playerTab = {}
-    for _, ply in ipairs( player.GetAll() ) do
-        if self:TestPVS( ply ) then table.insert( playerTab, ply ) end
-    end
-
     if CurTime() - lastMSG > 1 then
         net.Start( "PlayerTrackerDFI" .. self:EntIndex(), true )
         net.WriteInt( self:EntIndex() )
-        net.WriteTable( playerTab, true )
-        net.Broadcast()
+        net.SendPVS( self:GetPos() )
     end
 end
 
@@ -86,7 +79,6 @@ function ENT:DumpTable( table, indent )
 end
 
 function ENT:Think()
-    self.BaseClass:Think()
     local trainPresent = self:TrainPresent()
     local stationIndex = tonumber( self.VMF.StationIndex, 10 )
     local platformIndex = tonumber( self.VMF.PlatformIndex, 10 )

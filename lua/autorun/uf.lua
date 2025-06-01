@@ -23,6 +23,12 @@ if not UF and Metrostroi then
 	end )
 end
 
+if CLIENT then
+	include( "autorun/client/cl_uf.lua" )
+elseif SERVER then
+	AddCSLuaFile( "autorun/client/cl_uf.lua" )
+end
+
 hook.Add( "MPLRCouplingCallback", "MPLRDigestConsist", function( ent )
 	local wagonNumber = ent.WagonNumber
 	local function checkTrainInConsist( consist, ent )
@@ -99,32 +105,6 @@ hook.Add( "EntityRemoved", "UFTrains", function( ent )
 	Metrostroi.SpawnedTrains[ ent ] = nil
 end )
 
-if CLIENT then
-	-- Define the target entity class
-	local targetClass = "gmod_track_uf_dfi" -- Replace with your custom entity's class name
-	-- Table to track active hooks for entities
-	local activeHooks = {}
-	local function CreateEntityHook( entity )
-		local hookName = "PostDrawHUD_Entity_" .. entity:EntIndex()
-		hook.Add( "PostDrawHUD", hookName, function()
-			if not IsValid( entity ) then
-				-- Remove the hook if the entity is no longer valid
-				hook.Remove( "PostDrawHUD", hookName )
-				activeHooks[ hookName ] = nil
-				return
-			end
-
-			-- Call RenderDisplay with the entity as a parameter
-			if entity.RenderDisplay then
-				entity:RenderDisplay( entity ) -- Pass entity as an argument
-			end
-		end )
-
-		-- Track the hook
-		activeHooks[ hookName ] = entity
-	end
-end
-
 if SERVER and Metrostroi then
 	hook.Add( "OnEntityCreated", "UFTrains", function( ent )
 		local prefix = "gmod_subway_uf_"
@@ -149,18 +129,41 @@ elseif CLIENT and Metrostroi then
 end
 
 if CLIENT then
-	for _, ent in ipairs( ents.GetAll() ) do
-		if ent:GetClass() == "gmod_track_uf_dfi" then timer.Simple( 0, function() if IsValid( ent ) and ent:GetClass() == targetClass then CreateEntityHook( ent ) end end ) end
-	end
+	hook.Add( "InitPostEntity", "MPLR_PostLaunch_RenderDisplays", function()
+		-- Define the target entity class
+		local targetClass = "gmod_track_uf_dfi"
+		-- Table to track active hooks for entities
+		local activeHooks = {}
+		local function CreateEntityHook( entity )
+			local hookName = "MPLR_Display_PostDrawHUD_Entity_" .. entity:EntIndex()
+			hook.Add( "PostDrawHUD", hookName, function()
+				if not IsValid( entity ) then
+					-- Remove the hook if the entity is no longer valid
+					hook.Remove( "PostDrawHUD", hookName )
+					activeHooks[ hookName ] = nil
+					return
+				end
 
-	-- Hook to detect when entities are created
-	hook.Add( "OnEntityCreated", "ManageEntityHooks_OnSpawn", function( entity )
-		-- Delay to ensure the entity is fully initialized
-		timer.Simple( 0, function() if IsValid( entity ) and entity:GetClass() == targetClass then CreateEntityHook( entity ) end end )
+				-- Call RenderDisplay with the entity as a parameter
+				if entity.RenderDisplay then
+					entity:RenderDisplay( entity ) -- Pass entity as an argument
+				end
+			end )
+
+			-- Track the hook
+			activeHooks[ hookName ] = entity
+		end
+
+		for _, ent in ipairs( ents.GetAll() ) do
+			if ent:GetClass() == "gmod_track_uf_dfi" then timer.Simple( 0, function() if IsValid( ent ) and ent:GetClass() == targetClass then CreateEntityHook( ent ) end end ) end
+		end
+
+		-- Hook to detect when entities are created
+		hook.Add( "OnEntityCreated", "ManageEntityHooks_OnSpawn", function( entity )
+			-- Delay to ensure the entity is fully initialized
+			timer.Simple( 0, function() if IsValid( entity ) and entity:GetClass() == targetClass then CreateEntityHook( entity ) end end )
+		end )
 	end )
-
-	-- Hook to detect when entities are removed
-	hook.Add( "EntityRemoved", "ManageEntityHooks_OnRemove", function( entity ) if entity:GetClass() == targetClass then RemoveEntityHook( entity ) end end )
 end
 
 UF.IBISAnnouncementFiles = {}
@@ -406,31 +409,6 @@ function UF.AddRollsignTex( id, stIndex, texture )
 	end
 
 	tbl[ stIndex ] = table.insert( tbl, texture )
-end
-
-if SERVER then
-	if Metrostroi.Paths then
-		local options = {
-			z_pad = 256
-		}
-
-		if Metrostroi.IgnoreEntityUpdates then return end
-		print( "[!] LIGHT RAIL: Injecting Light Rail Signal Entities into Railnetwork" )
-		local entities = ents.FindByClass( "gmod_track_uf_signal*" )
-		for k, v in pairs( entities ) do
-			local pos = Metrostroi.GetPositionOnTrack( v:GetPos(), v:GetAngles() - Angle( 0, 90, 0 ), options )[ 1 ]
-			if pos then -- FIXME make it select proper path
-				Metrostroi.SignalEntitiesForNode[ pos.node1 ] = Metrostroi.SignalEntitiesForNode[ pos.node1 ] or {}
-				table.insert( Metrostroi.SignalEntitiesForNode[ pos.node1 ], v )
-				-- A signal belongs only to a single track
-				Metrostroi.SignalEntityPositions[ v ] = pos
-				v.TrackPosition = pos
-				v.TrackX = pos.x
-				-- else
-				-- print("position not found",k,v)
-			end
-		end
-	end
 end
 
 files = file.Find( "uf/IBIS/*.lua", "LUA" )

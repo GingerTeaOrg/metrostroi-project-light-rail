@@ -35,11 +35,8 @@ end
 function ENT:Initialize()
 	self.DFI1 = self:CreateRT( "RT1", 4096, 912 )
 	-- self.DFI2 = self:CreateRT("RT2", 4096, 1024)
-	--[[render.PushRenderTarget(self.DFI1, 0, 0, 1024, 128)
-	render.Clear(0, 0, 0, 0)
-	render.PopRenderTarget()
-	render.PushRenderTarget(self.DFI2, 0, 0, 1024, 128)
-	render.Clear(0, 0, 0, 0)
+	--[[render.PushRenderTarget( self.DFI1, 0, 0, 1024, 128 )
+	render.Clear( 0, 0, 0, 0 )
 	render.PopRenderTarget()]]
 	local ang = self:GetAngles()
 	local pos = self:GetPos()
@@ -114,21 +111,11 @@ function ENT:Initialize()
 
 	self.Mode = self:GetNW2Int( "Mode", 0 )
 	-- Define a unique material name
-	self.DisplayMaterial = CreateMaterial( "display" .. self:EntIndex(), "UnlitGeneric", {
-		[ "$basetexture" ] = self.DFI1:GetName()
-	} )
-
-	self.DisplayMaterial2 = CreateMaterial( "display2" .. self:EntIndex(), "UnlitGeneric", {
-		[ "$basetexture" ] = self.DFI1:GetName()
-	} )
-
-	self:SetSubMaterial( 2, "!display" .. self:EntIndex() )
-	self:SetSubMaterial( 3, "!display2" .. self:EntIndex() )
 end
 
 function ENT:Think()
 	self:ClockFace()
-	--self:RenderDisplay()
+	--self:RenderDisplay( self )
 	self.Mode = self:GetNW2Int( "Mode", 0 )
 	self.Theme = self:GetNW2String( "Theme", "Frankfurt" )
 	self.Train1Time = self:GetNW2String( "Train1Time", "E" )
@@ -235,7 +222,7 @@ function ENT:RenderDisplay( ent )
 
 	print( "RENDERING!", self )
 	if not ent.RenderTimer then ent.RenderTimer = RealTime() end
-	if CurTime() - ent.RenderTimer > 2 then
+	if RealTime() - ent.RenderTimer > 2 then
 		render.PushRenderTarget( ent.DFI1, 0, 0, 4096, 912 )
 		render.Clear( 0, 0, 0, 255, true, true )
 		cam.Start2D()
@@ -249,33 +236,27 @@ function ENT:RenderDisplay( ent )
 
 		cam.End2D()
 		render.PopRenderTarget()
+		ent.RenderTimer = RealTime()
 	end
 end
 
 function ENT:Draw()
+	if not self.DisplayMaterial then
+		self.DisplayMaterial = CreateMaterial( "display" .. self:EntIndex(), "UnlitGeneric", {
+			[ "$basetexture" ] = self.DFI1:GetName()
+		} )
+
+		self.DisplayMaterial2 = CreateMaterial( "display2" .. self:EntIndex(), "UnlitGeneric", {
+			[ "$basetexture" ] = self.DFI1:GetName()
+		} )
+
+		self:SetSubMaterial( 2, "!display" .. self:EntIndex() )
+		self:SetSubMaterial( 3, "!display2" .. self:EntIndex() )
+	end
+
+	self:SetSubMaterial( 2, "!display" .. self:EntIndex() )
+	self:SetSubMaterial( 3, "!display2" .. self:EntIndex() )
 	self:DrawModel()
-end
-
-local ownEntIndex = ENT:EntIndex()
-net.Receive( "PlayerTrackerDFI" .. ownEntIndex, function()
-	local entIndex = net.ReadInt()
-	local playerTab = net.ReadTable() -- Read the table of players
-	local ent = Entity( entIndex )
-	for _, v in ipairs( playerTab ) do
-		if v == LocalPlayer() then
-			ent:ManageDrawingHook( true )
-		else
-			ent:ManageDrawingHook( false )
-		end
-	end
-end )
-
-function ENT:ManageDrawingHook( inRange )
-	if inRange then
-		hook.Add( "PostDrawOpaqueRenderables", "RenderDFIScreens" .. self:EntIndex(), function() self:RenderDisplay( self ) end )
-	else
-		hook.Remove( "RenderDFIScreens" .. self:EntIndex() )
-	end
 end
 
 -- function ENT:DrawPost() end
@@ -482,7 +463,7 @@ function ENT:Mode0Disp( ent )
 	if ent.Mode ~= 0 then return end
 	local Text = ent:GetNW2String( "ModeMessage", "Keine Zugfahrten!" )
 	if Text == "false" then Text = "Keine Zugfahrten!" end
-	ent.TextPosX = math.floor( #ent.Grid / 2 ) + #Text
+	ent.TextPosX = math.ceil( #ent.Grid / 2 ) + #Text
 	local msg = {
 		[ 1 ] = { 15, { Text, "SmallThin", ent.TextPosX } }
 	}
@@ -550,13 +531,13 @@ function ENT:Mode2Disp( ent )
 	elseif Text == "DontBoard" then
 		local message = "Nicht Einsteigen!"
 		local textPos = math.floor( #ent.Grid / 2 ) + #message
-		local msg = {
+		msg = {
 			[ 1 ] = { 15, { message, "SmallThin", textPos } }
 		}
 	elseif Text == "DestUnknown" then
 		local message = "Auf Zugschild achten!"
 		local textPos = math.floor( #ent.Grid / 2 ) + #message
-		local msg = {
+		msg = {
 			[ 1 ] = { 15, { message, "SmallThin", textPos } }
 		}
 	end
