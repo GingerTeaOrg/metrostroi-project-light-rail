@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/mplr/ruhrbahn/b_1973/roof"
+	"$normalmap" "models/lilly/mplr/ruhrbahn/b_1973/roof_n"
+	"$surfaceprop" "Metal"
+}
