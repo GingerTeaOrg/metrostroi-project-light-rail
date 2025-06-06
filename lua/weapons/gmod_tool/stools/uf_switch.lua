@@ -8,9 +8,9 @@ TOOL.ClientConVar[ "left_path" ] = -1
 TOOL.ClientConVar[ "right_path" ] = -1
 TOOL.ClientConVar[ "allow_iron" ] = 1
 if CLIENT then
-	language.Add( "Tool.switch.name", "Switch Tool" )
-	language.Add( "Tool.switch.desc", "Sets/edits switch parameters" )
-	language.Add( "Tool.switch.0", "Primary: Set channel 1\nSecondary: Copy settings" )
+	language.Add( "Tool.uf_switch.name", "Switch Tool" )
+	language.Add( "Tool.uf_switch.desc", "Sets/edits switch parameters" )
+	language.Add( "Tool.uf_switch.0", "Primary: Set channel 1\nSecondary: Copy settings" )
 end
 
 function TOOL:LeftClick( trace )
@@ -23,7 +23,7 @@ function TOOL:LeftClick( trace )
 	for k, v in pairs( entlist ) do
 		if v:GetClass() == "gmod_track_uf_switch" then
 			v.ID = self:GetClientInfo( "ID" ) ~= "" and self:GetClientInfo( "ID" ) or nil
-			v.AllowSwitchingIron = self:GetClientNumber( "controllable" ) == 0
+			v.AllowSwitchingIron = self:GetClientNumber( "allow_iron" ) == 1
 			v.DirectionsToPaths[ "left" ] = self:GetClientNumber( "left_path" )
 			v.DirectionsToPaths[ "right" ] = self:GetClientNumber( "right_path" )
 			print( Format( "ID:%s, Left path is %s, Right path is %s, Switching Iron is %s allowed", self:GetClientInfo( "ID" ) ~= "" and self:GetClientInfo( "ID" ) or "nil", self:GetClientNumber( "left_path" ), self:GetClientNumber( "right_path" ), self:GetClientNumber( "allow_iron" ) == 0 and "not " or "" ) )
@@ -64,7 +64,7 @@ function TOOL:Reload( trace )
 			net.WriteBool( v.LockedSignal )
 			net.WriteBool( not v.NotChangePos )
 			net.WriteBool( v.Invertred )
-			net.Send( self:GetOwner() )
+			net.Send( ply )
 			--if self:GetClientNumber("lock") == 1 then
 			--if v.LockedSignal then v.LockedSignal = nil else v.LockedSignal = v.LastSignal end
 			--print("Locked switch signal",v.LockedSignal)
@@ -92,7 +92,7 @@ function TOOL.BuildCPanel( panel )
 end
 
 net.Receive( "metrostroi-lightrail-stool-switch", function( _, ply )
-	local TOOL = LocalPlayer and LocalPlayer():GetTool( "signalling" ) or ply:GetTool( "signalling" )
+	local TOOL = LocalPlayer and LocalPlayer():GetTool( "uf_switch" ) or ply:GetTool( "uf_switch" )
 	RunConsoleCommand( "uf_switch_ID", net.ReadString() )
 	RunConsoleCommand( "uf_switch_left_path", tonumber( net.ReadString(), 10 ) )
 	RunConsoleCommand( "uf_switch_right_path", tonumber( net.ReadString(), 10 ) )

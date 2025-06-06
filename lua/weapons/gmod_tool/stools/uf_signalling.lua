@@ -368,7 +368,7 @@ function TOOL:Think()
         local ply = self:GetOwner()
         if not ply:IsAdmin() then
             ply:PrintMessage( HUD_PRINTTALK, "You're not a server admin. Bailing." )
-            return
+            return false
         end
 
         local ClientSettings = ClientSettings or {}
