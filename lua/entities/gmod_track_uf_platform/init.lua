@@ -70,38 +70,41 @@ function ENT:Initialize()
 
     self:SetNW2Int( "TrainDoorCount", 0 )
     self.DoorUnlockCalled = false
-    if self.PlatformStart and self.PlatformEnd then self:MarkPlatformPathing() end
+    self.PlatformsMarked = false
 end
 
 function ENT:MarkPlatformPathing()
-    local startPos = self.PlatformStart:GetPos()
-    local startAng = self.PlatformStart:GetAngles()
-    local endPos = self.PlatformEnd:GetPos()
-    local endAng = self.PlatformEnd:GetAngles()
-    local startTrackPos = Metrostroi.GetPositionOnTrack( startPos, startAng )
-    local endTrackPos = Metrostroi.GetPositionOnTrack( endPos, endAng )
+    local startPos = self.PlatformStart
+    local startAng = Angle( 0, 0, 0 )
+    local endPos = self.PlatformEnd
+    local endAng = Angle( 0, 0, 0 )
+    local startTrackPos = Metrostroi.GetPositionOnTrack( startPos, startAng )[ 1 ].node1
+    local endTrackPos = Metrostroi.GetPositionOnTrack( endPos, endAng )[ 1 ].node1
     -- Ensure valid track positions with INDUSI
-    if not ( startTrackPos.node1.indusi and endTrackPos.node1.indusi ) then return end
+    --if not ( startTrackPos.node1.indusi and endTrackPos.node1.indusi ) then return end
     -- Recursively mark nodes as part of the station
-    local function markNodes( node, nodeEnd, nextNodeFunc )
+    local function markNodes( node, nodeEnd )
+        local station = {
+            [ "ID" ] = self.StationIndex,
+            [ "Platform" ] = self.PlatformIndex
+        }
+
         if node == nodeEnd then
-            node.station = true
+            node.station = station
             return
         end
 
-        node.station = true
-        timer.Simple( 0, function()
-            markNodes( nextNodeFunc( node ), nodeEnd, nextNodeFunc ) -- Prevent locking up
-        end )
+        node.station = station
+        if node.x > nodeEnd.x then
+            -- Traverse backwards on the track
+            return markNodes( node.prev, nodeEnd )
+        else
+            -- Traverse forwards on the track
+            return markNodes( node.next, nodeEnd )
+        end
     end
 
-    if startTrackPos.x > endTrackPos.x then
-        -- Traverse backwards on the track
-        markNodes( startTrackPos.node1, endTrackPos.node1, function( node ) return node.prev end )
-    else
-        -- Traverse forwards on the track
-        markNodes( startTrackPos.node1, endTrackPos.node1, function( node ) return node.next end )
-    end
+    markNodes( startTrackPos, endTrackPos )
 end
 
 --------------------------------------------------------------------------------
@@ -195,6 +198,11 @@ end
 local dT = 0.25
 local trains = {}
 function ENT:Think()
+    if next( Metrostroi.Paths ) and not self.PlatformsMarked then
+        self.PlatformsMarked = true
+        self:MarkPlatformPathing()
+    end
+
     --if not Metrostroi.Stations[self.StationIndex] then return end
     -- Send update to client
     self:SetNW2Int( "WindowStart", self.WindowStart )
@@ -211,7 +219,7 @@ function ENT:Think()
     local boarding = false
     local BoardTime = 8 + 7
     for k, v in pairs( ents.FindByClass( "gmod_subway_*" ) ) do
-        if v.Base ~= "gmod_subway_uf_base" then continue end
+        if v.Base ~= "gmod_subway_uf_base" or string.match( "subway_mplr", v.Base ) then continue end
         if not v.DoorHandler then continue end
         local doorHandler = v.DoorHandler
         if not IsValid( v ) or v:GetPos():Distance( self:GetPos() ) > self.PlatformStart:Distance( self.PlatformEnd ) then continue end
@@ -247,8 +255,8 @@ function ENT:Think()
             -- Find player of the train
             local driver = getTrainDriver( v )
             local floorHeight, floorHeight2 = v:GetStandingArea()
-            local floorHeight = floorHeight.z
-            self:SetNW2Int( "FloorHeight", floorHeight )
+            floorHeight = floorHeight.z
+            self:SetNW2Float( "FloorHeight", floorHeight )
             self:SetNW2Vector( "TrainPos", v:GetPos() )
             -- Limit train to platform
             train_start = math.max( 0, math.min( 1, train_start ) )
@@ -326,19 +334,11 @@ function ENT:Think()
             -- Keep list of door positions
             if left_side then
                 for i, vec in pairs( v.DoorsLeft ) do
-                    print( i )
                     if doorHandler.DoorStatesLeft[ i ] > 0.8 then boardingDoorList[ k ] = v:LocalToWorld( vec ) end
                 end
             else
-                for i, vec in pairs( v.RightDoorPositions ) do
-                    if type( vec ) ~= "Vector" then continue end
-                    local doorHandler = v.DoorHandler
-                    if doorHandler.DoorStatesRight[ i ] < 0.9 then
-                        doorHandler.DoorStatesRight[ i ] = 0
-                        continue
-                    end
-
-                    boardingDoorList[ k ] = v:LocalToWorld( vec )
+                for i, vec in pairs( v.DoorsRight ) do
+                    if doorHandler.DoorStatesRight[ i ] > 0.8 then boardingDoorList[ k ] = v:LocalToWorld( vec ) end
                 end
             end
 
@@ -410,7 +410,7 @@ function ENT:CheckDoors( ent, left_side )
     if not tab then return end
     for _, v in ipairs( tab ) do
         if v > 0.9 then
-            print( "doors are open!" )
+            --print( "doors are open!" )
             return true
         end
     end

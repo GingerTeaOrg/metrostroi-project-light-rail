@@ -47,7 +47,7 @@ local rareModels = {
 }
 
 function ENT:Initialize()
-    self.PassengerSounds = CreateSound( LocalPlayer(), Sound( "lilly/ambience/station/station.wav" ) )
+    self.PassengerSounds = CreateSound( LocalPlayer(), Sound( "lilly/uf/ambience/station/station.wav" ) )
     self.NonPassengerSounds = CreateSound( self, Sound( "ambient/levels/canals/tunnel_wind_loop1.mp3" ) )
     self.ClientModels = {}
     self.CleanupModels = {}
@@ -224,7 +224,6 @@ function ENT:Think()
     -- If platform is defined and pool is not
     --print(self:GetNW2Vector("StationCenter"))
     --print(entStart,entEnd,self.Pool)
-    local dataReady = ( self:GetNW2Float( "X0", -1 ) >= 0 ) and ( self:GetNW2Float( "Sigma", -1 ) > 0 )
     local poolReady = self.Pool and ( #self.Pool == self:PoolSize() )
     if ( not poolReady ) and ( stationCenter:Length() > 0.0 ) then self:PopulatePlatform( platformStart, platformEnd, stationCenter ) end
     -- Check if set of models changed
@@ -315,9 +314,9 @@ function ENT:Think()
         -- Get pos and target in XY plane
         local pos = v.ent:GetPos()
         local target = v.target
-        local floorHeight = self:GetNW2Int( "FloorHeight", 0 )
-        local trainPos = self:GetNW2Vector( "TrainPos", Vector( 0, 0, 0 ) ).z
-        local heightDelta = self:GetPos().z > trainPos and 0 or floorHeight
+        local floorHeight = self:GetNW2Float( "FloorHeight", 0 )
+        local selfHeight = self:GetPos().z
+        local heightDelta = selfHeight > floorHeight and selfHeight - floorHeight or floorHeight - selfHeight
         pos.z = 0
         target.z = 0
         -- Find direction in which pedestrians must walk
@@ -356,10 +355,12 @@ function ENT:Think()
                 distance = d
             end
         end
-        --if distance > 32
-        --then v.target = self:GetPos()
-        --else v.target = new_target
-        --end
+
+        if distance > 32 then
+            v.target = self:GetPos()
+        else
+            v.target = new_target
+        end
     end
 end
 
@@ -375,10 +376,6 @@ function ENT:Draw()
     local platformStart = self:GetNW2Vector( "PlatformStart", false )
     local platformEnd = self:GetNW2Vector( "PlatformEnd", false )
     local pos = self:GetPos() + Vector( 0, 0, 50 )
-    --[[ if platformStart and platformEnd then
-        pos = platformStart + (platformEnd-platformStart)/2+Vector(0,0,50)
-    end--]]
-    --print(2)
     local ang = self:LocalToWorldAngles( Angle( 0, 180, 90 ) )
     cam.Start3D2D( pos, ang, 0.25 )
     surface.SetDrawColor( 125, 125, 0, 255 )
