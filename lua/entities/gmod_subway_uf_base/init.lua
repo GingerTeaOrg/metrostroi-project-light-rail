@@ -1273,7 +1273,7 @@ function ENT:SetLightPower( index, power, brightness )
     local prevLightData = prevLightData or {}
     local lightData = self.Lights[ index ]
     if not lightData then
-        print( "ERROR! SetLightPower called on unconfigured light index: " .. index )
+        --print( "ERROR! SetLightPower called on unconfigured light index: " .. index )
         return
     end
 
