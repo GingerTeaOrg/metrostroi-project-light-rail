@@ -1,0 +1,15 @@
+ENT.PrintName = "Switch Lantern/Signal"
+ENT.Name = "Switch Lantern/Signal"
+ENT.Spawnable = true
+ENT.AdminOnly = true
+ENT.Category = "Metrostroi: Project Light Rail"
+ENT.Type = "anim"
+ENT.AutomaticFrameAdvance = true
+ENT.LensCasePath = "models/lilly/mplr/signals/trafficlight/trafficlight_lenscase.mdl"
+ENT.PoleModel = "models/lilly/mplr/signals/trafficlight/trafficlight_pole.mdl"
+ENT.StraightLens = "models/lilly/mplr/signals/trafficlight/sprites/sprite_w1.mdl"
+ENT.StraightLensLocked = "models/lilly/mplr/signals/trafficlight/sprites/sprite_w11.mdl"
+ENT.LeftLens = "models/lilly/mplr/signals/trafficlight/sprites/sprite_w3.mdl"
+ENT.LeftLensLocked = "models/lilly/mplr/signals/trafficlight/sprites/sprite_w13.mdl"
+ENT.RightLens = "models/lilly/mplr/signals/trafficlight/sprites/sprite_w2.mdl"
+ENT.RightLensLocked = "models/lilly/mplr/signals/trafficlight/sprites/sprite_w12.mdl"
