@@ -20,14 +20,15 @@ local function tableInit()
 	UF.SignalEntitiesByNode = {} -- 		-- Query this table by entering a given node, get a signal entity returned if present
 	UF.SwitchEntitiesByNode = {} --			-- Query this table by entering a given node, get a switch entity returned if present
 	UF.SwitchEntitiesByID = {} --			-- Query this table by entering a given Switch ID number and get a switch returned
-	UF.SwitchPathIDsByDirection = {} -- 	-- This table saves the Path IDs that a given switch is sitting at, in order to query which way it is pointing.
+	UF.SwitchPathIDsByDirection = {} -- 	-- This table saves the Path IDs that a given switch is sitting at related to their logical direction, in order to query which way it is pointing.
+	UF.SwitchBranches = {} --				-- Switch entities as corresponding to nodes that this switch branches off of
 	UF.Fahrstrassen = {} -- 				-- This table is a total list of a map's "Farhstraßen" (routes in English). 
 	UF.ConflictingFahrstrassen = {} --		-- This table is a list of Fahrstraßen and with which they conflict with. This table is queried in order to determine whether two active Fahrstraßen should result in one signal showing danger (H0 or F0) to let the other signal show (H1 or F1)
 	UF.ActiveFahrstrassen = {} -- 			-- This table notes which Fahrstraßen are currently active. This is important in cases such as one Fahrstraße being active and another being in conflict with the other, so we don't activate the latter conflicting one until the former Fahrstraße has been released.
 	UF.SignalBlocks = {} -- 				-- This table holds static signal blocks which
 	UF.StationEntsByIndex = {} --			-- Query this table by entering a given station index ID, get a station entity returned
 	UF.SignalEntityPositions = {} --		-- Signal entity Vectors, just in case it'll be useful ¯\_(ツ)_/¯
-	UF.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by end or name
+	UF.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by ent or name
 	UF.SignageEntsByNode = {} --			-- Query this table by entering a given node, get a signage entity returned if present
 end
 
@@ -473,10 +474,9 @@ function UF.Save( name )
 	name = name or game.GetMap()
 	-- Format signs, signal, switch data
 	local signs = {}
-	local signals_ents = ents.FindByClass( "gmod_track_uf_signal*" )
-	if not signals_ents then print( "MPLR: Signalling file is corrupted!" ) end
-	for k, v in pairs( signals_ents ) do
-		local Routes = table.Copy( v.Routes )
+	local signals_ents = ents.FindByClass( "gmod_track_uf_signal" )
+	if not signals_ents then print( "MPLR: No Block Signals Found!" ) end
+	for _, v in pairs( signals_ents ) do
 		table.insert( signs, {
 			Class = "gmod_track_uf_signal",
 			Pos = v:GetPos(),
@@ -490,8 +490,24 @@ function UF.Save( name )
 		} )
 	end
 
+	local overground_signals_ents = ents.FindByClass( "gmod_track_uf_signal_overground" )
+	if not overground_signals_ents then print( "MPLR: No Tram Signals Found!" ) end
+	for _, v in pairs( overground_signals_ents ) do
+		table.insert( signs, {
+			Class = "gmod_track_uf_signal_overground",
+			Pos = v:GetPos(),
+			Angles = v:GetAngles(),
+			Name1 = v.Name1,
+			Name2 = v.Name2,
+			Name = v.Name,
+			Columns = v.Columns,
+			Lenses = v.Lenses,
+			Blockmode = v.Blockmode
+		} )
+	end
+
 	local switch_ents = ents.FindByClass( "gmod_track_uf_switch" )
-	for k, v in ipairs( switch_ents ) do
+	for _, v in ipairs( switch_ents ) do
 		table.insert( signs, {
 			Class = "gmod_track_uf_switch",
 			Pos = v:GetPos(),
@@ -511,6 +527,19 @@ function UF.Save( name )
 			ZOffset = v:GetNW2Int( "Vertical", 0 ),
 			Left = v:GetNW2Bool( "Left", false ),
 			Rotation = v:GetNW2Int( "Rotation", 0 )
+		} )
+	end
+
+	local switch_lantern_ents = ents.FindByClass( "gmod_track_mplr_switch_lantern" )
+	for _, v in pairs( switch_lantern_ents ) do
+		table.insert( signs, {
+			Class = "gmod_track_mplr_switch_lantern",
+			Pos = v:GetPos(),
+			Angles = v:GetAngles(),
+			YOffset = v:GetNW2Float( "Horizontal", 0 ),
+			ZOffset = v:GetNW2Float( "Vertical", 0 ),
+			--Left = v:GetNW2Bool( "Left", false ), TODO: Do switch signals also sit left of track?
+			Rotation = v:GetNW2Float( "Rotation", 0 )
 		} )
 	end
 
@@ -1126,4 +1155,48 @@ function UF.GetTravelTime( src, dest )
 
 	if src.path == dest.path and src.branches and src.branches[ 2 ] and src.branches[ 2 ][ 2 ].path == dest.path then scan( src, src.x > src.branches[ 1 ][ 1 ].x ) end
 	return travel_time, travel_dist
+end
+
+function UF.ScanSwitchOccupation( switch )
+	if not IsValid( switch ) then return end
+	local branches = UF.SwitchBranches( switch )
+	local switchOrientation = switch.TrackPos.forward
+	if not branches or #branches < 1 then return end
+	local firstPath
+	local firstPathNode
+	local secondPath
+	local secondPathNode
+	local iter = 0
+	for id, node in pairs( branches ) do
+		if iter < 1 then iter = 1 end
+		if iter == 1 then
+			if not firstPath then firstPath = id end
+			if not firstPathNode then firstPathNode = node end
+			iter = 2
+		elseif iter == 2 then
+			if not secondPath then secondPath = id end
+			if not secondPathNode then secondPathNode = node end
+		end
+	end
+
+	local nodeRange = 15
+	local firstNodesTraversed = 0
+	local secondNodesTraversed = 0
+	local firstScanForwardsResult = -1
+	local secondScanForwardsResult = -1
+	local function scanForwards( node, prim_sec )
+		if not node then return end
+		local nextNode = switchOrientation and node.next or node.prev
+		if prim_sec == 1 then
+			firstNodesTraversed = firstNodesTraversed + 1
+			if firstNodesTraversed < nodeRange then firstScanForwardsResult = scanForwards( nextNode, 1 ) end
+		elseif prim_sec == 2 then
+			-- FIXME: Get it right on the primary/secondary node scanning and result compiling of both runs; do we run it once and it scans both paths, or do we run it separately?? Separately might be easier!!
+			secondNodesTraversed = secondNodesTraversed + 1
+			if secondNodesTraversed < nodeRange then secondScanForwardsResult = scanForwards( nextNode, 2 ) end
+		end
+
+		if prim_sec == 1 and firstNodesTraversed == nodeRange then return firstScanForwardsResult, scanForwards( secondPathNode, 2 ) end
+		if prim_sec == 2 and secondNodesTraversed == nodeRange then return secondScanForwardsResult end
+	end
 end
