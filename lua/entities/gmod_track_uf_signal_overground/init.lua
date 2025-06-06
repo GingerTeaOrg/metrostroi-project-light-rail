@@ -171,6 +171,8 @@ function ENT:OnSightSignalling()
 					self.Aspect[ column ] = switchToAspect
 				end
 			end
+
+			if aAspect then self.Aspect[ column ] = self.Aspect[ column ] .. "_" .. aAspect end
 		end
 	end
 end
