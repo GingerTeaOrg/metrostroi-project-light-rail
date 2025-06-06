@@ -220,7 +220,7 @@ function ENT:RenderDisplay( ent )
 		return
 	end
 
-	print( "RENDERING!", self )
+	--print( "RENDERING!", self )
 	if not ent.RenderTimer then ent.RenderTimer = RealTime() end
 	if RealTime() - ent.RenderTimer > 2 then
 		render.PushRenderTarget( ent.DFI1, 0, 0, 4096, 912 )
