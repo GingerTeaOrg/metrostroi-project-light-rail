@@ -43,6 +43,11 @@
 		"main" : "Main"
 		"alt" : "Alt"
 	]
+	StraightPosition(Choices) : "Direction to Declare as straight" : "left" : "Which direction a connected track signal should consider to be straight" =
+	[
+		"left" : "Left"
+		"right" : "Right"
+	]
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
 	Blade1(target_destination) : "Blade 1"
 	Blade2(target_destination) : "Blade 2"
