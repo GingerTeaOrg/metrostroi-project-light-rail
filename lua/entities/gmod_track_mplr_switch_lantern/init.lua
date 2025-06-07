@@ -8,18 +8,18 @@ end
 
 function ENT:Initialize()
 	self:SetModel( self.PoleModel )
-	self.PairedSwitch = self:GetNW2Entity( "PairedSwitch", self.VMF and self.VMF.PairedSwitch )
+	self.PairedSwitch = self:GetNW2Entity( "PairedSwitch", self.VMF and ents.FindByName( self.VMF.PairedSwitch ) )
 	self.StraightPosition = self:GetNW2String( "StraightPosition", self.VMF and self.VMF.StraightPosition or "left" )
-	self.YOffset = self:GetNW2Float( "Horizontal", 0 )
-	self.ZOffset = self:GetNW2Float( "Vertical", 0 )
-	self.Rotation = self:GetNW2Float( "Rotation", 0 )
+	self.YOffset = self:GetNW2Float( "Horizontal", self.VMF and tonumber( self.VMF.HorizontalOffset, 10 ) or 0 )
+	self.ZOffset = self:GetNW2Float( "Vertical", self.VMF and tonumber( self.VMF.VerticalOffset, 10 ) or 0 )
+	self.Rotation = self:GetNW2Float( "Rotation", self.VMF and tonumber( self.VMF.Rotation, 10 ) or 0 )
 	self.TrackPos = UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	self.Forward = not self.TrackPos.forward
 end
 
 local iter = 0
 function ENT:FindNextSwitch( node, iter )
-	local iter = iter and iter + 1 or 0
+	local iter = iter and iter + 1 or 1
 	if iter >= 10 then return UF.SwitchEntitiesByNode[ self.TrackPos and self.TrackPos.node1 ] end
 	if not self.TrackPos or table.IsEmpty( self.TrackPos ) then
 		self.TrackPos = UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
