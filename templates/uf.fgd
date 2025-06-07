@@ -83,3 +83,15 @@
 	SwitchID(integer) : "Switch Number" : 000 : "Set switch ID for identification via RBL routing table"
 	SwitchEnt(target_name_or_class) : "Switch Entity to associate with"
 ]
+@PointClass base(Targetname, Origin ) studioprop("models/lilly/mplr/signals/traffliclight/trafficlight_pole.mdl") = gmod_track_mplr_switch_lantern : "Switch Signal"
+[
+	PairedSwitch(target_destination) : "Switch to pair to"
+	StraightPosition(Choices) : "Direction that represents Straight" : "left" : "Select which direction is supposed to be straight on the signal" =
+	[
+		"left" : "Left"
+		"right" : "Right"
+	]
+	VerticalOffset(float) : "Vertical Offset" : 0.0 : "How much to offset the clientside models by vertically in-game. Do not place the entity in hammer anywhere but in the middle and on the surface of the track!"
+	HorizontalOffset(float) : "Horizontal Offset" : 0.0 : "How much to offset the clientside models by horizontally in-game. Do not place the entity in hammer anywhere but in the middle and on the surface of the track!"
+	VerticalOffset(float) : "Vertical Offset" : 0.0 : "How much to rotate the clientside models by in-game. Do not rotate the entity in Hammer except facing forwards or backwards on the track!"
+]
