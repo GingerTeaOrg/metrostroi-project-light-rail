@@ -32,3 +32,5 @@
 - U2 Electrical Engineering insights by Fred Walter
 
 - Archival documentation support for electrical schematics, Bernd Rodmann Historische Straßenbahn Frankfurt
+
+- Lumino Krefeld for basic info on their station displays
