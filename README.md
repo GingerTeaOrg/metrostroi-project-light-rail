@@ -12,11 +12,14 @@
 
 <div align="center" >
 
-
+<h3>Subscribe on the Steam Workshop:</h3>
+<a href=https://steamcommunity.com/sharedfiles/filedetails/?id=2634043997>Click here!</a>
 <br/>
+
 <picture>
 <source media="(prefers-color-scheme: dark)" srcset="https://streak-stats.demolab.com?user=lillywho&theme=dark&hide_border=true&date_format=j%20M%5B%20Y%5D&background=00000000&sideNums=DD6F20&currStreakLabel=DD2727&sideLabels=DD2727&currStreakNum=DD2727" />
 <img src="https://streak-stats.demolab.com?user=lillywho&theme=dark&hide_border=true&date_format=j%20M%5B%20Y%5D&background=00000000&sideNums=DD6F20&currStreakLabel=DD2727&sideLabels=DD2727&currStreakNum=DD2727](https://streak-stats.demolab.com?user=lillywho&theme=solarized-dark&card_width=512&card_height=512)" />
 
 </picture>
+
 </div>
