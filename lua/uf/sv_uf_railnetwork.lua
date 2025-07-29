@@ -25,11 +25,18 @@ local function tableInit()
 	UF.Fahrstrassen = {} -- 				-- This table is a total list of a map's "Farhstraßen" (routes in English). 
 	UF.ConflictingFahrstrassen = {} --		-- This table is a list of Fahrstraßen and with which they conflict with. This table is queried in order to determine whether two active Fahrstraßen should result in one signal showing danger (H0 or F0) to let the other signal show (H1 or F1)
 	UF.ActiveFahrstrassen = {} -- 			-- This table notes which Fahrstraßen are currently active. This is important in cases such as one Fahrstraße being active and another being in conflict with the other, so we don't activate the latter conflicting one until the former Fahrstraße has been released.
+	UF.RequestedFahrstrassen = {} --			-- This is a queue of Fahrstraßen which have been requested but not executed yet due to conflicts
 	UF.SignalBlocks = {} -- 				-- This table holds static signal blocks which
 	UF.StationEntsByIndex = {} --			-- Query this table by entering a given station index ID, get a station entity returned
 	UF.SignalEntityPositions = {} --		-- Signal entity Vectors, just in case it'll be useful ¯\_(ツ)_/¯
 	UF.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by ent or name
 	UF.SignageEntsByNode = {} --			-- Query this table by entering a given node, get a signage entity returned if present
+	print( "MPLR: Preparing INDUSI additions for pathing." )
+	for i = 1, #Metrostroi.Paths do
+		for k, v in ipairs( Metrostroi.Paths[ i ] ) do
+			v.INDUSI = {}
+		end
+	end
 end
 
 if Metrostroi.Paths then
@@ -58,11 +65,15 @@ function UF.UpdateStations()
 	for _, platform in pairs( platforms ) do
 		UF.StationEntsByIndex[ platform.StationIndex ] = platform
 		-- Position
-		local dir = platform.PlatformEnd - platform.PlatformStart
-		local pos1 = Metrostroi.GetPositionOnTrack( platform.PlatformStart, dir:Angle() )[ 1 ]
-		local pos2 = Metrostroi.GetPositionOnTrack( platform.PlatformEnd, dir:Angle() )[ 1 ]
+		local mid = ( platform.PlatformStart + platform.PlatformEnd ) / 2
+		local dir1 = platform.PlatformStart - mid
+		local dir2 = platform.PlatformEnd - mid
+		local angle1 = dir1:Angle()
+		local angle2 = dir2:Angle()
+		local pos1 = Metrostroi.GetPositionOnTrack( platform.PlatformStart, angle1 )[ 1 ]
+		local pos2 = Metrostroi.GetPositionOnTrack( platform.PlatformEnd, angle2 )[ 1 ]
 		if pos1 and pos2 then
-			local path = Metrostroi.GetPositionOnTrack( platform:GetPos(), dir:Angle() )[ 1 ].path
+			local path = Metrostroi.GetPositionOnTrack( mid, mid:Angle() )[ 1 ].path.id
 			local length = pos2.x > pos1.x and pos2.x - pos1.x or pos1.x - pos2.x
 			-- Add platform to station
 			local platform_data = {
@@ -139,10 +150,6 @@ function UF.UpdateSignalEntities()
 	end
 
 	print( Format( "MPLR: Total signals: %u (normal: %u, repeaters: %u)", count, count - repeater, repeater ) )
-	local entities = ents.FindByClass( "gmod_track_uf_switch" )
-	for _, v in pairs( entities ) do
-		if v.ID then UF.SwitchEntitiesByID[ v.ID ] = v end
-	end
 end
 
 function UF.UpdateSignalNames()
@@ -565,10 +572,10 @@ local function getFile( path, name, id )
 	end
 
 	if not found then
-		print( Format( "%s definition file not found: %s", id, Format( path, name ) ) )
+		print( Format( "MPLR: %s definition file not found: %s", id, Format( path, name ) ) )
 		return
 	elseif not data then
-		print( Format( "Parse error in %s %s definition JSON", id, Format( path, name ) ) )
+		print( Format( "MPLR: Parse error in %s %s definition JSON", id, Format( path, name ) ) )
 		return
 	end
 	return data
@@ -1103,24 +1110,16 @@ end
 
 function UF.UpdateSwitchEntities()
 	if Metrostroi.IgnoreEntityUpdates then return end
-	UF.SwitchesForNode = {}
-	UF.SwitchEntitiesByID = {}
 	local entities = ents.FindByClass( "gmod_track_uf_switch" )
 	for _, v in pairs( entities ) do
-		local pos = Metrostroi.GetPositionOnTrack( v:GetPos(), v:GetAngles() - Angle( 0, 90, 0 ) )[ 1 ]
-		if pos then
-			if not v.Name or v.Name == "" then
-				-- pos.path.id.."/"..pos.node1.id
-				if not UF.SwitchEntitiesByID[ pos.path.id ] then UF.SwitchEntitiesByID[ pos.path.id ] = {} end
-				UF.SwitchEntitiesByID[ pos.path.id ][ pos.node1.id ] = v
-			end
-
-			UF.SwitchesForNode[ pos.node1 ] = UF.SwitchesForNode[ pos.node1 ] or {}
-			table.insert( UF.SwitchesForNode[ pos.node1 ], v )
-			v.TrackPosition = pos -- FIXME: check that one switch belongs to one track
+		local pos = Metrostroi.GetPositionOnTrack( v:GetPos(), v:GetAngles() )[ 1 ]
+		if v.ID then
+			UF.SwitchEntitiesByID[ v.ID ] = v
+		else
+			ErrorNoHaltWithStack( "MPLR: Switch entity ", v, " at position ", v:GetPos(), " has no ID assigned!" )
 		end
 
-		if v.Name and v.Name ~= "" then UF.SwitchEntitiesByID[ v.Name ] = v end
+		if pos.node1 then UF.SwitchEntitiesByNode[ pos.node1 ] = v end
 	end
 end
 
