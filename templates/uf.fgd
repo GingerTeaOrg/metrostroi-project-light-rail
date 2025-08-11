@@ -91,7 +91,7 @@
 		"left" : "Left"
 		"right" : "Right"
 	]
-	VerticalOffset(float) : "Vertical Offset" : 0.0 : "How much to offset the clientside models by vertically in-game. Do not place the entity in hammer anywhere but in the middle and on the surface of the track!"
-	HorizontalOffset(float) : "Horizontal Offset" : 0.0 : "How much to offset the clientside models by horizontally in-game. Do not place the entity in hammer anywhere but in the middle and on the surface of the track!"
-	VerticalOffset(float) : "Vertical Offset" : 0.0 : "How much to rotate the clientside models by in-game. Do not rotate the entity in Hammer except facing forwards or backwards on the track!"
+	VerticalOffset(float) : "Vertical Offset" : 0 : "How much to offset the clientside models by vertically in-game. Do not place the entity in hammer anywhere but in the middle and on the surface of the track!"
+	HorizontalOffset(float) : "Horizontal Offset" : 0 : "How much to offset the clientside models by horizontally in-game. Do not place the entity in hammer anywhere but in the middle and on the surface of the track!"
+	VerticalOffset(float) : "Vertical Offset" : 0 : "How much to rotate the clientside models by in-game. Do not rotate the entity in Hammer except facing forwards or backwards on the track!"
 ]
