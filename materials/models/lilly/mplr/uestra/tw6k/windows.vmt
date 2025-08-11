@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/lilly/mplr/uestra/tw6k/windows"
+	"$envmapmask" "models/lilly/mplr/uestra/tw6k/windows-env"
+	"$surfaceprop" "Glass"
+	"$alphatest" 1
+}
