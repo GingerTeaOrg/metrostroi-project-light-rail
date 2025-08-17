@@ -10,13 +10,12 @@ function ENT:Initialize()
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
 	self:SetColor( Color( 0, 0, 0, 0 ) )
 	self:DrawShadow( false )
-	print( self:GetNW2String( "Type", "speed_40" ) )
+	--print( self:GetNW2String( "Type", "speed_40" ) )
 	local pos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )
 	self.TrackPosition = pos[ 1 ]
 	self.Forward = self.TrackPosition.forward
 	self.Node = self.TrackPosition.node1
-	if self.VMF and self.VMF.Type then self:SetNW2String( "Type", self.VMF.Type ) end
-	self.Type = self.Type or self.VMF and self.VMF.Type or self:GetNW2String( "Type", "speed_40" )
+	self.Type = self:GetNW2String( "Type", self.VMF and self.VMF.Type )
 	if string.match( self.Type, "speed", 1 ) then
 		self.NextSign = self:FindNextSpeedSign()
 		self:SetSpeedLimitSection()
@@ -82,25 +81,16 @@ end
 
 util.AddNetworkString( "RespawnSign" )
 function ENT:Think()
-	local rF = RecipientFilter( false ) -- TODO: test if this needs to be reliable or unreliable
-	local pvsTab = next( pvsTab ) and pvsTab or {}
-	local plyTab = player.GetAll()
-	for _, ply in ipairs( plyTab ) do
-		pvsTab[ ply ] = self:TestPVS( ply )
-	end
-
-	for ply, bool in pairs( pvsTab ) do
-		if bool then rF:AddPlayer( ply ) end
-	end
-
+	local pos = self:GetPos()
 	net.Start( "RespawnSign" )
 	net.WriteEntity( self )
 	net.WriteBool( true )
-	net.Send( rF )
+	net.SendPVS( pos )
 	self:NextThink( CurTime() + 1 )
 end
 
 function ENT:OnRemove()
+	if true then return end
 	local k_v = {}
 	if string.match( self.Type, "speed", 1 ) then
 		if forward then

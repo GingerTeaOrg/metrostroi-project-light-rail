@@ -15,7 +15,11 @@ function ENT:OnRemove()
 	if IsValid( self.Sign ) then self.Sign:Remove() end
 end
 
-net.Receive( "RespawnSign", function() ENT.InPVS = net.ReadBool() end )
+net.Receive( "RespawnSign", function()
+	ent = net.ReadEntity()
+	ent.InPVS = net.ReadBool()
+end )
+
 function ENT:Think()
 	if not IsValid( self.Sign ) and self.InPVS then
 		self.Sign:Remove()
