@@ -6,18 +6,17 @@ util.AddNetworkString"uf-signal-state"
 function ENT:Initialize()
 	self:SetModel( "models/lilly/mplr/signals/trafficlight/trafficlight_pole.mdl" )
 	--self:PhysicsInit( SOLID_VPHYSICS )
-	self.BlockMode = self.VMF and self.VMF.Blockmode > 0 or self:GetNW2Bool( "BlockMode", false )
-	self.Lenses = self.DefaultLenses
+	self.BlockMode = self.VMF and self.VMF.Blockmode > 0 and self.VMF.Blockmode > 0 or self:GetNW2Bool( "BlockMode", false )
+	self.Lenses = self.Lenses or self.DefaultLenses
 	self.Columns = self.VMF and self.VMF.Columns or self:GetNW2Int( "Columns", 1 )
 	self.TrackPosition = UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
-	self.Aspect = {
-		[ 1 ] = "F1",
-		[ 2 ] = "F4",
-		[ 3 ] = "A1_F0"
-	}
+	self.Aspect = {}
+	for i = 1, self.Columns do
+		self.Aspect[ i ] = "F0"
+	end
 
-	self.Name1 = self.Name1 or self:GetNW2Bool( "Name1", "ER" )
-	self.Name2 = self.Name2 or self:GetNW2Bool( "Name2", "ER" )
+	self.Name1 = self:GetNW2String( "Name1", self.Name1 or "ER" )
+	self.Name2 = self:GetNW2String( "Name2", self.Name2 or "ER" )
 	self.Name = self.Name1 .. "/" .. self.Name2
 	self.Node = self.TrackPosition.node1
 	self.Forward = self.TrackPosition.forward
@@ -26,6 +25,7 @@ function ENT:Initialize()
 	self.SimulateFailedToRegister = false
 	self.NextSwitch = -1
 	util.AddNetworkString( "UpdateOvergroundSignal" )
+	self:SendLensUpdate()
 end
 
 function ENT:SendLensUpdate()
@@ -144,11 +144,16 @@ function ENT:AdditionalAspect( column )
 end
 
 function ENT:OnSightSignalling()
+	-- Ensure NextSwitch is set or found
 	self.NextSwitch = type( self.NextSwitch ) ~= "number" and self.NextSwitch or self:FindNextSwitch( self.Node )
 	if not self.NextSwitch or not IsValid( self.NextSwitch ) then return end
+	-- Determine orientation of the switch ("alt" vs "main")
 	local switchOrientationLeft = self.NextSwitch.Left == "alt" or "main"
+	-- Check if switch is thrown into alternate track
 	local switchStatusAlternate = self.NextSwitch.AlternateTrack == true
+	-- Decide actual direction ("left" or "right") based on orientation and status
 	local switchPointsTo = switchOrientationLeft == "alt" and switchStatusAlternate and "left" or switchOrientationLeft == "main" and not switchStatusAlternate and "left" or "right"
+	-- Mapping between F-signal aspects and directions
 	local signalsToDirections = {
 		[ "F1" ] = "left_right",
 		[ "F2" ] = "right",
@@ -156,22 +161,43 @@ function ENT:OnSightSignalling()
 		[ "F5" ] = "left_right"
 	}
 
+	--local multiDirection = false
+	-- Iterate through all signal columns
 	for column, lensTab in ipairs( self.Lenses ) do
-		local aAspect = self:AdditionalAspect( column )
+		-- Optional additional aspect (suffix)
+		local aAspect = self:AdditionalAspect( tonumber( column, 10 ) )
+		-- Iterate through lenses in this column
 		for lens in pairs( lensTab ) do
+			-- Process only recognized lenses
 			if signalsToDirections[ lens ] then
 				if lens ~= "F1" then
+					-- F2, F3, F5: Aspect depends on switch position match
 					local switchToAspect = string.find( signalsToDirections[ lens ], switchPointsTo ) and lens or "F0"
-					--print( signalsToDirections[ lens ] )
-					--print( switchToAspect )
 					if switchToAspect then self.Aspect[ column ] = switchToAspect end
-					--print( lens, self.Aspect[ column ], column, switchToAspect )
 				else
-					local switchToAspect = ( switchPointsTo == "left" and switchOrientationLeft == "main" or switchPointsTo == "right" and switchOrientationLeft == "alt" ) and "F1" or "F0"
+					local switchToAspect
+					if self.Columns > 1 then
+						if ( switchPointsTo == "left" and switchOrientationLeft == "main" ) or ( switchPointsTo == "right" and switchOrientationLeft == "alt" ) then
+							switchToAspect = "F1"
+						else
+							print( "halt" )
+							switchToAspect = "F0"
+						end
+					else
+						if switchPointsTo == "right" and switchOrientationLeft == "main" then
+							switchToAspect = "F2"
+						elseif switchPointsTo == "left" and switchOrientationLeft == "alt" then
+							switchToAspect = "F3"
+						elseif switchPointsTo == "left" and switchOrientationLeft == "main" then
+							switchToAspect = "F1"
+						end
+					end
+
 					self.Aspect[ column ] = switchToAspect
 				end
 			end
 
+			-- Apply additional aspect modifier if present
 			if aAspect then self.Aspect[ column ] = self.Aspect[ column ] .. "_" .. aAspect end
 		end
 	end
