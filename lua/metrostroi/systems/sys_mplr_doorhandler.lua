@@ -163,7 +163,7 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 	local idle = self.ReverserA == 1 or self.ReverserB == 1
 	local stepmode = self.StepMode
 	local toggle = self.Train.DoorsUnlockToggle
-	print( "left", right )
+	--print( "left", right )
 	if p.UnlockDoors > 0 and self.DoorUnlockState == 0 then
 		self.DoorsPreviouslyUnlocked = true
 		if left then
@@ -174,7 +174,7 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 
 		self.DoorsCloseTriggered = false
 	elseif ( not toggle and p.DoorsLock > 0 or toggle and p.UnlockDoors == 0 ) and self.DoorUnlockState > 0 then
-		print( "LOCKING" )
+		--print( "LOCKING" )
 		self.DoorUnlockState = 0
 		self.DoorsCloseTriggered = true
 	end
@@ -296,7 +296,7 @@ function TRAIN_SYSTEM:StepHandler( side, open, dT )
 	local function updateStepStates( stepStates, side, open, factor )
 		local doorRandomness = side == "right" and self.DoorRandomnessRight or self.DoorRandomnessLeft
 		for i in pairs( doorRandomness ) do
-			print( i, "random" )
+			--print( i, "random" )
 			if open then
 				if stepStates[ i ] < 1 and doorRandomness[ i ] == 3 then stepStates[ i ] = stepStates[ i ] + factor end
 			else
@@ -364,9 +364,9 @@ function TRAIN_SYSTEM:Doors( unlock, left, right, door1, idleunlock, stepmode, d
 		self.DoorLockMoment = CurTime()
 	end
 
-	print( "TEST", unlock )
+	--print( "TEST", unlock )
 	local IRGates = self:IRIS( true )
-	PrintTable( IRGates )
+	--PrintTable( IRGates )
 	-- Initialize previousUnlock outside the loop to maintain state across iterations
 	local previousUnlock = false
 	-- Determine if the alarm for closed doors should be triggered
@@ -392,7 +392,7 @@ function TRAIN_SYSTEM:Doors( unlock, left, right, door1, idleunlock, stepmode, d
 
 		self:UnlockDoors( right, left, IRGates, dT )
 	elseif not unlock and not door1 then
-		print( "LOCKING!!" )
+		--print( "LOCKING!!" )
 		self:LockDoors( right, left, IRGates, dT, lockSignalMoment )
 		self.DoorRandomnessCalculated = false
 	elseif idleunlock then
@@ -410,7 +410,7 @@ function TRAIN_SYSTEM:UnlockDoors( right, left, IRGates, dT )
 		local tabRight = self.DoorRandomnessRight
 		local tabLeft = self.DoorRandomnessLeft
 		local doorStatesLeft = self.DoorStatesLeft
-		PrintTable( self.DoorStatesLeft )
+		--PrintTable( self.DoorStatesLeft )
 		local doorStatesRight = self.DoorStatesRight
 		if next( tabRight ) and right then
 			for i = 1, #tabRight do
@@ -426,10 +426,10 @@ function TRAIN_SYSTEM:UnlockDoors( right, left, IRGates, dT )
 			end
 		end
 
-		PrintTable( tabLeft )
+		--PrintTable( tabLeft )
 		if next( tabLeft ) and left then
 			for i in pairs( tabLeft ) do
-				print( "i =", i, tabLeft[ i ], doorStatesLeft[ i ] )
+				--print( "i =", i, tabLeft[ i ], doorStatesLeft[ i ] )
 				if tabLeft[ i ] == 3 and doorStatesLeft[ i ] < 1 and not IRGates[ i ] then
 					if self.StepMode and self.StepMode < 1 then --no steps, open immediately
 						doorStatesLeft[ i ] = math.Clamp( doorStatesLeft[ i ] + 0.55 * dT, 0, 1 )
@@ -460,7 +460,7 @@ function TRAIN_SYSTEM:UnlockDoors( right, left, IRGates, dT )
 end
 
 function TRAIN_SYSTEM:LockDoors( right, left, IRGates, dT )
-	print( "locking" )
+	--print( "locking" )
 	local closeMoments = right and self.DoorCloseMomentsRight or self.DoorCloseMomentsLeft
 	local function DecrementDoorStates( doorStates, lockSignalMoment, closeMoments, IRGates, right, dT )
 		local stuck, stuckWhich = self:DoorStuck()

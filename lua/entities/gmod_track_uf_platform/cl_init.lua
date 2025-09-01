@@ -150,7 +150,7 @@ end
 -- Think loop that manages clientside models
 --------------------------------------------------------------------------------
 function ENT:Think()
-    self.PrevTime = self.PrevTime or CurTime()
+    self.PrevTime = self.PrevTime or RealFrameTime()
     self.DeltaTime = CurTime() - self.PrevTime
     self.PrevTime = CurTime()
     if self:IsDormant() then
@@ -331,8 +331,8 @@ function ENT:Think()
 
         -- Move pedestrian
         local threshold = 16
-        local speed = 1024
-        if distance > 1024 then speed = 256 end
+        local speed = 256
+        if distance > 1024 then speed = 512 end
         v.ent:SetPos( v.ent:GetPos() + targetDir * math.min( threshold, speed * self.DeltaTime ) )
         -- Rotate pedestrian
         v.ent:SetAngles( targetDir:Angle() + Angle( 0, 180, 0 ) )
@@ -372,7 +372,7 @@ end
 -- Make sure entity is not drawn
 --------------------------------------------------------------------------------
 function ENT:Draw()
-    if GetConVarNumber( "metrostroi_drawsignaldebug" ) ~= 1 then return end
+    if GetConVar( "metrostroi_drawsignaldebug" ):GetInt() ~= 1 then return end
     local platformStart = self:GetNW2Vector( "PlatformStart", false )
     local platformEnd = self:GetNW2Vector( "PlatformEnd", false )
     local pos = self:GetPos() + Vector( 0, 0, 50 )
