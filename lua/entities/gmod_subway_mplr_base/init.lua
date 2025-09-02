@@ -1934,7 +1934,7 @@ end
 --------------------------------------------------------------------------------
 function ENT:SpawnFunction( ply, tr, className, rotate, func )
     --MaxTrains limit
-    if self.ClassName ~= "gmod_subway_uf_base" and not self.NoTrain then
+    if self.ClassName ~= "gmod_subway_mplr_base" and not self.NoTrain then
         local Limit1 = math.min( 2, C_MaxWagons:GetInt() ) * C_MaxTrainsOnPly:GetInt() - 1
         local Limit2 = math.max( 0, C_MaxWagons:GetInt() - 2 ) * C_MaxTrainsOnPly:GetInt() - 1
         if UF.TrainCount() > C_MaxTrains:GetInt() * C_MaxWagons:GetInt() - 1 then
