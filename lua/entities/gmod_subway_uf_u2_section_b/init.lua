@@ -606,7 +606,7 @@ function ENT:OnButtonPress( button, ply )
 	end
 
 	if button == "DeadmanSet" then
-		self.SectionA.DeadmanUF.IsPressedB = true
+		self.SectionA.DeadmanMPLR.IsPressedB = true
 		if self.SectionA:ReadTrainWire( 6 ) > 0 then self.SectionA:WriteTrainWire( 12, 1 ) end
 		------print("DeadmanPressedYes")
 	end
@@ -1017,7 +1017,7 @@ function ENT:OnButtonRelease( button, ply )
 	if button == "BatteryToggle" then self:SetPackedBool( "FlickBatterySwitchOn", false ) end
 	if button == "BatteryDisableToggle" then self:SetPackedBool( "FlickBatterySwitchOff", false ) end
 	if button == "DeadmanSet" then
-		self.SectionA.DeadmanUF.IsPressedB = false
+		self.SectionA.DeadmanMPLR.IsPressedB = false
 		if self.SectionA:ReadTrainWire( 6 ) > 0 then self.SectionA:WriteTrainWire( 12, 0 ) end
 		------print("DeadmanPressedNo")
 	end

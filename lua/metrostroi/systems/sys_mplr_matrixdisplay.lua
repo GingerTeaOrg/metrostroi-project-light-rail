@@ -39,7 +39,7 @@ function TRAIN_SYSTEM:Display( msg )
     local maxRows = #self.Grid
     local maxCols = #self.Grid[ 1 ] -- assuming the grid is a rectangle
     -- Precompute the width of an empty character for spacing calculations
-    local emptyCharWidth = #UF.charMatrixSmallThin[ "EMPTY" ][ 1 ]
+    local emptyCharWidth = #MPLR.charMatrixSmallThin[ "EMPTY" ][ 1 ]
     -- If the new message is different from the old one, clear the grid
     if msg ~= oldmsg then
         -- Optimized grid clearing using nested loop unrolling
@@ -70,13 +70,13 @@ function TRAIN_SYSTEM:Display( msg )
             local char = str1:sub( i, i )
             -- Determine the character matrix based on the font
             if font == "SmallThin" then
-                charMatrix = UF.charMatrixSmallThin[ char ]
+                charMatrix = MPLR.charMatrixSmallThin[ char ]
             elseif font == "SmallBold" then
-                charMatrix = UF.charMatrixSmallBold[ char ]
+                charMatrix = MPLR.charMatrixSmallBold[ char ]
             elseif font == "Symbols" then
-                charMatrix = UF.charMatrixSymbols[ char ]
+                charMatrix = MPLR.charMatrixSymbols[ char ]
             elseif font == "Headline" then
-                charMatrix = UF.charMatrixHeadline[ char ]
+                charMatrix = MPLR.charMatrixHeadline[ char ]
             else
                 charMatrix = nil
                 Error( "Character not found!!!" )
@@ -86,13 +86,13 @@ function TRAIN_SYSTEM:Display( msg )
             if char == " " then
                 -- Use the width of the space character defined in the font's character matrix
                 if font == "SmallThin" then
-                    charWidth = #UF.charMatrixSmallThin[ " " ][ 1 ]
+                    charWidth = #MPLR.charMatrixSmallThin[ " " ][ 1 ]
                 elseif font == "SmallBold" then
-                    charWidth = #UF.charMatrixSmallBold[ " " ][ 1 ]
+                    charWidth = #MPLR.charMatrixSmallBold[ " " ][ 1 ]
                 elseif font == "Headline" then
-                    charWidth = #UF.charMatrixHeadline[ "SPACE" ][ 1 ]
+                    charWidth = #MPLR.charMatrixHeadline[ "SPACE" ][ 1 ]
                 elseif font == "Symbols" then
-                    charWidth = #UF.charMatrixSymbols[ " " ][ 1 ]
+                    charWidth = #MPLR.charMatrixSymbols[ " " ][ 1 ]
                 end
 
                 -- Simply increase the cumulativeWidth by the width of the space character

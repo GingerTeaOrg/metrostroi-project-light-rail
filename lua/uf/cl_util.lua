@@ -1,4 +1,4 @@
-function UF.PositionFromPanel( panel, button_id_or_vec, z, x, y, train )
+function MPLR.PositionFromPanel( panel, button_id_or_vec, z, x, y, train )
 	local self = train or ENT
 	local panel = self.ButtonMapMPLR[ panel ]
 	if not panel then return Vector( 0, 0, 0 ) end
@@ -25,7 +25,7 @@ function UF.PositionFromPanel( panel, button_id_or_vec, z, x, y, train )
 	return panel.pos + vec * panel.scale
 end
 
-function UF.AngleFromPanel( panel, ang, train )
+function MPLR.AngleFromPanel( panel, ang, train )
 	local self = train or ENT
 	local panel = self.ButtonMapMPLR[ panel ]
 	if not panel then return Vector( 0, 0, 0 ) end
@@ -40,8 +40,8 @@ function UF.AngleFromPanel( panel, ang, train )
 	return true_ang
 end
 
-UF.PrecacheModels = UF.PrecacheModels or {}
-function UF.GenerateClientProps()
+MPLR.PrecacheModels = MPLR.PrecacheModels or {}
+function MPLR.GenerateClientProps()
 	local self = ENT
 	if not self.AutoAnimNames then self.AutoAnimNames = {} end
 	local ret = "self.table = {\n"
@@ -106,8 +106,8 @@ function UF.GenerateClientProps()
 					table.insert( panel.props, name )
 					self.ClientProps[ name ] = {
 						model = config.model or "models/metrostroi/81-717/button07.mdl",
-						pos = UF.PositionFromPanel( id, config.pos or buttons.ID, config.z or 0.2, config.x or 0, config.y or 0 ),
-						ang = UF.AngleFromPanel( id, config.ang ),
+						pos = MPLR.PositionFromPanel( id, config.pos or buttons.ID, config.z or 0.2, config.x or 0, config.y or 0 ),
+						ang = MPLR.AngleFromPanel( id, config.ang ),
 						color = config.color,
 						colora = config.colora,
 						skin = config.skin or 0,
@@ -231,8 +231,8 @@ function UF.GenerateClientProps()
 						table.insert( panel.props, pname )
 						self.ClientProps[ pname ] = {
 							model = pconfig.model,
-							pos = UF.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( pconfig.z or 0.2 ), ( config.x or 0 ) + ( pconfig.x or 0 ), ( config.y or 0 ) + ( pconfig.y or 0 ) ),
-							ang = UF.AngleFromPanel( id, pconfig.ang or config.ang ),
+							pos = MPLR.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( pconfig.z or 0.2 ), ( config.x or 0 ) + ( pconfig.x or 0 ), ( config.y or 0 ) + ( pconfig.y or 0 ) ),
+							ang = MPLR.AngleFromPanel( id, pconfig.ang or config.ang ),
 							color = pconfig.color or pconfig.color,
 							skin = pconfig.skin or config.skin or 0,
 							config = pconfig,
@@ -269,8 +269,8 @@ function UF.GenerateClientProps()
 					table.insert( panel.props, lname )
 					self.ClientProps[ lname ] = {
 						model = lconfig.model or "models/metrostroi/81-717/button07.mdl",
-						pos = UF.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( lconfig.z or 0.2 ), ( config.x or 0 ) + ( lconfig.x or 0 ), ( config.y or 0 ) + ( lconfig.y or 0 ) ),
-						ang = UF.AngleFromPanel( id, lconfig.ang or config.ang ),
+						pos = MPLR.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( lconfig.z or 0.2 ), ( config.x or 0 ) + ( lconfig.x or 0 ), ( config.y or 0 ) + ( lconfig.y or 0 ) ),
+						ang = MPLR.AngleFromPanel( id, lconfig.ang or config.ang ),
 						color = lconfig.color or config.color,
 						skin = lconfig.skin or config.skin or 0,
 						config = lconfig,
@@ -290,8 +290,8 @@ function UF.GenerateClientProps()
 					if lconfig.lcolor then
 						self.Lights[ lname ] = {
 							"headlight",
-							UF.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( lconfig.z or 0.2 ) + ( lconfig.lz or 0.2 ), ( config.x or 0 ) + ( lconfig.x or 0 ) + ( lconfig.lx or 0 ), ( config.y or 0 ) + ( lconfig.y or 0 ) + ( lconfig.ly or 0 ) ),
-							UF.AngleFromPanel( id, lconfig.lang or lconfig.ang or config.ang ) + Angle( 90, 0, 0 ),
+							MPLR.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( lconfig.z or 0.2 ) + ( lconfig.lz or 0.2 ), ( config.x or 0 ) + ( lconfig.x or 0 ) + ( lconfig.lx or 0 ), ( config.y or 0 ) + ( lconfig.y or 0 ) + ( lconfig.ly or 0 ) ),
+							MPLR.AngleFromPanel( id, lconfig.lang or lconfig.ang or config.ang ) + Angle( 90, 0, 0 ),
 							lconfig.lcolor,
 							farz = lconfig.lfar or 8,
 							nearz = lconfig.lnear or 1,
@@ -304,8 +304,8 @@ function UF.GenerateClientProps()
 						}
 						--[[self.ClientProps[lname.."TEST"] = {
 				model = "models/metrostroi_train/81-703/cabin_cran_334.mdl",
-				pos = UF.PositionFromPanel(id,config.pos or buttons.ID,(config.z or 0.2)+(lconfig.z or 0.2)+(lconfig.lz or 0.2),(config.x or 0)+(lconfig.x or 0)+(lconfig.lx or 0),(config.y or 0)+(lconfig.y or 0)+(lconfig.ly or 0)),
-				ang = UF.AngleFromPanel(id,lconfig.lang or lconfig.ang or config.ang)+Angle(-180,180,0),
+				pos = MPLR.PositionFromPanel(id,config.pos or buttons.ID,(config.z or 0.2)+(lconfig.z or 0.2)+(lconfig.lz or 0.2),(config.x or 0)+(lconfig.x or 0)+(lconfig.lx or 0),(config.y or 0)+(lconfig.y or 0)+(lconfig.ly or 0)),
+				ang = MPLR.AngleFromPanel(id,lconfig.lang or lconfig.ang or config.ang)+Angle(-180,180,0),
 				scale=0.1,
 			}]]
 						--[[table.insert(self.AutoAnims, function(ent)
@@ -344,8 +344,8 @@ function UF.GenerateClientProps()
 						table.insert( panel.props, lname )
 						self.ClientProps[ lname ] = {
 							model = lconfig.model or "models/metrostroi/81-717/button07.mdl",
-							pos = UF.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( lconfig.z or 0.2 ), ( config.x or 0 ) + ( lconfig.x or 0 ), ( config.y or 0 ) + ( lconfig.y or 0 ) ),
-							ang = UF.AngleFromPanel( id, lconfig.ang or config.ang ),
+							pos = MPLR.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( lconfig.z or 0.2 ), ( config.x or 0 ) + ( lconfig.x or 0 ), ( config.y or 0 ) + ( lconfig.y or 0 ) ),
+							ang = MPLR.AngleFromPanel( id, lconfig.ang or config.ang ),
 							color = lconfig.color or config.color,
 							skin = lconfig.skin or config.skin or 0,
 							config = lconfig,
@@ -385,8 +385,8 @@ function UF.GenerateClientProps()
 					local hideName = sconfig.hidden or config.lamp and name .. "_lamp" or name
 					self.Lights[ sconfig.lamp or name ] = {
 						sconfig.glow and "glow" or "light",
-						UF.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.5 ) + ( sconfig.z or 0.2 ), ( config.x or 0 ) + ( sconfig.x or 0 ), ( config.y or 0 ) + ( sconfig.y or 0 ) ),
-						UF.AngleFromPanel( id, sconfig.ang or config.ang ) + Angle( 90, 0, 0 ),
+						MPLR.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.5 ) + ( sconfig.z or 0.2 ), ( config.x or 0 ) + ( sconfig.x or 0 ), ( config.y or 0 ) + ( sconfig.y or 0 ) ),
+						MPLR.AngleFromPanel( id, sconfig.ang or config.ang ) + Angle( 90, 0, 0 ),
 						sconfig.color or sconfig.color,
 						brightness = sconfig.bright,
 						texture = sconfig.texture or "sprites/light_glow02",
@@ -442,8 +442,8 @@ function UF.GenerateClientProps()
 						table.insert( panel.props, aname )
 						self.ClientProps[ aname ] = {
 							model = aconfig.model or "models/metrostroi/81-717/button07.mdl",
-							pos = UF.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( aconfig.z or 0.2 ), ( config.x or 0 ) + ( aconfig.x or 0 ), ( config.y or 0 ) + ( aconfig.y or 0 ) ),
-							ang = UF.AngleFromPanel( id, aconfig.ang or config.ang ),
+							pos = MPLR.PositionFromPanel( id, config.pos or buttons.ID, ( config.z or 0.2 ) + ( aconfig.z or 0.2 ), ( config.x or 0 ) + ( aconfig.x or 0 ), ( config.y or 0 ) + ( aconfig.y or 0 ) ),
+							ang = MPLR.AngleFromPanel( id, aconfig.ang or config.ang ),
 							color = aconfig.color or config.color,
 							colora = aconfig.colora or config.colora,
 							skin = aconfig.skin or config.skin or 0,
@@ -465,7 +465,7 @@ function UF.GenerateClientProps()
 
 	for k, v in pairs( self.ClientProps ) do
 		if not v.model then continue end
-		UF.PrecacheModels[ v.model ] = true
+		MPLR.PrecacheModels[ v.model ] = true
 	end
 
 	for k, v in pairs( self.Lights or {} ) do
@@ -483,23 +483,23 @@ function UF.GenerateClientProps()
 	--SetClipboardText(ret)
 end
 
-UF.SpriteCache1 = UF.SpriteCache1 or {}
-UF.SpriteCache2 = UF.SpriteCache2 or {}
-function UF.MakeSpriteTexture( path, isSprite )
+MPLR.SpriteCache1 = MPLR.SpriteCache1 or {}
+MPLR.SpriteCache2 = MPLR.SpriteCache2 or {}
+function MPLR.MakeSpriteTexture( path, isSprite )
 	if isSprite then
-		if UF.SpriteCache1[ path ] then return UF.SpriteCache1[ path ] end
+		if MPLR.SpriteCache1[ path ] then return MPLR.SpriteCache1[ path ] end
 		matSprite[ "$basetexture" ] = path
-		UF.SpriteCache1[ path ] = CreateMaterial( path .. ":sprite", "Sprite", matSprite )
-		return UF.SpriteCache1[ path ]
+		MPLR.SpriteCache1[ path ] = CreateMaterial( path .. ":sprite", "Sprite", matSprite )
+		return MPLR.SpriteCache1[ path ]
 	else
-		if UF.SpriteCache1[ path ] then return UF.SpriteCache1[ path ] end
+		if MPLR.SpriteCache1[ path ] then return MPLR.SpriteCache1[ path ] end
 		matUnlit[ "$basetexture" ] = path
-		UF.SpriteCache2[ path ] = CreateMaterial( path .. ":spriteug", "UnlitGeneric", matUnlit )
-		return UF.SpriteCache2[ path ]
+		MPLR.SpriteCache2[ path ] = CreateMaterial( path .. ":spriteug", "UnlitGeneric", matUnlit )
+		return MPLR.SpriteCache2[ path ]
 	end
 end
 
-function UF.CheckKurs( Linie, ply, arg )
+function MPLR.CheckKurs( Linie, ply, arg )
 	if not arg then arg = 0.0 end
 	net.Start( "RBLTriggerClientRequest" )
 	net.WriteFloat( Linie )
@@ -516,7 +516,7 @@ net.Receive(
 		local hasArgument = net.ReadBool()
 		if not hasArgument then
 			local tab = net.ReadTable( false )
-			UF.PrintValuesToChat( tab, ply )
+			MPLR.PrintValuesToChat( tab, ply )
 		else
 			local alreadyTaken = net.ReadBool()
 			if alreadyTaken then
@@ -528,7 +528,7 @@ net.Receive(
 	end
 )
 
-function UF.PrintValuesToChat( t, ply )
+function MPLR.PrintValuesToChat( t, ply )
 	if #t > 5 then
 		ply:PrintMessage( HUD_PRINTTALK, "The table is too long. Please enable the developer console to see the output." )
 		for _, v in pairs( t ) do
@@ -544,23 +544,24 @@ end
 -- format: multiline
 hook.Add(
 	"OnPlayerChat", 
-	"MPLR_RBL", 
+	"MPLR_RBLCheck", 
 	function( ply, strText, bTeam, bDead )
 		local response = ""
-		if bDead then return end
+		if bDead then return true end
 		strText = string.lower( strText )
 		local command, command2 = "!mplr_rbl", "/mplr_rbl"
-		local notSilent = not string.match( string.sub( strText, 1, 1 ), "/" )
+		local Silent = string.match( string.sub( strText, 1, 1 ), "/" )
 		if not string.match( strText, command ) and not string.match( strText, command2 ) then return end
 		local message = string.sub( strText, #command + 1, #strText )
+		print( message )
 		local line = tonumber( message, 10 )
-		UF.CheckKurs( line, ply, arg )
-		return not notSilent
+		MPLR.CheckKurs( line, ply, arg )
+		return Silent
 	end
 )
 
 -- format: multiline
-UF.charMatrixSmallThin = {
+MPLR.charMatrixSmallThin = {
 	-- format: multiline
 	[ "EMPTY" ] = {
 		"0",
@@ -1235,7 +1236,7 @@ UF.charMatrixSmallThin = {
 }
 
 -- format: multiline
-UF.charMatrixSmallBold = {
+MPLR.charMatrixSmallBold = {
 	-- format: multiline
 	[ "EMPTY" ] = {
 		"0",
@@ -1790,7 +1791,7 @@ UF.charMatrixSmallBold = {
 }
 
 -- format: multiline
-UF.charMatrixSmallBold = {
+MPLR.charMatrixSmallBold = {
 	[ "EMPTY" ] = {
 		"0",
 		"0",
@@ -2344,7 +2345,7 @@ UF.charMatrixSmallBold = {
 }
 
 -- format: multiline
-UF.charMatrixHeadline = {
+MPLR.charMatrixHeadline = {
 	[ "EMPTY" ] = {
 		"0",
 		"0",
@@ -2997,7 +2998,7 @@ UF.charMatrixHeadline = {
 }
 
 -- format: multiline
-UF.charMatrixSymbols = {
+MPLR.charMatrixSymbols = {
 	-- format: multiline
 	[ "i" ] = {
 		"00111111100",

@@ -1,16 +1,16 @@
-function UF.AddU2Rollsigns( name, lines )
+function MPLR.AddU2Rollsigns( name, lines )
     if not name or not lines then return end
-    for k, v in pairs( UF.U2Rollsigns ) do
+    for k, v in pairs( MPLR.U2Rollsigns ) do
         if v.name == name then
-            UF.U2Rollsigns[ k ] = lines
-            UF.U2Rollsigns[ k ].name = name
+            MPLR.U2Rollsigns[ k ] = lines
+            MPLR.U2Rollsigns[ k ].name = name
             print( "Light Rail: Reloaded \"" .. name .. "\" U2 Rollsigns." )
             return
         end
     end
 
-    local id = table.insert( UF.U2Rollsigns, lines )
-    UF.U2Rollsigns[ id ].name = name
+    local id = table.insert( MPLR.U2Rollsigns, lines )
+    MPLR.U2Rollsigns[ id ].name = name
     print( "Light Rail: Loaded \"" .. name .. "\" U2 Rollsigns." )
 end
 

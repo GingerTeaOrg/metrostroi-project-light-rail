@@ -121,10 +121,10 @@ function TRAIN_SYSTEM:Initialize()
 	self.Menu = 4 -- which menu are we in
 	self.Announce = false
 	self.AutomaticAnnouncementDone = true
-	self.LineTable = UF.IBISLines[ self.Train:GetNW2Int( "IBIS:Lines", 1 ) ]
-	self.RouteTable = UF.IBISRoutes[ self.Train:GetNW2Int( "IBIS:Routes", 1 ) ]
-	self.DestinationTable = UF.IBISDestinations[ self.Train:GetNW2Int( "IBIS:Destinations", 1 ) ]
-	self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[ self.Train:GetNW2Int( "IBIS:ServiceA", 1 ) ]
+	self.LineTable = MPLR.IBISLines[ self.Train:GetNW2Int( "IBIS:Lines", 1 ) ]
+	self.RouteTable = MPLR.IBISRoutes[ self.Train:GetNW2Int( "IBIS:Routes", 1 ) ]
+	self.DestinationTable = MPLR.IBISDestinations[ self.Train:GetNW2Int( "IBIS:Destinations", 1 ) ]
+	self.ServiceAnnouncements = MPLR.SpecialAnnouncementsIBIS[ self.Train:GetNW2Int( "IBIS:ServiceA", 1 ) ]
 	self.LineLength = self:GetLineLength()
 	self.Debounce = {}
 	for _, v in ipairs( self.TriggerNames ) do
@@ -521,10 +521,10 @@ function TRAIN_SYSTEM:Think()
 	self.PrevTime = CurTime()
 	local Train = self.Train
 	-- if not Train.BatteryOn or not Train.CircuitBreakerOn or Train:RearainWire(7) < 1 then return end -- why run anything when the train is off? fss.
-	self.RouteTable = UF.IBISRoutes[ self.Train:GetNW2Int( "IBIS:Routes", 1 ) ]
-	self.DestinationTable = UF.IBISDestinations[ self.Train:GetNW2Int( "IBIS:Destinations", 1 ) ]
-	self.ServiceAnnouncements = UF.SpecialAnnouncementsIBIS[ self.Train:GetNW2Int( "IBIS:ServiceA", 1 ) ]
-	self.LineTable = UF.IBISLines[ self.Train:GetNW2Int( "IBIS:Lines", 1 ) ]
+	self.RouteTable = MPLR.IBISRoutes[ self.Train:GetNW2Int( "IBIS:Routes", 1 ) ]
+	self.DestinationTable = MPLR.IBISDestinations[ self.Train:GetNW2Int( "IBIS:Destinations", 1 ) ]
+	self.ServiceAnnouncements = MPLR.SpecialAnnouncementsIBIS[ self.Train:GetNW2Int( "IBIS:ServiceA", 1 ) ]
+	self.LineTable = MPLR.IBISLines[ self.Train:GetNW2Int( "IBIS:Lines", 1 ) ]
 	self:UpdateState()
 	if self.PowerOn or Train:ReadTrainWire( 7 ) > 0 then self:CANBusRunner() end
 	if self.Train.SkinCategory == "U2h" then
@@ -783,7 +783,7 @@ function TRAIN_SYSTEM:Menu1()
 
 	self.Train:SetNW2String( "Prompt", prompt )
 	if self.State == 1 and self.Triggers[ "Enter" ] then
-		local registered = registered or UF.RegisterTrain( prompt, self.Train )
+		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered == true then
 			return true
 		elseif registered == "logout" then
@@ -802,7 +802,7 @@ function TRAIN_SYSTEM:Menu1()
 			return "fail"
 		end
 	elseif self.State == 2 and self.Triggers[ "Enter" ] then
-		local registered = registered or UF.RegisterTrain( prompt, self.Train )
+		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered then
 			self.Menu = 2
 			return true
@@ -984,8 +984,8 @@ function TRAIN_SYSTEM:Play( time )
 		line = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3
 	end
 
-	local commonFiles = UF.IBISCommonFiles[ self.Train:GetNW2Int( "IBIS:CommonFiles", 1 ) ]
-	local announcementScript = UF.IBISAnnouncementScript[ self.Train:GetNW2Int( "IBIS:AnnouncementScript", 1 ) ]
+	local commonFiles = MPLR.IBISCommonFiles[ self.Train:GetNW2Int( "IBIS:CommonFiles", 1 ) ]
+	local announcementScript = MPLR.IBISAnnouncementScript[ self.Train:GetNW2Int( "IBIS:AnnouncementScript", 1 ) ]
 	local temp = {}
 	for i = 1, #announcementScript do
 		if announcementScript[ i ] ~= "station" and type( commonFiles[ announcementScript[ i ] ][ 1 ] ) == "string" then
@@ -996,7 +996,7 @@ function TRAIN_SYSTEM:Play( time )
 			table.insert( message, i, temp )
 		elseif announcementScript[ i ] == "station" then
 			print( line )
-			temp = UF.IBISAnnouncementMetadata[ self.Train:GetNW2Int( "IBIS:Announcements", 1 ) ][ self.CurrentStation ][ line ][ self.Route ]
+			temp = MPLR.IBISAnnouncementMetadata[ self.Train:GetNW2Int( "IBIS:Announcements", 1 ) ][ self.CurrentStation ][ line ][ self.Route ]
 			if not temp then
 				print( "ANNOUNCEMENT CORRUPT" )
 				return
@@ -1053,7 +1053,7 @@ function TRAIN_SYSTEM:CANReceive( source, sourceid, target, targetid, textdata, 
 end
 
 function TRAIN_SYSTEM:AnnouncementProcessor()
-	local AnnouncementScript = UF.IBISAnnouncementScript[ self.Train:GetNW2Int( "IBIS:AnnouncementRoutine", 1 ) ]
+	local AnnouncementScript = MPLR.IBISAnnouncementScript[ self.Train:GetNW2Int( "IBIS:AnnouncementRoutine", 1 ) ]
 	local workingBuffer = {}
 	local ProcessedInput = {}
 	for i, v in pairs( AnnouncementScript ) do

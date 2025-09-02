@@ -1,0 +1,2 @@
+function ENT:Initialize()
+end

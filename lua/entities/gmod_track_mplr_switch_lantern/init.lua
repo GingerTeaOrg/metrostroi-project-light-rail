@@ -13,16 +13,16 @@ function ENT:Initialize()
 	self.YOffset = self:GetNW2Float( "Horizontal", self.VMF and tonumber( self.VMF.HorizontalOffset, 10 ) or 0 )
 	self.ZOffset = self:GetNW2Float( "Vertical", self.VMF and tonumber( self.VMF.VerticalOffset, 10 ) or 0 )
 	self.Rotation = self:GetNW2Float( "Rotation", self.VMF and tonumber( self.VMF.Rotation, 10 ) or 0 )
-	self.TrackPos = UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+	self.TrackPos = MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	self.Forward = not self.TrackPos.forward
 end
 
 local iter = 0
 function ENT:FindNextSwitch( node, iter )
 	local iter = iter and iter + 1 or 1
-	if iter >= 10 then return UF.SwitchEntitiesByNode[ self.TrackPos and self.TrackPos.node1 ] end
+	if iter >= 10 then return MPLR.SwitchEntitiesByNode[ self.TrackPos and self.TrackPos.node1 ] end
 	if not self.TrackPos or table.IsEmpty( self.TrackPos ) then
-		self.TrackPos = UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+		self.TrackPos = MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 		if not self.TrackPos then
 			print( "Track position could not be determined!" )
 			return
@@ -38,7 +38,7 @@ function ENT:FindNextSwitch( node, iter )
 
 	debugoverlay.Sphere( node.pos, 10, 5, Color( 255, 0, 0 ), true )
 	local nextNode = self.Forward and node.next or node.prev
-	local switchNode = UF.SwitchEntitiesByNode[ node ]
+	local switchNode = MPLR.SwitchEntitiesByNode[ node ]
 	if not switchNode then
 		print( self, "No switch found at current node. Moving", self.Forward and "forward" or "backward" )
 		return self:FindNextSwitch( nextNode, iter )

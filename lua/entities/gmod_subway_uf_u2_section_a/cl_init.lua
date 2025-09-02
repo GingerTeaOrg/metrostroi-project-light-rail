@@ -2039,7 +2039,7 @@ ENT.ButtonMapMPLR[ "Left" ] = {
 	}
 }
 
-ENT.RTMaterialUF = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
+ENT.RTMaterialMPLR = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
 	[ "$vertexcolor" ] = 0,
 	[ "$vertexalpha" ] = 1,
 	[ "$nolod" ] = 1
@@ -2050,9 +2050,9 @@ function ENT:Draw()
 end
 
 function ENT:DrawPost()
-	self.RTMaterialUF:SetTexture( "$basetexture", self.IBIS )
+	self.RTMaterialMPLR:SetTexture( "$basetexture", self.IBIS )
 	self:DrawOnPanel( "IBISScreen", function( ... )
-		surface.SetMaterial( self.RTMaterialUF )
+		surface.SetMaterial( self.RTMaterialMPLR )
 		surface.SetDrawColor( 0, 65, 11 )
 		surface.DrawTexturedRectRotated( 59, 16, 116, 25, 0 )
 	end )
@@ -2485,4 +2485,4 @@ function ENT:OnAnnouncer( volume )
 	return self:GetPackedBool( "AnnPlay" ) and volume or 0
 end
 
-UF.GenerateClientProps()
+MPLR.GenerateClientProps()

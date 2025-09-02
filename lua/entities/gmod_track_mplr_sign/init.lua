@@ -33,20 +33,20 @@ end
 
 function ENT:FindNextSpeedSign()
 	if not self.TrackPosition then return end
-	local sign = UF.ScanTrackForEntity( "gmod_track_mplr_sign", self.Node, false, self.Forward, nil, true, "Type", "speed", true )
-	local signal = UF.ScanTrackForEntity( "gmod_track_uf_signal", self.Node, false, self.Forward, nil, true, "Type", "speed", true )
+	local sign = MPLR.ScanTrackForEntity( "gmod_track_mplr_sign", self.Node, false, self.Forward, nil, true, "Type", "speed", true )
+	local signal = MPLR.ScanTrackForEntity( "gmod_track_uf_signal", self.Node, false, self.Forward, nil, true, "Type", "speed", true )
 	return sign or signal or nil
 end
 
 function ENT:FindNextBlockEndSign()
 	if not self.TrackPosition then return end
-	local sign = UF.ScanTrackForEntity( "gmod_track_mplr_sign", self.Node, self.TrackPosition.x, self.Forward, nil, true, "Type", "end_of_block_operation", true )
+	local sign = MPLR.ScanTrackForEntity( "gmod_track_mplr_sign", self.Node, self.TrackPosition.x, self.Forward, nil, true, "Type", "end_of_block_operation", true )
 	return IsValid( sign ) and sign or nil
 end
 
 function ENT:FindNextBlockStartSign()
 	if not self.TrackPosition then return end
-	local sign = UF.ScanTrackForEntity( "gmod_track_mplr_sign", self.Node, self.TrackPosition.x, self.Forward, nil, true, "Type", "start_of_block_operation", true )
+	local sign = MPLR.ScanTrackForEntity( "gmod_track_mplr_sign", self.Node, self.TrackPosition.x, self.Forward, nil, true, "Type", "start_of_block_operation", true )
 	return sign or nil
 end
 
@@ -75,7 +75,7 @@ function ENT:SetSpeedLimitSection()
 	if not self.NextSign then
 		self:RecursiveNodes( self.Node, self.Node.next, k_v ) --if there's no sign ahead, just write the speed restriction until the end
 	else
-		UF.WriteToNodeTable( self.Node, self.NextSign.Node, forward, k_v )
+		MPLR.WriteToNodeTable( self.Node, self.NextSign.Node, forward, k_v )
 	end
 end
 
@@ -140,7 +140,7 @@ function ENT:OpenBlockOperation()
 	if not self.NextSign then
 		self:RecursiveNodes( self.Node, self.Node.next, k_v ) --if there's no sign ahead, just write the info until the end
 	else
-		UF.WriteToNodeTable( self.Node, self.NextSign.Node, forward, k_v )
+		MPLR.WriteToNodeTable( self.Node, self.NextSign.Node, forward, k_v )
 	end
 end
 
@@ -155,7 +155,7 @@ function ENT:CloseBlockOperation()
 	if not self.NextSign then
 		self:RecursiveNodes( self.Node, self.Node.next, k_v ) --if there's no sign ahead, just write the info until the end
 	else
-		UF.WriteToNodeTable( self.Node, self.NextSign.Node, forward, k_v )
+		MPLR.WriteToNodeTable( self.Node, self.NextSign.Node, forward, k_v )
 	end
 end
 
@@ -170,7 +170,7 @@ function ENT:StopMarker()
 		return
 	end
 
-	local stationTab = UF.StationEntsByIndex[ station ]
+	local stationTab = MPLR.StationEntsByIndex[ station ]
 	if not next( stationTab ) then
 		print( "ERROR: STATION INDEX " .. station .. "NOT FOUND!!" )
 		return

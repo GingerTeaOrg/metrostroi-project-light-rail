@@ -16,6 +16,7 @@ end
 
 function ENT:Think()
     self.BaseClass.Think()
-    UF.UpdateSignalBlockOccupation()
+    --MPLR.UpdateSignalBlockOccupation()
     self:NextThink( CurTime() + 0.25 )
+    return true
 end

@@ -17,23 +17,23 @@ local function tableInit()
 	---- Where stations are is a vital piece of information for pathfinding and may allow for other enhancements further down the line (haha, down the line, geddit?).											    ----
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	UF.SignalEntitiesByNode = {} -- 		-- Query this table by entering a given node, get a signal entity returned if present
-	UF.SwitchEntitiesByNode = {} --			-- Query this table by entering a given node, get a switch entity returned if present
-	UF.SwitchEntitiesByID = {} --			-- Query this table by entering a given Switch ID number and get a switch returned
-	UF.SwitchPathIDsByDirection = {} -- 	-- This table saves the Path IDs that a given switch is sitting at related to their logical direction, in order to query which way it is pointing.
-	UF.SwitchBranches = {} --				-- Switch entities as corresponding to nodes that this switch branches off of
-	UF.Fahrstrassen = {} -- 				-- This table is a total list of a map's "Farhstraßen" (routes in English). 
-	UF.ConflictingFahrstrassen = {} --		-- This table is a list of Fahrstraßen and with which they conflict with. This table is queried in order to determine whether two active Fahrstraßen should result in one signal showing danger (H0 or F0) to let the other signal show (H1 or F1)
-	UF.ActiveFahrstrassen = {} -- 			-- This table notes which Fahrstraßen are currently active. This is important in cases such as one Fahrstraße being active and another being in conflict with the other, so we don't activate the latter conflicting one until the former Fahrstraße has been released.
-	UF.RequestedFahrstrassen = {} --			-- This is a queue of Fahrstraßen which have been requested but not executed yet due to conflicts
-	UF.SignalBlocks = {} -- 				-- This table holds static signal blocks which
-	UF.StationEntsByIndex = {} --			-- Query this table by entering a given station index ID, get a station entity returned
-	UF.SignalEntityPositions = {} --		-- Signal entity Vectors, just in case it'll be useful ¯\_(ツ)_/¯
-	UF.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by ent or name
-	UF.SignageEntsByNode = {} --			-- Query this table by entering a given node, get a signage entity returned if present
+	MPLR.SignalEntitiesByNode = {} -- 		-- Query this table by entering a given node, get a signal entity returned if present
+	MPLR.SwitchEntitiesByNode = {} --			-- Query this table by entering a given node, get a switch entity returned if present
+	MPLR.SwitchEntitiesByID = {} --			-- Query this table by entering a given Switch ID number and get a switch returned
+	MPLR.SwitchPathIDsByDirection = {} -- 	-- This table saves the Path IDs that a given switch is sitting at related to their logical direction, in order to query which way it is pointing.
+	MPLR.SwitchBranches = {} --				-- Switch entities as corresponding to nodes that this switch branches off of
+	MPLR.Fahrstrassen = {} -- 				-- This table is a total list of a map's "Farhstraßen" (routes in English). 
+	MPLR.ConflictingFahrstrassen = {} --		-- This table is a list of Fahrstraßen and with which they conflict with. This table is queried in order to determine whether two active Fahrstraßen should result in one signal showing danger (H0 or F0) to let the other signal show (H1 or F1)
+	MPLR.ActiveFahrstrassen = {} -- 			-- This table notes which Fahrstraßen are currently active. This is important in cases such as one Fahrstraße being active and another being in conflict with the other, so we don't activate the latter conflicting one until the former Fahrstraße has been released.
+	MPLR.RequestedFahrstrassen = {} --			-- This is a queue of Fahrstraßen which have been requested but not executed yet due to conflicts
+	MPLR.SignalBlocks = {} -- 				-- This table holds static signal blocks which
+	MPLR.StationEntsByIndex = {} --			-- Query this table by entering a given station index ID, get a station entity returned
+	MPLR.SignalEntityPositions = {} --		-- Signal entity Vectors, just in case it'll be useful ¯\_(ツ)_/¯
+	MPLR.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by ent or name
+	MPLR.SignageEntsByNode = {} --			-- Query this table by entering a given node, get a signage entity returned if present
 	print( "MPLR: Preparing INDUSI additions for pathing." )
 	for i = 1, #Metrostroi.Paths do
-		for k, v in ipairs( Metrostroi.Paths[ i ] ) do
+		for _, v in ipairs( Metrostroi.Paths[ i ] ) do
 			v.INDUSI = {}
 		end
 	end
@@ -42,28 +42,28 @@ end
 if Metrostroi.Paths then
 	tableInit()
 else
-	timer.Simple( 10, function() tableInit() end )
+	timer.Simple( 8, function() tableInit() end )
 end
 
-hook.Add( "Initialize", "UF_MapInitialize", function()
+hook.Add( "Initialize", "MPLR_MapInitialize", function()
 	if not Metrostroi then
 		assert( Metrostroi, "ERROR METROSTROI IS NOT INSTALLED / LOADED" )
 		return
 	end
 
-	timer.Simple( 6, UF.Load )
+	timer.Simple( 6, MPLR.Load )
 end )
 
-function UF.LoadSwitchPaths()
+function MPLR.LoadSwitchPaths()
 	local name = game.GetMap()
 	include( "data/project_light_rail_data/" .. "switching_" .. name .. ".lua" )
 end
 
-function UF.UpdateStations()
-	if not UF.StationEntsByIndex then UF.StationEntsByIndex = {} end
+function MPLR.UpdateStations()
+	if not MPLR.StationEntsByIndex then MPLR.StationEntsByIndex = {} end
 	local platforms = ents.FindByClass( "gmod_track_uf_platform" )
 	for _, platform in pairs( platforms ) do
-		UF.StationEntsByIndex[ platform.StationIndex ] = platform
+		MPLR.StationEntsByIndex[ platform.StationIndex ] = platform
 		-- Position
 		local mid = ( platform.PlatformStart + platform.PlatformEnd ) / 2
 		local dir1 = platform.PlatformStart - mid
@@ -89,13 +89,13 @@ function UF.UpdateStations()
 				platform_number = platform.PlatformIndex
 			}
 
-			if UF.StationEntsByIndex[ platform.StationIndex ][ platform.PlatformIndex ] then
+			if MPLR.StationEntsByIndex[ platform.StationIndex ][ platform.PlatformIndex ] then
 				print( Format( "MPLR: Error, station %03d has two platforms %d with same index!", platform.StationIndex, platform.PlatformIndex ) )
 				return
 			else
-				UF.StationEntsByIndex[ platform.StationIndex ] = UF.StationEntsByIndex[ platform.StationIndex ] or {}
+				MPLR.StationEntsByIndex[ platform.StationIndex ] = MPLR.StationEntsByIndex[ platform.StationIndex ] or {}
 				-- Assign the platform object to the correct platform index within the station index
-				UF.StationEntsByIndex[ platform.StationIndex ][ platform.PlatformIndex ] = platform
+				MPLR.StationEntsByIndex[ platform.StationIndex ][ platform.PlatformIndex ] = platform
 			end
 
 			-- Print information
@@ -106,7 +106,7 @@ function UF.UpdateStations()
 	end
 end
 
-function UF.UpdateSignalEntities()
+function MPLR.UpdateSignalEntities()
 	if Metrostroi.IgnoreEntityUpdates then return end
 	if CurTime() - Metrostroi.OldUpdateTime < 0.05 then
 		print( "MPLR: Stopping all updates!" )
@@ -114,8 +114,8 @@ function UF.UpdateSignalEntities()
 		timer.Simple( 0.2, function()
 			print( "MPLR: Retrieve updates." )
 			Metrostroi.IgnoreEntityUpdates = false
-			UF.UpdateSignalEntities()
-			UF.UpdateSwitchEntities()
+			MPLR.UpdateSignalEntities()
+			MPLR.UpdateSwitchEntities()
 			--Metrostroi.UpdateARSSections()
 		end )
 		return
@@ -126,7 +126,7 @@ function UF.UpdateSignalEntities()
 		z_pad = 256
 	}
 
-	UF.UpdateSignalNames()
+	MPLR.UpdateSignalNames()
 	local count = 0
 	local repeater = 0
 	local entities = ents.FindByClass( "gmod_track_uf_signal*" )
@@ -135,10 +135,10 @@ function UF.UpdateSignalEntities()
 		local pos = Metrostroi.GetPositionOnTrack( v:GetPos(), v:GetAngles() - Angle( 0, 90, 0 ), options )[ 1 ]
 		local pos2 = Metrostroi.GetPositionOnTrack( v:LocalToWorld( Vector( 0, 10, 0 ) ), v:GetAngles() - Angle( 0, 90, 0 ), options )
 		if pos then -- FIXME make it select proper path
-			UF.SignalEntitiesByNode[ pos.node1 ] = UF.SignalEntitiesByNode[ pos2.node1 ] or {}
-			table.insert( UF.SignalEntitiesByNode[ pos.node1 ], v )
+			MPLR.SignalEntitiesByNode[ pos.node1 ] = MPLR.SignalEntitiesByNode[ pos2.node1 ] or {}
+			table.insert( MPLR.SignalEntitiesByNode[ pos.node1 ], v )
 			-- A signal belongs only to a single track
-			UF.SignalEntityPositions[ v ] = pos
+			MPLR.SignalEntityPositions[ v ] = pos
 			v.TrackPosition = pos
 			v.TrackX = pos.x
 			v.TrackDir = pos.forward
@@ -152,24 +152,24 @@ function UF.UpdateSignalEntities()
 	print( Format( "MPLR: Total signals: %u (normal: %u, repeaters: %u)", count, count - repeater, repeater ) )
 end
 
-function UF.UpdateSignalNames()
+function MPLR.UpdateSignalNames()
 	print( "MPLR: Updating signal names..." )
-	if not UF.SignalEntitiesByName then UF.SignalEntitiesByName = {} end
+	if not MPLR.SignalEntitiesByName then MPLR.SignalEntitiesByName = {} end
 	local entities = ents.FindByClass( "gmod_track_uf_signal*" )
 	for _, v in pairs( entities ) do
 		if not IsValid( v ) then continue end
 		print( v, v.Name )
 		if v.Name then
-			if UF.SignalEntitiesByName[ v.Name ] then --
-				print( Format( "MPLR: Signal with this name %s already exists! Check signal names!\nInfo:\n\tFirst signal:  %s\n\tPos:    %s\n\tSecond signal: %s\n\tPos:    %s", v.Name, UF.SignalEntitiesByName[ v.Name ], UF.SignalEntitiesByName[ v.Name ]:GetPos(), v, v:GetPos() ) )
+			if MPLR.SignalEntitiesByName[ v.Name ] then --
+				print( Format( "MPLR: Signal with this name %s already exists! Check signal names!\nInfo:\n\tFirst signal:  %s\n\tPos:    %s\n\tSecond signal: %s\n\tPos:    %s", v.Name, MPLR.SignalEntitiesByName[ v.Name ], MPLR.SignalEntitiesByName[ v.Name ]:GetPos(), v, v:GetPos() ) )
 			else
-				UF.SignalEntitiesByName[ v.Name ] = v
+				MPLR.SignalEntitiesByName[ v.Name ] = v
 			end
 		end
 	end
 end
 
-function UF.CheckForSignal( node, min_x, max_x )
+function MPLR.CheckForSignal( node, min_x, max_x )
 	-- Check if the current node contains a signal
 	if node and node.signals then
 		for _, signal in pairs( node.signals ) do
@@ -182,19 +182,19 @@ function UF.CheckForSignal( node, min_x, max_x )
 	return false, nil -- No signal found in this segment
 end
 
-function UF.GetXCoordinate( ent )
+function MPLR.GetXCoordinate( ent )
 	return Metrostroi.GetPositionOnTrack( ent:GetPos(), ent:GetAngles() )[ 1 ].x
 end
 
-function UF.GetNode1( ent )
+function MPLR.GetNode1( ent )
 	return Metrostroi.GetPositionOnTrack( ent:GetPos(), ent:GetAngles() )[ 1 ].node1
 end
 
-function UF.GetNode2( ent )
+function MPLR.GetNode2( ent )
 	return Metrostroi.GetPositionOnTrack( ent:GetPos(), ent:GetAngles() )[ 1 ].node2
 end
 
-function UF.GetPositionOnTrack( pos, ang, opts )
+function MPLR.GetPositionOnTrack( pos, ang, opts )
 	if not opts then opts = empty_table end
 	-- Angle can be specified to determine if facing forward or backward
 	ang = ang or Angle( 0, 0, 0 )
@@ -242,8 +242,8 @@ function UF.GetPositionOnTrack( pos, ang, opts )
 	return results
 end
 
-if Metrostroi and Metrostroi.GetPositionOnTrack then Metrostroi.GetPositionOnTrack = UF.GetPositionOnTrack end
-function UF.GetPathsForSwitch( ent )
+if Metrostroi and Metrostroi.GetPositionOnTrack then Metrostroi.GetPositionOnTrack = MPLR.GetPositionOnTrack end
+function MPLR.GetPathsForSwitch( ent )
 	local pos = Metrostroi.GetPositionOnTrack( ent:GetPos(), ent:GetAngles() )
 	local current_path = pos[ 1 ].path.id
 	local adjacent_paths = {}
@@ -271,21 +271,21 @@ function UF.GetPathsForSwitch( ent )
 	return paths
 end
 
-function UF.FindNextSignal( node_start, forward )
+function MPLR.FindNextSignal( node_start, forward )
 	if not next( node_start ) then return end
 	local currentPath = node_start.path.id
 	local proceedingNode = forward and node_start.next or node_start.prev
-	local signalFound = UF.SignalEntitiesByNode( node_start )
+	local signalFound = MPLR.SignalEntitiesByNode( node_start )
 	local branchingPaths = node_start.connectedPaths
 	-- Return signal if found at current node
 	if signalFound then return signalFound end
 	-- Try proceeding node in the same path
-	local mainPathResult = UF.FindNextSignal( proceedingNode, forward )
+	local mainPathResult = MPLR.FindNextSignal( proceedingNode, forward )
 	if mainPathResult then return mainPathResult end
 	-- If there's a diverging path (single switch), try that next
 	if branchingPaths then
 		for pathID, node in pairs( branchingPaths ) do
-			if pathID ~= currentPath then return UF.FindNextSignal( node, forward ) end
+			if pathID ~= currentPath then return MPLR.FindNextSignal( node, forward ) end
 		end
 	end
 end
@@ -293,7 +293,7 @@ end
 --------------------------------------------------------------------------------
 -- Scans an isolated track segment and for every useable segment calls func
 --------------------------------------------------------------------------------
--- UF.ScanTrack recursively scans the track starting from a given node, calling a specified function for each node it encounters.
+-- MPLR.ScanTrack recursively scans the track starting from a given node, calling a specified function for each node it encounters.
 -- Parameters:
 --   itype: The type of scan (e.g., "light", "switch"). Controls scan behavior.
 --   node: The node to start scanning from.
@@ -304,7 +304,7 @@ end
 -- Returns:
 --   Results from the callback function, if any are returned.
 local check_table = {} -- Table to track which nodes have already been checked.
-function UF.ScanTrack( itype, node, func, x, dir, checked )
+function MPLR.ScanTrack( itype, node, func, x, dir, checked )
 	local light, switch = itype == "light", itype == "switch" -- Determine if we're scanning for "light" or "switch".
 	-- If no node is provided, stop the scan.
 	if not node then return end
@@ -327,8 +327,8 @@ function UF.ScanTrack( itype, node, func, x, dir, checked )
 	local isolateForward = false
 	local isolateBackward = false
 	-- Check for signals or switches on this node to determine isolation behavior.
-	if UF.SignalEntitiesByNode[ node ] then
-		for _, signal in pairs( UF.SignalEntitiesByNode[ node ] ) do
+	if MPLR.SignalEntitiesByNode[ node ] then
+		for _, signal in pairs( MPLR.SignalEntitiesByNode[ node ] ) do
 			local isolating = false
 			if IsValid( signal ) then
 				-- Light scans: check if the signal is aligned with the scan direction or has a pass/occupation constraint.
@@ -382,7 +382,7 @@ function UF.ScanTrack( itype, node, func, x, dir, checked )
 	if node.branches then
 		for _, branch in pairs( node.branches ) do
 			if ( branch[ 1 ] >= min_x ) and ( branch[ 1 ] <= max_x ) then
-				local branch_results = { UF.ScanTrack( itype, branch[ 2 ], func, branch[ 1 ], true, checked ) }
+				local branch_results = { MPLR.ScanTrack( itype, branch[ 2 ], func, branch[ 1 ], true, checked ) }
 				if branch_results[ 1 ] ~= nil then return unpack( branch_results ) end
 			end
 		end
@@ -390,19 +390,19 @@ function UF.ScanTrack( itype, node, func, x, dir, checked )
 
 	-- Continue scanning forward if not isolated, scanning from the front end of the node.
 	if ( dir or switch ) and not isolateForward then
-		local forward_results = { UF.ScanTrack( itype, node.next, func, max_x, true, checked ) }
+		local forward_results = { MPLR.ScanTrack( itype, node.next, func, max_x, true, checked ) }
 		if forward_results[ 1 ] ~= nil then return unpack( forward_results ) end
 	end
 
 	-- Continue scanning backward if not isolated, scanning from the rear end of the node.
 	if ( not dir or switch ) and not isolateBackward then
-		local backward_results = { UF.ScanTrack( itype, node.prev, func, min_x, false, checked ) }
+		local backward_results = { MPLR.ScanTrack( itype, node.prev, func, min_x, false, checked ) }
 		if backward_results[ 1 ] ~= nil then return unpack( backward_results ) end
 	end
 end
 
 local EntTrackPos = {} -- Stores track positions of static entities
-function UF.ScanTrackForEntity( entityClass, currentNode, directionSensitive, direction, checkedNodes, searchForVal, key, val, partialMatch )
+function MPLR.ScanTrackForEntity( entityClass, currentNode, directionSensitive, direction, checkedNodes, searchForVal, key, val, partialMatch )
 	if not currentNode then return end
 	-- Initialize finalEntList to store matching entities for this scan
 	local finalEntList = {}
@@ -463,20 +463,20 @@ function UF.ScanTrackForEntity( entityClass, currentNode, directionSensitive, di
 	-- Recursively scan branches of the current node
 	if currentNode.branches then
 		for _, branch in pairs( currentNode.branches ) do
-			local branchResults = { UF.ScanTrackForEntity( entityClass, branch, nil, direction, checkedNodes, searchForVal, key, val, partialMatch ) }
+			local branchResults = { MPLR.ScanTrackForEntity( entityClass, branch, nil, direction, checkedNodes, searchForVal, key, val, partialMatch ) }
 			if branchResults[ 1 ] then return unpack( branchResults ) end
 		end
 	end
 
 	-- Continue scanning in the specified direction
 	if direction then
-		return UF.ScanTrackForEntity( entityClass, currentNode.next, nil, true, checkedNodes, searchForVal, key, val, partialMatch )
+		return MPLR.ScanTrackForEntity( entityClass, currentNode.next, nil, true, checkedNodes, searchForVal, key, val, partialMatch )
 	else
-		return UF.ScanTrackForEntity( entityClass, currentNode.prev, nil, false, checkedNodes, searchForVal, key, val, partialMatch )
+		return MPLR.ScanTrackForEntity( entityClass, currentNode.prev, nil, false, checkedNodes, searchForVal, key, val, partialMatch )
 	end
 end
 
-function UF.Save( name )
+function MPLR.Save( name )
 	if not file.Exists( "project_light_rail_data", "DATA" ) then file.CreateDir( "project_light_rail_data" ) end
 	name = name or game.GetMap()
 	-- Format signs, signal, switch data
@@ -520,6 +520,9 @@ function UF.Save( name )
 			Pos = v:GetPos(),
 			Angles = v:GetAngles(),
 			ID = v.ID,
+			AllowSwitchingIron = v.AllowSwitchingIron,
+			Blade1 = v.VMF.Blade1,
+			Blade2 = v.VMF.Blade2,
 		} )
 	end
 
@@ -581,7 +584,7 @@ local function getFile( path, name, id )
 	return data
 end
 
-function UF.DownLoadTracks( name )
+function MPLR.DownLoadTracks( name )
 	local baseUrl = "https://lillywho.github.io/mapdata/"
 	local track = getFile( "metrostroi_data/track_%s", name, "Signal" ) or {}
 	if next( Metrostroi.Paths ) or track then return end
@@ -593,7 +596,7 @@ function UF.DownLoadTracks( name )
 			file.Write( filePath .. "track_" .. name, body ) -- Save file content
 			print( "[MPLR]: File saved successfully: " .. filePath )
 			print( "[MPLR]: loading downloaded track file" )
-			UF.LoadTracks( name )
+			MPLR.LoadTracks( name )
 		else
 			print( "[MPLR]: Failed to download. HTTP code: " .. code )
 		end
@@ -603,7 +606,7 @@ function UF.DownLoadTracks( name )
 	end )
 end
 
-function UF.DownLoadSignals( name )
+function MPLR.DownLoadSignals( name )
 	local baseUrl = "https://lillywho.github.io/mapdata/"
 	local track = getFile( "project_light_rail_data/signs_%s", name, "Track" ) or {}
 	if track then return true end
@@ -643,7 +646,7 @@ local function addLookup( node )
 	table.insert( Metrostroi.SpatialLookup[ kz ][ kx ][ ky ], node )
 end
 
-function UF.LoadTracks( name )
+function MPLR.LoadTracks( name )
 	-- This function has been copied and adapted from Metrostroi. Querying the branches table of regular Metrostroi is a bit tedious,
 	-- so I added something that I find more intuitive.
 	--[[
@@ -779,42 +782,42 @@ function UF.LoadTracks( name )
 	end
 end
 
-function UF.Load( name, keep_signs )
+function MPLR.Load( name, keep_signs )
 	if not Metrostroi then
 		print( "Quitting because Metrostroi not loaded" )
 		return
 	end
 
 	name = name or game.GetMap()
-	--UF.LoadTracks( name )
+	--MPLR.LoadTracks( name )
 	-- Initialize stations list
 	-- Print info
-	-- UF.PrintStatistics()
+	-- MPLR.PrintStatistics()
 	-- Ignore updates to prevent created/removed switches from constantly updating table of positions
 	Metrostroi.IgnoreEntityUpdates = true
-	UF.LoadSignalling( name, keep_signs )
-	UF.LoadRoutes( name )
+	MPLR.LoadSignalling( name, keep_signs )
+	MPLR.LoadRoutes( name )
 	timer.Simple( 0.05, function()
 		-- No more ignoring updates
 		Metrostroi.IgnoreEntityUpdates = false
 		-- Load Signal entities
-		UF.UpdateSignalEntities()
+		MPLR.UpdateSignalEntities()
 		-- Load switches
-		UF.UpdateSwitchEntities()
-		UF.UpdateStations()
-		--UF.ConstructDefaultSignalBlocks()
+		MPLR.UpdateSwitchEntities()
+		MPLR.UpdateStations()
+		--MPLR.ConstructDefaultSignalBlocks()
 		if not ents.FindByClass( "gmod_mplr_signalserver" ) then
 			Server = ents.Create( "gmod_mplr_signalserver" )
-			Server.Model = UF.ServerModel or nil
-			Server.SoundLoop = UF.ServerSound or nil
-			Server:SetPos( UF.ServerPos or Vector( 0, 0, 0 ) )
+			Server.Model = MPLR.ServerModel or nil
+			Server.SoundLoop = MPLR.ServerSound or nil
+			Server:SetPos( MPLR.ServerPos or Vector( 0, 0, 0 ) )
 			Server:Spawn()
 			print( "MPLR: Spawned central signalling server" )
 		end
 	end )
 end
 
-function UF.LoadRoutes( name )
+function MPLR.LoadRoutes( name )
 	local routes = getFile( "project_light_rail_data/routing_%s", name, "Route" ) or {}
 end
 
@@ -841,30 +844,30 @@ local function findKeyInNestedTable( table, keyToFind )
 	end
 end
 
-function UF.ConstructDefaultSignalBlocks() -- those signals that do not need dynamic routing, just make static signal blocks ¯\_(ツ)_/¯ actually no let's just construct the default state
+function MPLR.ConstructDefaultSignalBlocks() -- those signals that do not need dynamic routing, just make static signal blocks ¯\_(ツ)_/¯ actually no let's just construct the default state
 	print( "MPLR: Loading default Signal blocks" )
-	UF.SignalBlocks = {}
-	for k, v in pairs( UF.SignalEntitiesByName ) do
+	MPLR.SignalBlocks = {}
+	for k, v in pairs( MPLR.SignalEntitiesByName ) do
 		print( "Constructing default signal blocks: " .. k, v.Routes[ 1 ].NextSignal )
-		table.insert( UF.SignalBlocks, {
+		table.insert( MPLR.SignalBlocks, {
 			[ k ] = v.Routes[ 1 ].NextSignal,
 			Occupied = false
 		} )
 
-		UF.ActiveRoutes[ k ] = 1
-		print( k, UF.ActiveRoutes[ k ] )
+		MPLR.ActiveRoutes[ k ] = 1
+		print( k, MPLR.ActiveRoutes[ k ] )
 	end
 end
 
-function UF.OpenRoute( signal, route, ent )
-	if not next( UF.SignalBlocks ) then return end
+function MPLR.OpenRoute( signal, route, ent )
+	if not next( MPLR.SignalBlocks ) then return end
 	--print("Route Change requested on signal:", signal, "to route", route,"by entity:", ent)
-	if UF.ActiveRoutes[ signal ] == route then
+	if MPLR.ActiveRoutes[ signal ] == route then
 		print( "Requested route already active, bailing out" )
 		return
 	end
 
-	local CurrentSignalEnt = UF.SignalEntitiesByName[ signal ] -- target the signal's entity for operations
+	local CurrentSignalEnt = MPLR.SignalEntitiesByName[ signal ] -- target the signal's entity for operations
 	local RoutesTable = CurrentSignalEnt.Routes -- a little shortcut to the routes table, for readability
 	local CurrentBlock
 	local function checkSignal( v )
@@ -875,19 +878,19 @@ function UF.OpenRoute( signal, route, ent )
 		return false
 	end
 
-	for _, v in ipairs( UF.SignalBlocks ) do
+	for _, v in ipairs( MPLR.SignalBlocks ) do
 		CurrentBlock = v
 		if checkSignal( v ) then
 			v[ signal ] = RoutesTable[ route ].NextSignal --look up what the next signal of the route is and set it
-			UF.ActiveRoutes[ signal ] = route -- we're changing the currently active route on this signal, write that down, squire!
+			MPLR.ActiveRoutes[ signal ] = route -- we're changing the currently active route on this signal, write that down, squire!
 			print( Format( "Opened Route %s on Signal %s to Signal %s", route, signal, RoutesTable[ route ].NextSignal ) )
 		end
 	end
 end
 
-function UF.UpdateSignalBlockOccupation()
-	for k, v in pairs( UF.SignalBlocks ) do
-		local CurrentBlock = UF.SignalBlocks[ k ]
+function MPLR.UpdateSignalBlockOccupation()
+	for k, v in pairs( MPLR.SignalBlocks ) do
+		local CurrentBlock = MPLR.SignalBlocks[ k ]
 		local function GetSignals()
 			for ky, val in pairs( CurrentBlock ) do
 				if type( ky ) == "string" then return ky, val end
@@ -896,7 +899,7 @@ function UF.UpdateSignalBlockOccupation()
 
 		-- print(CurrentBlock)
 		local CurrentSignal, DistantSignal = GetSignals()
-		local CurrentSignalEnt, DistantSignalEnt = UF.SignalEntitiesByName[ CurrentSignal ], UF.SignalEntitiesByName[ DistantSignal ]
+		local CurrentSignalEnt, DistantSignalEnt = MPLR.SignalEntitiesByName[ CurrentSignal ], MPLR.SignalEntitiesByName[ DistantSignal ]
 		if not DistantSignalEnt then continue end
 		local CurrentPos = CurrentSignalEnt.TrackPosition
 		local DistantPos = DistantSignalEnt.TrackPosition
@@ -905,15 +908,15 @@ function UF.UpdateSignalBlockOccupation()
 			return
 		end
 
-		CurrentBlock.Occupied = UF.IsTrackOccupied( CurrentPos.node1, CurrentPos.x, CurrentPos.x < DistantPos.x, "light", DistantPos.x )
+		CurrentBlock.Occupied = MPLR.IsTrackOccupied( CurrentPos.node1, CurrentPos.x, CurrentPos.x < DistantPos.x, "light", DistantPos.x )
 	end
 end
 
-function UF.LoadSignalling( name, keep )
+function MPLR.LoadSignalling( name, keep )
 	if keep then return end
 	local signs = getFile( "project_light_rail_data/signs_%s", name, "Signal" )
 	if not type( signs ) == "table" or not next( signs ) then
-		local success = UF.DownLoadSignals( name )
+		local success = MPLR.DownLoadSignals( name )
 		if not success then
 			print( "[MPLR]: Downloading signalling data failed and no signalling data present offline. Exiting!" )
 			return
@@ -932,6 +935,10 @@ function UF.LoadSignalling( name, keep )
 		SafeRemoveEntity( v )
 	end
 
+	--[[local signs_ents = ents.FindByClass( "gmod_track_uf_switch" )
+	for k, v in pairs( signs_ents ) do
+		SafeRemoveEntity( v )
+	end]]
 	-- Create new entities (add a delay so the old entities clean up)
 	print( "MPLR: Loading signs, signals, switches..." )
 	for k, v in pairs( signs ) do
@@ -970,14 +977,14 @@ function UF.LoadSignalling( name, keep )
 	end
 end
 
-function UF.LinkSwitch()
+function MPLR.LinkSwitch()
 	local function linkSwitch( node, ... )
-		print( "UF: Linking swithes to branches" )
+		print( "MPLR: Linking swithes to branches" )
 		if not node then return end
 		if node[ 2 ] then node = node[ 2 ] end
 		if not node.branches or node.switch ~= nil then return end
 		if #node.branches ~= 1 then
-			print( "UF: Bad track branch(" .. #node.branches .. " != 1)" )
+			print( "MPLR: Bad track branch(" .. #node.branches .. " != 1)" )
 			print( Format( "\t  Node %d path %d id %d pos %s", 0, node.path.id, node.id, node.pos ) )
 			for i, v in ipairs( node.branches ) do
 				print( Format( "\tBranch %d path %d id %d pos %s", i, v[ 2 ].path.id, v[ 2 ].id, v[ 2 ].pos ) )
@@ -996,7 +1003,7 @@ function UF.LinkSwitch()
 		end
 
 		if switch then
-			print( Format( "UF: Path:%d nodeX:%d\tLinked to switch %s", path.id, node.x, switch ) )
+			print( Format( "MPLR: Path:%d nodeX:%d\tLinked to switch %s", path.id, node.x, switch ) )
 			for i, brTbl in pairs( node.branches ) do
 				local nodeB = brTbl[ 2 ]
 				local pathB = nodeB.path
@@ -1020,12 +1027,12 @@ function UF.LinkSwitch()
 				local nextNode, nextNodeB
 				nextNodeB = id > 2 and nextNodeB2 or nextNodeB1
 				nextNode = id % 2 == 0 and nextNode2 or nextNode1
-				print( "- UF: Node paths" )
+				print( "- MPLR: Node paths" )
 				print( "--", "node1.path", "node1b.path" )
 				print( "--", node.id .. "->" .. nextNode.id, "", nodeB.id .. "->" .. nextNodeB.id )
 				print( "--", node.id < nextNode.id, "", nodeB.id < nextNodeB.id )
 				--print(Metrostroi.VectorAngle(node.pos,nnode1.pos,nnode2.pos))
-				print( Format( "- UF: Path:%d nodeX:%d\tLinked to switch %s (linked from)", nodeB.path.id, nodeB.x, switch ) )
+				print( Format( "- MPLR: Path:%d nodeX:%d\tLinked to switch %s (linked from)", nodeB.path.id, nodeB.x, switch ) )
 				--Set switch in branch for easy access
 				node.switch = { switch, node.id < nextNode.id }
 				brTbl[ 3 ] = switch
@@ -1035,7 +1042,7 @@ function UF.LinkSwitch()
 			--Try to process branches
 			linkSwitch( unpack( node.branches ) )
 		else
-			print( Format( "UF: Path:%d nodeX:%d\tCan't find switch", node.path.id, node.x, switch ) )
+			print( Format( "MPLR: Path:%d nodeX:%d\tCan't find switch", node.path.id, node.x, switch ) )
 			node.switch = false
 		end
 
@@ -1049,7 +1056,7 @@ function UF.LinkSwitch()
 	end
 end
 
--- UF.IsTrackOccupied checks if any trains are present between two positions on the track.
+-- MPLR.IsTrackOccupied checks if any trains are present between two positions on the track.
 -- It scans the track from a source node, returning true if a train is detected, along with details of the train(s).
 -- Parameters:
 --   src_node: The node to start scanning from.
@@ -1059,37 +1066,43 @@ end
 --   maximum_x: The maximum X position to scan up to.
 -- Returns:
 --   true if a train is found, along with the first and last detected train and a list of all trains.
-function UF.IsTrackOccupied( src_node, x, dir, t, maximum_x )
-	local Trains = {} -- List to store any detected trains.
-	-- Call UF.ScanTrack to scan the track and look for trains. The callback checks for trains within the scan range.
-	UF.ScanTrack( t or "light", src_node, function( node, min_x, max_x )
-		-- If no trains are present in this node, continue scanning.
-		if ( not Metrostroi.TrainsForNode[ node ] ) or ( #Metrostroi.TrainsForNode[ node ] == 0 ) then return end
-		-- Loop through each train in the node.
-		for _, train in pairs( Metrostroi.TrainsForNode[ node ] ) do
-			-- Get the position of the train on the track.
+function MPLR.IsTrackOccupied( src_node, x, dir, t, maximum_x )
+	local Trains = {}
+	-- Helper: check if two ranges overlap
+	local function rangesOverlap( a1, a2, b1, b2 )
+		return ( a1 <= b2 ) and ( a2 >= b1 )
+	end
+
+	MPLR.ScanTrack( t or "light", src_node, function( node, min_x, max_x )
+		local nodeTrains = Metrostroi.TrainsForNode[ node ]
+		if not nodeTrains or #nodeTrains == 0 then return end
+		for _, train in ipairs( nodeTrains ) do
 			local positions = Metrostroi.TrainPositions[ train ]
-			-- For each path that the train is on, check if it's in the scan range.
-			for _, pos_data in pairs( positions ) do
-				-- Check if the train's path matches the node's path.
-				if pos_data.path == node.path then
-					-- Define X bounds for the train's position.
-					local x1, x2 = pos_data.x, pos_data.x
-					-- Check if the train is within the scanning range (between min_x and max_x).
-					if ( ( x1 >= min_x ) and ( x1 <= max_x ) ) or ( ( x2 >= min_x ) and ( x2 <= max_x ) ) or ( ( x1 <= min_x ) and ( x2 >= max_x ) ) then
-						-- Train detected, insert into the Trains list.
-						table.insert( Trains, train )
+			if positions then
+				for _, pos_data in pairs( positions ) do
+					if pos_data.path == node.path then
+						local px = pos_data.x
+						if rangesOverlap( px, px, min_x, max_x ) then
+							table.insert( Trains, train )
+							break -- avoid inserting same train multiple times
+						end
 					end
 				end
 			end
 		end
 	end, x, dir, nil, maximum_x )
-	-- Return true if any trains were found, and also return the first and last train detected, along with the train list.
-	return #Trains > 0, Trains[ #Trains ], Trains[ 1 ], Trains
+
+	-- Sort trains by position along track
+	table.sort( Trains, function( a, b )
+		local ax = Metrostroi.TrainPositions[ a ][ 1 ].x
+		local bx = Metrostroi.TrainPositions[ b ][ 1 ].x
+		return ax < bx
+	end )
+	return #Trains > 0, Trains[ 1 ], Trains[ #Trains ], Trains
 end
 
 local nodes = {}
-function UF.WriteToNodeTable( node_start, node_end, forwards, k_v )
+function MPLR.WriteToNodeTable( node_start, node_end, forwards, k_v )
 	if not node_start then return end
 	nodeTab = node_start
 	for k, v in pairs( k_v ) do
@@ -1099,34 +1112,34 @@ function UF.WriteToNodeTable( node_start, node_end, forwards, k_v )
 
 	if node_start == node_end then return true end
 	if forwards then
-		UF.WriteToNodeTable( node_start.next, node_end, forwards, k_v )
+		MPLR.WriteToNodeTable( node_start.next, node_end, forwards, k_v )
 	else
-		UF.WriteToNodeTable( node_start.prev, node_end, forwards, k_v )
+		MPLR.WriteToNodeTable( node_start.prev, node_end, forwards, k_v )
 	end
 end
 
-function UF.PrintStatistics()
+function MPLR.PrintStatistics()
 end
 
-function UF.UpdateSwitchEntities()
+function MPLR.UpdateSwitchEntities()
 	if Metrostroi.IgnoreEntityUpdates then return end
 	local entities = ents.FindByClass( "gmod_track_uf_switch" )
 	for _, v in pairs( entities ) do
 		local pos = Metrostroi.GetPositionOnTrack( v:GetPos(), v:GetAngles() )[ 1 ]
 		if v.ID then
-			UF.SwitchEntitiesByID[ v.ID ] = v
+			MPLR.SwitchEntitiesByID[ v.ID ] = v
 		else
 			ErrorNoHaltWithStack( "MPLR: Switch entity ", v, " at position ", v:GetPos(), " has no ID assigned!" )
 		end
 
-		if pos.node1 then UF.SwitchEntitiesByNode[ pos.node1 ] = v end
+		if pos.node1 then MPLR.SwitchEntitiesByNode[ pos.node1 ] = v end
 	end
 end
 
 --------------------------------------------------------------------------------
 -- Get travel time between two nodes in seconds
 --------------------------------------------------------------------------------
-function UF.GetTravelTime( src, dest )
+function MPLR.GetTravelTime( src, dest )
 	-- Determine direction of travel
 	-- assert(src.path == dest.path)
 	local direction = src.x < dest.x
@@ -1156,9 +1169,9 @@ function UF.GetTravelTime( src, dest )
 	return travel_time, travel_dist
 end
 
-function UF.ScanSwitchOccupation( switch )
+function MPLR.ScanSwitchOccupation( switch )
 	if not IsValid( switch ) then return end
-	local branches = UF.SwitchBranches( switch )
+	local branches = MPLR.SwitchBranches( switch )
 	local switchOrientation = switch.TrackPos.forward
 	if not branches or #branches < 1 then return end
 	local firstPath

@@ -72,7 +72,7 @@ function ENT:OnRemove()
 end
 
 function ENT:CreateRT( name, w, h )
-    local RT = GetRenderTarget( "UF" .. self:EntIndex() .. ":" .. name, w or 512, h or 512 )
+    local RT = GetRenderTarget( "MPLR" .. self:EntIndex() .. ":" .. name, w or 512, h or 512 )
     if not RT then Error( "Can't create RT\n" ) end
     return RT
 end

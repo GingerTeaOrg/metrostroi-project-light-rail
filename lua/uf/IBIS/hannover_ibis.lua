@@ -1,4 +1,4 @@
-UF.AddSpecialAnnouncements( "Hannover", {
+MPLR.AddSpecialAnnouncements( "Hannover", {
 	[ "01" ] = {
 		[ 1 ] = {
 			[ "lilly/uf/IBIS/announcements/special/hannover/stop_due_to_technical_issue.mp3" ] = 5
@@ -46,7 +46,7 @@ UF.AddSpecialAnnouncements( "Hannover", {
 	}
 } )
 
-UF.AddIBISDestinations( "Hannover", {
+MPLR.AddIBISDestinations( "Hannover", {
 	[ 01 ] = "Misburg",
 	[ 02 ] = "Buchholz/Bhf.",
 	[ 07 ] = "Hauptbahnhof",
@@ -96,7 +96,7 @@ UF.AddIBISDestinations( "Hannover", {
 	[ 95 ] = "Kronsberg"
 } )
 
-UF.AddIBISLines( "Hannover", {
+MPLR.AddIBISLines( "Hannover", {
 	-- ["00"] = true,
 	[ "01" ] = true,
 	[ "02" ] = true,
@@ -118,7 +118,7 @@ UF.AddIBISLines( "Hannover", {
 	[ "18" ] = true
 } )
 
-UF.AddIBISRoutes( "Hannover", {
+MPLR.AddIBISRoutes( "Hannover", {
 	-- Format: [Line] = {[RouteNumber] = {StationNumber1,StationNumber2,StationNumber3,etc},[RouteNumber2] = {etc}}
 	[ "01" ] = {
 		[ "01" ] = { 13, 14, 71, 40, 32 },
@@ -150,16 +150,16 @@ UF.AddIBISRoutes( "Hannover", {
 	}
 } )
 
-UF.AddIBISAnnouncementScript( "Hannover", {
+MPLR.AddIBISAnnouncementScript( "Hannover", {
 	[ 1 ] = "gong",
 	[ 2 ] = "station"
 } )
 
-UF.AddIBISCommonFiles( "Hannover", {
+MPLR.AddIBISCommonFiles( "Hannover", {
 	[ "gong" ] = { "lilly/uf/IBIS/announcements/hannover/common/gong.mp3", 1.3 }
 } )
 
-UF.AddIBISAnnouncementMetadata( "Hannover", {
+MPLR.AddIBISAnnouncementMetadata( "Hannover", {
 	-- format: {[station] = {[line] = {[route] = {[audiofile] = seconds}}}} | Sets the "station" element announcement routine for each station on a basis of line, route
 	[ 01 ] = {
 		[ "07" ] = {

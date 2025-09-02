@@ -53,7 +53,7 @@ end
 
 function UpdateGhostPos( pl )
     local trace = util.TraceLine( util.GetPlayerTrace( pl ) )
-    local tbl = UF.RerailGetTrackData( trace.HitPos, pl:GetAimVector() )
+    local tbl = MPLR.RerailGetTrackData( trace.HitPos, pl:GetAimVector() )
     if not tbl then tbl = Trace( pl, trace ) end
     local class = IsValid( trace.Entity ) and trace.Entity:GetClass()
     local pos, ang = Vector( 0, 0, 0 ), Angle( 0, 0, 0 )
@@ -70,7 +70,7 @@ end
 
 function UpdateWagPos( pl )
     local trace = util.TraceLine( util.GetPlayerTrace( pl ) )
-    local tbl = UF.RerailGetTrackData( trace.HitPos, pl:GetAimVector() )
+    local tbl = MPLR.RerailGetTrackData( trace.HitPos, pl:GetAimVector() )
     if not tbl then tbl = Trace( pl, trace ) end
     local pos, ang = Vector( 0, 0, 0 ), Angle( 0, 0, 0 )
     if tbl[ 3 ] ~= nil then
@@ -284,7 +284,7 @@ function TOOL:SpawnWagon( trace )
                 bogeyE2:SetPos( ent:LocalToWorld( bogeyE2.SpawnPos ) )
             end
 
-            UF.RerailTrain( ent ) --Rerail train
+            MPLR.RerailTrain( ent ) --Rerail train
             --LastEnt:LocalToWorld(bogeyL1:WorldToLocal(Vector))))
             LastRot = rot
         end
@@ -507,6 +507,7 @@ function TOOL:LeftClick( trace )
 end
 
 function TOOL:RightClick( trace )
+    if true then return false end
     if not self.Train then return end
     if IsValid( trace.Entity ) then
         if SERVER then

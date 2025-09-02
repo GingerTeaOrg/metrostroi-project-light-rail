@@ -1,5 +1,5 @@
 include( "shared.lua" )
-ENT.RTMaterial = CreateMaterial( "UFRT4", "UnlitGeneric", {
+ENT.RTMaterial = CreateMaterial( "MPLRRT4", "UnlitGeneric", {
 	[ "$basetexture" ] = "example_rt",
 	[ "$vertexcolor" ] = 1,
 	[ "$vertexalpha" ] = 1,
@@ -7,14 +7,14 @@ ENT.RTMaterial = CreateMaterial( "UFRT4", "UnlitGeneric", {
 	[ "$alphatest" ] = 1
 } )
 
-ENT.RTMaterial2 = CreateMaterial( "UFRT4", "VertexLitGeneric", {
+ENT.RTMaterial2 = CreateMaterial( "MPLRRT4", "VertexLitGeneric", {
 	[ "$vertexcolor" ] = 0,
 	[ "$vertexalpha" ] = 0,
 	[ "$nolod" ] = 1
 } )
 
 function ENT:CreateRT( name, w, h )
-	local RT = GetRenderTarget( "UF" .. self:EntIndex() .. ":" .. name, w or 512, h or 512 )
+	local RT = GetRenderTarget( "MPLR" .. self:EntIndex() .. ":" .. name, w or 512, h or 512 )
 	if not RT then Error( "Can't create RT\n" ) end
 	return RT
 end
@@ -337,7 +337,7 @@ function ENT:NewDisplay( msg, ent )
 	local maxRows = #ent.Grid
 	local maxCols = #ent.Grid[ 1 ] -- assuming the grid is a rectangle
 	-- Precompute the width of an empty character for spacing calculations
-	local emptyCharWidth = #UF.charMatrixSmallThin[ "EMPTY" ][ 1 ]
+	local emptyCharWidth = #MPLR.charMatrixSmallThin[ "EMPTY" ][ 1 ]
 	-- If the new message is different from the old one, clear the grid
 	if msg ~= oldmsg then
 		-- Optimized grid clearing using nested loop unrolling
@@ -368,13 +368,13 @@ function ENT:NewDisplay( msg, ent )
 			local char = str1:sub( i, i )
 			-- Determine the character matrix based on the font
 			if font == "SmallThin" then
-				charMatrix = UF.charMatrixSmallThin[ char ]
+				charMatrix = MPLR.charMatrixSmallThin[ char ]
 			elseif font == "SmallBold" then
-				charMatrix = UF.charMatrixSmallBold[ char ]
+				charMatrix = MPLR.charMatrixSmallBold[ char ]
 			elseif font == "Symbols" then
-				charMatrix = UF.charMatrixSymbols[ char ]
+				charMatrix = MPLR.charMatrixSymbols[ char ]
 			elseif font == "Headline" then
-				charMatrix = UF.charMatrixHeadline[ char ]
+				charMatrix = MPLR.charMatrixHeadline[ char ]
 			else
 				charMatrix = nil
 				Error( "Character not found!!!" )
@@ -384,13 +384,13 @@ function ENT:NewDisplay( msg, ent )
 			if char == " " then
 				-- Use the width of the space character defined in the font's character matrix
 				if font == "SmallThin" then
-					charWidth = #UF.charMatrixSmallThin[ " " ][ 1 ]
+					charWidth = #MPLR.charMatrixSmallThin[ " " ][ 1 ]
 				elseif font == "SmallBold" then
-					charWidth = #UF.charMatrixSmallBold[ " " ][ 1 ]
+					charWidth = #MPLR.charMatrixSmallBold[ " " ][ 1 ]
 				elseif font == "Headline" then
-					charWidth = #UF.charMatrixHeadline[ "SPACE" ][ 1 ]
+					charWidth = #MPLR.charMatrixHeadline[ "SPACE" ][ 1 ]
 				elseif font == "Symbols" then
-					charWidth = #UF.charMatrixSymbols[ " " ][ 1 ]
+					charWidth = #MPLR.charMatrixSymbols[ " " ][ 1 ]
 				end
 
 				-- Simply increase the cumulativeWidth by the width of the space character
@@ -521,7 +521,7 @@ function ENT:Mode2Disp( ent )
 	local CarPos = 155
 	local TrackPos = 155
 	local st = "Seckbacher Ldstr."
-	ent.DestPosX = 22 --ent.Theme == "Essen" and ( 76 - ( DestWidth / 2 ) ) or #UF.charMatrixSmallThin[ string.sub( ent.Line1String, 1, 1 ) ][ 1 ] + #UF.charMatrixSmallThin[ string.sub( ent.LineString1, 2, 2 ) ][ 1 ] + 8
+	ent.DestPosX = 22 --ent.Theme == "Essen" and ( 76 - ( DestWidth / 2 ) ) or #MPLR.charMatrixSmallThin[ string.sub( ent.Line1String, 1, 1 ) ][ 1 ] + #MPLR.charMatrixSmallThin[ string.sub( ent.LineString1, 2, 2 ) ][ 1 ] + 8
 	-- todo implement modular "via" information, listing notable stations along the way: U7 Hausen über Eissporthalle/Festplatz
 	local msg = {}
 	if Text ~= "DontBoard" then
@@ -549,48 +549,48 @@ end
 function ENT:drawCharacter( char, startX, startY, font )
 	-- Define the LED matrix for each character
 	if font == "SmallThin" then
-		if not UF.charMatrixSmallThin[ char ] then
-			assert( UF.charMatrixSmallThin[ char ], "DFI DID NOT FIND CHARACTER IN CHARACTER SET!!! Character:" .. char )
+		if not MPLR.charMatrixSmallThin[ char ] then
+			assert( MPLR.charMatrixSmallThin[ char ], "DFI DID NOT FIND CHARACTER IN CHARACTER SET!!! Character:" .. char )
 			cam.End3D2D()
 			return
 		end
 
-		local rows = #UF.charMatrixSmallThin[ char ]
-		local cols = #UF.charMatrixSmallThin[ char ][ 1 ]
+		local rows = #MPLR.charMatrixSmallThin[ char ]
+		local cols = #MPLR.charMatrixSmallThin[ char ][ 1 ]
 		for row = 1, rows do
 			for col = 1, cols do
 				local ledX = startX + ( col - 1 ) * ledSize
 				local ledY = startY + ( row - 1 ) * ledSize
 				-- Draw an LED if the matrix element is 1
-				if tonumber( UF.charMatrixSmallThin[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
+				if tonumber( MPLR.charMatrixSmallThin[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
 			end
 		end
 	elseif font == "SmallBold" then
-		if not UF.charMatrixSmallBold[ char ] then
-			assert( UF.charMatrixSmallBold[ char ], "DFI DID NOT FIND CHARACTER IN CHARACTER SET!!! Character:" .. char )
+		if not MPLR.charMatrixSmallBold[ char ] then
+			assert( MPLR.charMatrixSmallBold[ char ], "DFI DID NOT FIND CHARACTER IN CHARACTER SET!!! Character:" .. char )
 			cam.End3D2D()
 			return
 		end
 
-		local rows = #UF.charMatrixSmallBold[ char ]
-		local cols = #UF.charMatrixSmallBold[ char ][ 1 ]
+		local rows = #MPLR.charMatrixSmallBold[ char ]
+		local cols = #MPLR.charMatrixSmallBold[ char ][ 1 ]
 		for row = 1, rows do
 			for col = 1, cols do
 				local ledX = startX + ( col - 1 ) * ledSize
 				local ledY = startY + ( row - 1 ) * ledSize
 				-- Draw an LED if the matrix element is 1
-				if tonumber( UF.charMatrixSmallBold[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
+				if tonumber( MPLR.charMatrixSmallBold[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
 			end
 		end
 	else
-		local rows = #UF.charMatrixSmallThin[ char ]
-		local cols = #UF.charMatrixSmallThin[ char ][ 1 ]
+		local rows = #MPLR.charMatrixSmallThin[ char ]
+		local cols = #MPLR.charMatrixSmallThin[ char ][ 1 ]
 		for row = 1, rows do
 			for col = 1, cols do
 				local ledX = startX + ( col - 1 ) * ledSize
 				local ledY = startY + ( row - 1 ) * ledSize
 				-- Draw an LED if the matrix element is 1
-				if tonumber( UF.charMatrixSmallThin[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
+				if tonumber( MPLR.charMatrixSmallThin[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
 			end
 		end
 	end
@@ -600,14 +600,14 @@ function ENT:CharacterTest( startX, startY )
 	local char = "T"
 	startX = startX or 0
 	startY = startY or 0
-	local rows = #UF.charMatrixSymbols[ char ]
-	local cols = #UF.charMatrixSymbols[ char ][ 1 ]
+	local rows = #MPLR.charMatrixSymbols[ char ]
+	local cols = #MPLR.charMatrixSymbols[ char ][ 1 ]
 	for row = 1, rows do
 		for col = 1, cols do
 			local ledX = startX + ( col - 1 ) * ledSize
 			local ledY = startY + ( row - 1 ) * ledSize
 			-- Draw an LED if the matrix element is 1
-			if tonumber( UF.charMatrixSymbols[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
+			if tonumber( MPLR.charMatrixSymbols[ char ][ row ]:sub( col, col ) ) == 1 then ent:drawLED( ledX, ledY, ent ) end
 		end
 	end
 end
@@ -633,13 +633,13 @@ function ENT:drawString( str, startX, startY, orientation, font )
 		for i = 1, #str do
 			local char = str:sub( i, i )
 			ent:drawCharacter( char, startX + xOffset, startY, font )
-			xOffset = xOffset + ledSize * ( #UF.charMatrixSmallThin[ char ][ 1 ] + #UF.charMatrixSmallThin[ "EMPTY" ][ 1 ] ) -- Add some padding between characters
+			xOffset = xOffset + ledSize * ( #MPLR.charMatrixSmallThin[ char ][ 1 ] + #MPLR.charMatrixSmallThin[ "EMPTY" ][ 1 ] ) -- Add some padding between characters
 		end
 	elseif font == "SmallBold" then
 		for i = 1, #str do
 			local char = str:sub( i, i )
 			ent:drawCharacter( char, startX + xOffset, startY, font )
-			xOffset = xOffset + ledSize * ( #UF.charMatrixSmallBold[ char ][ 1 ] + #UF.charMatrixSmallBold[ "EMPTY" ][ 1 ] ) -- Add some padding between characters
+			xOffset = xOffset + ledSize * ( #MPLR.charMatrixSmallBold[ char ][ 1 ] + #MPLR.charMatrixSmallBold[ "EMPTY" ][ 1 ] ) -- Add some padding between characters
 		end
 	end
 end

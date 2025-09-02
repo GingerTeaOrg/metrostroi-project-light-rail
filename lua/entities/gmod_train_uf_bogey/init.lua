@@ -6,7 +6,7 @@ ENT.Types = {
     [ "u5" ] = { "models/lilly/uf/u5/bogey.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, -3.3 ), Vector( 4.3, 63, -3.3 ) },
     [ "u2joint" ] = { "models/lilly/uf/u2/jointbogey.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
     [ "b_motor" ] = { "models/lilly/mplr/bogeys/b-wagen/bogey_motor.mdl", Vector( 0, 0.0, -1.5 ), Angle( 0, 0, 0 ), "models/lilly/mplr/b_wheelset.mdl", Vector( 0, -61, -14 ), Vector( 0, 61, -15 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
-    [ "b_joint" ] = { "models/lilly/mplr/bogeys/b-wagen/joint_bogey.mdl", Vector( 0, 0.0, -1.5 ), Angle( 0, 0, 0 ), "models/lilly/mplr/b_wheelset.mdl", Vector( 0, -61, -28 ), Vector( 0, 61, -15 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
+    [ "b_joint" ] = { "models/lilly/mplr/bogeys/b-wagen/joint_bogey.mdl", Vector( 0, 0.0, -1.5 ), Angle( 0, 0, 0 ), "models/lilly/mplr/b_wheelset_traction.mdl", Vector( 0, -61, -28 ), Vector( 0, 61, -15 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
     [ "u3joint" ] = { "models/lilly/uf/u3/jointbogey.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, 0 ), Vector( 4.3, 63, 0 ) },
     [ "duewag_motor" ] = { "models/lilly/uf/bogey/duewag_motor.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, -3.3 ), Vector( 4.3, 63, -3.3 ) },
     [ "pt" ] = { "models/lilly/uf/bogey/duewag_motor.mdl", Vector( 0, 0.0, 0 ), Angle( 0, 0, 0 ), nil, Vector( 0, -61, -14 ), Vector( 0, 61, -14 ), nil, Vector( 4.3, -63, -3.3 ), Vector( 4.3, 63, -3.3 ) },
@@ -265,7 +265,7 @@ function ENT:SpawnFunction( ply, tr )
     ent:SetAngles( ang )
     ent:Spawn()
     ent:Activate()
-    if not inhibitrerail then UF.RerailBogey( ent ) end
+    if not inhibitrerail then MPLR.RerailBogey( ent ) end
     return ent
 end
 

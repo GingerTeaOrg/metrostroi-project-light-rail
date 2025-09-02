@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "gmod_subway_uf_base"
+ENT.Base = "gmod_subway_mplr_base"
 ENT.PrintName = "Duewag Pt"
 ENT.PrintNameTranslated = "Duewag Pt"
 ENT.Author = ""
@@ -8,16 +8,17 @@ ENT.Purpose = ""
 ENT.Instructions = ""
 ENT.Category = "Metrostroi: Project Light Rail"
 ENT.Spawnable = false
+ENT.AutomaticFrameAdvance = true
 ENT.AdminSpawnable = false
 ENT.DontAccelerateSimulation = true
 function ENT:InitializeSystems()
 	self:LoadSystem( "CoreSys", "Duewag_Pt" )
-	self:LoadSystem( "DeadmanUF", "Duewag_Deadman" )
+	self:LoadSystem( "DeadmanMPLR", "Duewag_Deadman" )
 	self:LoadSystem( "IBIS" )
 	self:LoadSystem( "Announcer", "uf_announcer" )
 	self:LoadSystem( "Duewag_Battery" )
 	self:LoadSystem( "Panel", "U2_panel" )
-	self:LoadSystem( "MPLR_DoorHandler" )
+	self:LoadSystem( "DoorHandler", "MPLR_DoorHandler" )
 end
 
 ENT.NumberRanges = { { 700, 780 } }

@@ -577,7 +577,7 @@ end
 hook.Add( "PostDrawTranslucentRenderables", "mplr_base_draw", function( _, isDD )
 	if isDD then return end
 	local inSeat = LocalPlayer().InMetrostroiTrain
-	for ent in pairs( UF.SpawnedTrains ) do
+	for ent in pairs( MPLR.SpawnedTrains ) do
 		if ent:IsDormant() then continue end
 		if MPLR and MPLR ~= true or ent.RenderBlock then
 			if not inSeat then
@@ -624,7 +624,7 @@ local function enableDebug()
 	if C_DrawDebug:GetInt() > 0 then
 		hook.Add( "PostDrawTranslucentRenderables", "MPLRTrainDebug", function( bDrawingDepth, bDrawingSkybox )
 			if bDrawingSkybox then return end
-			for ent in pairs( UF.SpawnedTrains ) do
+			for ent in pairs( MPLR.SpawnedTrains ) do
 				-- Debug draw for buttons
 				if ent.ButtonMapMPLR ~= nil then
 					draw.NoTexture()

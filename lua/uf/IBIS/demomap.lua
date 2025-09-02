@@ -1,4 +1,4 @@
-UF.AddSpecialAnnouncements( "Demo", {
+MPLR.AddSpecialAnnouncements( "Demo", {
     [ "01" ] = {
         [ 1 ] = {
             [ "lilly/uf/IBIS/announcements/special/imn/delay_due_to_malfunction.mp3" ] = 10
@@ -86,13 +86,13 @@ UF.AddSpecialAnnouncements( "Demo", {
     }
 } )
 
-UF.AddIBISLines( "Demo", {
+MPLR.AddIBISLines( "Demo", {
     -- ["00"] = true,
     [ "01" ] = true,
 } )
 
-UF.AddIBISDestinations( "Demo", {
-    [ 099 ] = "Leerfahrt",
+MPLR.AddIBISDestinations( "Demo", {
+    [ 999 ] = "Leerfahrt",
     [ 001 ] = "Borsigallee",
     [ 002 ] = "Katernberger Str",
     [ 003 ] = "Dom/Römer",
@@ -101,8 +101,8 @@ UF.AddIBISDestinations( "Demo", {
     [ 006 ] = "Nordwest-Zentrum"
 } )
 
-UF.AddIBISAnnouncementScript( "Demo", {
-    -- The general routine for announcement. Strings are from UF.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
+MPLR.AddIBISAnnouncementScript( "Demo", {
+    -- The general routine for announcement. Strings are from MPLR.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
     [ 1 ] = "next_station",
     [ 2 ] = "station"
 } )

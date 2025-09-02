@@ -308,8 +308,8 @@ function ENT:Initialize()
 	self.DoorLockSignalMoment = 0
 	self.DoorsOpen = false
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF( Vector( 290, 0, 0 ), Angle( 0, 180, 0 ), true, "duewag_motor", "a" )
-	self.MiddleBogey = self:CreateBogeyUF( Vector( 0, 0, 0 ), Angle( 0, 0, 0 ), false, "u2joint", "a" )
+	self.FrontBogey = self:CreateBogeyMPLR( Vector( 290, 0, 0 ), Angle( 0, 180, 0 ), true, "duewag_motor", "a" )
+	self.MiddleBogey = self:CreateBogeyMPLR( Vector( 0, 0, 0 ), Angle( 0, 0, 0 ), false, "u2joint", "a" )
 	self:SetNWEntity( "FrontBogey", self.FrontBogey )
 	-- Create couples
 	self.FrontCouple = self:CreateCustomCoupler( Vector( 415, 0, 0 ), Angle( 0, 0, 0 ), true, "u2", "a" )
@@ -317,7 +317,7 @@ function ENT:Initialize()
 	self.SectionB = self:CreateSection( Vector( 0, 0, 0 ), nil, --[[no angle]]
 		"gmod_subway_uf_u2_section_b", self, nil, self )
 
-	self.RearBogey = self:CreateBogeyUF( Vector( -290, 0, 0 ), Angle( 0, 180, 0 ), false, "duewag_motor", "b" )
+	self.RearBogey = self:CreateBogeyMPLR( Vector( -290, 0, 0 ), Angle( 0, 180, 0 ), false, "duewag_motor", "b" )
 	self.RearCouple = self:CreateCustomCoupler( Vector( -415, 0, 0 ), Angle( 0, 180, 0 ), false, "u2", "b" )
 	self.Panto = self:CreatePanto( Vector( 35, 0, 115 ), Angle( 0, 90, 0 ), "diamond" )
 	self.PantoUp = false
@@ -1418,7 +1418,7 @@ function ENT:Traction()
 	-- are the motors set to parralel or series?
 	throttle = not parralel and throttle / 2 or throttle
 	throttleWire = not parralel and throttleWire / 2 or throttleWire
-	local motorBaseForce = 99140.28
+	local motorBaseForce = 66140.28
 	local motorForceFactor = motorBaseForce / 20
 	local brakeBaseForce = 128568.336
 	local brakeForceFactor = brakeBaseForce / 20

@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "gmod_subway_uf_base"
+ENT.Base = "gmod_subway_mplr_base"
 ENT.PrintName = "Duewag U2h"
 ENT.Author = "LillyWho"
 ENT.Contact = ""
@@ -215,7 +215,7 @@ ENT.DoorsRight = {
 
 ENT.RequireDepartureAcknowledge = true
 ENT.Bidirectional = true
-ENT.Cameras = { { Vector( 413, -11, 62 ), Angle( 35, -46, 0 ), "Train.UF_U2.IBIS" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.UF_U2.IBISKey" }, { Vector( 400, -55, 90 ), Angle( 0, -170, 0 ), "Train.UF_U2.OutTheWindowRight" }, { Vector( 400, 55, 90 ), Angle( 0, 170, 0 ), "Train.UF_U2.OutTheWindowLeft" }, { Vector( 300, 6, 90 ), Angle( 0, 180 + 5, 0 ), "Train.UF_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 90 ), Angle( 0, 0, 0 ), "Train.UF_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 388, -30, 80 ), Angle( 0, -90, 0 ), "Train.UF_U2.RouteList" }, { Vector( 388, 0, 120 ), Angle( 0, -180, 0 ), "Train.UF_U2.Rollsign" }, { Vector( 450, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.UF_U2.Bogey" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.UF_U2.IBISKey" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.UF_U2.Panto" } }
+ENT.Cameras = { { Vector( 413, -11, 62 ), Angle( 35, -46, 0 ), "Train.MPLR_U2.IBIS" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.MPLR_U2.IBISKey" }, { Vector( 400, -55, 90 ), Angle( 0, -170, 0 ), "Train.MPLR_U2.OutTheWindowRight" }, { Vector( 400, 55, 90 ), Angle( 0, 170, 0 ), "Train.MPLR_U2.OutTheWindowLeft" }, { Vector( 300, 6, 90 ), Angle( 0, 180 + 5, 0 ), "Train.MPLR_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 90 ), Angle( 0, 0, 0 ), "Train.MPLR_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 388, -30, 80 ), Angle( 0, -90, 0 ), "Train.MPLR_U2.RouteList" }, { Vector( 388, 0, 120 ), Angle( 0, -180, 0 ), "Train.MPLR_U2.Rollsign" }, { Vector( 450, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.MPLR_U2.Bogey" }, { Vector( 413, -25, 58 ), Angle( 10, 50, 0 ), "Train.MPLR_U2.IBISKey" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.MPLR_U2.Panto" } }
 ENT.MirrorCams = { Vector( 441, 72, 100 ), Angle( 1, 180, 0 ), 30, Vector( 441, -72, 100 ), Angle( 1, 180, 0 ), 30 }
 ENT.MirrorRight = true
 function ENT:InitializeSystems()
@@ -293,14 +293,14 @@ end,]]
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISLines or {} ) do
+			for k, v in pairs( MPLR.IBISLines or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISLines and val == 1 then
+			if MPLR.IBISLines and val == 1 then
 				ent:SetNW2Int( "IBIS:Lines", 1 )
 			else
 				ent:SetNW2Int( "IBIS:Lines", val )
@@ -313,14 +313,14 @@ end,]]
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISRoutes or {} ) do
+			for k, v in pairs( MPLR.IBISRoutes or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISLRoutes and val == 1 then
+			if MPLR.IBISLRoutes and val == 1 then
 				ent:SetNW2Int( "IBIS:Routes", 1 )
 			else
 				ent:SetNW2Int( "IBIS:Routes", val )
@@ -333,14 +333,14 @@ end,]]
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISDestinations or {} ) do
+			for k, v in pairs( MPLR.IBISDestinations or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISDestinations and val == 1 then
+			if MPLR.IBISDestinations and val == 1 then
 				ent:SetNW2Int( "IBIS:Destinations", 1 )
 			else
 				ent:SetNW2Int( "IBIS:Destinations", val )
@@ -353,14 +353,14 @@ end,]]
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.SpecialAnnouncementsIBIS or {} ) do
+			for k, v in pairs( MPLR.SpecialAnnouncementsIBIS or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.SpecialAnnouncementsIBIS and val == 1 then
+			if MPLR.SpecialAnnouncementsIBIS and val == 1 then
 				ent:SetNW2Int( "IBIS:ServiceA", 1 )
 			else
 				ent:SetNW2Int( "IBIS:ServiceA", val )
@@ -373,14 +373,14 @@ end,]]
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISAnnouncementScript or {} ) do
+			for k, v in pairs( MPLR.IBISAnnouncementScript or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISAnnouncementScript and val == 1 then
+			if MPLR.IBISAnnouncementScript and val == 1 then
 				ent:SetNW2Int( "IBIS:AnnouncementScript", 1 )
 			else
 				ent:SetNW2Int( "IBIS:AnnouncementScript", val )
@@ -393,14 +393,14 @@ end,]]
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISAnnouncementMetadata or {} ) do
+			for k, v in pairs( MPLR.IBISAnnouncementMetadata or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISAnnouncementMetadata and val == 1 then
+			if MPLR.IBISAnnouncementMetadata and val == 1 then
 				ent:SetNW2Int( "IBIS:Announcements", 1 )
 			else
 				ent:SetNW2Int( "IBIS:Announcements", val )
@@ -413,14 +413,14 @@ end,]]
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISCommonFiles or {} ) do
+			for k, v in pairs( MPLR.IBISCommonFiles or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISCommonFiles and val == 1 then
+			if MPLR.IBISCommonFiles and val == 1 then
 				ent:SetNW2Int( "IBIS:CommonFiles", 1 )
 			else
 				ent:SetNW2Int( "IBIS:CommonFiles", val )
@@ -433,14 +433,14 @@ end,]]
 		"List",
 		function( ent )
 			local Rollsigns = {}
-			for k, v in pairs( UF.U2Rollsigns or {} ) do
+			for k, v in pairs( MPLR.U2Rollsigns or {} ) do
 				Rollsigns[ k ] = v.name
 			end
 			return Rollsigns
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.U2Rollsigns and val == 1 then
+			if MPLR.U2Rollsigns and val == 1 then
 				ent:SetNW2Int( "Rollsign", 1 )
 			else
 				ent:SetNW2Int( "Rollsign", val )

@@ -186,15 +186,19 @@ function ENT:Initialize()
 end
 
 function ENT:Think()
+	if not self.CoreSys and IsValid( self.SectionC ) then self.CoreSys = self.SectionC.CoreSys end
+	self:NextThink( CurTime() )
 	self.BaseClass.Think( self )
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
 	self.Speed = math.abs( -self:GetVelocity():Dot( self:GetAngles():Forward() ) * 0.06858 )
-	local poseValue = self:Animate( "front_r", 0, 0, 100, 1, 1, true )
+	local poseValue = self:Animate( "front_r", 100, 100, 100, 1, 4, false )
 	--print( "Pose Value: ", poseValue )
+	--print( self.FrontStepR )
 	-- Apply pose parameter
-	self.FrontStepR:SetPoseParameter( "position", poseValue )
+	--if IsValid( self.FrontStepR ) then self.FrontStepR:SetPoseParameter( "position", poseValue ) end
+	return true
 end
 
 --------------------------------------------------------------------------------
@@ -212,6 +216,7 @@ function ENT:Animate( Prop, targetValue, min, max, speed, damping )
 		end
 	end
 
+	if not self.Anims then self.Anims = {} end
 	if not self.Anims[ id ] then
 		-- Initialize only once
 		self.Anims[ id ] = {
@@ -310,62 +315,63 @@ end
 
 function ENT:CreateFoldingSteps( pos )
 	if pos == "front_r" then
-		local step = ents.Create( "prop_physics" )
+		local step = ents.Create( "prop_dynamic" )
 		step:SetModel( "models/lilly/uf/pt/step_r.mdl" )
-		step:SetParent( self )
-		step.SpawnPos = self:LocalToWorld( Vector( 0, 0, 0 ) )
 		step:SetPos( self:LocalToWorld( Vector( 237, 0, 0 ) ) )
-		step.SpawnAng = Angle( 0, 0, 0 )
 		step:SetAngles( self:GetAngles() )
+		--step:SetMoveType( MOVETYPE_VPHYSICS )
 		step:Spawn()
 		step:Activate()
+		step:SetCollisionGroup( COLLISION_GROUP_NONE )
+		step:PhysicsInit( SOLID_VPHYSICS )
+		step:SetSolid( SOLID_VPHYSICS )
 		local phys = step:GetPhysicsObject()
-		phys:EnableCollisions()
+		phys:Wake()
+		--
+		constraint.NoCollide( self, step )
 		constraint.Weld( step, self, 0, 0, 0, true, false )
+		--step.SpawnPos = self:LocalToWorld( Vector( 0, 0, 0 ) )
+		--step.SpawnAng = Angle( 0, 0, 0 )
 		table.insert( self.TrainEntities, step )
 		return step
 	elseif pos == "front_r_back" then
 		local step = ents.Create( "prop_physics" )
 		step:SetModel( "models/lilly/uf/pt/step_r_back.mdl" )
-		step:SetParent( self )
-		step.SpawnPos = self:LocalToWorld( Vector( 0, 0, 0 ) )
-		step:SetPos( self:LocalToWorld( Vector( 0, 0, 0 ) ) )
-		step.SpawnAng = Angle( 0, 0, 0 )
-		step:SetAngles( self:GetAngles() )
-		step:Spawn()
-		step:Activate()
-		local phys = step:GetPhysicsObject()
-		phys:EnableCollisions()
+		constraint.NoCollide( self, step )
 		constraint.Weld( step, self, 0, 0, 0, true, false )
+		--step.SpawnPos = self:LocalToWorld( Vector( 0, 0, 0 ) )
+		step:SetPos( self:LocalToWorld( Vector( 237, 0, 0 ) ) )
+		--step.SpawnAng = Angle( 0, 0, 0 )
+		step:SetAngles( self:GetAngles() )
+		local phys = step:GetPhysicsObject()
+		phys:EnableCollisions( true )
 		table.insert( self.TrainEntities, step )
 		return step
 	elseif pos == "front_l" then
 		local step = ents.Create( "prop_physics" )
 		step:SetModel( "models/lilly/uf/pt/step_r.mdl" )
-		step:SetParent( self )
-		step.SpawnPos = self:LocalToWorld( Vector( 667, 0, 0 ) )
-		step:SetPos( self:LocalToWorld( Vector( 430, 0, 0 ) ) )
-		step.SpawnAng = Angle( 0, 180, 0 )
-		step:SetAngles( self:GetAngles() + self:LocalToWorldAngles( Angle( 0, 0, 180 ) ) )
-		step:Spawn()
-		step:Activate()
-		local phys = step:GetPhysicsObject()
-		phys:EnableCollisions()
+		constraint.NoCollide( self, step )
 		constraint.Weld( step, self, 0, 0, 0, true, false )
+		--step.SpawnPos = self:LocalToWorld( Vector( 0, 0, 0 ) )
+		step:SetPos( self:LocalToWorld( Vector( 237, 0, 0 ) ) )
+		--step.SpawnAng = Angle( 0, 0, 0 )
+		step:SetAngles( self:GetAngles() )
+		local phys = step:GetPhysicsObject()
+		phys:EnableCollisions( true )
 		table.insert( self.TrainEntities, step )
-		-- step:SetParent(self)
 		return step
 	elseif pos == "front_l_back" then
 		local step = ents.Create( "prop_physics" )
 		step:SetModel( "models/lilly/uf/pt/step_r_back.mdl" )
-		step.SpawnPos = self:LocalToWorld( Vector( 431.5, 0, 0 ) )
-		step:SetPos( self:LocalToWorld( Vector( 194, 0, 0 ) ) )
-		step:SetAngles( self:GetAngles() + self:LocalToWorldAngles( Angle( 0, 0, 180 ) ) )
-		step.SpawnAng = Angle( 0, 180, 0 )
-		step:Spawn()
+		constraint.NoCollide( self, step )
 		constraint.Weld( step, self, 0, 0, 0, true, false )
+		--step.SpawnPos = self:LocalToWorld( Vector( 0, 0, 0 ) )
+		step:SetPos( self:LocalToWorld( Vector( 237, 0, 0 ) ) )
+		--step.SpawnAng = Angle( 0, 0, 0 )
+		step:SetAngles( self:GetAngles() )
+		local phys = step:GetPhysicsObject()
+		phys:EnableCollisions( true )
 		table.insert( self.TrainEntities, step )
-		-- step:SetParent(self)
 		return step
 	end
 end

@@ -69,9 +69,9 @@ function ENT:CheckContact( pos )
     --print("traceorigin",PhysObj:WorldToLocalVector(pos),"hitpos",PhysObj:WorldToLocalVector(result.HitPos),"calculated height diff",pantoheight.z)
     self:SetNW2Float( "PantoHeight", pantoheight.z )
     local traceEnt = result.Entity
-    if IsValid( traceEnt ) and traceEnt:GetClass() == "player" and UF.Voltage > 40 then --if the player hits the bounding box, unalive them
+    if IsValid( traceEnt ) and traceEnt:GetClass() == "player" and MPLR.Voltage > 40 then --if the player hits the bounding box, unalive them
         local pPos = traceEnt:GetPos()
-        util.BlastDamage( traceEnt, traceEnt, pPos, 100, 3.0 * UF.Voltage )
+        util.BlastDamage( traceEnt, traceEnt, pPos, 100, 3.0 * MPLR.Voltage )
         local effectdata = EffectData()
         effectdata:SetOrigin( pPos + Vector( 0, 0, -16 + math.random() * ( 40 + 0 ) ) )
         util.Effect( "cball_explode", effectdata, true, true )
@@ -88,15 +88,16 @@ function ENT:CheckContact( pos )
             [ 8 ] = "%s just checked the voltage. It's %s V!",
             [ 9 ] = "%s will stick to energy drinks from now on instead.",
             [ 10 ] = "%s, deus Juppiter volt, uh I mean, vult tuum mortem. That's right, it's Latin. Look it up!",
-            [ 11 ] = "%s used Thunderbolt. They hit themself in confusion. It was very effective!"
+            [ 11 ] = "%s used Thunderbolt. They hit themself in confusion. It was very effective!",
+            [ 12 ] = "%s just found out that electrons taste.... purple. How strange."
         }
 
         local list = player.GetHumans()
         for _, v in ipairs( list ) do
-            if traceEnt:Health() == 0 then v:PrintMessage( HUD_PRINTTALK, string.format( msg[ rnd ], traceEnt:GetPlayerInfo().name, UF.Voltage ) ) end
+            if traceEnt:Health() == 0 then v:PrintMessage( HUD_PRINTTALK, string.format( msg[ rnd ], traceEnt:GetPlayerInfo().name, MPLR.Voltage ) ) end
         end
         return false --don't return anything because... I mean, a human body is a conductor, just not a very good one
-    elseif result.Hit and traceEnt:GetClass() == "prop_static" and UF.Voltage > 40 then
+    elseif result.Hit and traceEnt:GetClass() == "prop_static" and MPLR.Voltage > 40 then
         --randomly create some sparks if we're hitting catenary, with a 12% chance
         if self.Train.Speed >= 5 and math.random( 0, 100 ) >= 80 then
             local pPos = result.HitPos
@@ -119,7 +120,7 @@ function ENT:CheckVoltage( dT )
     end
 
     local model = string.match( hitEnt:GetModel(), "overhead_wire", 1 )
-    if not supported or hitEnt:GetClass() == "prop_static" and model then self.Voltage = UF.Voltage end
+    if not supported or hitEnt:GetClass() == "prop_static" and model then self.Voltage = MPLR.Voltage end
     self.CheckTimeout = CurTime()
 end
 
@@ -131,9 +132,9 @@ end
 function ENT:AcceptInput( inputName, activator, called, data )
     if inputName == "OnFeederIn" then
         self.Feeder = tonumber( data )
-        if self.Feeder and not UF.Voltages[ self.Feeder ] then
-            UF.Voltages[ self.Feeder ] = 0
-            UF.Currents[ self.Feeder ] = 0
+        if self.Feeder and not MPLR.Voltages[ self.Feeder ] then
+            MPLR.Voltages[ self.Feeder ] = 0
+            MPLR.Currents[ self.Feeder ] = 0
         end
     elseif inputName == "OnFeederOut" then
         self.Feeder = nil

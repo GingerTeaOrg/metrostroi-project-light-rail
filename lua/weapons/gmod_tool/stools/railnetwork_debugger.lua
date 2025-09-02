@@ -1,5 +1,5 @@
--- Define your toolgun SWEP
-local TOOL = {}
+TOOL.Category = "Metrostroi: Project Light Rail"
+TOOL.Name = "Railnetwork Debugger Tool"
 -- Set the basic meta table
 if CLIENT then
 	TOOL.Author = "LillyWho"

@@ -1,5 +1,5 @@
 -- Format: LineRoute = {[SwitchID] = "Direction"}
-UF.RoutingTable = {
+MPLR.RoutingTable = {
     [ "00101" ] = {
         [ 1 ] = "Right",
         [ 2 ] = "Right",
@@ -8,4 +8,4 @@ UF.RoutingTable = {
     },
 }
 
-UF.RoutingTable[ "0101" ] = UF.RoutingTable[ "00101" ]
+MPLR.RoutingTable[ "0101" ] = MPLR.RoutingTable[ "00101" ]

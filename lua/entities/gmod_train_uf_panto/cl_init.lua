@@ -30,8 +30,9 @@ function ENT:Draw()
     end
 
     self:DrawModel()
-    local lerped = lerp( self.PantoHeight, 0, 135, 0, 1 )
-    self:SetPoseParameter( "position", self:Animate( "1", lerped, 0, 100, 1.6, 1, 1 ) )
+    local lerped = math.Remap( self.PantoHeight, 0, 135, 0, 1 ) + math.Remap( self.PantoHeight, 0, 135, -0.03, 0.079 )
+    local speed = self.FirstRaise and 1.1 or 1.6
+    self:SetPoseParameter( "position", self:Animate( "1", lerped, 0, 100, speed, 1, 1 ) )
     self:InvalidateBoneCache()
 end
 

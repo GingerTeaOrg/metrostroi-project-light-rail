@@ -1,4 +1,4 @@
-UF.AddSpecialAnnouncements( "Frankfurt", {
+MPLR.AddSpecialAnnouncements( "Frankfurt", {
     [ "01" ] = {
         [ 1 ] = {
             [ "lilly/uf/IBIS/announcements/special/imn/delay_due_to_malfunction.mp3" ] = 10
@@ -86,7 +86,7 @@ UF.AddSpecialAnnouncements( "Frankfurt", {
     }
 } )
 
-UF.AddIBISLines( "Frankfurt", {
+MPLR.AddIBISLines( "Frankfurt", {
     -- ["00"] = true,
     [ "01" ] = true,
     [ "02" ] = true,
@@ -99,7 +99,7 @@ UF.AddIBISLines( "Frankfurt", {
     [ "09" ] = true
 } )
 
-UF.AddIBISRoutes( "Frankfurt", {
+MPLR.AddIBISRoutes( "Frankfurt", {
     -- Format: [Line] = {[RouteNumber] = {StationNumber1,StationNumber2,StationNumber3,etc},[RouteNumber2] = {etc}}
     [ "01" ] = {
         [ "01" ] = { 712, 773, 715, 710, 783, 711 },
@@ -142,7 +142,7 @@ UF.AddIBISRoutes( "Frankfurt", {
     }
 } )
 
-UF.AddLinePrefixes( "Frankfurt", {
+MPLR.AddLinePrefixes( "Frankfurt", {
     [ "01" ] = "U",
     [ "02" ] = "U",
     [ "03" ] = "U",
@@ -154,7 +154,7 @@ UF.AddLinePrefixes( "Frankfurt", {
     [ "09" ] = "U",
 } )
 
-UF.AddIBISDestinations( "Frankfurt", {
+MPLR.AddIBISDestinations( "Frankfurt", {
     [ 045 ] = "Leerfahrt",
     [ 700 ] = " ",
     [ 701 ] = "PROBEWAGEN NICHT EINSTEIGEN",
@@ -203,13 +203,13 @@ UF.AddIBISDestinations( "Frankfurt", {
     [ 795 ] = "Eschenheimer Tor"
 } )
 
-UF.AddIBISAnnouncementScript( "Frankfurt", {
-    -- The general routine for announcement. Strings are from UF.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
+MPLR.AddIBISAnnouncementScript( "Frankfurt", {
+    -- The general routine for announcement. Strings are from MPLR.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
     [ 1 ] = "next_station",
     [ 2 ] = "station"
 } )
 
-UF.AddIBISAnnouncementMetadata( "Frankfurt", {
+MPLR.AddIBISAnnouncementMetadata( "Frankfurt", {
     -- format: {[station] = {[line] = {[route] = {[audiofile] = seconds}}}} | Sets the "station" element announcement routine for each station on a basis of line, route
     [ 704 ] = {
         [ "07" ] = {
@@ -1498,7 +1498,7 @@ UF.AddIBISAnnouncementMetadata( "Frankfurt", {
     }
 } )
 
-UF.AddIBISCommonFiles( "Frankfurt", {
+MPLR.AddIBISCommonFiles( "Frankfurt", {
     [ "next_station" ] = { "lilly/uf/IBIS/announcements/ffm/ubahn/common/next_station.mp3", 1.2, },
     [ "terminus" ] = { "lilly/uf/IBIS/announcements/ffm/ubahn/common/terminus.mp3", 2 }
 } )

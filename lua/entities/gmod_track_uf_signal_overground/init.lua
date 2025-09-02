@@ -9,7 +9,7 @@ function ENT:Initialize()
 	self.BlockMode = self.VMF and self.VMF.Blockmode > 0 and self.VMF.Blockmode > 0 or self:GetNW2Bool( "BlockMode", false )
 	self.Lenses = self.Lenses or self.DefaultLenses
 	self.Columns = self.VMF and self.VMF.Columns or self:GetNW2Int( "Columns", 1 )
-	self.TrackPosition = UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+	self.TrackPosition = MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	self.Aspect = {}
 	for i = 1, self.Columns do
 		self.Aspect[ i ] = "F0"
@@ -24,6 +24,7 @@ function ENT:Initialize()
 	self.FailureIndex = 0
 	self.SimulateFailedToRegister = false
 	self.NextSwitch = -1
+	self.FailedToFindSwitch = false
 	util.AddNetworkString( "UpdateOvergroundSignal" )
 	self:SendLensUpdate()
 end
@@ -58,18 +59,20 @@ function ENT:ParseLenses( str )
 end
 
 function ENT:Think()
-	self.TrackPosition = self.TrackPosition or UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+	self.LastTrainCheck = self.LastTrainCheck or CurTime()
+	self.TrackPosition = self.TrackPosition or MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	self.Node = self.Node or self.TrackPosition.node1
 	if self.BlockMode then
 		self:BlockModeSignalling()
 	else
+		self:DetectTrainArrived()
 		self:FailToRegisterSim()
 		self:OnSightSignalling()
 	end
 
 	--timer.Simple( 4, function() self.SendSignalStateToClient( self ) end )
 	self:SendSignalStateToClient( self )
-	self:NextThink( CurTime() + 1 )
+	self:NextThink( CurTime() )
 	return true
 end
 
@@ -81,13 +84,18 @@ function ENT:FindNextSwitch( node )
 		return
 	end
 
+	if self.FailedToFindSwitch then -- avoid spamming the console with repeat attempts!
+		return
+	end
+
 	if nodes_traversed and nodes_traversed == max_nodes then
 		print( "Maximum of nodes traversed without findings. Quitting" )
+		self.FailedToFindSwitch = true
 		return
 	end
 
 	local forward = not self.Forward
-	local foundSwitch = UF.SwitchEntitiesByNode[ node ]
+	local foundSwitch = MPLR.SwitchEntitiesByNode[ node ]
 	local branch = node.branches and node.branches[ 1 ][ 2 ]
 	--print( node.id )
 	--print( branch )
@@ -122,6 +130,41 @@ function ENT:FindNextSwitch( node )
 	end
 end
 
+function ENT:DetectTrainArrived()
+	local forward = self.TrackPosition.forward
+	local x = self.TrackPosition.x
+	-- safer calculation
+	local scanStart, scanEnd
+	if forward then
+		scanStart = x
+		scanEnd = x - 20 -- look ahead 30m
+	else
+		scanStart = x
+		scanEnd = x + 20 -- look behind 30m
+	end
+
+	local occupied, firstTrain, lastTrain, trainList = MPLR.IsTrackOccupied( self.TrackPosition.node1, scanStart, forward, nil, scanEnd )
+	local targetTrain
+	--print( lastTrain )
+	if lastTrain and not lastTrain.IBIS then
+		for _, train in ipairs( trainList ) do
+			if train.IBIS then
+				targetTrain = train
+				break
+			end
+		end
+	else
+		if IsValid( lastTrain ) and lastTrain.IBIS then
+			targetTrain = lastTrain
+		else
+			targetTrain = nil
+		end
+	end
+
+	self.TrainIsRegistered = IsValid( targetTrain )
+	--print( occupied, targetTrain )
+end
+
 function ENT:AdditionalAspect( column )
 	local additionalLenses = {
 		[ "So14" ] = true,
@@ -145,6 +188,15 @@ end
 
 function ENT:OnSightSignalling()
 	-- Ensure NextSwitch is set or found
+	if self.FailedToFindSwitch then
+		for column, lensTab in ipairs( self.Lenses ) do
+			-- Optional additional aspect (suffix)
+			local aAspect = self:AdditionalAspect( tonumber( column, 10 ) )
+			if aAspect then self.Aspect[ column ] = aAspect .. "_" .. "F0" end
+		end
+		return
+	end
+
 	self.NextSwitch = type( self.NextSwitch ) ~= "number" and self.NextSwitch or self:FindNextSwitch( self.Node )
 	if not self.NextSwitch or not IsValid( self.NextSwitch ) then return end
 	-- Determine orientation of the switch ("alt" vs "main")
@@ -180,7 +232,7 @@ function ENT:OnSightSignalling()
 						if ( switchPointsTo == "left" and switchOrientationLeft == "main" ) or ( switchPointsTo == "right" and switchOrientationLeft == "alt" ) then
 							switchToAspect = "F1"
 						else
-							print( "halt" )
+							--print( "halt" )
 							switchToAspect = "F0"
 						end
 					else
@@ -207,5 +259,5 @@ function ENT:BlockModeSignalling()
 end
 
 function ENT:OnRemove()
-	UF.UpdateSignalEntities()
+	MPLR.UpdateSignalEntities()
 end

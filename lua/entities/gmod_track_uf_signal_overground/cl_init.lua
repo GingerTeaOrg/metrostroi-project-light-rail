@@ -101,51 +101,37 @@ function ENT:SpawnLenses()
 	local horizontalOffset = 0 -- procedural offset for spawning all signal elements
 	local totalHorizontalOffset = self.Left and -50 + self.TotalHorizontalOffset or 50 + self.TotalHorizontalOffset -- offset for the entire signal, to be set by the mapper using the toolgun
 	local spriteOffset = -170 --fixed offset for the actual sprites to work off of
-	local previousColumn = 0
 	-- loop through columns to spawn frames and sprites 
 	self.Columns = self:GetNW2Int( "SignalColumns", 1 )
 	for j = 1, self.Columns do
-		if not self.SignalStatesByColumn[ j ] then -- initialise actual light state by column
-			self.SignalStatesByColumn[ j ] = {}
-		end
-
+		if not self.SignalStatesByColumn[ j ] then self.SignalStatesByColumn[ j ] = {} end
 		for i = 1, #self.LensOrder do
-			local lens = self.LensOrder[ i ] -- fetch lens by ordered hierarchy
-			if self.Lenses[ j ][ lens ] then -- if lens is found in currently set configuration, continue
-				if not self.LensModels[ j ] then -- initialise sprite table for column
-					self.LensModels[ j ] = {}
-				end
-
-				if not self.LensCases[ j ] then -- initialise frame trable for column
-					self.LensCases[ j ] = {}
-				end
-
-				self.LensModels[ j ][ lens ] = ents.CreateClientProp( lensBasepath .. lens .. ".mdl" ) -- spawn sprite
-				self.SignalStatesByColumn[ j ][ lens ] = false -- default sprite to off
-				table.insert( self.Attachments, self.LensModels[ j ][ lens ] ) -- add to cleanup table
-				self.LensModels[ j ][ lens ]:SetPos( self:LocalToWorld( Vector( self.LateralOffset + 12.9, totalHorizontalOffset + horizontalOffset, 0 ) ) - Vector( 0, 0, spriteOffset ) ) -- move sprite to alotted position relative to the main model
-				spriteOffset = spriteOffset + 15 -- increment the offset vertically
+			local lens = self.LensOrder[ i ]
+			if self.Lenses[ j ][ lens ] then
+				if not self.LensModels[ j ] then self.LensModels[ j ] = {} end
+				if not self.LensCases[ j ] then self.LensCases[ j ] = {} end
+				self.LensModels[ j ][ lens ] = ents.CreateClientProp( lensBasepath .. lens .. ".mdl" )
+				self.SignalStatesByColumn[ j ][ lens ] = false
+				table.insert( self.Attachments, self.LensModels[ j ][ lens ] )
+				self.LensModels[ j ][ lens ]:SetPos( self:LocalToWorld( Vector( self.LateralOffset + 12.9, totalHorizontalOffset + horizontalOffset, 0 ) ) - Vector( 0, 0, spriteOffset ) )
+				spriteOffset = spriteOffset + 15
 				self.LensModels[ j ][ lens ]:SetAngles( self:GetAngles() )
 				self.LensModels[ j ][ lens ]:Spawn()
 				self.LensModels[ j ][ lens ]:SetParent( self )
 				self.LensCases[ j ][ lens ] = ents.CreateClientProp( lensCase )
 				table.insert( self.Attachments, self.LensCases[ j ][ lens ] )
-				self.LensCases[ j ][ lens ]:SetPos( self:LocalToWorld( Vector( self.LateralOffset + 0, totalHorizontalOffset + horizontalOffset, 0 ) ) - Vector( 0, 0, verticalOffset ) )
+				self.LensCases[ j ][ lens ]:SetPos( self:LocalToWorld( Vector( self.LateralOffset, totalHorizontalOffset + horizontalOffset, 0 ) ) - Vector( 0, 0, verticalOffset ) )
 				self.LensCases[ j ][ lens ]:SetAngles( self:GetAngles() )
 				self.LensCases[ j ][ lens ]:Spawn()
 				self.LensCases[ j ][ lens ]:SetParent( self )
 				verticalOffset = verticalOffset + 15
 			end
-
-			if previousColumn ~= j then
-				--reset all parameters after the loop for column has run so that it can be in the right place for the next column
-				verticalOffset = 0
-				spriteOffset = -170
-				previousColumn = j
-			end
 		end
 
-		--for each column, we move horizontally as well
+		-- reset once per column
+		verticalOffset = 0
+		spriteOffset = -170
+		-- move to next column horizontally
 		horizontalOffset = horizontalOffset + 18
 	end
 

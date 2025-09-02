@@ -96,4 +96,6 @@ function ENT:OnRemove()
 	self.Left:Remove()
 	self.Right:Remove()
 	self.Straight:Remove()
+	self.TopBracket:Remove()
+	self.BottomBracket:Remove()
 end

@@ -2,11 +2,11 @@
 -- Rerailing, testing whether train is on rails
 --------------------------------------------------------------------------------
 -- Z Offset for rerailing bogeys
-local bogeyOffset = 31
+local bogeyOffset = 11
 local TRACK_GAUGE = 56 --Distance between rails
 local TRACK_WIDTH = 2.26 --Width of a single rail
 local TRACK_HEIGHT = 3.24 --Height of a single rail
-local TRACK_CLEARANCE = 160 --Vertical space above the rails that will always be clear of world, also used as rough estimation of train height
+local TRACK_CLEARANCE = 60 --Vertical space above the rails that will always be clear of world, also used as rough estimation of train height
 --------------------------------------------------------------------------------
 local TRACK_SINGLERAIL = ( TRACK_GAUGE + TRACK_WIDTH ) / 2
 local function dirdebug( pos, dir, color )
@@ -31,11 +31,20 @@ local function traceWorldOnly( pos, dir, col )
 	local tr = util.TraceLine( {
 		start = pos,
 		endpos = pos + dir,
-		mask = MASK_PLAYERSOLID --MASK_NPCWORLDSTATIC
+		mask = MASK_PLAYERSOLID
 	} )
 
+	-- Debug overlay
 	debugoverlay.Line( tr.StartPos, tr.HitPos, 10, col or Color( 0, 0, 255 ), true )
 	debugoverlay.Sphere( tr.StartPos, 2, 10, Color( 0, 255, 255 ), true )
+	-- Print info about what we hit
+	if tr.Hit then
+		print( "[Rerail Debug] Hit entity:", tr.Entity, "Class:", tr.Entity:IsValid() and tr.Entity:GetClass() or "world" )
+		print( "[Rerail Debug] Hit texture:", tr.HitTexture )
+		print( "[Rerail Debug] Hit normal:", tr.HitNormal )
+	else
+		print( "[Rerail Debug] No hit" )
+	end
 	return tr
 end
 
@@ -79,49 +88,41 @@ end
 -- Position needs to be between/below the tracks already, don't use a props origin
 -- Only needs a rough forward vector, ent:GetAngles():Forward() suffices
 local function getTrackData( pos, forward )
-	-- Trace down
-	debugoverlay.Cross( pos, 5, 10, Color( 255, 0, 255 ), true ) -- Starting position cross
+	debugoverlay.Cross( pos, 5, 10, Color( 255, 0, 255 ), true )
+	-- Trace down to find ground/rail top
 	local tr = traceWorldOnly( pos, Vector( 0, 0, -500 ) )
 	if not tr or not tr.Hit then return false end
 	local updir = tr.HitNormal
 	local floor = tr.HitPos + updir * ( TRACK_HEIGHT * 0.9 )
-	local right = forward:Cross( updir )
-	dirdebug( tr.HitPos, updir, Color( 0, 0, 255 ) ) -- 'up' direction in blue
-	dirdebug( floor, trackright, Color( 255, 0, 0 ) ) -- 'right' direction in red
-	dirdebug( floor, trackforward, Color( 0, 255, 0 ) ) -- 'forward' direction in green
-	-- Trace right
-	tr = traceWorldOnly( floor, right * 500 )
+	-- First try to estimate right and forward
+	local approxRight = forward:Cross( updir )
+	tr = traceWorldOnly( floor, approxRight * 500 )
 	if not tr or not tr.Hit then return false end
-	debugoverlay.Line( tr.StartPos, tr.HitPos, 10, Color( 0, 255, 0 ), true ) -- Right trace
+	-- Now properly compute track orientation
 	local trackforward = tr.HitNormal:Cross( updir )
 	local trackright = trackforward:Cross( updir )
-	debugoverlay.Axis( floor, trackforward:Angle(), 10, 5, true ) -- Floor axes visualization
-	-- Trace right and left for rails
+	-- Debug overlays
+	dirdebug( tr.HitPos, updir, Color( 0, 0, 255 ) ) -- Up
+	dirdebug( floor, trackright, Color( 255, 0, 0 ) ) -- Right
+	dirdebug( floor, trackforward, Color( 0, 255, 0 ) ) -- Forward
+	debugoverlay.Axis( floor, trackforward:Angle(), 10, 5, true )
+	-- Rail traces
 	local tr1 = traceWorldOnly( floor, trackright * TRACK_GAUGE )
 	local tr2 = traceWorldOnly( floor, -trackright * TRACK_GAUGE )
 	if not tr1 or not tr2 then return false end
-	debugoverlay.Line( tr1.StartPos, tr1.HitPos, 10, Color( 0, 255, 0 ), true ) -- Right rail trace
-	debugoverlay.Line( tr2.StartPos, tr2.HitPos, 10, Color( 0, 255, 0 ), true ) -- Left rail trace
-	debugoverlay.Cross( ( tr1.HitPos + tr2.HitPos ) / 2, 5, 10, Color( 255, 0, 0 ), true ) -- Midpoint between rails
+	debugoverlay.Line( tr1.StartPos, tr1.HitPos, 10, Color( 0, 255, 0 ), true )
+	debugoverlay.Line( tr2.StartPos, tr2.HitPos, 10, Color( 0, 255, 0 ), true )
 	local centerpos = ElevateToTrackLevel( floor, trackright, updir )
 	if not centerpos then return false end
-	debugoverlay.Cross( centerpos, 5, 10, Color( 255, 0, 0 ), true ) -- Elevated center position
-	local data = {
+	return {
 		forward = trackforward,
 		right = trackright,
 		up = updir,
 		centerpos = centerpos
 	}
-
-	-- Visualize track data
-	debugoverlay.Cross( centerpos, 5, 10, Color( 255, 0, 0 ), true ) -- Center position
-	debugoverlay.Line( centerpos, centerpos + trackforward * 30, 10, Color( 255, 0, 0 ), true ) -- Forward direction
-	debugoverlay.Line( centerpos, centerpos + trackright * 30, 10, Color( 0, 255, 0 ), true ) -- Right direction
-	debugoverlay.Line( centerpos, centerpos + updir * 30, 10, Color( 0, 0, 255 ), true ) -- Up direction
-	return data
 end
 
-UF.RerailGetTrackData = getTrackData
+MPLR.RerailGetTrackData = getTrackData
 -- Helper function that tries to find trackdata at -z or -ent:Up()
 local function getTrackDataBelowEnt( ent )
 	local forward = ent:GetAngles():Forward()
@@ -161,10 +162,10 @@ local function RerailConCMDHandler( ply, cmd, args, fullstring )
 	if train:GetClass() == "gmod_train_uf_bogey" then
 		print( train )
 		ply:PrintMessage( HUD_PRINTTALK, "Rerailing bogey!" )
-		UF.RerailBogey( train )
+		MPLR.RerailBogey( train )
 	else
 		ply:PrintMessage( HUD_PRINTTALK, "Rerailing whole train!" )
-		UF.RerailTrain( train, ply )
+		MPLR.RerailTrain( train, ply )
 	end
 end
 
@@ -172,7 +173,7 @@ if SERVER then concommand.Add( "mplr_rerail", RerailConCMDHandler, nil, "Rerail 
 --------------------------------------------------------------------------------
 -- Rerails a single bogey
 --------------------------------------------------------------------------------
-function UF.RerailBogey( bogey )
+function MPLR.RerailBogey( bogey )
 	if timer.Exists( "mplr_rerailer_solid_reset_" .. bogey:EntIndex() ) then return false end
 	local trackData = getTrackDataBelowEnt( bogey )
 	if not trackData then return false end
@@ -198,7 +199,7 @@ end
 --------------------------------------------------------------------------------
 -- Rerails given train entity
 --------------------------------------------------------------------------------
-function UF.RerailTrain( train, ply )
+function MPLR.RerailTrain( train, ply )
 	-- Safety checks
 	if not IsValid( train ) or train.SubwayTrain == nil then return false end
 	if train.NoPhysics or not IsValid( train:GetPhysicsObject() ) then return false end

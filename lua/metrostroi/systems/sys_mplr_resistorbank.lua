@@ -74,9 +74,9 @@ function TRAIN_SYSTEM:Camshaft()
     if speed < 20 then
         if speed < 3 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 1 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 6 )
             elseif throttle <= 0 and speed > 5 then
-                self.RequestedResistors = Lerp( throttle, 19, 20 )
+                self.RequestedResistors = Lerp( throttle, 15, 20 )
             elseif throttle <= 0 and speed < 5 then
                 self.BrakingResistors = 20
                 self.RequestedResistors = 0
@@ -84,20 +84,13 @@ function TRAIN_SYSTEM:Camshaft()
             end
         elseif speed <= 4 and speed > 3 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 2 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 7 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 18, 19 )
-            elseif speed <= 15 and speed > 4 then
-            end
-
-            if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 3 )
-            elseif throttle <= 0 then
-                self.BrakingResistors = Lerp( throttle, 17, 18 )
             end
         elseif speed <= 20 and speed > 15 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 4 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 7 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 16, 17 )
             end
@@ -105,25 +98,25 @@ function TRAIN_SYSTEM:Camshaft()
     elseif speed > 20 and speed <= 40 then
         if speed < 25 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 5 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 9 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 15, 16 )
             end
         elseif speed <= 30 and speed > 25 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 6 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 11 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 14, 15 )
             end
         elseif speed <= 35 and speed > 30 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 7 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 13 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 13, 14 )
             end
         elseif speed <= 40 and speed > 35 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 9 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 15 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 12, 13 )
             end
@@ -131,25 +124,25 @@ function TRAIN_SYSTEM:Camshaft()
     elseif speed > 40 and speed <= 60 then
         if speed < 45 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 10 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 17 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 11, 12 )
             end
         elseif speed <= 50 and speed > 45 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 11 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 18 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 10, 11 )
             end
         elseif speed <= 55 and speed > 50 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 13 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 19 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 9, 10 )
             end
         elseif speed <= 60 and speed > 55 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 14 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 20 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 8, 9 )
             end
@@ -157,19 +150,19 @@ function TRAIN_SYSTEM:Camshaft()
     elseif speed > 60 and speed <= 80 then
         if speed < 65 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 15 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 20 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 7, 8 )
             end
         elseif speed <= 70 and speed > 65 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 16 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 20 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 6, 7 )
             end
         elseif speed <= 75 and speed > 70 then
             if throttle > 0 then
-                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 17 )
+                self.RequestedResistors = ilerp( throttle, 0, 1, 0, 20 )
             elseif throttle <= 0 then
                 self.BrakingResistors = Lerp( throttle, 5, 6 )
             end

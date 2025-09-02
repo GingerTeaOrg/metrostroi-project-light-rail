@@ -1,4 +1,4 @@
-UF.AddIBISLines( "Düsseldorf", {
+MPLR.AddIBISLines( "Düsseldorf", {
 	[ "74" ] = true,
 	[ "77" ] = true,
 	[ "78" ] = true,
@@ -6,26 +6,26 @@ UF.AddIBISLines( "Düsseldorf", {
 	[ "81" ] = true,
 } )
 
-UF.AddIBISAnnouncementScript( "Düsseldorf", {
-	--The general routine for announcement. Strings are from UF.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
+MPLR.AddIBISAnnouncementScript( "Düsseldorf", {
+	--The general routine for announcement. Strings are from MPLR.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
 	[ 1 ] = "gong",
 	[ 2 ] = "station",
 } )
 
-UF.AddIBISAnnouncementScript( "Düsseldorf Vintage", {
-	--The general routine for announcement. Strings are from UF.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
+MPLR.AddIBISAnnouncementScript( "Düsseldorf Vintage", {
+	--The general routine for announcement. Strings are from MPLR.AddIBISCommonFiles. Table listing index numbers dictate the order of announcements. Any arbitrary extra announcements defined in IBISCommonFiles can be prefixed or appended.
 	[ 1 ] = "gong_old",
 	[ 2 ] = "station",
 } )
 
-UF.AddIBISCommonFiles( "Düsseldorf", {
+MPLR.AddIBISCommonFiles( "Düsseldorf", {
 	[ "gong" ] = { "lilly/uf/IBIS/announcements/rheinbahn/common/gong.mp3", 1.2 },
 	[ "gong_old" ] = { "lilly/uf/IBIS/announcements/rheinbahn/common/gong_vintage.mp3", 1.2 },
 	[ "terminus" ] = { "lilly/uf/IBIS/announcements/rheinbahn/common/terminus.mp3", 1 },
 	[ "request_stop" ] = { "lilly/uf/IBIS/announcements/rheinbahn/common/request_stop.mp3", 1.5 },
 } )
 
-UF.AddIBISDestinations( "Düsseldorf", {
+MPLR.AddIBISDestinations( "Düsseldorf", {
 	[ 001 ] = "Moorenstra?e",
 	[ 002 ] = "Am Steinberg",
 	[ 003 ] = "Kopernikusstr",
@@ -75,7 +75,7 @@ UF.AddIBISDestinations( "Düsseldorf", {
 	[ 881 ] = "Messe Ost",
 } )
 
-UF.AddIBISAnnouncementMetadata( "Düsseldorf", {
+MPLR.AddIBISAnnouncementMetadata( "Düsseldorf", {
 	-- format: {[station] = {[line] = {[route] = {[audiofile] = seconds}}}} | Sets the "station" element announcement routine for each station on a basis of line, route
 	[ 704 ] = {
 		[ "07" ] = {

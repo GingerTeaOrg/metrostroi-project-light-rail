@@ -1,4 +1,4 @@
-function UF.DebugSwitchPaths()
+function MPLR.DebugSwitchPaths()
     local switches = ents.FindByClass( "gmod_track_uf_switch" )
     for _, v in ipairs( switches ) do
         if next( v.Paths ) then
@@ -27,7 +27,7 @@ local function printTableLimited( table, depth )
     end
 end
 
-function UF.PrintBranchPathsNearSwitch()
+function MPLR.PrintBranchPathsNearSwitch()
     local switches = ents.FindByClass( "gmod_track_uf_switch" )
     for _, ent in ipairs( switches ) do
         local branches = Metrostroi.GetPositionOnTrack( ent:GetPos(), ent:GetAngles() )[ 1 ].node1

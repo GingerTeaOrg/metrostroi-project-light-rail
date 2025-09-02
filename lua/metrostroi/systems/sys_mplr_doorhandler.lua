@@ -73,22 +73,22 @@ function TRAIN_SYSTEM:Initialize()
 
 	self.DoorRandomnessRight = {}
 	self.DoorRandomnessLeft = {}
-	for i in pairs( self.DoorStatesRight ) do
+	for i in ipairs( self.DoorStatesRight ) do
 		self.DoorRandomnessRight[ i ] = 0
 	end
 
-	for i in pairs( self.DoorStatesLeft ) do
+	for i in ipairs( self.DoorStatesLeft ) do
 		self.DoorRandomnessLeft[ i ] = 0
 	end
 
 	self.DoorLockSignalMoment = 0
-	self.DoorsPreviouslyUnlocked = false
 	self.DoorOpenMoments = {}
 	self.DoorCloseMomentsCalculated = false
 	self.DoorRandomnessCalculated = false
 	self.DoorsCloseTriggered = false
 	self.DoorsClosed = true
 	self.DoorsPreviouslyUnlocked = false
+	self.DoorsPreviousOpened = false
 	self.RequireDepartureAcknowledge = self.Train.RequireDepartureAcknowledge
 	self.DoorsForceClose = false
 	---------------------------------------
@@ -182,10 +182,12 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 	if self.DoorsPreviouslyUnlocked and self.RequireDepartureAcknowledge and self.TrainHasDoorsClosed and self.DoorsCloseTriggered then
 		if p.DoorsCloseConfirm > 0 then self.DoorsPreviouslyUnlocked = false end
 		self.Train:SetNW2Bool( "DepartureAlarm", self.DoorsPreviouslyUnlocked )
-	elseif self.DoorsPreviouslyUnlocked and not self.RequireDepartureAcknowledge and self.TrainHasDoorsClosed then
+	elseif ( ( self.DoorsPreviouslyUnlocked and self.DoorsPreviouslyOpened ) or ( self.DoorUnlockState == 0 and self.DoorsPreviouslyUnlocked ) ) and not self.RequireDepartureAcknowledge and self.TrainHasDoorsClosed then
+		print( "DepartureClear!!" )
 		self.Train:SetNW2Bool( "DepartureAlarm", true )
-		self.Train:SetNW2Bool( "DepartureAlarm", false )
 		self.DoorsPreviouslyUnlocked = false
+		self.DoorsPreviouslyOpened = false
+		--self.Train:SetNW2Bool( "DepartureAlarm", false )
 	end
 
 	if self.StepStatesMediumLeft or self.StepStatesMediumRight then self:Steps() end
@@ -415,6 +417,7 @@ function TRAIN_SYSTEM:UnlockDoors( right, left, IRGates, dT )
 		if next( tabRight ) and right then
 			for i = 1, #tabRight do
 				if tabRight[ i ] == 3 and doorStatesRight[ i ] < 1 and not IRGates[ i ] then
+					self.DoorsPreviouslyOpened = true
 					if self.StepMode and self.StepMode < 1 then --no steps, open immediately
 						doorStatesRight[ i ] = math.Clamp( doorStatesRight[ i ] + 0.55 * dT, 0, 1 )
 						--print( doorStates[ i ] )
@@ -584,7 +587,7 @@ function TRAIN_SYSTEM:PrevUnlock( left, right, unlocked )
 	local doorsClosed = true
 	local departureAlarm = false
 	if unlocked then
-		self.DoorsPreviouslyUnlocked = true
+		--self.DoorsPreviouslyUnlocked = true
 		if self.RequireDepartureAcknowledge then self.DepartureConfirmed = false end
 	end
 

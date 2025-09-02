@@ -297,8 +297,8 @@ function ENT:Initialize()
     self.DoorLockSignalMoment = 0
     self.DoorsOpen = false
     -- Create bogeys
-    self.FrontBogey = self:CreateBogeyUF( Vector( 345, 0, 10 ), Angle( 0, 180, 0 ), true, "duewag_motor", "a" )
-    self.MiddleBogey = self:CreateBogeyUF( Vector( 0, 0, 11.9 ), Angle( 0, 0, 0 ), false, "u3joint", "a" )
+    self.FrontBogey = self:CreateBogeyMPLR( Vector( 345, 0, 10 ), Angle( 0, 180, 0 ), true, "duewag_motor", "a" )
+    self.MiddleBogey = self:CreateBogeyMPLR( Vector( 0, 0, 11.9 ), Angle( 0, 0, 0 ), false, "u3joint", "a" )
     self:SetNWEntity( "FrontBogey", self.FrontBogey )
     -- Create couples
     self.FrontCouple = self:CreateCustomCoupler( Vector( 465, 0, 12 ), Angle( 0, 0, 0 ), true, "u2", "a" )
@@ -310,7 +310,7 @@ function ENT:Initialize()
     self.SectionB = self:CreateSection( Vector( 0, 0, 0 ), nil, --[[no angle]]
         "gmod_subway_uf_u3_section_b", self, nil, self )
 
-    self.RearBogey = self:CreateBogeyUF( Vector( -345, 0, 10 ), Angle( 0, 180, 0 ), false, "duewag_motor", "b" )
+    self.RearBogey = self:CreateBogeyMPLR( Vector( -345, 0, 10 ), Angle( 0, 180, 0 ), false, "duewag_motor", "b" )
     self.RearCouple = self:CreateCustomCoupler( Vector( -465, 0, 12 ), Angle( 0, 180, 0 ), false, "u2", "b" )
     self.Panto = self:CreatePanto( Vector( 38, 0, 128 ), Angle( 0, 180, 0 ), "einholm" )
     self.PantoUp = false
@@ -477,7 +477,7 @@ function ENT:Think( dT )
     self.Speed = math.abs( self:GetVelocity():Dot( self:GetAngles():Forward() ) * 0.06858 )
     self:SetNW2Float( "BatteryCharge", self.Duewag_Battery.Voltage )
     self:Traction()
-    self:Wipe( 0 )
+    self:Wipe( 2 )
     --self:Wipe( 0 )
 end
 
@@ -648,7 +648,7 @@ function ENT:OnButtonPress( button, ply )
     end
 
     if button == "DeadmanSet" then
-        self.DeadmanUF.IsPressedA = true
+        self.DeadmanMPLR.IsPressedA = true
         if self:ReadTrainWire( 6 ) > 0 then self:WriteTrainWire( 12, 1 ) end
         ------print("DeadmanPressedYes")
     end
@@ -866,7 +866,7 @@ function ENT:OnButtonRelease( button, ply )
     if button == "BatterySet" then self:SetPackedBool( "FlickBatterySwitchOn", false ) end
     if button == "BatteryDisableSet" then self:SetPackedBool( "FlickBatterySwitchOff", false ) end
     if button == "DeadmanSet" then
-        self.DeadmanUF.IsPressedA = false
+        self.DeadmanMPLR.IsPressedA = false
         if self:ReadTrainWire( 6 ) > 0 then self:WriteTrainWire( 12, 0 ) end
         ------print("DeadmanPressedNo")
     end

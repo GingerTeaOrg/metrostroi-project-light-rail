@@ -1561,4 +1561,4 @@ function ENT:Animations()
 	end
 end
 
-UF.GenerateClientProps()
+MPLR.GenerateClientProps()

@@ -4,7 +4,7 @@ function ENT:Initialize()
 	self:SetModel( "models/lilly/uf/tram/sgauge/switch_motor.mdl" )
 	--Metrostroi.DropToFloor( self )
 	self.TrackSwitches = {}
-	self.ID = self.VMF.ID
+	self.ID = self:GetNW2Int( "ID", self.VMF and tonumber( self.VMF.SwitchID, 10 ) and tonumber( self.VMF.SwitchID, 10 ) or 000 )
 	self.Queue = {}
 	self.SecondaryQueue = {}
 	-- Initial state of the switch
@@ -13,7 +13,7 @@ function ENT:Initialize()
 	self.InhibitSwitching = false
 	self.SignalCaller = {}
 	self.LastSignalTime = 0
-	self.Left = self.VMF.PositionCorrespondance or "alt"
+	self.Left = self:GetNW2String( "PositionCorrespondence", self.VMF and self.VMF.PositionCorrespondance or "alt" )
 	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
 	self.IronOverride = false
 	self.IronOverrideTime = 0
@@ -27,7 +27,6 @@ function ENT:Initialize()
 		table.insert( self.TrackSwitches, v )
 	end
 
-	self.TrackPos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	timer.Simple( 15, function()
 		self.TrackPos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 		local reversePosition = self.VMF.ReverseTrackOrientationLogic and tonumber( self.VMF.ReverseTrackOrientationLogic, 10 ) > 0 or true
@@ -37,7 +36,7 @@ function ENT:Initialize()
 	self.PairedControllers = {}
 	self.ControllerHierarchy = {}
 	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
-	UF.UpdateSignalEntities()
+	MPLR.UpdateSignalEntities()
 	hook.Add( "EntityRemoved", "Switching" .. self:EntIndex(), function( ent )
 		for i, entry in ipairs( self.Queue ) do
 			if entry[ 2 ] == ent then
@@ -50,27 +49,41 @@ function ENT:Initialize()
 	self.Paths = {}
 	if next( Metrostroi.Paths ) then
 		self.Paths = self:GetBranchingPaths()
+		if next( self.Paths ) then
+			if not MPLR.SwitchBranches then MPLR.SwitchBranches = {} end
+			MPLR.SwitchBranches[ self ] = self.Paths
+		end
 	else
 		timer.Simple( 20, function()
-			print( "Searching branching paths for switch:", self )
+			print( "Searching branching paths for switch:", self, "Switch ID: " .. self.ID )
 			self.Paths = self:GetBranchingPaths()
-		end )
-
-		timer.Simple( 15, function()
-			if next( self.Paths ) then
-				if not UF.SwitchBranches then UF.SwitchBranches = {} end
-				UF.SwitchBranches[ self ] = self.Paths
-			end
+			MPLR.SwitchBranches[ self ] = self.Paths
 		end )
 	end
+
+	self.DirectionsToPaths = {
+		[ "left" ] = -1,
+		[ "right" ] = -1
+	}
 end
 
 function ENT:OnRemove()
-	UF.UpdateSignalEntities()
+	MPLR.UpdateSignalEntities()
+end
+
+function ENT:ScanSwitchOccupied()
+	local function physicalScan()
+	end
 end
 
 function ENT:Think()
 	self.TrackPos = self.TrackPos or Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+	if not self.TrackPos then
+		assert( "No track found!!" )
+		return
+	end
+
+	if not MPLR.SwitchEntitiesByNode[ self.TrackPos.node1 ] then MPLR.SwitchEntitiesByNode[ self.TrackPos.node1 ] = self end
 	if not self.ID then self.ID = self.VMF.ID end
 	if not next( self.TrackSwitches ) then return end
 	self:Switching()
@@ -121,6 +134,63 @@ function ENT:ManualSwitching( dir, ply )
 	self.AlternateTrack = dir
 	self.IronOverrideTime = CurTime()
 	ply:PrintMessage( HUD_PRINTTALK, "Selected switch now manually switched and locked for 60 seconds. Switching back manually is also possible." )
+end
+
+function ENT:TestTrackOccupation()
+	local mins = self:OBBMins()
+	local maxs = self:OBBMaxs()
+	local startpos = self:GetPos() -- Origin point for the trace
+	local dir = self:GetUp() -- Direction for the trace, as a unit vector
+	local len = 64 -- Maximum length of the trace
+	local tr = util.TraceHull( {
+		start = startpos,
+		endpos = startpos + dir * len,
+		maxs = maxs,
+		mins = mins,
+		filter = self
+	} )
+
+	if string.find( tr.BaseClass, "gmod_subway_" ) then return true end
+	local function iterateForward( node )
+		if node.next then
+			return iterateForward( node.next )
+		else
+			return node
+		end
+	end
+
+	local function iterateBackward( node )
+		if node.prev then
+			return iterateBackward( node.prev )
+		else
+			return node
+		end
+	end
+
+	local function checkInRange()
+		local inRange
+		for k in pairs( self.PairedControllers ) do
+			local targetPos = Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ]
+			local TargetX = targetPos.x
+			local targetNode = targetPos.node1
+			local dir = targetPos.forward
+			local path = targetPos.path
+			if self.TrackPos.path == path then
+				inRange = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < TargetX, "light", TargetX )
+			else
+				if dir then
+					local lastNode = iterateForward( self.TrackPos.node1 )
+					inRange = MPLR.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
+				else
+					local lastNode = iterateBackward( self.TrackPos.node1 )
+					inRange = MPLR.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
+				end
+			end
+
+			if inRange then return true end
+		end
+		return false
+	end
 end
 
 function ENT:TriggerSwitch()
@@ -200,14 +270,14 @@ function ENT:SwitchingQueue( direction, ent )
 			local dir = targetPos.forward
 			local path = targetPos.path
 			if self.TrackPos.path == path then
-				inRange = UF.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < TargetX, "light", TargetX )
+				inRange = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < TargetX, "light", TargetX )
 			else
 				if dir then
 					local lastNode = iterateForward( self.TrackPos.node1 )
-					inRange = UF.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
+					inRange = MPLR.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
 				else
 					local lastNode = iterateBackward( self.TrackPos.node1 )
-					inRange = UF.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
+					inRange = MPLR.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
 				end
 			end
 
@@ -261,7 +331,7 @@ function ENT:GetBranchingPaths()
 		return
 	end
 
-	local pos = UF.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ] -- query our position on the pathing system
+	local pos = MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ] -- query our position on the pathing system
 	local current_path = pos.path.id --this is our main path
 	local adjacent_paths = {} -- initialise the paths next to us
 	local paths = {}

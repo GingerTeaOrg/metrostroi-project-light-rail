@@ -5,6 +5,6 @@ ENT.Contact = ""
 ENT.Purpose = ""
 ENT.Instructions = ""
 ENT.Category = "Metrostroi: Project Light Rail"
-
 ENT.Spawnable = false
 ENT.AdminSpawnable = true
+ENT.AutomaticFrameAdvance = true

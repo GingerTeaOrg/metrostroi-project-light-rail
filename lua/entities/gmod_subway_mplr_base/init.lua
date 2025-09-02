@@ -176,7 +176,7 @@ function ENT:CreateCustomCoupler( pos, ang, forward, typ, a_b )
     return coupler
 end
 
-function ENT:CreateBogeyUF( pos, ang, forward, typ, a_b )
+function ENT:CreateBogeyMPLR( pos, ang, forward, typ, a_b )
     -- Create bogey entity
     local bogey = ents.Create( "gmod_train_uf_bogey" )
     if a_b == "a" then
@@ -427,7 +427,7 @@ function ENT:Initialize()
     self.RightDoorsOpening = false
     -- Get default train mass
     if IsValid( self:GetPhysicsObject() ) then self.NormalMass = self:GetPhysicsObject():GetMass() end
-    SetGlobalInt( "mplr_train_count", UF.TrainCount() )
+    SetGlobalInt( "mplr_train_count", MPLR.TrainCount() )
     net.Start( "MPLRTrainCount" )
     net.Broadcast()
     --[[GRAVHULL
@@ -495,7 +495,7 @@ function ENT:OnRemove()
 
     -- Deinitialize train
     if Turbostroi then Turbostroi.DeinitializeTrain( self ) end
-    SetGlobalInt( "mplr_train_count", UF.TrainCount() )
+    SetGlobalInt( "mplr_train_count", MPLR.TrainCount() )
     net.Start( "MPLRTrainCount" )
     net.Broadcast()
 end
@@ -765,14 +765,14 @@ function ENT:ReadCell( Address )
             if Address == 49159 then return self.Schedule.EndTime * 60 end
         end
 
-        local pos = UF.TrainPositions[ self ]
+        local pos = MPLR.TrainPositions[ self ]
         if ( Address >= 49160 ) and ( Address <= 49171 ) and pos and pos[ 1 ] then
             pos = pos[ 1 ]
             -- Get stations
             local current, next, prev = 0, 0, 0
             local cPlatID, nPlatID, pPlatID = 0, 0, 0
             local x1, x2, x3 = 1e9, 0, 1e9
-            for stationID, stationData in pairs( UF.Stations ) do
+            for stationID, stationData in pairs( MPLR.Stations ) do
                 for platformID, platformData in pairs( stationData ) do
                     if ( platformData.node_start.path == pos.path ) and ( platformData.x_start < pos.x ) and ( platformData.x_end > pos.x ) then
                         current = stationID
@@ -826,7 +826,7 @@ function ENT:ReadCell( Address )
         local stationID = math.floor( ( x - lineID * 800 ) / 8 )
         local platformID = math.floor( ( x - lineID * 800 - stationID * 8 ) / 4 )
         local varID = x - lineID * 800 - stationID * 8 - platformID * 4
-        local station = UF.Stations[ ( lineID + 1 ) * 100 + stationID ]
+        local station = MPLR.Stations[ ( lineID + 1 ) * 100 + stationID ]
         if station then
             local platform = station[ platformID ]
             if platform then
@@ -840,7 +840,7 @@ function ENT:ReadCell( Address )
     end
 
     if ( Address >= 65504 ) and ( Address <= 65510 ) then
-        local pos = UF.TrainPositions[ self ]
+        local pos = MPLR.TrainPositions[ self ]
         if pos and pos[ 1 ] then
             pos = pos[ 1 ]
             if Address == 65504 then return pos.x end
@@ -1937,26 +1937,26 @@ function ENT:SpawnFunction( ply, tr, className, rotate, func )
     if self.ClassName ~= "gmod_subway_mplr_base" and not self.NoTrain then
         local Limit1 = math.min( 2, C_MaxWagons:GetInt() ) * C_MaxTrainsOnPly:GetInt() - 1
         local Limit2 = math.max( 0, C_MaxWagons:GetInt() - 2 ) * C_MaxTrainsOnPly:GetInt() - 1
-        if UF.TrainCount() > C_MaxTrains:GetInt() * C_MaxWagons:GetInt() - 1 then
+        if MPLR.TrainCount() > C_MaxTrains:GetInt() * C_MaxWagons:GetInt() - 1 then
             ply:LimitHit( "train_limit" )
             --Metrostroi.LimitMessage(ply)
             return
         end
 
-        if UF.TrainCountOnPlayer( ply ) > C_MaxWagons:GetInt() * C_MaxTrainsOnPly:GetInt() - 1 then
+        if MPLR.TrainCountOnPlayer( ply ) > C_MaxWagons:GetInt() * C_MaxTrainsOnPly:GetInt() - 1 then
             ply:LimitHit( "train_limit" )
             --Metrostroi.LimitMessage(ply)
             return
         end
 
         if self.SubwayTrain and self.SubwayTrain.WagType == 1 then
-            if UF.TrainCountOnPlayer( ply, 1 ) > Limit1 then
+            if MPLR.TrainCountOnPlayer( ply, 1 ) > Limit1 then
                 ply:LimitHit( "train_limit" )
                 --Metrostroi.LimitMessage(ply)
                 return
             end
         elseif self.SubwayTrain and self.SubwayTrain.WagType == 2 then
-            if UF.TrainCountOnPlayer( ply, 2 ) > Limit2 then
+            if MPLR.TrainCountOnPlayer( ply, 2 ) > Limit2 then
                 ply:LimitHit( "train_limit" )
                 --Metrostroi.LimitMessage(ply)
                 return

@@ -69,15 +69,15 @@ function ENT:Initialize()
 	self.ThrottleEngaged = false
 	self.Door1 = false
 	-- Create bogeys
-	self.FrontBogey = self:CreateBogeyUF( Vector( 390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "a" )
-	self.MiddleBogey = self:CreateBogeyUF( Vector( 0, 0, 4 ), Angle( 0, 180, 0 ), false, "b_joint", "a" )
+	self.FrontBogey = self:CreateBogeyMPLR( Vector( 390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "a" )
+	self.MiddleBogey = self:CreateBogeyMPLR( Vector( 0, 0, 4 ), Angle( 0, 180, 0 ), false, "b_joint", "a" )
 	-- Create couples
 	self.FrontCouple = self:CreateCustomCoupler( Vector( 475, 0, 30 ), Angle( 0, 0, 0 ), true, "b", "a" )
 	self.FrontCoupler = self.FrontCouple
 	self.SectionB = self:CreateSection( Vector( 0, 0, 0 ), Angle( 0, 0, 0 ), "gmod_subway_mplr_bwagen1973_section_b", self, nil, self )
 	self.RearCouple = self:CreateCustomCoupler( Vector( -475, 0, 30 ), Angle( 0, 180, 0 ), true, "b", "b" )
 	self.RearCoupler = self.RearCouple
-	self.RearBogey = self:CreateBogeyUF( Vector( -390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "b" )
+	self.RearBogey = self:CreateBogeyMPLR( Vector( -390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "b" )
 	self.Panto = self:CreatePanto( Vector( 36.5, 0, 135 ), Angle( 0, 0, 0 ), "einholm" )
 	self.FrontBogey:SetNWInt( "MotorSoundType", 0 )
 	self.MiddleBogey:SetNWInt( "MotorSoundType", 0 )
@@ -412,7 +412,7 @@ function ENT:Think( dT )
 	self.RearCoupler = self.RearCouple
 	self:Traction()
 	self:Sounds()
-	print( self.CoreSys.IgnitionKeyAIn )
+	--print( self.CoreSys.IgnitionKeyAIn )
 end
 
 function ENT:SetButton( button )
@@ -532,7 +532,7 @@ function ENT:Traction()
 	--print(chopper,traction)
 	local P = math.max( 0, 0.04449 + 1.06879 * math.abs( chopper ) - 0.465729 * chopper ^ 2 )
 	if speed < 10 then P = P * ( 1.0 + 0.5 * ( 10.0 - speed ) / 10.0 ) end
-	self.FrontBogey.MotorForce = traction > 0 and 56688.07175 or 68363.606
+	self.FrontBogey.MotorForce = traction > 0 and 51688.07175 or 68363.606
 	self.RearBogey.MotorForce = self.FrontBogey.MotorForce
 	if traction > 0 and not emergency then
 		fb.MotorPower = math.abs( chopper )
@@ -557,6 +557,9 @@ function ENT:Traction()
 		fb.BrakeCylinderPressure = 0 -- or another default value if needed
 	end
 
+	fb.PneumaticBrakeForce = 10000.0
+	mb.PneumaticBrakeForce = 10000.0
+	rb.PneumaticBrakeForce = 10000.0
 	mb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	rb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	--print(self.FrontBogey.MotorPower, traction, fb.BrakeCylinderPressure, rb.Reversed, self.FrontBogey.MotorForce)

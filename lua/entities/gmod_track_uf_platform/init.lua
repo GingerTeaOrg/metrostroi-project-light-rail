@@ -220,7 +220,7 @@ function ENT:Think()
 	local boarding = false
 	local BoardTime = 8 + 7
 	for k, v in pairs( ents.FindByClass( "gmod_subway_*" ) ) do
-		if v.Base ~= "gmod_subway_uf_base" or string.match( "subway_mplr", v.Base ) then continue end
+		if v.Base ~= "gmod_subway_mplr_base" or string.match( "subway_mplr", v.Base ) then continue end
 		if not v.DoorHandler then continue end
 		local doorHandler = v.DoorHandler
 		if not IsValid( v ) or v:GetPos():Distance( self:GetPos() ) > self.PlatformStart:Distance( self.PlatformEnd ) then continue end

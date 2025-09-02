@@ -5,11 +5,6 @@
 	PlatformStart(target_destination) : "Start of the platform"
 	PlatformEnd(target_destination) : "End of the platform"
 	PopularityIndex(float) : "Station popularity index" : "1.0" : "Total number of people who use station per day, normalized to average number of people using stations per day"
-	PlatformLast(Choices) : "Is this platform last on line?" : "no" : "" =
-	[
-		"no" : "No"
-		"yes" : "Yes"
-	]
 	StepsType(choices) : "Are steps required on this station, and which" : 0 : "Some stations have not received any platform upgrades and may require trains that support folding steps. Passengers will not board if steps aren't available or extended." =
 	[
     		0 : "Completely High Floor"

@@ -16,7 +16,7 @@ end
 
 function ENT:Think()
 	local function executeSwitching( line, route, isOverride, train, isAutomaticOverride )
-		local routeCommand = line and UF.RoutingTable[ line .. route ] and UF.RoutingTable[ line .. route ][ self.SwitchID ] or nil --get the routing command from the table
+		local routeCommand = line and MPLR.RoutingTable[ line .. route ] and MPLR.RoutingTable[ line .. route ][ self.SwitchID ] or nil --get the routing command from the table
 		--print( "exec" )
 		if isAutomaticOverride and IsValid( train ) then
 			print( "Automatic Override" )
@@ -61,16 +61,16 @@ function ENT:Think()
 		local targetPath = self.TargetEnt.TrackPos.path.id
 		local dir = self.TrackPos.forward
 		if not self.AutomaticSwitching or self.AutomaticSwitching == "none" or targetPath == self.TrackPos.path.id then
-			inRange, _, trainDetected = UF.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < self.TargetEnt.TrackPos.x, "light", self.TargetEnt.TrackPos.x )
+			inRange, _, trainDetected = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < self.TargetEnt.TrackPos.x, "light", self.TargetEnt.TrackPos.x )
 			return inRange, _, trainDetected
 		elseif dir then
 			local lastNode = lastNode or iterateForward( self.TrackPos.node1 )
 			--print( lastNode.x, self.TrackPos.x, self.TrackPos.path.id )
-			inRange, _, trainDetected = UF.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, dir, "light", lastNode.x )
+			inRange, _, trainDetected = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, dir, "light", lastNode.x )
 			return inRange, _, trainDetected
 		elseif not dir then
 			local lastNode = lastNode or iterateBackward( self.TrackPos.node1 )
-			inRange, _, trainDetected = UF.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, dir, "light", lastNode.x )
+			inRange, _, trainDetected = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, dir, "light", lastNode.x )
 			return inRange, _, trainDetected
 		end
 		return false

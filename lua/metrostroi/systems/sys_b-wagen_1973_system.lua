@@ -182,6 +182,7 @@ function TRAIN_SYSTEM:Initialize()
     self.BatteryState = false
     self.PreviousBatteryState = false
     self.Speed = 0
+    self.BrakesAppliedFullSound = false
 end
 
 -- ==============================================================================================
@@ -209,6 +210,8 @@ function TRAIN_SYSTEM:Think( dT )
     self:PantoFunction()
     self:BellHorn()
     self:MUHandler()
+    --self:BrakeSounds()
+    --self:MotorSounds()
     --self:Mirrors()
     self.Speed = math.abs( self.Train:GetVelocity():Dot( self.Train:GetAngles():Forward() ) * 0.06858 )
 end
@@ -446,7 +449,7 @@ function TRAIN_SYSTEM:Blink( enable, left, right )
 end
 
 function TRAIN_SYSTEM:BrakesApplied()
-    self.BrakesAreApplied = self.ThrottleStateA < 0 and self.ThrottleStateB < 0
+    self.BrakesAreApplied = ( self.ReverserA ~= 0 and self.ReverserA ~= 1 and self.ThrottleStateA < 0 ) or ( self.ReverserB ~= 0 and self.ReverserB ~= 1 and self.ThrottleStateB < 0 ) or false
 end
 
 function TRAIN_SYSTEM:Headlights()

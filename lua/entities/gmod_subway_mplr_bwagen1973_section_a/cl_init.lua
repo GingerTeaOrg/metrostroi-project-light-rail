@@ -5,11 +5,273 @@ ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
 ENT.ButtonMapMPLR[ "IBISScreen" ] = {
-	pos = Vector( 511.89, -4.5, 74.98 ),
-	ang = Angle( 0, -90, 35 ),
+	pos = Vector( 511.89, -4.360, 74.86 ),
+	ang = Angle( 0, -90, 37.4 ),
 	width = 128,
 	height = 29.9,
 	scale = 0.0315
+}
+
+ENT.ButtonMapMPLR[ "IBISButtons" ] = {
+	pos = Vector( 512.1, -3.9, 75.2 ),
+	ang = Angle( 0, -90, 37.4 ),
+	width = 230,
+	height = 117,
+	scale = 0.0315,
+	buttons = {
+		{
+			ID = "Number1Set",
+			x = 155,
+			y = 20,
+			radius = 10,
+			tooltip = "1",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number1Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number2Set",
+			x = 182,
+			y = 20,
+			radius = 10,
+			tooltip = "2",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number2Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number3Set",
+			x = 208,
+			y = 20,
+			radius = 10,
+			tooltip = "3",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number3Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number4Set",
+			x = 155,
+			y = 46,
+			radius = 10,
+			tooltip = "4",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number4Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number5Set",
+			x = 182,
+			y = 46,
+			radius = 10,
+			tooltip = "5",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number5Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number6Set",
+			x = 208,
+			y = 46,
+			radius = 10,
+			tooltip = "6",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number6Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number7Set",
+			x = 155,
+			y = 72,
+			radius = 10,
+			tooltip = "7",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number7Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number8Set",
+			x = 182,
+			y = 72,
+			radius = 10,
+			tooltip = "8",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number8Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number9Set",
+			x = 208,
+			y = 72,
+			radius = 10,
+			tooltip = "9",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number9Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "DeleteSet",
+			x = 155,
+			y = 100,
+			radius = 10,
+			tooltip = "Delete",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DeleteSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number0Set",
+			x = 182,
+			y = 100,
+			radius = 10,
+			tooltip = "0",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number0Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "EnterSet",
+			x = 208,
+			y = 100,
+			radius = 10,
+			tooltip = "Enter",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "EnterSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+	}
 }
 
 ENT.ClientProps[ "flap_a" ] = {
@@ -210,7 +472,7 @@ ENT.ClientProps[ "throttle" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/throttle.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	hideseat = 0.2
+	nohide = true
 }
 
 ENT.ClientProps[ "reverser" ] = {
@@ -1196,9 +1458,9 @@ ENT.ButtonMapMPLR[ "DoorButton8L" ] = {
 }
 
 ENT.ButtonMapMPLR[ "LineRollsign" ] = {
-	pos = Vector( 511, -11.8, 115 ),
+	pos = Vector( 511.25, -11.8, 115 ),
 	ang = Angle( 0, -90, -90 ),
-	width = 35,
+	width = 10,
 	height = 9,
 	scale = 1
 }
@@ -1235,20 +1497,19 @@ ENT.ButtonMapMPLR[ "InfoRollsignL" ] = {
 	scale = 1
 }
 
-ENT.ButtonMapMPLR[ "DestinationRollsign" ] = {
+--[[ENT.ButtonMapMPLR[ "DestinationRollsign" ] = {
 	pos = Vector( 511, 22, 115 ),
 	ang = Angle( 0, -90, -90 ),
 	width = 35,
 	height = 9,
 	scale = 1
-}
-
+}]]
 ENT.ButtonMapMPLR[ "DestinationRollsignFront" ] = {
-	pos = Vector( 511.25, 20.5, 115 ),
+	pos = Vector( 511.25, 20, 115 ),
 	ang = Angle( 0, -90, -90 ),
-	width = 33,
-	height = 9,
-	scale = 1
+	width = 65,
+	height = 15,
+	scale = 0.51
 }
 
 ENT.ButtonMapMPLR[ "Key" ] = {
@@ -1315,15 +1576,33 @@ function ENT:Initialize()
 	self.ScrollModifier3 = 0
 	self.ScrollModifier4 = 0
 	self.ScrollModifier5 = 0
-	self.SCrollModifier6 = 0
+	self.ScrollModifier6 = 0
 end
 
 function ENT:Think()
 	self.BaseClass.Think( self )
-	self.ScrollModifier1 = 0
-	self.ScrollModifier2 = 0
-	self.ScrollModifier3 = 0
+	self.ScrollModifier1 = 0.4
+	--self.ScrollModifier2 = 0
+	--self.ScrollModifier3 = 0.25
 	self.ScrollModifier4 = 0
+	self.ScrollModifier5 = 0
+	self.ScrollModifier6 = 0
+	if self.ScrollModifier2 < 1 then
+		self.ScrollModifier2 = self.ScrollModifier2 + 0.01 * RealFrameTime()
+	elseif self.ScrollModifier2 > 1 then
+		self.ScrollModifier2 = 0
+	elseif not self.ScrollModifier2 then
+		self.ScrollModifier2 = 0
+	end
+
+	if self.ScrollModifier3 < 1 then
+		self.ScrollModifier3 = self.ScrollModifier3 + 0.01 * RealFrameTime()
+	elseif self.ScrollModifier3 > 1 then
+		self.ScrollModifier3 = 0
+	elseif not self.ScrollModifier3 then
+		self.ScrollModifier3 = 0
+	end
+
 	self:Animations()
 	self:SoundsFunc()
 	self.PrevTime = self.PrevTime or CurTime()
@@ -1442,16 +1721,18 @@ function ENT:Draw()
 	self.BaseClass.Draw( self )
 end
 
-ENT.RTMaterialUF = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
+ENT.RTMaterialMPLR = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
 	[ "$vertexcolor" ] = 0,
 	[ "$vertexalpha" ] = 1,
 	[ "$nolod" ] = 1
 } )
 
 function ENT:DrawPost()
-	local mat = Material( "models/lilly/mplr/rollsigns/b_1973/lines_def.png", "noclamp" )
-	local mat2 = Material( "models/lilly/mplr/rollsigns/b_1973/flank_def.png", "noclamp" )
-	local mat3 = Material( "models/lilly/mplr/rollsigns/b_1973/internal_def.png", "noclamp" )
+	local rollsignIndex = self:GetNW2Int( "RollsignTexture" )
+	local rollsignTab = MPLR.Rollsigns[ rollsignIndex ]
+	local mat = Material( rollsignTab.line, "noclamp" )
+	local mat2 = Material( rollsignTab.front, "noclamp" )
+	local mat3 = Material( rollsignTab.info, "noclamp" )
 	self:DrawOnPanel( "LineRollsign", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat )
@@ -1461,50 +1742,54 @@ function ENT:DrawPost()
 	self:DrawOnPanel( "DestinationRollsignFront", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat2 )
-		surface.DrawTexturedRectUV( 1, 1.8, 31, 7.6, 0, self.ScrollModifier1, -.7, self.ScrollModifier1 - 1 )
+		surface.DrawTexturedRectUV( 0, 0, 64, 15, 0.01, self.ScrollModifier3 - 1, -.77, self.ScrollModifier3 - 1.03 )
 	end )
 
 	self:DrawOnPanel( "LineRollsignR", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat2 )
-		surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 0, self.ScrollModifier1 + .01, -1, self.ScrollModifier1 - 0.85 )
+		surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier3 - 1.45, -0.015, self.ScrollModifier3 - 1.5 )
 	end )
 
-	self:DrawOnPanel( "LineRollsignL", function( ... )
+	--[[self:DrawOnPanel( "LineRollsignL", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat2 )
-		surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 0, self.ScrollModifier1 + .01, -1, self.ScrollModifier1 - 0.85 )
-	end )
-
-	self:DrawOnPanel( "InfoRollsignR", function( ... )
+		surface.DrawTexturedRectUV( 1, 0, 26.8, 7.6, 0, self.ScrollModifier1 + .01, -1, self.ScrollModifier1 - 0.9 )
+	end )]]
+	cam.Start3D2D( self:LocalToWorld( Vector( 189, 48, 115 ) ), self:LocalToWorldAngles( Angle( 0, 0, -90 ) ), 1 )
+	surface.SetMaterial( mat2 )
+	surface.SetDrawColor( 255, 255, 255, 255 )
+	surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier4 - 1.45, -0.015, self.ScrollModifier4 - 1.5 )
+	cam.End3D2D()
+	--[[self:DrawOnPanel( "InfoRollsignR", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat3 )
 		surface.DrawTexturedRectUV( 0, -1, 41, 11, 0, self.ScrollModifier1 + .1, -1, self.ScrollModifier1 - .85 )
-	end )
-
-	self:DrawOnPanel( "InfoRollsignL", function( ... )
+	end )]]
+	cam.Start3D2D( self:LocalToWorld( Vector( 224, 37, 115.3 ) ), self:LocalToWorldAngles( Angle( 0, 180, -106 ) ), 1 )
+	surface.SetMaterial( mat3 )
+	surface.SetDrawColor( 255, 255, 255, 255 )
+	surface.DrawTexturedRectUV( 0, 0, 40, 12, 0, .1, -1.01, self.ScrollModifier5 - 1 )
+	cam.End3D2D()
+	--[[self:DrawOnPanel( "InfoRollsignL", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat3 )
 		surface.DrawTexturedRectUV( 0, 0, 41, 11, 0, self.ScrollModifier1 + .1, -1, self.ScrollModifier1 - .85 )
-	end )
-
-	self.RTMaterialUF:SetTexture( "$basetexture", self.IBIS )
+	end )]]
+	cam.Start3D2D( self:LocalToWorld( Vector( 184, -37, 115.3 ) ), self:LocalToWorldAngles( Angle( 0, 0, -105 ) ), 1 )
+	surface.SetMaterial( mat3 )
+	surface.SetDrawColor( 255, 255, 255, 255 )
+	surface.DrawTexturedRectUV( 0, 0, 40, 12, 0, .1, -1.01, self.ScrollModifier6 - 1 )
+	cam.End3D2D()
+	self.RTMaterialMPLR:SetTexture( "$basetexture", self.IBIS )
 	self:DrawOnPanel( "IBISScreen", function( ... )
-		surface.SetMaterial( self.RTMaterialUF )
+		surface.SetMaterial( self.RTMaterialMPLR )
 		surface.SetDrawColor( 0, 65, 11 )
-		surface.DrawTexturedRectRotated( 60, 16, 129, 30, 0 )
+		surface.DrawTexturedRectRotated( 60, 16, 96, 30, 0 )
 	end )
 end
 
 function ENT:SoundsFunc()
-	local batteryOn = self:GetNW2Bool( "BatteryOn", false )
-	if not batteryOn then return end
-	local departureAlarm = self:GetNW2Bool( "DepartureAlarm", false )
-	--print( departureAlarm )
-	if departureAlarm then self:PlayOnce( "DepartureConfirmed", "cabin", 1, 1 ) end
-	self:SetSoundState( "bell", self:GetNW2Bool( "Bell", false ) and 1 or 0, 1 )
-	self:SetSoundState( "bell_in", self:GetNW2Bool( "Bell", false ) and 1 or 0, 1 )
-	self:SetSoundState( "DepartureConfirmed", self:GetNW2Bool( "DepartureAlarm", false ) and 1 or 0, 1 )
 end
 
 function ENT:OnPlay( soundid, location, range, pitch )
@@ -1517,4 +1802,4 @@ function ENT:OnPlay( soundid, location, range, pitch )
 	end
 end
 
-UF.GenerateClientProps()
+MPLR.GenerateClientProps()

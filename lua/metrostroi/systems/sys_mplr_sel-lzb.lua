@@ -145,7 +145,7 @@ end
 function TRAIN_SYSTEM:StationApproach()
     local nextStationIndex = self.Train.IBIS.CurrentStation -- Get the next station from the IBIS
     if not nextStationIndex then return end
-    local stationData = UF.StationEntsByIndex[ nextStationIndex ] -- Get station data by index
+    local stationData = MPLR.StationEntsByIndex[ nextStationIndex ] -- Get station data by index
     if not stationData or not stationData.platform_data then return end
     -- Get platform data and compare distances to see if train is approaching the station
     local platformData = stationData.platform_data

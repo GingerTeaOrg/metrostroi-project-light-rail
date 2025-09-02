@@ -594,14 +594,14 @@ function ENT:Initialize()
 	self.Rollsign = Material( self:GetNW2String( "Rollsign", "models/lilly/uf/u2/rollsigns/frankfurt_stock.png" ) )
 end
 
-ENT.RTMaterialUF = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
+ENT.RTMaterialMPLR = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
 	[ "$vertexcolor" ] = 0,
 	[ "$vertexalpha" ] = 1,
 	[ "$nolod" ] = 1
 } )
 
 function ENT:DrawPost()
-	self.RTMaterialUF:SetTexture( "$basetexture", self.IBIS )
+	self.RTMaterialMPLR:SetTexture( "$basetexture", self.IBIS )
 	self:DrawOnPanel( "IBISScreen", function( ... )
 		surface.SetMaterial( self.RTMaterial )
 		surface.SetDrawColor( 0, 65, 11 )
@@ -644,7 +644,7 @@ function ENT:OnAnnouncer( volume )
 	return self:GetPackedBool( "AnnPlay" ) and volume or 0
 end
 
-UF.GenerateClientProps()
+MPLR.GenerateClientProps()
 function ENT:SoundRoutine()
 	if self:GetNW2Bool( "Bell", false ) == true then
 		self:SetSoundState( "bell", 1, 1 )

@@ -21,6 +21,7 @@ function ENT:Initialize()
     util.PrecacheModel( self.SignalType )
     self.Name1 = self:GetNW2String( "Name1", "ER" )
     self.Name2 = self:GetNW2String( "Name2", "ER" )
+    self.Name = self.Name1 .. "/" .. self.Name2
     self.Left = self:GetNW2Bool( "Left", false )
     self.Pos = self:GetPos()
     self.PositionModifier = ( self.Left and Vector( 0, 20, 0 ) or Vector( 0, -20, 0 ) ) + self.Pos
@@ -34,11 +35,12 @@ function ENT:Initialize()
     } )
 
     self.Aspect = "H0"
-    self.PreviousAspect = ""
+    self.Routes = {}
+    self.PreviousAspect = self.Aspect
     self.InPVS = false
 end
 
-net.Receive( "mplr-signal", function()
+net.Receive( "mplr-signal-server", function()
     local ent = net.ReadEntity()
     if not IsValid( ent ) then return end
     ent.Routes = net.ReadTable()
@@ -46,12 +48,12 @@ end )
 
 net.Receive( "RespawnSignal", function()
     local ent = net.ReadEntity()
-    print( "nethook" )
+    if not IsValid( ent ) then return end
+    --print( "nethook" )
     ent.InPVS = net.ReadBool()
 end )
 
 function ENT:Think()
-    local CurTime = CurTime()
     self.PrevTime = self.PrevTime or RealTime()
     self.DeltaTime = RealTime() - self.PrevTime
     self.PrevTime = RealTime()
@@ -63,23 +65,22 @@ function ENT:Think()
         self.SignalModel:Spawn()
     end
 
-    if not self.Name then
-        if self.Sent and ( CurTime - self.Sent ) > 0 then self.Sent = nil end
+    if not next( self.Routes ) then
         if not self.Sent then
-            net.Start( "mplr-signal" )
+            net.Start( "mplr-signal-client" )
             net.WriteEntity( self )
             net.SendToServer()
-            self.Sent = CurTime + 1.5
+            self.Sent = RealTime() + 1.5
         end
         return true
     end
 
     self.Aspect = self:GetNW2String( "Aspect", "H0" )
     self.SignalType = self:GetNW2String( "Type" )
-    self:SetNextClientThink( CurTime + 0.0333 )
+    self:SetNextClientThink( RealTime() + 1 )
 end
 
-hook.Add( "PostDrawOpaqueRenderables", "MyEntityDrawHook", function()
+hook.Add( "PostDrawOpaqueRenderables", "MPLR_DrawSignals", function()
     -- Get all entities of your type
     for _, ent in pairs( ents.GetAll() ) do
         if ent:GetClass() == "gmod_track_uf_signal" and IsValid( ent.SignalModel ) and IsValid( ent ) then -- Replace with your entity class name
@@ -224,7 +225,7 @@ function ENT:SignalAspect( aspect )
     local pos_o, pos_g, pos_r, pos_rr = self:SetLensPositions( self.SignalType )
     local ScalingEnabled = GetConVar( "mplr_enable_signal_sprite_scaling" ):GetBool()
     -- Invert the normalized distance for Lerp (to make scaling smaller when closer)
-    self.SpriteSize = ScalingEnabled and iLerp( self.DistanceFactor, 10, 600, 10, 40 ) or 10
+    self.SpriteSize = ScalingEnabled and iLerp( self.DistanceFactor, 10, 600, 5, 40 ) or 10
     if aspect == "H0" then
         self:ClientSprites( pos_o, self.SpriteSize, Color( 204, 116, 0 ), false )
         self:ClientSprites( pos_g, self.SpriteSize, Color( 27, 133, 0 ), false )
@@ -250,6 +251,14 @@ function ENT:SignalAspect( aspect )
         self:ClientSprites( pos_r, self.SpriteSize, Color( 200, 0, 0 ), false )
         --self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0,alpha_rr), true)
         self:ClientSprites( pos_rr, self.SpriteSize, Color( 200, 0, 0 ), true )
+    elseif aspect == "H4" then
+        self:ClientSprites( pos_o, self.SpriteSize, Color( 204, 116, 0 ), true )
+        --self:ClientSprites(pos_g, self.SpriteSize, Color(27, 133, 0,self.AlphaGreen), true)
+        self:ClientSprites( pos_g, self.SpriteSize, Color( 27, 133, 0 ), false )
+        --self:ClientSprites(pos_r, self.SpriteSize, Color(200, 0, 0,self.AlphaRed), true)
+        self:ClientSprites( pos_r, self.SpriteSize, Color( 200, 0, 0 ), false )
+        --self:ClientSprites(pos_rr, self.SpriteSize, Color(200, 0, 0,alpha_rr), true)
+        self:ClientSprites( pos_rr, self.SpriteSize, Color( 200, 0, 0 ), false )
     elseif aspect == "Sh3d" then
         local blinkTime = blinkTime or 0
         local lensOn = false

@@ -991,7 +991,7 @@ function ENT:Draw()
 end
 
 function ENT:DrawPost()
-	--[[self.RTMaterialUF:SetTexture("$basetexture", self.IBIS)
+	--[[self.RTMaterialMPLR:SetTexture("$basetexture", self.IBIS)
 	self:DrawOnPanel("IBISScreen", function(...)
 		surface.SetMaterial(self.RTMaterial)
 		surface.SetDrawColor(0, 65, 11)
@@ -1023,4 +1023,4 @@ function ENT:OnPlay( soundid, location, range, pitch )
 	end
 end
 
-UF.GenerateClientProps()
+MPLR.GenerateClientProps()

@@ -1,4 +1,4 @@
-function UF.DebugMyPos()
+function MPLR.DebugMyPos()
 	local ply = ents.GetByIndex( 1 )
 	if not ply then return end
 	local pos = Metrostroi.GetPositionOnTrack( ply:GetPos(), ply:GetAngles() )
@@ -31,7 +31,7 @@ function UF.DebugMyPos()
 	printTableLimited( pos[ 1 ], 1 )
 end
 
-function UF.DebugPlyPaths()
+function MPLR.DebugPlyPaths()
 	local ply = ents.GetByIndex( 1 )
 	if not ply then return end
 	local pos = Metrostroi.GetPositionOnTrack( ply:GetPos(), ply:GetAngles() )
@@ -58,4 +58,4 @@ function UF.DebugPlyPaths()
 	end
 end
 
-concommand.Add( mplr_debug_trackpos, UF.DebugMyPos(), nil, "Debug the first player's position on track, for debugging purposes" )
+concommand.Add( mplr_debug_trackpos, MPLR.DebugMyPos(), nil, "Debug the first player's position on track, for debugging purposes" )

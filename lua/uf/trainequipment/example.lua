@@ -10,5 +10,5 @@ local MyBogey = {
         },
 }
 
-table.Add(UF.BogeyTypes,MyBogey)
+table.Add(MPLR.BogeyTypes,MyBogey)
 ]]

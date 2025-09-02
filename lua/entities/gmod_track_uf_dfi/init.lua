@@ -2,7 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 function ENT:Initialize()
-    if not UF then return end
+    if not MPLR then return end
     util.AddNetworkString( "PlayerTrackerDFI" .. self:EntIndex() )
     self:DropToFloor()
     if self.VMF and self.VMF.Type == "nopole" then
@@ -11,6 +11,7 @@ function ENT:Initialize()
         self:SetModel( "models/lilly/uf/stations/dfi.mdl" )
     end
 
+    self.PairedPlatform = self:GetNW2Entity( "PairedPlatform", self.VMF and self.VMF.PairedPlatform )
     self:DropToFloor()
     self.ValidLines = {
         [ "01" ] = true,
@@ -82,15 +83,15 @@ function ENT:Think()
     local trainPresent = self:TrainPresent()
     local stationIndex = tonumber( self.VMF.StationIndex, 10 )
     local platformIndex = tonumber( self.VMF.PlatformIndex, 10 )
-    if not next( UF.StationEntsByIndex ) then return end
-    self.PairedPlatform = self.PairedPlatform or UF.StationEntsByIndex[ stationIndex ][ platformIndex ]
+    if not next( MPLR.StationEntsByIndex ) then return end
+    self.PairedPlatform = self.PairedPlatform or MPLR.StationEntsByIndex[ stationIndex ][ platformIndex ]
     self.Time = os.date( "%I%M", os.time() )
     self:SetNW2String( "Time", self.Time )
     self.TrackPosition = self.TrackPosition or Metrostroi.GetPositionOnTrack( self.Position, self:GetAngles() )[ 1 ]
     self:SetNW2String( "Theme", self.CurrentTheme )
-    if not next( UF.IBISRegisteredTrains ) or not Metrostroi.Paths then -- either fall back to idle, train list, or current train display
+    if not next( MPLR.IBISRegisteredTrains ) or not Metrostroi.Paths then -- either fall back to idle, train list, or current train display
         self.Mode = 0
-    elseif next( UF.IBISRegisteredTrains ) and Metrostroi.Paths then
+    elseif next( MPLR.IBISRegisteredTrains ) and Metrostroi.Paths then
         if CurTime() - self.LastRefresh > 10 then
             self.LastRefresh = CurTime()
             print( "Refreshing DFI" )
@@ -113,10 +114,10 @@ function ENT:Think()
     end
 
     self:SetNW2String( "ModeMessage", trainPresent )
-    if not next( UF.IBISRegisteredTrains ) and not trainPresent then -- either fall back to idle, train list, or current train display
+    if not next( MPLR.IBISRegisteredTrains ) and not trainPresent then -- either fall back to idle, train list, or current train display
         self.Mode = 0
         self.IgnoredTrains = {}
-    elseif not next( UF.IBISRegisteredTrains ) and trainPresent then
+    elseif not next( MPLR.IBISRegisteredTrains ) and trainPresent then
         self.Mode = 0
         self.IgnoredTrains = {}
     elseif self.Train1ETA and tonumber( self.Train1ETA ) > 0 then
@@ -137,7 +138,7 @@ function ENT:TrainPresent()
     local trainPresent, train = IsValid( platform.CurrentTrain ), platform.CurrentTrain
     if not trainPresent then return false end
     local msg = {}
-    if not train.IBIS or not next( UF.IBISRegisteredTrains ) then
+    if not train.IBIS or not next( MPLR.IBISRegisteredTrains ) then
         return "DestUnknown"
     elseif train.IBIS then
         local ibis = train.IBIS
@@ -263,40 +264,33 @@ function ENT:ProcessResults()
     self:SetNW2String( "Train4Time", self.Train4ETA )
 end
 
-function ENT:ScanForTrains() -- scrape all trains that have been logged into RBL, sort by distance, and display sorted by ETA
-    if not next( UF.IBISRegisteredTrains ) then -- No point in doing anything if there isn't a single train registered / table is empty
+function ENT:ScanForTrains() --
+    -- scrape all trains that have been logged into RBL, sort by distance, and display sorted by ETA
+    if table.IsEmpty( MPLR.IBISRegisteredTrains ) then -- No point in doing anything if there isn't a single train registered / table is empty
         return
     end
 
-    local trainpath = {}
     if not self.TrackPosition then return end
-    for k, _ in pairs( UF.IBISRegisteredTrains ) do
-        trainpath = Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ]
-        print( Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ] )
+    for k, _ in pairs( MPLR.IBISRegisteredTrains ) do
+        --print( Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ] )
         local trainCourse = k.IBIS.Course
         local route = k.IBIS.Route
         local courseRoute = trainCourse .. "/" .. route
-        if trainpath.path ~= self.TrackPosition.path then
-            continue
-        elseif not valueExists( self.WorkTable, k ) and not self.IgnoredTrains[ courseRoute ] then
-            table.insert( self.WorkTable, k )
-        else
-            break
-        end
+        if not valueExists( self.WorkTable, k ) and not self.IgnoredTrains[ courseRoute ] then table.insert( self.WorkTable, k ) end
     end
 
     if #self.WorkTable < 1 then return end
     if #self.WorkTable > 4 then -- let's cut it short. The display only ever does four different trains.
         -- Iterate through the table and remove excess pairs
         local currentPairCount = 0
-        for key, value in pairs( self.WorkTable ) do
+        for key in pairs( self.WorkTable ) do
             currentPairCount = currentPairCount + 1
             if currentPairCount > 4 then self.WorkTable[ key ] = nil end
         end
     end
 
     if not next( self.WorkTable ) then
-        print( "WorkTable Empty" )
+        --print( "WorkTable Empty" )
         return
     end
 
@@ -304,7 +298,7 @@ function ENT:ScanForTrains() -- scrape all trains that have been logged into RBL
     -- if next(self.WorkTable) then print("WorkTable Length:", #self.WorkTable) end
     for k, v in ipairs( self.WorkTable ) do
         if not self.SortedTable[ k ] then
-            local eta, Dist, path = self:TrackETA( v )
+            local eta, Dist, _ = self:TrackETA( v )
             table.insert( self.SortedTable, {
                 train = v, -- Insert a train and its ETA into the table
                 ETA = eta,
@@ -330,7 +324,7 @@ function ENT:TrackETA( train ) -- universal function for having Metrostroi calcu
         local TrainPosOnTrack = Metrostroi.GetPositionOnTrack( train:GetPos(), train:GetAngles() )[ 1 ]
         -- input the train's world vector and get its position on the node system
         if not TrainPosOnTrack then return end
-        return UF.GetTravelTime( TrainPosOnTrack.node1, self.TrackPosition.node1 ) -- return the travel time between the train and the display
+        return MPLR.GetTravelTime( TrainPosOnTrack.node1, self.TrackPosition.node1 ) -- return the travel time between the train and the display
     else
         return nil
     end

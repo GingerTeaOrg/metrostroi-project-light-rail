@@ -56,7 +56,7 @@ function ENT:ReinitializeSounds()
 
     -- Create sounds
     self.Sounds = {}
-    for k, v in pairs( UF.BogeySounds.SoundNames ) do
+    for k, v in pairs( MPLR.BogeySounds.SoundNames ) do
         --[[local e = self
         if (k == "brake3a") and IsValid(self:GetNW2Entity("TrainWheels")) then
             e = self:GetNW2Entity("TrainWheels")
@@ -69,8 +69,8 @@ end
 
 function ENT:SetSoundState( sound, volume, pitch, name, level )
     if not self.Sounds[ sound ] then
-        if UF.BogeySounds.SoundNames[ name or sound ] and ( not wheels or IsValid( self:GetNW2Entity( "TrainWheels" ) ) ) then
-            self.Sounds[ sound ] = CreateSound( wheels and self:GetNW2Entity( "TrainWheels" ) or self, Sound( UF.BogeySounds.SoundNames[ name or sound ] ) )
+        if MPLR.BogeySounds.SoundNames[ name or sound ] and ( not wheels or IsValid( self:GetNW2Entity( "TrainWheels" ) ) ) then
+            self.Sounds[ sound ] = CreateSound( wheels and self:GetNW2Entity( "TrainWheels" ) or self, Sound( MPLR.BogeySounds.SoundNames[ name or sound ] ) )
         else
             return
         end
@@ -160,10 +160,10 @@ function ENT:DefaultSoundFunc()
 
         self.MotorSoundType = self:GetNWInt( "MotorSoundType", 0 )
         self.DisableEngines = self:GetNWBool( "DisableEngines" )
-        self.MotorSoundArr = UF.BogeySounds.EngineSNDConfig[ self.MotorSoundType ]
+        self.MotorSoundArr = MPLR.BogeySounds.EngineSNDConfig[ self.MotorSoundType ]
     end
 
-    self.MotorSoundArr = UF.BogeySounds.EngineSNDConfig[ self.MotorSoundType ]
+    self.MotorSoundArr = MPLR.BogeySounds.EngineSNDConfig[ self.MotorSoundType ]
     if not self.DisableEngines and self.MotorSoundArr then
         self.MotorPowerSound = math.Clamp( self.MotorPowerSound + ( motorPower - self.MotorPowerSound ) * self.DeltaTime * 3, -1.5, 1.5 )
         local t = RealTime() * 2.5

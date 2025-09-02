@@ -246,7 +246,7 @@ local function UpdateTrainList( fromPresets )
 	end
 
 	if not Settings[ Settings.Train ] then Settings[ Settings.Train ] = {} end
-	for k, name in pairs( UF.TrainClasses ) do
+	for k, name in pairs( MPLR.TrainClasses ) do
 		local ENT = scripted_ents.Get( name )
 		if not ENT.Spawner or ENT.ClassName ~= Settings.Train then continue end
 		for i, menu in ipairs( ENT.Spawner ) do
@@ -287,7 +287,7 @@ end
 
 local function Draw()
 	local Trains = {}
-	for _, name in pairs( UF.TrainClasses ) do
+	for _, name in pairs( MPLR.TrainClasses ) do
 		local ENT = scripted_ents.Get( name )
 		if not ENT.Spawner or not ENT.SubwayTrain then continue end
 		local ENTl = list.Get( "SpawnableEntities" )[ name ]
@@ -299,7 +299,7 @@ local function Draw()
 	--[[CreateSlider( "WagNum", 0, 1, GetGlobalInt( "mplr_maxwagons" ), "Car Count									",
 		function( slider )
 		local WagNumTable
-		for k, name in pairs( UF.TrainClasses ) do
+		for k, name in pairs( MPLR.TrainClasses ) do
 			local ENT = scripted_ents.Get( name )
 			if not ENT.Spawner or ENT.ClassName ~= Settings.Train then continue end
 			WagNumTable = ENT.Spawner.WagNumTable

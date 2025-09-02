@@ -29,7 +29,7 @@ function TRAIN_SYSTEM:Think( dT )
 
 	self.SpeedLimitForward = self.ScanLocation and self.ScanLocation.node1.speed_forward or nil
 	self.SpeedLimitBackward = self.ScanLocation and self.ScanLocation.node1.speed_backward or nil
-	self.PassedSignal = UF.SignalEntitiesForNode[ self.ScanLocation.node1 ] or UF.SignalEntitiesForNode[ self.ScanLocation.node2 ]
+	self.PassedSignal = MPLR.SignalEntitiesForNode[ self.ScanLocation.node1 ] or MPLR.SignalEntitiesForNode[ self.ScanLocation.node2 ]
 	if IsValid( self.PassedSignal ) then
 		self.SignalTrackPos = IsValid( self.PassedSignal ) or self.PassedSignal.TrackPosition or nil
 		self.SPAD = IsValid( self.PassedSignal ) and ( self.SignalTrackPos.forward and self.ScanLocation.x > self.SignalTrackPos.x ) or ( not self.SignalTrackPos.forward and self.ScanLocation.x < self.SignalTrackPos.x ) and self.ScanLocation.path == self.SignalTrackPos.path

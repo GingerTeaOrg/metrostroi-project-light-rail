@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "gmod_subway_uf_base"
+ENT.Base = "gmod_subway_mplr_base"
 ENT.PrintName = "Duewag B-Wagen 1973 Series"
 ENT.Author = "LillyWho"
 ENT.Contact = ""
@@ -11,16 +11,6 @@ ENT.AdminSpawnable = false
 ENT.SkinsType = "B1973"
 ENT.DontAccelerateSimulation = true
 ENT.RenderGroup = 9
-ENT.BlinkersRight = {
-	[ 9 ] = true,
-	[ 11 ] = true
-}
-
-ENT.BlinkersRight = {
-	[ 8 ] = true,
-	[ 10 ] = true
-}
-
 ENT.BrakeLightLeft = {
 	[ 6 ] = true
 }
@@ -39,6 +29,8 @@ end
 
 function ENT:InitializeSounds()
 	self.BaseClass.InitializeSounds( self )
+	self.SoundNames[ "bell" ] = nil
+	self.SoundPositions[ "bell" ] = nil
 	self.SoundNames[ "bell" ] = {
 		loop = 0.01,
 		"lilly/uf/u2/Bell_start.mp3",
@@ -49,13 +41,23 @@ function ENT:InitializeSounds()
 	self.SoundPositions[ "bell" ] = { 1100, 1e9, Vector( 480, -20, 8 ), 0.7 }
 	self.SoundNames[ "bell_in" ] = {
 		loop = 0.01,
-		"lilly/uf/u2/insidecab/Bell_start.mp3",
-		"lilly/uf/u2/insidecab/Bell_loop.mp3",
-		"lilly/uf/u2/insidecab/Bell_end.mp3"
+		"lilly/mplr/b80c_firstgen/bell_start.wav",
+		"lilly/mplr/b80c_firstgen/bell_loop.wav",
+		"lilly/mplr/b80c_firstgen/bell_end.wav"
 	}
 
 	self.SoundPositions[ "bell_in" ] = { 800, 1e9, Vector( 480, -20, 50 ), 1 }
 	-----------------------------------------------------------------------------
+	self.SoundNames[ "BrakesRelease" ] = { "lilly/mplr/b80c_firstgen/brake_release.wav" }
+	self.SoundPositions[ "BrakesRelease" ] = { 800, 1e9, Vector( 440, 0, 100 ), 1 }
+	self.SoundNames[ "BrakesSet" ] = { "lilly/mplr/b80c_firstgen/brake_hiss.wav" }
+	self.SoundPositions[ "BrakesSet" ] = { 800, 1, Vector( 440, 0, 100 ), 1 }
+	self.SoundNames[ "Chopper" ] = {
+		loop = 2.25,
+		"lilly/mplr/b80c_firstgen/chopper.wav"
+	}
+
+	self.SoundPositions[ "Chopper" ] = { 800, 1e9, Vector( 440, 0, 100 ), 1 }
 	self.SoundNames[ "Cruise" ] = { "lilly/mplr/b-wagen_common/cruise.mp3" }
 	self.SoundPositions[ "Cruise" ] = { 800, 1e9, Vector( 240, 0, 50 ), 1 }
 	self.SoundNames[ "DepartureConfirmed" ] = { "lilly/mplr/common/departure_ready.wav" }
@@ -85,7 +87,7 @@ function ENT:InitializeSounds()
 	self.SoundPositions[ "key_insert" ] = { 1100, 1e9, Vector( 480, 36, 70 ), 1 }
 end
 
-ENT.Cameras = { { Vector( 500, -50, 90 ), Angle( 0, -170, 0 ), "Train.UF.OutTheWindowRight" }, { Vector( 500, 50, 90 ), Angle( 0, 170, 0 ), "Train.UF_U2.OutTheWindowLeft" }, { Vector( 300, 6, 100 ), Angle( 0, 180 + 5, 0 ), "Train.UF_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 100 ), Angle( 0, 0, 0 ), "Train.UF_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 480, -5, 100 ), Angle( 0, -180, 0 ), "Train.UF.RouteList" }, { Vector( 530, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.UF_U2.Bogey" }, { Vector( 505, -7, 80 ), Angle( 35, 0, 0 ), "Train.UF.IBIS" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.UF.Panto" } }
+ENT.Cameras = { { Vector( 500, -50, 90 ), Angle( 0, -170, 0 ), "Train.MPLR.OutTheWindowRight" }, { Vector( 500, 50, 90 ), Angle( 0, 170, 0 ), "Train.MPLR_U2.OutTheWindowLeft" }, { Vector( 300, 6, 100 ), Angle( 0, 180 + 5, 0 ), "Train.MPLR_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 100 ), Angle( 0, 0, 0 ), "Train.MPLR_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 480, -5, 100 ), Angle( 0, -180, 0 ), "Train.MPLR.RouteList" }, { Vector( 530, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.MPLR_U2.Bogey" }, { Vector( 505, -7, 80 ), Angle( 35, 0, 0 ), "Train.MPLR.IBIS" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.MPLR.Panto" } }
 ENT.LeftDoorPositions = {}
 ENT.RightDoorPositions = {}
 ENT.SectionADoors = {
@@ -137,7 +139,7 @@ ENT.BlinkersRight = {
 
 ENT.MirrorCams = { Vector( 540, 60, 100 ), Angle( 1, 180, 0 ), 50, Vector( 540, -60, 100 ), Angle( 1, 180, 0 ), 50 }
 function ENT:InitializeSystems()
-	self:LoadSystem( "DeadmanUF", "Duewag_Deadman" )
+	self:LoadSystem( "DeadmanMPLR", "Duewag_Deadman" )
 	self:LoadSystem( "Duewag_Battery" )
 	self:LoadSystem( "Panel", "1973_panel" )
 	self:LoadSystem( "Chopper" )
@@ -146,6 +148,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem( "IBIS" )
 	self:LoadSystem( "Announcer", "uf_announcer" )
 	self:LoadSystem( "DoorHandler", "MPLR_DoorHandler" )
+	self:LoadSystem( "SoundEng", "duewag_b_1973_soundeng" )
 	self:LoadSystem( "Blinkers" )
 	-- self:LoadSystem("duewag_electric")
 end
@@ -156,7 +159,12 @@ ENT.SubwayTrain = {
 	WagType = 0,
 	Manufacturer = "Duewag",
 	Section = "A",
-	Vmax = 100
+	Vmax = 100,
+	Mass = 38500,
+	StepsMedium = true,
+	StepsLow = true,
+	StopRequest = true,
+	Bidirectional = true
 }
 
 ENT.AnnouncerPositions = { { Vector( 293, 44, 102 ) }, { Vector( 293, -44, 102 ) } }
@@ -174,14 +182,14 @@ ENT.Spawner = {
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISLines or {} ) do
+			for k, v in pairs( MPLR.IBISLines or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISLines and val == 1 then
+			if MPLR.IBISLines and val == 1 then
 				ent:SetNW2Int( "IBIS:Lines", 1 )
 			else
 				ent:SetNW2Int( "IBIS:Lines", val )
@@ -194,14 +202,14 @@ ENT.Spawner = {
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISRoutes or {} ) do
+			for k, v in pairs( MPLR.IBISRoutes or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISLRoutes and val == 1 then
+			if MPLR.IBISLRoutes and val == 1 then
 				ent:SetNW2Int( "IBIS:Routes", 1 )
 			else
 				ent:SetNW2Int( "IBIS:Routes", val )
@@ -214,14 +222,14 @@ ENT.Spawner = {
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISDestinations or {} ) do
+			for k, v in pairs( MPLR.IBISDestinations or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISDestinations and val == 1 then
+			if MPLR.IBISDestinations and val == 1 then
 				ent:SetNW2Int( "IBIS:Destinations", 1 )
 			else
 				ent:SetNW2Int( "IBIS:Destinations", val )
@@ -234,14 +242,14 @@ ENT.Spawner = {
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.SpecialAnnouncementsIBIS or {} ) do
+			for k, v in pairs( MPLR.SpecialAnnouncementsIBIS or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.SpecialAnnouncementsIBIS and val == 1 then
+			if MPLR.SpecialAnnouncementsIBIS and val == 1 then
 				ent:SetNW2Int( "IBIS:ServiceA", 1 )
 			else
 				ent:SetNW2Int( "IBIS:ServiceA", val )
@@ -254,14 +262,14 @@ ENT.Spawner = {
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISAnnouncementScript or {} ) do
+			for k, v in pairs( MPLR.IBISAnnouncementScript or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISAnnouncementScript and val == 1 then
+			if MPLR.IBISAnnouncementScript and val == 1 then
 				ent:SetNW2Int( "IBIS:AnnouncementScript", 1 )
 			else
 				ent:SetNW2Int( "IBIS:AnnouncementScript", val )
@@ -274,17 +282,39 @@ ENT.Spawner = {
 		"List",
 		function( ent )
 			local Announcer = {}
-			for k, v in pairs( UF.IBISAnnouncementMetadata or {} ) do
+			for k, v in pairs( MPLR.IBISAnnouncementMetadata or {} ) do
 				Announcer[ k ] = v.name
 			end
 			return Announcer
 		end,
 		nil,
 		function( ent, val, rot, i, wagnum, rclk )
-			if UF.IBISAnnouncementMetadata and val == 1 then
+			if MPLR.IBISAnnouncementMetadata and val == 1 then
 				ent:SetNW2Int( "IBIS:Announcements", 1 )
 			else
 				ent:SetNW2Int( "IBIS:Announcements", val )
+			end
+		end
+	},
+	{
+		"RollsignData",
+		"Rollsign Texture",
+		"List",
+		function()
+			local Rollsign = {}
+			for k, v in pairs( MPLR.Rollsigns or {} ) do
+				if "B-Wagen Series 1973" == MPLR.Rollsigns[ k ].train then Rollsign[ k ] = v.name end
+			end
+
+			PrintTable( Rollsign )
+			return Rollsign
+		end,
+		nil,
+		function( ent, val, rot, i, wagnum, rclk )
+			if MPLR.Rollsigns[ val ] and val == 1 then
+				ent:SetNW2Int( "RollsignTexture", 1 )
+			else
+				ent:SetNW2Int( "RollsignTexture", val )
 			end
 		end
 	},

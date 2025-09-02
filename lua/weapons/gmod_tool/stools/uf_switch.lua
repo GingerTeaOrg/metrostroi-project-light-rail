@@ -10,7 +10,7 @@ TOOL.ClientConVar[ "allow_iron" ] = 1
 if CLIENT then
 	language.Add( "Tool.uf_switch.name", "Switch Tool" )
 	language.Add( "Tool.uf_switch.desc", "Sets/edits switch parameters" )
-	language.Add( "Tool.uf_switch.0", "Primary: Set channel 1\nSecondary: Copy settings" )
+	language.Add( "Tool.uf_switch.0", "Primary: Set settings\nSecondary: Copy settings" )
 end
 
 function TOOL:LeftClick( trace )
@@ -24,16 +24,23 @@ function TOOL:LeftClick( trace )
 		if v:GetClass() == "gmod_track_uf_switch" then
 			v.ID = self:GetClientInfo( "ID" ) ~= "" and self:GetClientInfo( "ID" ) or nil
 			v.AllowSwitchingIron = self:GetClientNumber( "allow_iron" ) == 1
+			if not v.DirectionsToPaths then v.DirectionsToPaths = {} end
 			v.DirectionsToPaths[ "left" ] = self:GetClientNumber( "left_path" )
 			v.DirectionsToPaths[ "right" ] = self:GetClientNumber( "right_path" )
-			print( Format( "ID:%s, Left path is %s, Right path is %s, Switching Iron is %s allowed", self:GetClientInfo( "ID" ) ~= "" and self:GetClientInfo( "ID" ) or "nil", self:GetClientNumber( "left_path" ), self:GetClientNumber( "right_path" ), self:GetClientNumber( "allow_iron" ) == 0 and "not " or "" ) )
+			MPLR.SwitchPathIDsByDirection[ v ] = {
+				[ "left" ] = v.DirectionsToPaths[ "left" ],
+				[ "right" ] = v.DirectionsToPaths[ "right" ]
+			}
+
+			ply:PrintMessage( HUD_PRINTTALK, Format( "ID:%s || Left path is %s, Right path is %s || Switching Iron is %s allowed", self:GetClientInfo( "ID" ) ~= "" and self:GetClientInfo( "ID" ) or "nil", self:GetClientNumber( "left_path" ), self:GetClientNumber( "right_path" ), self:GetClientNumber( "allow_iron" ) == 0 and "not " or "" ) )
+			return true
 		end
 	end
-	return true
+	return false
 end
 
 function TOOL:RightClick( trace )
-	if CLIENT then return true end
+	if CLIENT then return false end
 	--[[
 	local ply = self:GetOwner()
 	if (ply:IsValid()) and (not ply:IsAdmin()) then return false end
@@ -47,10 +54,10 @@ function TOOL:RightClick( trace )
 			print("Set channel 2")
 		end
 	end]]
-	return true
+	return false
 end
 
-function TOOL:Reload( trace )
+--[[function TOOL:Reload( trace )
 	if CLIENT then return true end
 	local ply = self:GetOwner()
 	if ply:IsValid() and ( not ply:IsAdmin() ) then return false end
@@ -75,8 +82,7 @@ function TOOL:Reload( trace )
 		end
 	end
 	return true
-end
-
+end]]
 function TOOL.BuildCPanel( panel )
 	panel = panel or controlpanel.Get( "uf_switch" )
 	panel:SetName( "#Tool.switch.name" )

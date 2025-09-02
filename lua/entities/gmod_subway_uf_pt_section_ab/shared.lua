@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "gmod_subway_uf_base"
+ENT.Base = "gmod_subway_mplr_base"
 ENT.PrintName = "Duewag Pt"
 ENT.PrintNameTranslated = "Duewag P8"
 ENT.Author = ""
@@ -8,6 +8,7 @@ ENT.Purpose = ""
 ENT.Instructions = ""
 ENT.Category = "Metrostroi: Project Light Rail"
 ENT.Spawnable = false
+ENT.AutomaticFrameAdvance = true
 ENT.AdminSpawnable = false
 ENT.DontAccelerateSimulation = true
 function ENT:InitializeSounds()
