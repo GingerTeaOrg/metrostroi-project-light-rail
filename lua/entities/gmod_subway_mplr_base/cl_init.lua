@@ -574,19 +574,19 @@ local function colAlpha( col, a )
 	return Color( col.r * a, col.g * a, col.b * a )
 end
 
-hook.Add( "PostDrawTranslucentRenderables", "mplr_base_draw", function( _, isDD )
+hook.Add( "PostDrawTranslucentRenderables", "metrostroi_base_draw", function( _, isDD )
 	if isDD then return end
 	local inSeat = LocalPlayer().InMetrostroiTrain
-	for ent in pairs( MPLR.SpawnedTrains ) do
+	for ent in pairs( Metrostroi.SpawnedTrains ) do
 		if ent:IsDormant() then continue end
-		if MPLR and MPLR ~= true or ent.RenderBlock then
+		if MPLRStarted and MPLRStarted ~= true or ent.RenderBlock then
 			if not inSeat then
-				local timeleft = math.max( 0, ( MPLR and MPLR ~= true ) and 3 - ( RealTime() - MPLR ) or 3 - ( RealTime() - ent.RenderBlock ) ) + 0.99
+				local timeleft = math.max( 0, ( MPLRStarted and MPLRStarted ~= true ) and 3 - ( RealTime() - MPLRStarted ) or 3 - ( RealTime() - ent.RenderBlock ) ) + 0.99
 				cam.Start3D2D( ent:LocalToWorld( Vector( 0, -150, 100 ) ), ent:LocalToWorldAngles( Angle( 0, 90, 90 ) ), 1.5 )
-				draw.SimpleText( "Please wait, the train will synchronise in " .. string.NiceTime( timeleft ) )
+				draw.SimpleText( "Wait, train will be available across " .. string.NiceTime( timeleft ) )
 				cam.End3D2D()
 				cam.Start3D2D( ent:LocalToWorld( Vector( 0, 150, 100 ) ), ent:LocalToWorldAngles( Angle( 0, -90, 90 ) ), 1.5 )
-				draw.SimpleText( "Please wait, the train will synchronise in " .. string.NiceTime( timeleft ) )
+				draw.SimpleText( "Wait, train will be available across " .. string.NiceTime( timeleft ) )
 				cam.End3D2D()
 			end
 
@@ -937,26 +937,26 @@ local function SoundTrace( startv, endv )
 	return 1000
 end
 
-MPLR = MPLR or nil
-hook.Add( "KeyPress", "MPLR", function( _, key )
+MPLRStarted = MPLRStarted or nil
+hook.Add( "KeyPress", "MPLRStarted", function( _, key )
 	if key ~= IN_FORWARD and key ~= IN_BACK and key ~= IN_MOVELEFT and key ~= IN_MOVERIGHT then return end
-	hook.Add( "Think", "MPLR", function()
-		if MPLR == nil then
-			MPLR = RealTime()
-		elseif MPLR == true or MPLR and RealTime() - MPLR > 3 then
-			MPLR = true
-			hook.Remove( "Think", "MPLR" )
+	hook.Add( "Think", "MPLRStarted", function()
+		if MPLRStarted == nil then
+			MPLRStarted = RealTime()
+		elseif MPLRStarted == true or MPLRStarted and RealTime() - MPLRStarted > 3 then
+			MPLRStarted = true
+			hook.Remove( "Think", "MPLRStarted" )
 		end
 	end )
 
-	hook.Remove( "KeyPress", "MPLR" )
+	hook.Remove( "KeyPress", "MPLRStarted" )
 end )
 
 function ENT:Think()
 	self.PrevTime = self.PrevTime or RealTime()
 	self.DeltaTime = RealTime() - self.PrevTime
 	self.PrevTime = RealTime()
-	if MPLR ~= true then return end
+	if MPLRStarted ~= true then return end
 	if not self.FirstTick then
 		self.FirstTick = true
 		self.RenderClientEnts = true
@@ -1796,7 +1796,7 @@ function ENT:Animate( clientProp, value, min, max, speed, damping, stickyness, n
 		end
 	end
 
-	local dT = FrameTime() --self.DeltaTime
+	local dT = RealFrameTime() --self.DeltaTime
 	if damping == false then
 		local dX = speed * dT
 		if value > val then val = val + dX end
