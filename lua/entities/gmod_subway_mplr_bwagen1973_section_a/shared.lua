@@ -150,6 +150,8 @@ function ENT:InitializeSystems()
 	self:LoadSystem( "DoorHandler", "MPLR_DoorHandler" )
 	self:LoadSystem( "SoundEng", "duewag_b_1973_soundeng" )
 	self:LoadSystem( "Blinkers" )
+	local loadLZB = self:GetNW2Bool( "LZBEnable", false )
+	if loadLZB then self:LoadSystem( "LZB90" ) end
 	-- self:LoadSystem("duewag_electric")
 end
 
@@ -168,7 +170,7 @@ ENT.SubwayTrain = {
 }
 
 ENT.AnnouncerPositions = { { Vector( 293, 44, 102 ) }, { Vector( 293, -44, 102 ) } }
-ENT.NumberRanges = { { 5021, 5028 } }
+ENT.NumberRanges = { { 5001, 5028 } }
 ENT.Spawner = {
 	model = { "models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl", "models/lilly/mplr/ruhrbahn/b_1973/section_b.mdl" },
 	head = "gmod_subway_mplr_bwagen1973_section_a",
