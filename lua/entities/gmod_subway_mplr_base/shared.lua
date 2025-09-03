@@ -425,7 +425,7 @@ end
 --------------------------------------------------------------------------------
 -- Load a single system with given name
 --------------------------------------------------------------------------------
-function ENT:LoadSystem( a, b, ... )
+function ENT:LoadSystem( a, b, not_MU, ... )
 	local name
 	local sys_name
 	if b then
@@ -481,6 +481,8 @@ function ENT:LoadSystem( a, b, ... )
 		--if (name ~= sys_name) or (b) then self[sys_name].Name = sys_name end
 		self[ sys_name ].Name = sys_name
 		self.Systems[ sys_name ] = self[ sys_name ]
+		if self.SectionA and not not_MU then self.SectionA[ sys_name ] = self[ sys_name ] end
+		if self.SectionB and not not_MU then self.SectionB[ sys_name ] = self[ sys_name ] end
 		--if SERVER then
 		--[[self[sys_name].TriggerOutput = function(sys,name,value)
 				local varname = (sys.Name or "")..name
