@@ -1,2 +1,5 @@
-- name: Mirror to GitLab and run GitLab CI
-  uses: SvanBoxel/gitlab-mirror-and-ci-action@0.5
+            - name: Mirror to GitLab and run GitLab CI
+  # You may pin to the exact commit or the version.
+  # uses: SvanBoxel/gitlab-mirror-and-ci-action@13f58d2ae6e838d2b8a446f55afa5d69ad7ab0d2
+  uses: SvanBoxel/gitlab-mirror-and-ci-action@0.2
+          
