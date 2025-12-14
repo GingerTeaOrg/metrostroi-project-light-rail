@@ -10,7 +10,7 @@ if not MPLR and Metrostroi then
 	MPLR.CarsByCarNumbers = {}
 	-- Supported train classes
 	MPLR.TrainSpawnerClasses = {}
-	timer.Simple( 0.05, function()
+	timer.Simple( 0, function()
 		for name in pairs( scripted_ents.GetList() ) do
 			local prefix = "gmod_subway_uf_"
 			local prefix2 = "gmod_subway_mplr_"
@@ -21,6 +21,16 @@ if not MPLR and Metrostroi then
 			end
 		end
 	end )
+
+	--format: multiline
+	timer.Simple(
+		0, 
+		function()
+			MPLR.TrolleybusInstalled = trolleyFile
+			MPLR.TrolleybusLoaded = Trolleybus_System and true or false
+			if not MPLR.TrolleybusLoaded then include( "trolleybus_system.lua" ) end
+		end
+	)
 end
 
 if CLIENT then
