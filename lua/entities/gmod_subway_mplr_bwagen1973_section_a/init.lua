@@ -78,7 +78,7 @@ function ENT:Initialize()
 	self.RearCouple = self:CreateCustomCoupler( Vector( -475, 0, 30 ), Angle( 0, 180, 0 ), true, "b", "b" )
 	self.RearCoupler = self.RearCouple
 	self.RearBogey = self:CreateBogeyMPLR( Vector( -390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "b" )
-	self.Panto = self:CreatePanto( Vector( 36.5, 0, 135 ), Angle( 0, 0, 0 ), "einholm" )
+	self.Panto = self:CreatePanto( Vector( 36.9, 0, 135 ), Angle( 0, 0, 0 ), "einholm" )
 	self.FrontBogey:SetNWInt( "MotorSoundType", 0 )
 	self.MiddleBogey:SetNWInt( "MotorSoundType", 0 )
 	self.RearBogey:SetNWInt( "MotorSoundType", 0 )
@@ -412,6 +412,7 @@ function ENT:Think( dT )
 	self.RearCoupler = self.RearCouple
 	self:Traction()
 	self:Sounds()
+	self:GenerateJerks()
 	--print( self.CoreSys.IgnitionKeyAIn )
 end
 
@@ -527,9 +528,9 @@ function ENT:Traction()
 	local rb = self.RearBogey
 	local speed = self.CoreSys.Speed
 	local traction = self:ReadTrainWire( 1 ) * 0.01
-	local chopper = self.Chopper.ChopperOutput > 0 and self.Chopper.ChopperOutput / 750 or 0
+	local chopper = self.Chopper.ChopperOutput > 0 and self.Chopper.ChopperOutput / 750 and self.Chopper.ChopperOutput / 750 or 0
 	local emergency = self:ReadTrainWire( 10 ) > 0
-	--print(chopper,traction)
+	--print( chopper, traction )
 	local P = math.max( 0, 0.04449 + 1.06879 * math.abs( chopper ) - 0.465729 * chopper ^ 2 )
 	if speed < 10 then P = P * ( 1.0 + 0.5 * ( 10.0 - speed ) / 10.0 ) end
 	self.FrontBogey.MotorForce = traction > 0 and 51688.07175 or 68363.606
@@ -550,6 +551,8 @@ function ENT:Traction()
 	if speed > 8 and traction < 0 then
 		fb.BrakeCylinderPressure = math.abs( traction * 2.5 )
 	elseif speed < 8 and traction <= 0 then
+		fb.BrakeCylinderPressure = 6
+	elseif speed < 8 and self.DoorHandler.DoorUnlockState > 0 then
 		fb.BrakeCylinderPressure = 6
 	elseif traction > 0 then
 		fb.BrakeCylinderPressure = 0

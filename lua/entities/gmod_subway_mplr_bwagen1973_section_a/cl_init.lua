@@ -1271,6 +1271,491 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 	}
 }
 
+ENT.ButtonMapMPLR[ "LeftPanel1" ] = {
+	pos = Vector( 481.8, 34, 69.6 ),
+	ang = Angle( 0, 0, 0 ),
+	width = 72,
+	height = 100,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorControlBypassSet",
+			x = 16,
+			y = 8.8,
+			radius = 7,
+			tooltip = "Bypass Closed Door Check",
+			model = {
+				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/switch_knuckle.mdl",
+				z = -6,
+				ang = 0,
+				anim = true,
+				var = "DoorControlBypass",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				getfunc = function( ent ) return ent:GetNW2Float( "DoorControlBypass", 0 ) == 0 and 0.5 or ent:GetNW2Float( "DoorControlBypass", 0 ) == 0.5 and 0 or ent:GetNW2Float( "DoorControlBypass", 0 ) == 1 and 1 or 0.5 end,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Door1AutomaticSet",
+			x = 31.5,
+			y = 8.8,
+			radius = 7,
+			tooltip = "Enable or disable door 1",
+			model = {
+				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/switch_knuckle.mdl",
+				z = -6,
+				ang = 0,
+				anim = true,
+				var = "Door1Automatic",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				getfunc = function( ent ) return ent:GetNW2Float( "Door1Automatic", 0 ) == 0 and 0.5 or ent:GetNW2Float( "Door1Automatic", 0 ) == 0.5 and 0 or ent:GetNW2Float( "Door1Automatic", 0 ) == 1 and 1 or 0.5 end,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "HeaterControlSet",
+			x = 45.5,
+			y = 8.8,
+			radius = 7,
+			tooltip = "Enable or disable wagon heater",
+			model = {
+				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/switch_knuckle.mdl",
+				z = -6,
+				ang = 0,
+				anim = true,
+				var = "HeaterControl",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				getfunc = function( ent ) return ent:GetNW2Float( "HeaterControl", 0 ) == 0 and 0.5 or ent:GetNW2Float( "HeaterControl", 0 ) == 0.5 and 0 or ent:GetNW2Float( "HeaterControl", 0 ) == 1 and 1 or 0.5 end,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "BatteryOnOffSet",
+			x = 61.5,
+			y = 8.8,
+			radius = 7,
+			tooltip = "Enable or disable the battery",
+			model = {
+				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/switch_knuckle.mdl",
+				z = -6,
+				ang = 0,
+				anim = true,
+				var = "BatteryOnOff",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				getfunc = function( ent ) return ent:GetNW2Float( "BatteryOnOff", 0 ) == 0 and 0.5 or ent:GetNW2Float( "BatteryOnOff", 0 ) == 0.5 and 0 or ent:GetNW2Float( "BatteryOnOff", 0 ) == 1 and 1 or 0.5 end,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+	}
+}
+
+ENT.ButtonMapMPLR[ "LeftPanel2" ] = {
+	pos = Vector( 487.8, 34, 69.6 ),
+	ang = Angle( 0, 0, 0 ),
+	width = 72,
+	height = 100,
+	scale = 0.069,
+	buttons = {}
+}
+
+local firstButton = 450
+ENT.ButtonMapMPLR[ "DoorButton1R" ] = {
+	pos = Vector( firstButton, -51, 74 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton1RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton1RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton2R" ] = {
+	pos = Vector( firstButton, -51.4, 58 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton1RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton1RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton3R" ] = {
+	pos = Vector( 332.2, -51, 74 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton2RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton2RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton4R" ] = {
+	pos = Vector( 332.2, -51.4, 58 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton2RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton2RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton5R" ] = {
+	pos = Vector( 264.3, -51, 74 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton1RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton1RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton6R" ] = {
+	pos = Vector( 264.3, -51.4, 58 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton2RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton2RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+local delta = 184.6
+ENT.ButtonMapMPLR[ "DoorButton7R" ] = {
+	pos = Vector( 332.2 - delta, -51, 74 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton5RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton5RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton8R" ] = {
+	pos = Vector( 332.2 - delta, -51.4, 58 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton6RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton6RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton9R" ] = {
+	pos = Vector( 264.3 - delta, -51, 74 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton7RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton7RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton10R" ] = {
+	pos = Vector( 264.3 - delta, -51.4, 58 ),
+	ang = Angle( 90, -90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton8RSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton8RSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton1L" ] = {
+	pos = Vector( 446.5, 51, 74 ),
+	ang = Angle( 90, 90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton3LSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton3LSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton2L" ] = {
+	pos = Vector( 446.5, 51.3, 58 ),
+	ang = Angle( 90, 90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton4LSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton4LSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
 ENT.ButtonMapMPLR[ "DoorButton3L" ] = {
 	pos = Vector( 328.8, 51, 74 ),
 	ang = Angle( 90, 90, 0 ),
@@ -1428,6 +1913,68 @@ ENT.ButtonMapMPLR[ "DoorButton7L" ] = {
 
 ENT.ButtonMapMPLR[ "DoorButton8L" ] = {
 	pos = Vector( 144.5, 51.3, 58 ),
+	ang = Angle( 90, 90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton8LSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton8LSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton9L" ] = {
+	pos = Vector( 76.5, 51, 74 ),
+	ang = Angle( 90, 90, 0 ),
+	width = 50,
+	height = 50,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "DoorButton7LSet",
+			x = 24,
+			y = 24,
+			radius = 30,
+			tooltip = "Request Door Open",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DoorButton7LSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
+	}
+}
+
+ENT.ButtonMapMPLR[ "DoorButton10L" ] = {
+	pos = Vector( 76.5, 51.3, 58 ),
 	ang = Angle( 90, 90, 0 ),
 	width = 50,
 	height = 50,
@@ -1702,10 +2249,10 @@ function ENT:Animations()
 	self:Animate( "step_tray2", StepLowestRight2, 0, 100, 100, 10, 0 )
 	self.SectionB:Animate( "step_tray3", StepLowestRight4, 0, 100, 100, 10, 0 )
 	self.SectionB:Animate( "step_tray4", StepLowestRight5, 0, 100, 100, 10, 0 )
-	local mirrorLeft = self:GetNW2Bool( "MirrorLeft", 0 ) and 1 or 0
-	local mirrorRight = self:GetNW2Bool( "MirrorRight", 0 ) and 1 or 0
-	self:Animate( "mirror_l", mirrorLeft, 0, 1, 35, 10, 5 )
-	self:Animate( "mirror_r", mirrorRight, 0, 1, 35, 10, 5 )
+	local mirrorLeft = self:GetNW2Int( "MirrorLeftStatus", 0 )
+	local mirrorRight = self:GetNW2Int( "MirrorRightStatus", 0 )
+	self:Animate( "mirror_l", mirrorLeft, 0, 1, 30 )
+	self:Animate( "mirror_r", mirrorRight, 0, 1, 30 )
 	--self:Animate("step_tray", StepLowestRight2, 0, 100, 100, 10, 0)
 	-- self:ShowHide("headlights_on", self:GetNW2Bool("Headlights",false), 0)
 	-- self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 100) / 100
@@ -1728,7 +2275,8 @@ ENT.RTMaterialMPLR = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
 } )
 
 function ENT:DrawPost()
-	local rollsignIndex = self:GetNW2Int( "RollsignTexture" )
+	local rollsignIndex = self:GetNW2Int( "RollsignTexture", 1 )
+	if IsValid( self.SectionB ) then self.SectionB:SetNW2Int( "RollsignTexture", rollsignIndex ) end
 	local rollsignTab = MPLR.Rollsigns[ rollsignIndex ]
 	local mat = Material( rollsignTab.line, "noclamp" )
 	local mat2 = Material( rollsignTab.front, "noclamp" )
@@ -1751,16 +2299,17 @@ function ENT:DrawPost()
 		surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier3 - 1.45, -0.015, self.ScrollModifier3 - 1.5 )
 	end )
 
-	--[[self:DrawOnPanel( "LineRollsignL", function( ... )
+	self:DrawOnPanel( "LineRollsignL", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat2 )
-		surface.DrawTexturedRectUV( 1, 0, 26.8, 7.6, 0, self.ScrollModifier1 + .01, -1, self.ScrollModifier1 - 0.9 )
-	end )]]
-	cam.Start3D2D( self:LocalToWorld( Vector( 189, 48, 115 ) ), self:LocalToWorldAngles( Angle( 0, 0, -90 ) ), 1 )
+		surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier4 - 1.45, -0.015, self.ScrollModifier4 - 1.5 )
+	end )
+
+	--[[cam.Start3D2D( self:LocalToWorld( Vector( 189, 48, 115 ) ), self:LocalToWorldAngles( Angle( 0, 0, -90 ) ), 1 )
 	surface.SetMaterial( mat2 )
 	surface.SetDrawColor( 255, 255, 255, 255 )
 	surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier4 - 1.45, -0.015, self.ScrollModifier4 - 1.5 )
-	cam.End3D2D()
+	cam.End3D2D()]]
 	--[[self:DrawOnPanel( "InfoRollsignR", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat3 )
@@ -1787,6 +2336,7 @@ function ENT:DrawPost()
 		surface.SetDrawColor( 0, 65, 11 )
 		surface.DrawTexturedRectRotated( 60, 16, 96, 30, 0 )
 	end )
+	--self:MirrorRender()
 end
 
 function ENT:SoundsFunc()

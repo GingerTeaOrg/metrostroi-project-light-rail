@@ -141,7 +141,7 @@ ENT.MirrorCams = { Vector( 540, 60, 100 ), Angle( 1, 180, 0 ), 50, Vector( 540, 
 function ENT:InitializeSystems()
 	self:LoadSystem( "DeadmanMPLR", "Duewag_Deadman" )
 	self:LoadSystem( "Duewag_Battery" )
-	self:LoadSystem( "Panel", "1973_panel" )
+	self:LoadSystem( "Panel", "1973_panel", true )
 	self:LoadSystem( "Chopper" )
 	self:LoadSystem( "CoreSys", "duewag_b_1973" )
 	self:LoadSystem( "INDUSI", "mplr_INDUSI_scanner" )
@@ -162,6 +162,7 @@ ENT.SubwayTrain = {
 	Manufacturer = "Duewag",
 	Section = "A",
 	Vmax = 100,
+	Voltage = 750,
 	Mass = 38500,
 	StepsMedium = true,
 	StepsLow = true,

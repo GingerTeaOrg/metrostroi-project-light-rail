@@ -215,20 +215,59 @@ ENT.ClientProps[ "mirror_r" ] = {
 	hideseat = 0.2
 }
 
-ENT.ButtonMapMPLR[ "DestinationRollsignFront" ] = {
-	pos = Vector( -511.25, -20.5, 115 ),
+ENT.ButtonMapMPLR[ "LineRollsign" ] = {
+	pos = Vector( -511.25, 11.8, 115 ),
 	ang = Angle( 0, 90, -90 ),
-	width = 33,
+	width = 10,
 	height = 9,
 	scale = 1
 }
 
-ENT.ButtonMapMPLR[ "LineRollsign" ] = {
-	pos = Vector( -511.25, 12, 115 ),
-	ang = Angle( 0, 90, -90 ),
-	width = 9,
+ENT.ButtonMapMPLR[ "LineRollsignL" ] = {
+	pos = Vector( -189.5, -48, 115 ),
+	ang = Angle( 0, 180, -90 ),
+	width = 27,
 	height = 9,
 	scale = 1
+}
+
+ENT.ButtonMapMPLR[ "LineRollsignR" ] = {
+	pos = Vector( -216.75, 48, 115 ),
+	ang = Angle( 0, 0, -90 ),
+	width = 28.8,
+	height = 9,
+	scale = 1
+}
+
+ENT.ButtonMapMPLR[ "InfoRollsignR" ] = {
+	pos = Vector( -224.8, -37, 115.3 ),
+	ang = Angle( 0, 0, -106 ),
+	width = 42,
+	height = 12.4,
+	scale = 1
+}
+
+ENT.ButtonMapMPLR[ "InfoRollsignL" ] = {
+	pos = Vector( -182.8, 37, 115.3 ),
+	ang = Angle( 0, 180, -105 ),
+	width = 42,
+	height = 12.4,
+	scale = 1
+}
+
+--[[ENT.ButtonMapMPLR[ "DestinationRollsign" ] = {
+	pos = Vector( 511, 22, 115 ),
+	ang = Angle( 0, -90, -90 ),
+	width = 35,
+	height = 9,
+	scale = 1
+}]]
+ENT.ButtonMapMPLR[ "DestinationRollsignFront" ] = {
+	pos = Vector( -511.25, -20, 115 ),
+	ang = Angle( 0, 90, -90 ),
+	width = 65,
+	height = 15,
+	scale = 0.51
 }
 
 ENT.ButtonMapMPLR[ "dashboard" ] = {
@@ -939,12 +978,12 @@ function ENT:Initialize()
 	self.KeyTurned = false
 	self.CabWindowL = 0
 	self.CabWindowR = 0
-	self.RollsignModifier1 = 0
-	self.RollsignModifier2 = 0
-	self.RollsignModifier3 = 0
-	self.RollsignModifier4 = 0
-	self.RollsignModifier5 = 0
-	self.RollsignModifier6 = 0
+	self.ScrollModifier1 = 0
+	self.ScrollModifier2 = 0
+	self.ScrollModifier3 = 0
+	self.ScrollModifier4 = 0
+	self.ScrollModifier5 = 0
+	self.ScrollModifier6 = 0
 end
 
 function ENT:Think()
@@ -990,6 +1029,12 @@ function ENT:Draw()
 	self.BaseClass.Draw( self )
 end
 
+ENT.RTMaterialMPLR = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
+	[ "$vertexcolor" ] = 0,
+	[ "$vertexalpha" ] = 1,
+	[ "$nolod" ] = 1
+} )
+
 function ENT:DrawPost()
 	--[[self.RTMaterialMPLR:SetTexture("$basetexture", self.IBIS)
 	self:DrawOnPanel("IBISScreen", function(...)
@@ -997,20 +1042,58 @@ function ENT:DrawPost()
 		surface.SetDrawColor(0, 65, 11)
 		surface.DrawTexturedRectRotated(59, 16, 116, 25, 0)
 	end)]]
-	local mat = Material( "models/lilly/mplr/rollsigns/b_1973/lines_def.png", "noclamp" )
-	local mat2 = Material( "models/lilly/mplr/rollsigns/b_1973/flank_def.png", "noclamp" )
-	local mat3 = Material( "models/lilly/mplr/rollsigns/b_1973/internal_def.png", "noclamp" )
+	local rollsignIndex = self:GetNW2Int( "RollsignTexture", 1 )
+	local rollsignTab = MPLR.Rollsigns[ rollsignIndex ]
+	local mat = Material( rollsignTab.line, "noclamp" )
+	local mat2 = Material( rollsignTab.front, "noclamp" )
+	local mat3 = Material( rollsignTab.info, "noclamp" )
 	self:DrawOnPanel( "LineRollsign", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat )
-		surface.DrawTexturedRectUV( 1, 1.8, 7.5, 7.6, 0, self.RollsignModifier1 + .04, -1, self.RollsignModifier1 + 0.00 )
+		surface.DrawTexturedRectUV( 1, 1.8, 7.5, 7.6, 0, self.ScrollModifier1 + .04, -1, self.ScrollModifier1 + 0.00 )
 	end )
 
 	self:DrawOnPanel( "DestinationRollsignFront", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat2 )
-		surface.DrawTexturedRectUV( 1, 1.8, 31, 7.6, 0, self.RollsignModifier1, -.7, self.RollsignModifier1 - 1 )
+		surface.DrawTexturedRectUV( 0, 0, 64, 15, 0.01, self.ScrollModifier3 - 1, -.77, self.ScrollModifier3 - 1.03 )
 	end )
+
+	self:DrawOnPanel( "LineRollsignR", function( ... )
+		surface.SetDrawColor( color_white )
+		surface.SetMaterial( mat2 )
+		surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier3 - 1.45, -0.015, self.ScrollModifier3 - 1.5 )
+	end )
+
+	self:DrawOnPanel( "LineRollsignL", function( ... )
+		surface.SetDrawColor( color_white )
+		surface.SetMaterial( mat2 )
+		surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier3 - 1.45, -0.015, self.ScrollModifier3 - 1.5 )
+	end )
+
+	cam.Start3D2D( self:LocalToWorld( Vector( 189, 48, 115 ) ), self:LocalToWorldAngles( Angle( 0, 0, -90 ) ), 1 )
+	surface.SetMaterial( mat2 )
+	surface.SetDrawColor( 255, 255, 255, 255 )
+	surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier4 - 1.45, -0.015, self.ScrollModifier4 - 1.5 )
+	cam.End3D2D()
+	self:DrawOnPanel( "InfoRollsignR", function( ... )
+		surface.SetDrawColor( color_white )
+		surface.SetMaterial( mat3 )
+		surface.DrawTexturedRectUV( 1, 0, 40, 12, 0, .1, -1.01, self.ScrollModifier6 - 1 )
+	end )
+
+	self:DrawOnPanel( "InfoRollsignL", function( ... )
+		surface.SetDrawColor( color_white )
+		surface.SetMaterial( mat3 )
+		surface.DrawTexturedRectUV( 1, 0, 40, 12, 0, .1, -1.01, self.ScrollModifier6 - 1 )
+	end )
+
+	self.RTMaterialMPLR:SetTexture( "$basetexture", self.IBIS )
+	--[[self:DrawOnPanel( "IBISScreen", function( ... )
+		surface.SetMaterial( self.RTMaterialMPLR )
+		surface.SetDrawColor( 0, 65, 11 )
+		surface.DrawTexturedRectRotated( 60, 16, 96, 30, 0 )
+	end )]]
 end
 
 function ENT:OnPlay( soundid, location, range, pitch )
