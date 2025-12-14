@@ -89,4 +89,9 @@
 	VerticalOffset(float) : "Vertical Offset" : 0 : "How much to offset the clientside models by vertically in-game. Do not place the entity in hammer anywhere but in the middle and on the surface of the track!"
 	HorizontalOffset(float) : "Horizontal Offset" : 0 : "How much to offset the clientside models by horizontally in-game. Do not place the entity in hammer anywhere but in the middle and on the surface of the track!"
 	VerticalOffset(float) : "Vertical Offset" : 0 : "How much to rotate the clientside models by in-game. Do not rotate the entity in Hammer except facing forwards or backwards on the track!"
+	SignalName(string) : "Signal Name"
+]
+@PointClass base(Targetname, Origin ) studioprop("models/lilly/mplr/signals/ballises/ballise_essen.mdl") = gmod_track_mplr_ballise : "Track Ballise"
+[
+	PairedSignal(string) : "Signal to pair to"
 ]
