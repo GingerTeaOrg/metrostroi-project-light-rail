@@ -481,16 +481,17 @@ function ENT:LoadSystem( a, b, not_MU, ... )
 		--if (name ~= sys_name) or (b) then self[sys_name].Name = sys_name end
 		self[ sys_name ].Name = sys_name
 		self.Systems[ sys_name ] = self[ sys_name ]
-		if self.SectionA and not not_MU then self.SectionA[ sys_name ] = self[ sys_name ] end
-		if self.SectionB and not not_MU then self.SectionB[ sys_name ] = self[ sys_name ] end
-		--if SERVER then
-		--[[self[sys_name].TriggerOutput = function(sys,name,value)
-				local varname = (sys.Name or "")..name
-				--self:TriggerOutput(varname, tonumber(value) or 0)
-				self.DebugVars[varname] = value
-			end]]
-		--
-		--end
+		self.NonMUSystems = self.NonMUSystems or {}
+		if not_MU then self.NonMUSystems[ name ] = true end
+	end
+end
+
+function ENT:LinkMUSystems( source_ent )
+	for name in pairs( source_ent.Systems ) do
+		-- format: multiline
+		if not source_ent.NonMUSystems[ name ] then
+			self.Systems[ name ] = source_ent.Systems[ name ]
+		end
 	end
 end
 
