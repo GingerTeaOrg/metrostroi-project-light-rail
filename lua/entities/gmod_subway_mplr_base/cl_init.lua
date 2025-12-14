@@ -759,8 +759,8 @@ function ENT:Initialize()
 	self.WiperInterval = 0
 	self.WipeDown = false
 	self.Wiped = false
-	self.rtLeft = self.rtLeft or GetRenderTarget( "rtLeft" .. self:EntIndex(), 1024, 512 )
-	self.rtRight = self.rtRight or GetRenderTarget( "rtRight" .. self:EntIndex(), 1024, 512 )
+	self.rtLeft = self.rtLeft or GetRenderTarget( "rtLeft" .. self:EntIndex(), 256, 512 )
+	self.rtRight = self.rtRight or GetRenderTarget( "rtRight" .. self:EntIndex(), 256, 512 )
 	self.rtMat_l = CreateMaterial( "mirror_l" .. self:EntIndex(), "UnlitGeneric", {
 		[ "$basetexture" ] = self.rtLeft:GetName()
 	} )
@@ -2315,7 +2315,7 @@ hook.Add( "InputMouseApply", "testMouseWheel", function( cmd, x, y, ang )
 		val = 0
 	end
 
-	ply:PrintMessage( HUD_PRINTTALK, val ~= 0 and val or " " )
+	--ply:PrintMessage( HUD_PRINTTALK, val ~= 0 and val or " " )
 	net.Start( "MouseWheelAnalog" )
 	net.WriteEntity( train )
 	net.WriteFloat( val )
@@ -2426,41 +2426,61 @@ end
 
 -- Args are player, IN_ enum and bool for press/release
 local function handleKeyEvent( ply, key, pressed )
+	local shift = input.IsKeyDown( KEY_LSHIFT )
+	-- Prevent duplicate or out-of-sync key events in multiplayer prediction
 	if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
+	-- Ignore input if the player is typing in console, interacting with game UI,
+	-- or hovering over a VGUI panel that is not the 3D world
 	if gui.IsConsoleVisible() or gui.IsGameUIVisible() or IsValid( vgui.GetHoveredPanel() ) and not vgui.IsHoveringWorld() and vgui.GetHoveredPanel():GetParent() ~= vgui.GetWorldPanel() then return end
+	-- Only process left and right mouse clicks, ignore other keys
 	if key ~= MOUSE_LEFT and key ~= MOUSE_RIGHT then return end
+	-- Check if the player is a valid train driver
 	local train, outside = isValidTrainDriver( ply )
 	if not IsValid( train ) then return end
+	-- Ensure the train has a valid button map (interactive controls defined)
 	if train.ButtonMapMPLR == nil then return end
+	-- Clear all pressed buttons when releasing the left mouse button
 	if key == MOUSE_LEFT and not pressed then train:ClearButtons() end
 	if pressed then
+		-- If a button is found at the aim position, capture it
 		local button, x, y, system = findAimButton( ply, train )
 		local plombed = false
+		-- Valid button press: only if not blocked by plombed (sealed) state
 		if button and button.ID and button.ID[ 1 ] ~= "!" and ( key ~= MOUSE_LEFT or not button.plombed or not ( { button.plombed( train ) } )[ 3 ] ) then
+			--if string.match( "On", buttonID ) and shift then end
+			-- Mark button as pressed
 			button.state = true
+			-- Send the button press message to the train logic
 			local buttID = sendButtonMessage( button, train, outside )
+			-- Store this as the last button pressed for release handling
 			lastButton = button
 			lastButton.train = train
+			-- Call train-specific hook if defined
 			if train.OnButtonPressed then train:OnButtonPressed( buttID:gsub( "^.+:", "" ) ) end
+			-- If aiming at an empty panel area (no button), treat it as a panel touch
 		elseif not button and x and y and not lastTouch then
 			sendPanelTouch( system, x, y, outside, true )
 			lastTouch = { system, x, y }
 		end
 	else
-		-- Reset the last button pressed
+		-- If a button was previously pressed, release it
 		if lastButton ~= nil then
 			if lastButton.state == true then
+				-- Reset pressed state
 				lastButton.state = false
+				-- Notify train system about button release
 				sendButtonMessage( lastButton, lastButton.train, outside )
 			end
 
+			-- Call optional train-specific hook for button release
 			if train.OnButtonReleased and button then
-				local tooltip, buttID = nil, button.ID -- haha
+				local tooltip, buttID = nil, button.ID -- buttID chosen for readability
 				if button.plombed then tooltip, buttID = button.plombed( train ) end
 				train:OnButtonReleased( buttID:gsub( "^.+:", "" ) )
 			end
 		end
 
+		-- If there was an active panel touch, release it as well
 		if lastTouch ~= nil then
 			sendPanelTouch( lastTouch[ 1 ], lastTouch[ 2 ], lastTouch[ 3 ], outside, false )
 			lastTouch = nil
@@ -2762,37 +2782,70 @@ net.Receive( "mplr-sound-inside-tracker", function()
 	ent.PlyIsInTrain = trackerTable[ LocalPlayer() ] or false
 end )
 
+hook.Add( "PostRender", "UpdateMirrors", function()
+	for _, ent in ipairs( ents.FindByClass( "gmod_subway_mplr*" ) ) do
+		if ent.MirrorRender then ent:MirrorRender() end
+	end
+end )
+
+hook.Add( "PreRender", "ResetBuffer", function()
+	cam.Start3D()
+	render.SetViewPort( 0, 0, ScrW(), ScrH() )
+	cam.End3D()
+end )
+
 function ENT:MirrorRender()
-	if GetConVar( "mplr_enable_mirrors" ):GetInt() <= 0 then return end
+	if GetConVar( "mplr_mirrors_enable" ):GetInt() <= 0 then return end
+	if true then return end
+	--print( "running" )
 	local ply = LocalPlayer()
 	if not self.ClientEnts or not istable( self.MirrorCams ) or #self.MirrorCams < 6 then return end
 	-- Prevent excessive updates
 	self.LastRenderTime = self.LastRenderTime or 0
-	if SysTime() - self.LastRenderTime < 0.1 then return end
-	self.LastRenderTime = SysTime()
+	if RealTime() - self.LastRenderTime < 0.05 then return end
+	self.LastRenderTime = RealTime()
 	local mirrorLeft = self.ClientEnts[ "mirror_l" ]
 	local mirrorRight = self.ClientEnts[ "mirror_r" ]
 	-- Cache materials (prevents excessive GetMaterials calls)
-	self.MirrorMaterials = self.MirrorMaterials or {
+	if not IsValid( mirrorLeft ) or not IsValid( mirrorRight ) then
+		print( "no mirror ents!" )
+		return
+	end
+
+	self.MirrorMaterials = self.MirrorMaterials and not table.IsEmpty( self.MirrorMaterials ) and self.MirrorMaterials or {
 		left = IsValid( mirrorLeft ) and mirrorLeft:GetMaterials() or {},
 		right = IsValid( mirrorRight ) and mirrorRight:GetMaterials() or {}
 	}
 
+	--if true then return end
+	local function reflect( vec, normal )
+		return vec - 2 * vec:Dot( normal ) * normal
+	end
+
 	local function GetReflectedView( mirrorOrigin, mirrorNormal )
-		if not mirrorOrigin or not mirrorNormal then return end
 		local playerPos = ply:EyePos()
 		local playerAngles = ply:EyeAngles()
-		local toMirror = mirrorOrigin - playerPos
-		local distToPlane = toMirror:Dot( mirrorNormal )
-		local reflectedPos = playerPos + 2 * mirrorNormal * distToPlane
-		local forward = playerAngles:Forward()
-		local reflectedDir = forward - 2 * mirrorNormal * forward:Dot( mirrorNormal )
-		local reflectedAngles = reflectedDir:Angle()
+		-- Position reflection
+		local toPlane = playerPos - mirrorOrigin
+		local dist = toPlane:Dot( mirrorNormal )
+		local reflectedPos = playerPos - 2 * dist * mirrorNormal
+		-- Angle reflection
+		local fwd = reflect( playerAngles:Forward(), mirrorNormal )
+		local up = reflect( playerAngles:Up(), mirrorNormal )
+		-- Fix up vector: make it orthogonal to fwd
+		local right = fwd:Cross( up ) * -1 -- recompute right
+		up = right:Cross( fwd ) -- recompute up properly
+		-- Build angle from forward + up
+		local reflectedAngles = fwd:AngleEx( up )
 		return reflectedPos, reflectedAngles
 	end
 
 	local function RenderMirror( mirror, camIndex, materialName, rtName, rtMat )
-		if not IsValid( mirror ) then return end
+		if not IsValid( mirror ) then
+			print( "mirror invalid:", mirror )
+			return
+		end
+
 		-- Use cached materials
 		local materials = self.MirrorMaterials[ materialName ]
 		local mirrorSlot = -1
@@ -2805,35 +2858,60 @@ function ENT:MirrorRender()
 			end
 		end
 
-		if mirrorSlot == -1 then return end
-		-- Prevent excessive render target creation
-		self[ rtName ] = self[ rtName ] or GetRenderTarget( rtName .. self:EntIndex(), 1024, 512 )
-		-- Prevent excessive material creation
-		if not self[ rtMat ] then
-			self[ rtMat ] = CreateMaterial( materialName .. self:EntIndex(), "UnlitGeneric", {
-				[ "$basetexture" ] = self[ rtName ]:GetName()
-			} )
+		if mirrorSlot == -1 then
+			print( "mirror slot not found", materialName )
+			return
 		end
 
-		render.PushRenderTarget( self[ rtName ] )
-		render.Clear( 0, 0, 0, 255, true, true )
-		local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ camIndex ] or Vector( 10, 10, 10 ) )
-		local mirrorAng = self:LocalToWorldAngles( self.MirrorCams[ camIndex + 1 ] or Angle( 0, 180, 0 ) )
-		local mirrorNormal = mirrorAng:Forward()
-		local reflectedPos, reflectedAng = GetReflectedView( mirrorOrigin, mirrorNormal )
-		-- Prevent crashes from invalid data
-		if not reflectedPos or not reflectedAng then return end
-		render.RenderView( {
-			origin = reflectedPos,
-			angles = reflectedAng,
-			fov = self.MirrorCams[ camIndex + 2 ] or 15,
-			znear = 5,
-			zfar = 100
+		local renderPlayer = false
+		-- Prevent excessive render target creation
+		self[ rtName ] = self[ rtName ] or GetRenderTarget( rtName .. self:EntIndex(), 256, 512 )
+		-- Prevent excessive material creation
+		self[ rtMat ] = self[ rtMat ] or CreateMaterial( materialName .. self:EntIndex(), "UnlitGeneric", {
+			[ "$basetexture" ] = self[ rtName ]:GetName()
 		} )
 
+		cam.Start3D()
+		render.PushRenderTarget( self[ rtName ] )
+		render.Clear( 255, 255, 255, 255, true, true )
+		local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ camIndex ] - Vector( 10, 0, 0 ) or Vector( 10, 10, 10 ) )
+		local mirrorAng = self:LocalToWorldAngles( self.MirrorCams[ camIndex + 1 ] or Angle( 0, 180, 0 ) )
+		local mirrorNormal = mirrorAng:Up() * -1
+		local reflectedPos, reflectedAng = GetReflectedView( mirrorOrigin, mirrorNormal )
+		local function myRender()
+			local ang = ( ply:GetPos() - mirrorOrigin ):Angle() + self:LocalToWorldAngles( Angle( 0, 65, 0 ) )
+		end
+
+		-- Prevent crashes from invalid data
+		if not reflectedPos or not reflectedAng then
+			render.PopRenderTarget()
+			return
+		end
+
+		render.RenderView( {
+			x = 0,
+			y = 0,
+			w = 256,
+			h = 512,
+			origin = mirrorOrigin,
+			angles = ( ply:GetPos() - mirrorOrigin ):Angle() + Angle( 0, 65, 90 ),
+			fov = self.MirrorCams[ camIndex + 2 ] or 15,
+			znear = 1,
+			zfar = 1000,
+			drawviewmodel = false,
+			drawviewer = true,
+			dopostprocess = false,
+		} )
+
+		--render.SetViewPort( 0, 0, ScrW(), ScrH() )
 		render.PopRenderTarget()
+		cam.End3D()
+		cam.Start3D()
+		render.SetViewPort( 0, 0, ScrW(), ScrH() )
+		cam.End3D()
 		-- Ensure mirrorSlot is valid
-		if mirrorSlot > -1 then self:SetSubMaterial( mirrorSlot, "!" .. materialName .. self:EntIndex() ) end
+		local ent = materialName == "left" and self.ClientEnts[ "mirror_l" ] or materialName == "right" and self.ClientEnts[ "mirror_r" ] or nil
+		if mirrorSlot > -1 and IsValid( ent ) then ent:SetSubMaterial( mirrorSlot, "!" .. self[ rtMat ]:GetName() ) end
 	end
 
 	-- Render left and right mirrors
