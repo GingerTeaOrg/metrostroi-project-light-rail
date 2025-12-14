@@ -1,7 +1,6 @@
 MPLR.SignalLib = {}
 local LIB = MPLR.SignalLib
 function LIB:New( signalEnt )
-	assert( IsValid( signalEnt ), "MPLR Signal Lib: GIVEN SIGNAL ENTITY IS NOT VALID" )
 	local obj = {}
 	setmetatable( obj, {
 		__index = self
@@ -19,6 +18,11 @@ function LIB:Initialize( signalEnt )
 		return
 	end
 
+	if not self.SignalEnt.TrackPos then
+		timer.Simple( 2, function() self:Initialize( signalEnt ) end )
+		return
+	end
+
 	self.TrackPos = self.SignalEnt.TrackPos or self.SignalEnt.TrackPosition
 	self.Forward = self.TrackPos.Forward
 	self.NextSwitch, self.SwitchNode = self:FindNextSwitch()
@@ -31,13 +35,16 @@ function LIB:Initialize( signalEnt )
 end
 
 function LIB:Think()
+	if not self.TrackPos then return end
 	self.EditMode = GetConVar( "mplr_signalling_editing_mode" ):GetBool()
 	self:BlockSignal()
 end
 
 function LIB:CollectSwitches( node, count )
-	count = count or 0
 	local maxCount = 25
+	count = count or 0
+	count = count + 1
+	if count > maxCount then return end
 	if not node then
 		error( "SignalLib: No next node found!! Exiting!" )
 		return
@@ -46,8 +53,6 @@ function LIB:CollectSwitches( node, count )
 	self.VisitedNodes = self.VisitedNodes or {}
 	if self.VisitedNodes[ node ] then return end
 	self.VisitedNodes[ node ] = true
-	count = count + 1
-	if count > maxCount then return end
 	local switchFound = MPLR.SwitchEntitiesByNode( node )
 	if switchFound then table.insert( self.Switches, switchFound ) end
 	-- Collect branch results
@@ -86,18 +91,19 @@ function LIB:BlockSignal()
 end
 
 function LIB:BlockSignalNoRoutes()
+	-- This is a simplified function in case there are no branching paths ahead. We just find the next signal and set our state based on it and the track occupation.
 	if not IsValid( self.NextSignal ) then self.NextSignal, self.SignalNode = self:FindNextBlockSignal() end
-	if not IsValid( self.NextSignal ) then
+	if not IsValid( self.NextSignal ) then -- if there isn't a next signal, we're the absolute last one in the chain, so set to whatever emergency aspect there would be (actual correcponding aspect handled by individual entity)
 		self.SignalState = "emergency"
-		return
+		return -- no need to do anything if there is no next signal, so quit without further checks
 	end
 
-	local function checkBlock()
+	local function checkBlock() -- simple block signalling helper
 		return MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.Forward, "light", self.NextSignal.TrackPos.x )
 	end
 
 	local trainIsInBlockAhead = checkBlock()
-	local nextSignalState = self.NextSignal.SignalLib.SignalState
+	local nextSignalState = self.NextSignal.SignalLib.SignalState -- ask the library of the next signal for its status
 	local nextSignalType = self.NextSignal.MainSignal and "main" or "distant"
 	if trainIsInBlockAhead then
 		if not self.AllowMultiOccupation then
@@ -127,9 +133,6 @@ function LIB:BlockSignalNoRoutes()
 
 	-- fallback to cover unknown or missing states
 	self.SignalState = self.SignalState or nextSignalState or "emergency"
-end
-
-function LIB:BlockSignal()
 end
 
 function LIB:CacheNodePaths( start, target, scannedNodes, validNodes, originPath, encounteredSwitches )
@@ -225,6 +228,7 @@ function LIB:FindNextBlockSignal( node )
 end
 
 function LIB:FindNextSwitch( node )
+	-- Simple function to find the very next switch from the signal
 	if not node then node = self.TrackPos.node1 end
 	local switchEnt = MPLR.SwitchEntitiesByNode[ node ]
 	local switch = IsValid( switchEnt ) and switchEnt

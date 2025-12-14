@@ -6,7 +6,6 @@ util.AddNetworkString( "mplr-signal-server" )
 util.AddNetworkString( "mplr-signal-client" )
 util.AddNetworkString( "mplr-signal-state" )
 function ENT:Initialize()
-	self.Library = MPLR.SignalLib:New( self )
 	self.SignalType = self.SignalType or self.SignalTypes[ "Underground_Small_Pole" ]
 	--print( self.SignalType )
 	self.Aspect = "Sh3d"
@@ -20,13 +19,13 @@ function ENT:Initialize()
 	self.TrackPosition = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	self.Node = self.TrackPosition.node1
 	self.SpeedLimit = 0
-	self.Left = self.Left or false
 	self.Name1 = self.Name1 or " "
 	self.Name2 = self.Name2 or " "
 	self.Routes = self.Routes or {}
-	if self.Name1 and self.Name1 ~= " " then self:SetNW2String( "Name1", self.Name1 ) end
-	if self.Name2 and self.Name2 ~= " " then self:SetNW2String( "Name2", self.Name2 ) end
+	--if self.Name1 and self.Name1 ~= " " then self:SetNW2String( "Name1", self.Name1 ) end
+	--if self.Name2 and self.Name2 ~= " " then self:SetNW2String( "Name2", self.Name2 ) end
 	self.LastPVSTracking = 0
+	self.Library = MPLR.SignalLib:New( self )
 end
 
 util.AddNetworkString( "RespawnSignal" )
@@ -76,6 +75,7 @@ end
 
 function ENT:Think()
 	self:NextThink( CurTime() )
+	if not self.Library then return true end
 	self.Library:Think()
 	--print( "thinking" )
 	--self:UpdateSignalAspect()
@@ -90,6 +90,7 @@ function ENT:SendUpdate( ply )
 	net.Start( "mplr-signal-server" )
 	net.WriteEntity( self )
 	net.WriteTable( self.Routes )
+	net.WriteBool( true )
 	net.SendPVS( self:GetPos() )
 end
 
