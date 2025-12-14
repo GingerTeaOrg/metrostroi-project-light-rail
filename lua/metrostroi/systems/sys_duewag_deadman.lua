@@ -23,6 +23,7 @@ function TRAIN_SYSTEM:Initialize()
 	----------------------------
 	self.Sys = self.Train.CoreSys
 	self.PanelA = self.Train.Panel
+	self.SPAD = false
 	if self.Train.SectionB then self.PanelB = self.Train.SectionB.Panel end
 end
 
@@ -84,6 +85,7 @@ function TRAIN_SYSTEM:AlarmTimer()
 end
 
 function TRAIN_SYSTEM:ResetDeadman()
+	local indusi = self.Train.INDUSI
 	local speed = self.Train.CoreSys.Speed
 	local reverserA = self.Train.CoreSys.ReverserA
 	local reverserB = self.Train.CoreSys.ReverserB
@@ -96,7 +98,8 @@ function TRAIN_SYSTEM:ResetDeadman()
 		throttle = self.Train.CoreSys.ThrottleStateB
 	end
 
-	if self.DeadmanTripped and speed < 5 and ( reverserA == 0 and reverserB == 0 ) and throttle == 0 then
+	print( self.DeadmanTripped )
+	if self.DeadmanTripped and speed < 5 and ( reverserA == 0 and reverserB == 0 ) and throttle == 0 and not self.SPAD then
 		self.DeadmanTripped = false
 		self.OverSpeed = false
 	end
@@ -106,7 +109,12 @@ function TRAIN_SYSTEM:EmergencyBrake()
 	local indusi = self.Train.INDUSI
 	if self.BrokenConsist then self.DeadmanTripped = true end
 	if self.AlarmTime - CurTime() > 3 then self.DeadmanTripped = true end
-	if indusi and indusi.SPAD then self.DeadmanTripped = true end
+	if indusi and indusi.SPAD then
+		self.SPAD = indusi.SPAD
+		self.DeadmanTripped = true
+		PrintMessage( HUD_PRINTTALK, "SPAD TRIPPED" )
+	end
+
 	if self.OverSpeed then self.DeadmanTripped = true end
 	self.Train:WriteTrainWire( 8, self.DeadmanTripped and 1 or 0 )
 end
@@ -134,9 +142,11 @@ function TRAIN_SYSTEM:SoundAlarm()
 	local reverserA = self.Train.CoreSys.ReverserA
 	local reverserB = self.Train.CoreSys.ReverserB
 	if reverserA ~= 0 then
-		self.Train:SetNW2Bool( "DeadmanAlarmSound", self.BrokenConsist or self.CabConflict or self.Alarm or self.TractionWithoutDeadman )
+		self.Train:SetNW2Bool( "DeadmanAlarmSound", self.BrokenConsist or self.CabConflict or self.Alarm or self.TractionWithoutDeadman or self.SPAD )
 	elseif reverserB ~= 0 and self.Train.SectionB then
-		self.Train.SectionB:SetNW2Bool( "DeadmanAlarmSound", self.BrokenConsist or self.CabConflict or self.Alarm or self.TractionWithoutDeadman )
+		self.Train.SectionB:SetNW2Bool( "DeadmanAlarmSound", self.BrokenConsist or self.CabConflict or self.Alarm or self.TractionWithoutDeadman or self.SPAD )
+	elseif self.SPAD then
+		self.Train:SetNW2Bool( "DeadmanAlarmSound", self.SPAD )
 	else
 		self.Train:SetNW2Bool( "DeadmanAlarmSound", false )
 		if self.Train.SectionB then self.Train.SectionB:SetNW2Bool( "DeadmanAlarmSound", false ) end
