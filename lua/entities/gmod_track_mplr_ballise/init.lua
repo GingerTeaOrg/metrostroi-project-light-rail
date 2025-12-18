@@ -22,9 +22,10 @@ function ENT:Think()
 	if not IsValid( self.PairedSignal ) or not self.PairedSignal then
 		self.PairedSignal = self:GetNW2String( "PairedSignal", self.VMF and self.VMF.PairedSignal or nil )
 		self.PairedSignal = MPLR.SignalEntitiesByName[ self.PairedSignal ]
-		print( MPLR.SignalEntitiesByName[ self.PairedSignal ] )
 		return true
 	end
+
+	self:SelectImpulseToTransfer()
 	--print( IsValid( self.PairedSignal ) )
 	return true
 end
