@@ -31,10 +31,12 @@ local function tableInit()
 	MPLR.SignalEntityPositions = {} --		-- Signal entity Vectors, just in case it'll be useful ¯\_(ツ)_/¯
 	MPLR.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by ent or name
 	MPLR.SignageEntsByNode = {} --			-- Query this table by entering a given node, get a signage entity returned if present
-	print( "MPLR: Preparing INDUSI additions for pathing." )
-	for i = 1, #Metrostroi.Paths do
-		for _, v in ipairs( Metrostroi.Paths[ i ] ) do
-			v.INDUSI = {}
+	if not table.IsEmpty( Metrostroi.Paths ) then
+		print( "MPLR: Preparing INDUSI additions for pathing." )
+		for i = 1, #Metrostroi.Paths do
+			for _, v in ipairs( Metrostroi.Paths[ i ] ) do
+				v.INDUSI = {}
+			end
 		end
 	end
 end
@@ -133,9 +135,8 @@ function MPLR.UpdateSignalEntities()
 	print( "MPLR: PreInitialize signals" )
 	for _, v in pairs( entities ) do
 		local pos = Metrostroi.GetPositionOnTrack( v:GetPos(), v:GetAngles() - Angle( 0, 90, 0 ), options )[ 1 ]
-		local pos2 = Metrostroi.GetPositionOnTrack( v:LocalToWorld( Vector( 0, 10, 0 ) ), v:GetAngles() - Angle( 0, 90, 0 ), options )
 		if pos then -- FIXME make it select proper path
-			MPLR.SignalEntitiesByNode[ pos.node1 ] = MPLR.SignalEntitiesByNode[ pos2.node1 ] or {}
+			MPLR.SignalEntitiesByNode[ pos.node1 ] = MPLR.SignalEntitiesByNode[ pos.node1 ] or {}
 			table.insert( MPLR.SignalEntitiesByNode[ pos.node1 ], v )
 			-- A signal belongs only to a single track
 			MPLR.SignalEntityPositions[ v ] = pos
@@ -158,12 +159,12 @@ function MPLR.UpdateSignalNames()
 	local entities = ents.FindByClass( "gmod_track_uf_signal*" )
 	for _, v in pairs( entities ) do
 		if not IsValid( v ) then continue end
-		print( v, v.Name )
+		print( v, v.Name1 .. "/" .. v.Name2 )
 		if v.Name then
-			if MPLR.SignalEntitiesByName[ v.Name ] then --
-				print( Format( "MPLR: Signal with this name %s already exists! Check signal names!\nInfo:\n\tFirst signal:  %s\n\tPos:    %s\n\tSecond signal: %s\n\tPos:    %s", v.Name, MPLR.SignalEntitiesByName[ v.Name ], MPLR.SignalEntitiesByName[ v.Name ]:GetPos(), v, v:GetPos() ) )
+			if MPLR.SignalEntitiesByName[ v.Name1 .. "/" .. v.Name2 ] then --
+				print( Format( "MPLR: Signal with this name %s already exists! Check signal names!\nInfo:\n\tFirst signal:  %s\n\tPos:    %s\n\tSecond signal: %s\n\tPos:    %s", v.Name1 .. "/" .. v.Name2, MPLR.SignalEntitiesByName[ v.Name1 .. "/" .. v.Name2 ], MPLR.SignalEntitiesByName[ v.Name1 .. "/" .. v.Name2 ]:GetPos(), v, v:GetPos() ) )
 			else
-				MPLR.SignalEntitiesByName[ v.Name ] = v
+				MPLR.SignalEntitiesByName[ v.Name1 .. "/" .. v.Name2 ] = v
 			end
 		end
 	end
@@ -493,7 +494,11 @@ function MPLR.Save( name )
 			Name2 = v.Name2,
 			Name = v.Name,
 			ActiveRoute = 1,
-			Routes = v.Routes
+			Routes = v.Routes,
+			Left = v.Left,
+			HorizontalOffset = v:GetNW2Float( "HorizontalOffset", 0 ),
+			VerticalOffset = v:GetNW2Float( "VerticalOffset", 0 ),
+			AllowMultiOccupation = v.AllowMultiOccupation
 		} )
 	end
 
@@ -509,7 +514,10 @@ function MPLR.Save( name )
 			Name = v.Name,
 			Columns = v.Columns,
 			Lenses = v.Lenses,
-			Blockmode = v.Blockmode
+			Blockmode = v.Blockmode,
+			Left = v.Left,
+			HorizontalOffset = v.HorizontalOffset,
+			VerticalOffset = v.VerticalOffset
 		} )
 	end
 
@@ -521,8 +529,8 @@ function MPLR.Save( name )
 			Angles = v:GetAngles(),
 			ID = v.ID,
 			AllowSwitchingIron = v.AllowSwitchingIron,
-			Blade1 = v.VMF.Blade1,
-			Blade2 = v.VMF.Blade2,
+			TrackSwitches = v.TrackSwitches,
+			ReverseTrackOrientationLogic = v.ReverseTrackOrientationLogic
 		} )
 	end
 
@@ -550,6 +558,16 @@ function MPLR.Save( name )
 			ZOffset = v:GetNW2Float( "Vertical", 0 ),
 			--Left = v:GetNW2Bool( "Left", false ), TODO: Do switch signals also sit left of track?
 			Rotation = v:GetNW2Float( "Rotation", 0 )
+		} )
+	end
+
+	local ballise_ents = ents.FindByClass( "gmod_track_mplr_ballise" )
+	for _, v in pairs( ballise_ents ) do
+		table.insert( signs, {
+			Class = "gmod_track_mplr_ballise",
+			Pos = v:GetPos(),
+			Angles = v:GetAngles(),
+			PairedSignal = v:GetNW2String( "PairedSignal" )
 		} )
 	end
 
@@ -806,14 +824,14 @@ function MPLR.Load( name, keep_signs )
 		MPLR.UpdateSwitchEntities()
 		MPLR.UpdateStations()
 		--MPLR.ConstructDefaultSignalBlocks()
-		if not ents.FindByClass( "gmod_mplr_signalserver" ) then
+		--[[if not ents.FindByClass( "gmod_mplr_signalserver" ) then
 			Server = ents.Create( "gmod_mplr_signalserver" )
 			Server.Model = MPLR.ServerModel or nil
 			Server.SoundLoop = MPLR.ServerSound or nil
 			Server:SetPos( MPLR.ServerPos or Vector( 0, 0, 0 ) )
 			Server:Spawn()
 			print( "MPLR: Spawned central signalling server" )
-		end
+		end]]
 	end )
 end
 
@@ -915,7 +933,7 @@ end
 function MPLR.LoadSignalling( name, keep )
 	if keep then return end
 	local signs = getFile( "project_light_rail_data/signs_%s", name, "Signal" )
-	if not type( signs ) == "table" or not next( signs ) then
+	if not signs and ( type( signs ) ~= "table" or type( signs ) == "table" and table.IsEmpty( signs ) ) then
 		local success = MPLR.DownLoadSignals( name )
 		if not success then
 			print( "[MPLR]: Downloading signalling data failed and no signalling data present offline. Exiting!" )
@@ -923,42 +941,53 @@ function MPLR.LoadSignalling( name, keep )
 		end
 	end
 
-	local signals_ents = ents.FindByClass( "gmod_track_uf_signal" )
-	for k, v in pairs( signals_ents ) do
-		SafeRemoveEntity( v )
-	end
-
-	--[[local switch_ents = ents.FindByClass("gmod_track_uf_switch")
-    for k, v in pairs(switch_ents) do SafeRemoveEntity(v) end]]
-	local signs_ents = ents.FindByClass( "gmod_track_uf_signs" )
-	for k, v in pairs( signs_ents ) do
-		SafeRemoveEntity( v )
-	end
-
-	--[[local signs_ents = ents.FindByClass( "gmod_track_uf_switch" )
-	for k, v in pairs( signs_ents ) do
-		SafeRemoveEntity( v )
-	end]]
+	-- TODO: ONLY REMOVE ENTITIES IF THEY ARE FOUND IN THE SIGNAL DEFINTION
 	-- Create new entities (add a delay so the old entities clean up)
 	print( "MPLR: Loading signs, signals, switches..." )
-	for k, v in pairs( signs ) do
+	for _, v in pairs( signs ) do
+		if v.Class == "gmod_track_uf_switch" then
+			local signs_ents = ents.FindByClass( "gmod_track_uf_switch" )
+			for _, mapEnt in pairs( signs_ents ) do
+				if v.ID == mapEnt.ID then SafeRemoveEntity( mapEnt ) end
+			end
+		elseif v.Class == "gmod_track_uf_signal" then
+			local signals_ents = ents.FindByClass( "gmod_track_uf_signal" )
+			for _, mapEnt in pairs( signals_ents ) do
+				if v.Name1 == mapEnt.Name1 and v.Name2 == mapEnt.Name2 then SafeRemoveEntity( mapEnt ) end
+			end
+		elseif v.Class == "gmod_track_uf_signal_overground" then
+			local signals_ents = ents.FindByClass( "gmod_track_uf_signal_overground" )
+			for _, mapEnt in pairs( signals_ents ) do
+				if v.Name1 == mapEnt.Name1 and v.Name2 == mapEnt.Name2 then SafeRemoveEntity( mapEnt ) end
+			end
+		elseif v.Class == "gmod_track_mplr_sign" then
+			local signs_ents = ents.FindByClass( "gmod_track_uf_sign" )
+			for _, mapEnt in pairs( signs_ents ) do
+				SafeRemoveEntity( mapEnt )
+			end
+		elseif V.Class == "gmod_track_mplr_switch_lantern" then
+			local signs_ents = ents.FindByClass( "gmod_track_mplr_switch_lantern" )
+			for _, mapEnt in pairs( signs_ents ) do
+				SafeRemoveEntity( mapEnt )
+			end
+		end
+
 		local ent = ents.Create( v.Class )
 		if IsValid( ent ) then
 			ent:SetPos( v.Pos )
 			ent:SetAngles( v.Angles )
 			if v.Class == "gmod_track_uf_switch" then
-				---CHANGE
-				ent.LockedSignal = v.LockedSignal
-				ent.NotChangePos = v.NotChangePos
+				ent.TrackSwitches = v.TrackSwitches
+				ent.AllowSwitchingIron = v.AllowSwitchingIron
+				ent:SetNW2Bool( "AllowSwitchingIron", v.AllowSwitchingIron )
 				ent.Inverted = v.Inverted
 				ent.ID = v.ID
-			end
-
-			if v.Class == "gmod_track_uf_signal" then
+			elseif v.Class == "gmod_track_uf_signal" then
 				ent.SignalType = v.SignalType
 				ent:SetNW2String( "Type", v.SignalType )
 				ent:SetNW2Int( "VerticalOffset", v.VerticalOffset )
 				ent:SetNW2Int( "HorizontalOffset", v.HorizontalOffset )
+				ent:SetNW2Bool( "Left", v.Left )
 				ent.Name1 = v.Name1
 				ent.Name2 = v.Name2
 				ent:SetNW2String( "Name1", v.Name1 )
@@ -966,14 +995,41 @@ function MPLR.LoadSignalling( name, keep )
 				ent.ActiveRoute = v.ActiveRoute
 				ent.Routes = v.Routes
 				ent:SendUpdate()
+			elseif v.Class == "gmod_track_uf_signal_overground" then
+				ent.Columns = v.Columns
+				ent.Lenses = v.Lenses
+				ent.Blockmode = v.Blockmode
+				ent.HorizontalOffset = v.HorizontalOffset
+				ent.VerticalOffset = v.VerticalOffset
+				ent.Left = v.Left
+				ent:SetNW2String( "Type", v.SignalType )
+				ent:SetNW2Int( "VerticalOffset", v.VerticalOffset )
+				ent:SetNW2Int( "HorizontalOffset", v.HorizontalOffset )
+				ent:SetNW2Bool( "Left", v.Left )
+				ent.Name1 = v.Name1
+				ent.Name2 = v.Name2
+				ent:SetNW2String( "Name1", v.Name1 )
+				ent:SetNW2String( "Name2", v.Name2 )
+				ent.ActiveRoute = v.ActiveRoute
+				ent.Routes = v.Routes
 			elseif v.Class == "gmod_track_mplr_sign" then
 				ent:SetNW2Int( "Horizontal", v.YOffset )
 				ent:SetNW2Int( "Vertical", v.ZOffset )
 				ent:SetNW2Int( "Rotation", v.Rotation )
 				ent:SetNW2String( "Type", v.SignType )
 				ent:SetNW2Bool( "Left", v.Left )
+			elseif v.Class == "gmod_track_mplr_switch_lantern" then
+				ent:SetNW2Float( "Horizontal", v.YOffset )
+				ent:SetNW2Float( "Vertical", v.ZOffset )
+				ent:SetNW2Float( "Rotation", v.Rotation )
+			elseif v.Class == "gmod_track_mplr_ballise" then
+				ent:SetNW2String( "PairedSignal", v.PairedSignal )
+				ent.PairedSignal = v.PairedSignal
 			end
 		end
+
+		ent:Spawn()
+		ent:Activate()
 	end
 end
 
