@@ -18,6 +18,7 @@ local function tableInit()
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	MPLR.SignalEntitiesByNode = {} -- 		-- Query this table by entering a given node, get a signal entity returned if present
+	MPLR.SignalEntitiesByName = {}
 	MPLR.SwitchEntitiesByNode = {} --			-- Query this table by entering a given node, get a switch entity returned if present
 	MPLR.SwitchEntitiesByID = {} --			-- Query this table by entering a given Switch ID number and get a switch returned
 	MPLR.SwitchPathIDsByDirection = {} -- 	-- This table saves the Path IDs that a given switch is sitting at related to their logical direction, in order to query which way it is pointing.
@@ -31,14 +32,14 @@ local function tableInit()
 	MPLR.SignalEntityPositions = {} --		-- Signal entity Vectors, just in case it'll be useful ¯\_(ツ)_/¯
 	MPLR.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by ent or name
 	MPLR.SignageEntsByNode = {} --			-- Query this table by entering a given node, get a signage entity returned if present
-	if not table.IsEmpty( Metrostroi.Paths ) then
+	--[[if not table.IsEmpty( Metrostroi.Paths ) then
 		print( "MPLR: Preparing INDUSI additions for pathing." )
 		for i = 1, #Metrostroi.Paths do
 			for _, v in ipairs( Metrostroi.Paths[ i ] ) do
 				v.INDUSI = {}
 			end
 		end
-	end
+	end]]
 end
 
 if Metrostroi.Paths then
@@ -155,12 +156,12 @@ end
 
 function MPLR.UpdateSignalNames()
 	print( "MPLR: Updating signal names..." )
-	if not MPLR.SignalEntitiesByName then MPLR.SignalEntitiesByName = {} end
+	--if not MPLR.SignalEntitiesByName then MPLR.SignalEntitiesByName = {} end
 	local entities = ents.FindByClass( "gmod_track_uf_signal*" )
 	for _, v in pairs( entities ) do
 		if not IsValid( v ) then continue end
 		print( v, v.Name1 .. "/" .. v.Name2 )
-		if v.Name then
+		if v.Name1 and v.Name2 then
 			if MPLR.SignalEntitiesByName[ v.Name1 .. "/" .. v.Name2 ] then --
 				print( Format( "MPLR: Signal with this name %s already exists! Check signal names!\nInfo:\n\tFirst signal:  %s\n\tPos:    %s\n\tSecond signal: %s\n\tPos:    %s", v.Name1 .. "/" .. v.Name2, MPLR.SignalEntitiesByName[ v.Name1 .. "/" .. v.Name2 ], MPLR.SignalEntitiesByName[ v.Name1 .. "/" .. v.Name2 ]:GetPos(), v, v:GetPos() ) )
 			else
@@ -965,7 +966,7 @@ function MPLR.LoadSignalling( name, keep )
 			for _, mapEnt in pairs( signs_ents ) do
 				SafeRemoveEntity( mapEnt )
 			end
-		elseif V.Class == "gmod_track_mplr_switch_lantern" then
+		elseif v.Class == "gmod_track_mplr_switch_lantern" then
 			local signs_ents = ents.FindByClass( "gmod_track_mplr_switch_lantern" )
 			for _, mapEnt in pairs( signs_ents ) do
 				SafeRemoveEntity( mapEnt )
@@ -1025,6 +1026,7 @@ function MPLR.LoadSignalling( name, keep )
 			elseif v.Class == "gmod_track_mplr_ballise" then
 				ent:SetNW2String( "PairedSignal", v.PairedSignal )
 				ent.PairedSignal = v.PairedSignal
+				ent:SetNW2String( "BalliseName", v.BalliseName )
 			end
 		end
 
