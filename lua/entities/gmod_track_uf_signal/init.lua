@@ -25,7 +25,6 @@ function ENT:Initialize()
 	--if self.Name1 and self.Name1 ~= " " then self:SetNW2String( "Name1", self.Name1 ) end
 	--if self.Name2 and self.Name2 ~= " " then self:SetNW2String( "Name2", self.Name2 ) end
 	self.LastPVSTracking = 0
-	self.Library = MPLR.SignalLib:New( self )
 end
 
 util.AddNetworkString( "RespawnSignal" )
@@ -75,7 +74,13 @@ end
 
 function ENT:Think()
 	self:NextThink( CurTime() )
-	if not self.Library then return true end
+	if not self.Library and IsValid( self ) then
+		self.Library = MPLR.SignalLib:New( self )
+		return true
+	elseif not self.Library and not IsValid( self ) then
+		return true
+	end
+
 	self.Library:Think()
 	--print( "thinking" )
 	--self:UpdateSignalAspect()

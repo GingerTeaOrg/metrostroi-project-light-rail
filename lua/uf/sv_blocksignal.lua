@@ -14,7 +14,7 @@ function LIB:Initialize( signalEnt )
 	if IsValid( signalEnt ) then
 		self.SignalEnt = signalEnt
 	else
-		ErrorNoHalt( "MPLR Signal Lib: ERROR! GIVEN SIGNAL ENTITY IS NOT A VALID ENTITY! EXITING" )
+		timer.Simple( 2, function() self:Initialize( signalEnt ) end )
 		return
 	end
 
