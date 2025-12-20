@@ -17,9 +17,7 @@ function ENT:DestroySound( snd, nogc )
 	destroySound( snd, nogc )
 end
 
---------------------------------------------------------------------------------
--- Default initializer only loads up DURA
---------------------------------------------------------------------------------
+ENT.IsTrolleybus = true
 function ENT:InitializeSystems()
 end
 
