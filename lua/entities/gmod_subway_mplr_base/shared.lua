@@ -52,6 +52,22 @@ function ENT:InitializeSounds()
 		"lilly/mplr/common/Door_open_end2.mp3"
 	}
 
+	self.SoundNames[ "RaisePanto" ] = {
+		loop = 10,
+		"lilly/mplr/common/stromabnehmer_heben_start.mp3",
+		"lilly/mplr/common/stromabnehmer_heben_loop.mp3",
+		"lilly/mplr/common/stromabnehmer_heben_end.mp3",
+	}
+
+	self.SoundPositions[ "RaisePanto" ] = { 400, 1e9, Vector( 40, 0, 400 ), 1 }
+	self.SoundNames[ "LowerPanto" ] = {
+		loop = 10,
+		"lilly/mplr/common/stromabnehmer_senken_start.mp3",
+		"lilly/mplr/common/stromabnehmer_senken_loop.mp3",
+		"lilly/mplr/common/stromabnehmer_senken_end.mp3",
+	}
+
+	self.SoundPositions[ "LowerPanto" ] = { 400, 1e9, Vector( 40, 0, 400 ), 1 }
 	self.SoundPositions[ "Door_open" ] = { 400, 1e9, Vector( 370, -49.4254, 110 ), 1 }
 	self.SoundNames[ "bell" ] = {
 		loop = 0.01,

@@ -768,8 +768,6 @@ function ENT:Initialize()
 	self.rtMat_r = CreateMaterial( "mirror_r" .. self:EntIndex(), "UnlitGeneric", {
 		[ "$basetexture" ] = self.rtRight:GetName()
 	} )
-
-	hook.Add( "PostDrawOpaqueRenderables", "MirrorHook" .. self:EntIndex(), function() self:MirrorRender() end )
 end
 
 function ENT:InitSegments( ent )
@@ -2796,7 +2794,7 @@ end )
 
 function ENT:MirrorRender()
 	if GetConVar( "mplr_mirrors_enable" ):GetInt() <= 0 then return end
-	if true then return end
+	--if true then return end
 	--print( "running" )
 	local ply = LocalPlayer()
 	if not self.ClientEnts or not istable( self.MirrorCams ) or #self.MirrorCams < 6 then return end
@@ -2832,7 +2830,7 @@ function ENT:MirrorRender()
 		-- Angle reflection
 		local fwd = reflect( playerAngles:Forward(), mirrorNormal )
 		local up = reflect( playerAngles:Up(), mirrorNormal )
-		-- Fix up vector: make it orthogonal to fwd
+		-- -Fix up vector: make it orthogonal to fwd
 		local right = fwd:Cross( up ) * -1 -- recompute right
 		up = right:Cross( fwd ) -- recompute up properly
 		-- Build angle from forward + up
