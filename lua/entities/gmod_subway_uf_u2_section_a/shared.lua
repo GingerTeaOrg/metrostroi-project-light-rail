@@ -228,6 +228,7 @@ function ENT:InitializeSystems()
 	self:LoadSystem( "Resistorbank" )
 	self:LoadSystem( "DoorHandler", "MPLR_DoorHandler" )
 	self:LoadSystem( "Blinkers" )
+	self:LoadSystem( "INDUSI", "mplr_INDUSI_scanner" )
 	-- self:LoadSystem("duewag_electric")
 end
 
