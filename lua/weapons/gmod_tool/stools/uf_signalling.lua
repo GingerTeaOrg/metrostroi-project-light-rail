@@ -45,21 +45,20 @@ if SERVER then
 end
 
 function TOOL:Initialize()
-	if CLIENT then
-		RunConsoleCommand( "uf_signalling_signal_rotation", "0" )
-		hook.Add( "PostDrawOpaqueRenderables", "DrawSignalWireframe", function()
-			local player = LocalPlayer()
-			local targetClass = "gmod_track_uf_signal"
-			local maxDistance = 1000 -- Set an appropriate max distance
-			for _, ent in ipairs( ents.FindByClass( targetClass ) ) do
-				if ent:IsValid() and player:GetPos():DistToSqr( ent:GetPos() ) < maxDistance ^ 2 then
-					local direction = ( ent:GetPos() - player:GetPos() ):GetNormalized()
-					if direction:Dot( player:EyeAngles():Forward() ) > 0.98 then -- Adjust threshold as needed
-						render.DrawWireframeBox( ent:GetPos(), ent:GetAngles(), Vector( 0, 40, 0 ), Vector( 40, 40, 40 ), Color( 255, 255, 255, 255 ), true )
-					end
-				end
+	if CLIENT then RunConsoleCommand( "uf_signalling_signal_rotation", "0" ) end
+end
+
+function TOOL:DrawHUD()
+	local player = LocalPlayer()
+	local targetClass = "gmod_track_uf_signal"
+	local maxDistance = 1000 -- Set an appropriate max distance
+	for _, ent in ipairs( ents.FindByClass( targetClass ) ) do
+		if ent:IsValid() and player:GetPos():DistToSqr( ent:GetPos() ) < maxDistance ^ 2 then
+			local direction = ( ent:GetPos() - player:GetPos() ):GetNormalized()
+			if direction:Dot( player:EyeAngles():Forward() ) > 0.98 then -- Adjust threshold as needed
+				render.DrawWireframeBox( ent:GetPos(), ent:GetAngles(), Vector( 0, 40, 0 ), Vector( 40, 40, 40 ), Color( 255, 255, 255, 255 ), true )
 			end
-		end )
+		end
 	end
 end
 
