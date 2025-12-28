@@ -319,6 +319,8 @@ function ENT:Initialize()
 
 	self.RearBogey = self:CreateBogeyMPLR( Vector( -290, 0, 0 ), Angle( 0, 180, 0 ), false, "duewag_motor", "b" )
 	self.RearCouple = self:CreateCustomCoupler( Vector( -415, 0, 0 ), Angle( 0, 180, 0 ), false, "u2", "b" )
+	self:CreateINDUSICoil( self.FrontBogey )
+	self:CreateINDUSICoil( self.RearBogey, true )
 	self.Panto = self:CreatePanto( Vector( 35, 0, 115 ), Angle( 0, 90, 0 ), "diamond" )
 	self.PantoUp = false
 	self.ReverserInsert = false
@@ -973,6 +975,10 @@ function ENT:OnButtonPress( button, ply )
 		else
 			self.IBIS.Override = "left"
 		end
+	end
+
+	if button == "SPADResetSet" then -- TODO: IMPLEMENT THE WHOLE KEY MECHANISM AND SETTINGS
+		self.INDUSI:Reset()
 	end
 
 	if button == "SetPointRightSet" then
