@@ -725,6 +725,35 @@ ENT.ButtonMapMPLR[ "DeadmanButton" ] = {
 	}
 }
 
+ENT.ButtonMapMPLR[ "SPADReset" ] = {
+	pos = Vector( 415.25, 39, 55.5 ),
+	ang = Angle( 0, 0, 0 ),
+	width = 20,
+	height = 20,
+	scale = 0.069,
+	buttons = {
+		{
+			ID = "SPADResetSet",
+			x = 10,
+			y = 10,
+			radius = 10,
+			tooltip = "Reset SPAD Braking System",
+			model = {
+				--model = "models/lilly/uf/u2/cab/button_indent_yellow.mdl",
+				z = 0,
+				ang = 0,
+				var = "SPADReset",
+				speed = 15,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+	}
+}
+
 ENT.ButtonMapMPLR[ "Cab" ] = {
 	pos = Vector( 419.6, 24.88, 55.2 ),
 	ang = Angle( 0, -90, 8 ),
