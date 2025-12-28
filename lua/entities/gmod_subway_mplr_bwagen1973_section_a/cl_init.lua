@@ -2340,6 +2340,10 @@ function ENT:DrawPost()
 end
 
 function ENT:SoundsFunc()
+	local pantoUp = self:GetNW2Bool( "PantoMovingUp", false )
+	local pantoDown = self:GetNW2Bool( "PantoMovingDown", false )
+	self:SetSoundState( "RaisePanto", pantoUp and 1 or 0, 1 )
+	self:SetSoundState( "LowerPanto", pantoDown and 1 or 0, 1 )
 end
 
 function ENT:OnPlay( soundid, location, range, pitch )
