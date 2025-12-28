@@ -98,7 +98,6 @@ function TRAIN_SYSTEM:ResetDeadman()
 		throttle = self.Train.CoreSys.ThrottleStateB
 	end
 
-	print( self.DeadmanTripped )
 	if self.DeadmanTripped and speed < 5 and ( reverserA == 0 and reverserB == 0 ) and throttle == 0 and not self.SPAD then
 		self.DeadmanTripped = false
 		self.OverSpeed = false
