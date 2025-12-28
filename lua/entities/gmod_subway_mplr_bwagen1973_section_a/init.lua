@@ -78,6 +78,8 @@ function ENT:Initialize()
 	self.RearCouple = self:CreateCustomCoupler( Vector( -475, 0, 30 ), Angle( 0, 180, 0 ), true, "b", "b" )
 	self.RearCoupler = self.RearCouple
 	self.RearBogey = self:CreateBogeyMPLR( Vector( -390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "b" )
+	self:CreateINDUSICoil( self.FrontBogey )
+	self:CreateINDUSICoil( self.RearBogey, true )
 	self.Panto = self:CreatePanto( Vector( 36.9, 0, 135 ), Angle( 0, 0, 0 ), "einholm" )
 	self.FrontBogey:SetNWInt( "MotorSoundType", 0 )
 	self.MiddleBogey:SetNWInt( "MotorSoundType", 0 )
