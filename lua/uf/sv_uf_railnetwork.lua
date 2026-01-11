@@ -607,7 +607,7 @@ function MPLR.DownLoadTracks( name )
 	local baseUrl = "https://lillywho.github.io/mapdata/"
 	local track = getFile( "metrostroi_data/track_%s", name, "Signal" ) or {}
 	if next( Metrostroi.Paths ) or track then return end
-	local url = baseUrl .. "track_" .. name
+	local url = baseUrl .. "mapdata/" .. "track_" .. name
 	local filePath = "metrostroi_data/"
 	http.Fetch( url, function( body, len, headers, code )
 		-- On success
@@ -629,7 +629,7 @@ function MPLR.DownLoadSignals( name )
 	local baseUrl = "https://lillywho.github.io/mapdata/"
 	local track = getFile( "project_light_rail_data/signs_%s", name, "Track" ) or {}
 	if track then return true end
-	local url = baseUrl .. "signs_" .. name
+	local url = baseUrl .. "mapdata/" .. "track_" .. name
 	local filePath = "project_light_rail_data/"
 	http.Fetch( url, function( body, len, headers, code )
 		-- On success
@@ -808,7 +808,7 @@ function MPLR.Load( name, keep_signs )
 	end
 
 	name = name or game.GetMap()
-	--MPLR.LoadTracks( name )
+	MPLR.LoadTracks( name )
 	-- Initialize stations list
 	-- Print info
 	-- MPLR.PrintStatistics()
@@ -942,14 +942,21 @@ function MPLR.LoadSignalling( name, keep )
 		end
 	end
 
-	-- TODO: ONLY REMOVE ENTITIES IF THEY ARE FOUND IN THE SIGNAL DEFINTION
+	if not signs then
+		print( "[MPLR]: Still no signalling data. Bailing init." )
+		return
+	end
+
 	-- Create new entities (add a delay so the old entities clean up)
 	print( "MPLR: Loading signs, signals, switches..." )
 	for _, v in pairs( signs ) do
 		if v.Class == "gmod_track_uf_switch" then
 			local signs_ents = ents.FindByClass( "gmod_track_uf_switch" )
 			for _, mapEnt in pairs( signs_ents ) do
-				if v.ID == mapEnt.ID then SafeRemoveEntity( mapEnt ) end
+				if v.ID == mapEnt.ID then
+					print( "Removing:", mapEnt, mapEnt.ID )
+					SafeRemoveEntity( mapEnt )
+				end
 			end
 		elseif v.Class == "gmod_track_uf_signal" then
 			local signals_ents = ents.FindByClass( "gmod_track_uf_signal" )
