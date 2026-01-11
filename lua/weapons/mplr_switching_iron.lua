@@ -25,48 +25,54 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
 -------------------------
 function SWEP:Equip()
-    self:SetHoldType( "passive" )
-    if CLIENT then hook.Add( "PostDrawTranslucentRenderables", "SwitchingIronTarget", SWEP.DrawBox ) end
-end
-
-function SWEP:Holster()
-    if CLIENT then
-        hook.Remove( "PostDrawTranslucentRenderables", "SwitchingIronTarget" )
-        return true
-    end
-    return true
+	self:SetHoldType( "passive" )
+	self.Fired = false
 end
 
 if CLIENT then
-    function SWEP:PrimaryAttack()
-    end
+	function SWEP:PrimaryAttack()
+	end
 
-    function SWEP:DoDrawCrosshair()
-        return
-    end
+	function SWEP:DoDrawCrosshair()
+		return
+	end
 
-    function SWEP:DrawBox()
-        local owner = self:GetOwner()
-        local trace = util.TraceLine( util.GetPlayerTrace( owner ) )
-        local traceLocal = ents.FindInSphere( trace.HitPos, 30 )
-        cam.Start3D()
-        for _, v in ipairs( traceLocal ) do
-            if v:GetClass() == "gmod_track_uf_switch" then render.DrawWireframeBox( trace.HitPos, Angle( 0, 0, 0 ), Vector( -24, 0, 0 ), Vector( 24, 24, 24 ), Color( 255, 0, 0 ), true ) end
-        end
+	function SWEP:DrawHUD()
+		local owner = self:GetOwner()
+		local trace = owner:GetEyeTrace()
+		local dist = owner:GetPos():Distance( trace.HitPos )
+		local traceLocal = ents.FindInSphere( trace.HitPos, 5 )
+		cam.Start3D()
+		for _, v in ipairs( traceLocal ) do
+			if v:GetClass() == "gmod_track_uf_switch" and dist < 30 then render.DrawWireframeBox( v:GetPos(), Angle( 0, 0, 0 ), Vector( -10, 0, 0 ), Vector( 10, 10, 10 ), Color( 255, 0, 0 ), true ) end
+		end
 
-        cam.End3D()
-    end
+		cam.End3D()
+	end
 else
-    function SWEP:PrimaryAttack()
-        local owner = self:GetOwner()
-        local trace = util.TraceLine( util.GetPlayerTrace( owner ) )
-        local traceLocal = ents.FindInSphere( trace.HitPos, 30 )
-        for _, v in ipairs( traceLocal ) do
-            local ent = v
-            if ent.AllowSwitchingIron then ent:ManualSwitching( not ent.AlternateTrack, owner ) end
-        end
-    end
+	function SWEP:PrimaryAttack()
+		local owner = self:GetOwner()
+		local trace = owner:GetEyeTrace()
+		local dist = owner:GetPos():Distance( trace.HitPos )
+		local traceLocal = ents.FindInSphere( trace.HitPos, 5 )
+		for _, ent in ipairs( traceLocal ) do
+			if ent:GetClass() ~= "gmod_track_uf_switch" then
+				continue
+			elseif ent:GetClass() == "gmod_track_uf_switch" and dist < 30 then
+				if not ent.Locked then
+					owner():PrintMessage( HUD_PRINTTALK, "This switch is still moving." )
+				elseif ent.AllowSwitchingIron then
+					ent:ManualSwitching( not ent.AlternateTrack, owner )
+					return true
+				elseif not ent.AllowSwitchingIron then
+					owner():PrintMessage( HUD_PRINTTALK, "This switch doesn't support using the switching iron." )
+				end
+			else
+				return false
+			end
+		end
+	end
 
-    function SWEP:Think()
-    end
+	function SWEP:Think()
+	end
 end
