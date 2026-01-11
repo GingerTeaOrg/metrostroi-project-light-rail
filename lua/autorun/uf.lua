@@ -257,14 +257,14 @@ function MPLR.AddIBISCommonFiles( name, datatable )
 		if v.name == name then
 			MPLR.IBISCommonFiles[ k ] = datatable
 			MPLR.IBISCommonFiles[ k ].name = name
-			print( "Light Rail: Changed \"" .. name .. "\" IBIS announcer common files." )
+			print( "Project Light Rail: Changed \"" .. name .. "\" IBIS announcer common files." )
 			return
 		end
 	end
 
 	local id = table.insert( MPLR.IBISCommonFiles, datatable )
 	MPLR.IBISCommonFiles[ id ].name = name
-	print( "Light Rail: Added \"" .. name .. "\" IBIS announcer common files." )
+	print( "Project Light Rail: Added \"" .. name .. "\" IBIS announcer common files." )
 end
 
 function MPLR.AddIBISAnnouncementMetadata( name, datatable )
@@ -273,14 +273,14 @@ function MPLR.AddIBISAnnouncementMetadata( name, datatable )
 		if v.name == name then
 			MPLR.IBISAnnouncementMetadata[ k ] = datatable
 			MPLR.IBISAnnouncementMetadata[ k ].name = name
-			print( "Light Rail: Changed \"" .. name .. "\" IBIS announcer Metadata." )
+			print( "Project Light Rail: Changed \"" .. name .. "\" IBIS announcer Metadata." )
 			return
 		end
 	end
 
 	local id = table.insert( MPLR.IBISAnnouncementMetadata, datatable )
 	MPLR.IBISAnnouncementMetadata[ id ].name = name
-	print( "Light Rail: Added \"" .. name .. "\" IBIS announcer Metadata." )
+	print( "Project Light Rail: Added \"" .. name .. "\" IBIS announcer Metadata." )
 end
 
 function MPLR.AddIBISAnnouncementScript( name, datatable )
@@ -289,14 +289,14 @@ function MPLR.AddIBISAnnouncementScript( name, datatable )
 		if v.name == name then
 			MPLR.IBISAnnouncementScript[ k ] = datatable
 			MPLR.IBISAnnouncementScript[ k ].name = name
-			print( "Light Rail: Changed \"" .. name .. "\" IBIS announcer script." )
+			print( "Project Light Rail: Changed \"" .. name .. "\" IBIS announcer script." )
 			return
 		end
 	end
 
 	local id = table.insert( MPLR.IBISAnnouncementScript, datatable )
 	MPLR.IBISAnnouncementScript[ id ].name = name
-	print( "Light Rail: Added \"" .. name .. "\" IBIS announcer script." )
+	print( "Project Light Rail: Added \"" .. name .. "\" IBIS announcer script." )
 end
 
 function MPLR.AddIBISDestinations( name, index )
@@ -305,14 +305,14 @@ function MPLR.AddIBISDestinations( name, index )
 		if v.name == name then
 			MPLR.IBISDestinations[ k ] = index
 			MPLR.IBISDestinations[ k ].name = name
-			print( "Light Rail: Loaded \"" .. name .. "\" IBIS station index." )
+			print( "Project Light Rail: Loaded \"" .. name .. "\" IBIS station index." )
 			return
 		end
 	end
 
 	local id = table.insert( MPLR.IBISDestinations, index )
 	MPLR.IBISDestinations[ id ].name = name
-	print( "Light Rail: Loaded \"" .. name .. "\" IBIS station index." )
+	print( "Project Light Rail: Loaded \"" .. name .. "\" IBIS station index." )
 end
 
 function MPLR.AddIBISRoutes( name, routes )
@@ -321,14 +321,14 @@ function MPLR.AddIBISRoutes( name, routes )
 		if v.name == name then
 			MPLR.IBISRoutes[ k ] = routes
 			MPLR.IBISRoutes[ k ].name = name
-			print( "Light Rail: Reloaded \"" .. name .. "\" IBIS Route index." )
+			print( "Project Light Rail: Reloaded \"" .. name .. "\" IBIS Route index." )
 			return
 		end
 	end
 
 	local id = table.insert( MPLR.IBISRoutes, routes )
 	MPLR.IBISRoutes[ id ].name = name
-	print( "Light Rail: Loaded \"" .. name .. "\" IBIS Route index." )
+	print( "Project Light Rail: Loaded \"" .. name .. "\" IBIS Route index." )
 end
 
 function MPLR.AddIBISLines( name, lines )
@@ -337,14 +337,14 @@ function MPLR.AddIBISLines( name, lines )
 		if v.name == name then
 			MPLR.IBISLines[ k ] = lines
 			MPLR.IBISLines[ k ].name = name
-			print( "Light Rail: Reloaded \"" .. name .. "\" IBIS line index." )
+			print( "Project Light Rail: Reloaded \"" .. name .. "\" IBIS line index." )
 			return
 		end
 	end
 
 	local id = table.insert( MPLR.IBISLines, lines )
 	MPLR.IBISLines[ id ].name = name
-	print( "Light Rail: Loaded \"" .. name .. "\" IBIS line index." )
+	print( "Project Light Rail: Loaded \"" .. name .. "\" IBIS line index." )
 end
 
 function MPLR.AddLinePrefixes( name, lines )
@@ -353,14 +353,14 @@ function MPLR.AddLinePrefixes( name, lines )
 		if v.name == name then
 			MPLR.IBISLinePrefixes[ k ] = lines
 			MPLR.IBISLinePrefixes[ k ].name = name
-			print( "Light Rail: Reloaded \"" .. name .. "\" IBIS line index." )
+			print( "Project Light Rail: Reloaded \"" .. name .. "\" IBIS line index." )
 			return
 		end
 	end
 
 	local id = table.insert( MPLR.IBISLinePrefixes, lines )
 	MPLR.IBISLinePrefixes[ id ].name = name
-	print( "Light Rail: Loaded \"" .. name .. "\" line prefix index." )
+	print( "Project Light Rail: Loaded \"" .. name .. "\" line prefix index." )
 end
 
 function MPLR.AddRollsigns( name, train, tab )
@@ -511,3 +511,8 @@ end
 
 AddCSLuaFile( "uf/sh_spawnmenu.lua" )
 include( "uf/sh_spawnmenu.lua" )
+files = file.Find( "uf/trainequipment/*.lua", "LUA" )
+for _, filename in pairs( files ) do
+	AddCSLuaFile( "uf/trainequipment/" .. filename )
+	include( "uf/trainequipment/" .. filename )
+end
