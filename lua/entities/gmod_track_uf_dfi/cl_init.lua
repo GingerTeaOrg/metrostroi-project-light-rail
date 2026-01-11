@@ -21,9 +21,17 @@ end
 
 function ENT:ClockFace()
 	if not IsValid( self.Hours ) and not IsValid( self.Minutes ) then return end
-	local Time = self:GetNW2String( "Time", "0000" )
-	local hours = tonumber( string.sub( Time, 1, 2 ), 10 )
-	local minutes = tonumber( string.sub( Time, 3, 4 ), 10 )
+	if not MPLR.WeatherSimActive then
+		local Time = self:GetNW2String( "Time", "0000" )
+		local hours = tonumber( string.sub( Time, 1, 2 ), 10 )
+		local minutes = tonumber( string.sub( Time, 3, 4 ), 10 )
+	else
+		local time = MPLR.Time
+		local explode = string.Explode( ":", time )
+		local hours = explode[ 1 ]
+		local minutes = explode[ 2 ]
+	end
+
 	self.MinutePos = ( ( minutes / 60 ) * 100 ) + 2
 	self.HourPos = ( ( hours / 12 ) * 100 - 4 ) + ( ( ( minutes / 60 ) * 100 ) + 2 ) / 12
 	self.Hours:SetPoseParameter( "position", self.HourPos )
@@ -53,12 +61,12 @@ function ENT:Initialize()
 	--
 	self.Hours = ents.CreateClientProp( "models/lilly/uf/stations/dfi_hands_hours.mdl" )
 	self.Minutes = ents.CreateClientProp( "models/lilly/uf/stations/dfi_hands_minutes.mdl" )
-	self.Hours:SetParent( self )
-	self.Minutes:SetParent( self )
 	self.Hours:SetPos( pos )
 	--self.Hours:SetAngles( ang )
 	self.Minutes:SetPos( pos )
 	--self.Minutes:SetAngles( ang )
+	self.Hours:SetParent( self )
+	self.Minutes:SetParent( self )
 	self.Hours:Spawn()
 	self.Minutes:Spawn()
 	self.circlePoints = {}
@@ -220,7 +228,7 @@ function ENT:RenderDisplay( ent )
 		return
 	end
 
-	--print( "RENDERING!", self )
+	print( "RENDERING!", self )
 	if not ent.RenderTimer then ent.RenderTimer = RealTime() end
 	if RealTime() - ent.RenderTimer > 2 then
 		render.PushRenderTarget( ent.DFI1, 0, 0, 4096, 912 )
