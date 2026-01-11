@@ -499,35 +499,6 @@ function MPLR.MakeSpriteTexture( path, isSprite )
 	end
 end
 
-function MPLR.CheckKurs( Linie, ply, arg )
-	if not arg then arg = 0.0 end
-	net.Start( "RBLTriggerClientRequest" )
-	net.WriteFloat( Linie )
-	net.WritePlayer( ply )
-	net.WriteFloat( arg )
-	net.SendToServer()
-end
-
---format: multiline
-net.Receive(
-	"RBLSendToClient", 
-	function( len, ply )
-		if ply ~= LocalPlayer() then return end
-		local hasArgument = net.ReadBool()
-		if not hasArgument then
-			local tab = net.ReadTable( false )
-			MPLR.PrintValuesToChat( tab, ply )
-		else
-			local alreadyTaken = net.ReadBool()
-			if alreadyTaken then
-				ply:PrintMessage( HUD_PRINTTALK, "The specified circulation ID has already been taken. Please try another." )
-			else
-				ply:PrintMessage( HUD_PRINTTALK, "The specified circulation ID is free to be used." )
-			end
-		end
-	end
-)
-
 function MPLR.PrintValuesToChat( t, ply )
 	if #t > 5 then
 		ply:PrintMessage( HUD_PRINTTALK, "The table is too long. Please enable the developer console to see the output." )
@@ -540,25 +511,6 @@ function MPLR.PrintValuesToChat( t, ply )
 		ply:PrintMessage( HUD_PRINTTALK, v )
 	end
 end
-
--- format: multiline
-hook.Add(
-	"OnPlayerChat", 
-	"MPLR_RBLCheck", 
-	function( ply, strText, bTeam, bDead )
-		local response = ""
-		if bDead then return true end
-		strText = string.lower( strText )
-		local command, command2 = "!mplr_rbl", "/mplr_rbl"
-		local Silent = string.match( string.sub( strText, 1, 1 ), "/" )
-		if not string.match( strText, command ) and not string.match( strText, command2 ) then return end
-		local message = string.sub( strText, #command + 1, #strText )
-		print( message )
-		local line = tonumber( message, 10 )
-		MPLR.CheckKurs( line, ply, arg )
-		return Silent
-	end
-)
 
 -- format: multiline
 MPLR.charMatrixSmallThin = {
@@ -581,7 +533,7 @@ MPLR.charMatrixSmallThin = {
 		"00",
 		"00",
 	},
-	[ "	" ] = {
+	[ "	  " ] = {
 		"00000000",
 		"00000000",
 		"00000000",
