@@ -85,6 +85,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.KeyTurned = false
 	self.PowerOnRegistered = false
 	self.PowerOffMoment = 0
+	self.FirstBoot = true
 	self.TriggerNames = {
 		"Number1", -- 1
 		"Number2", -- 2
@@ -100,7 +101,7 @@ function TRAIN_SYSTEM:Initialize()
 		"Delete", -- 12
 		"Enter", -- 13
 		"SpecialAnnouncements", -- 14
-		"TimeAndDate" -- 15
+		"TimeAndDate", -- 15
 	}
 
 	self.Triggers = {}
@@ -117,6 +118,8 @@ function TRAIN_SYSTEM:Initialize()
 		[ "Number0" ] = false,
 	}
 
+	self.LastMenuChange = 0
+	self.LastInput = ""
 	self.State = 0
 	self.Menu = 4 -- which menu are we in
 	self.Announce = false
@@ -130,31 +133,50 @@ function TRAIN_SYSTEM:Initialize()
 	for _, v in ipairs( self.TriggerNames ) do
 		self.Debounce[ v ] = 0
 	end
+
+	self.DebounceTime = 0.25
 	--PrintTable( self.LineTable )
 end
 
-TRAIN_SYSTEM.DebounceTime = 4
+function TRAIN_SYSTEM:RemapButtonFunctions( key, func )
+	self.RemappedKeys = self.RemappedKeys or {}
+	self.RemappedKeys[ key ] = func
+end
+
 function TRAIN_SYSTEM:HandleInput()
 	local p = self.Train.Panel
-	local currentTime = CurTime() -- Get the current time
-	for _, v in ipairs( self.TriggerNames ) do
-		if p[ v ] and p[ v ] > 0 and self.State > 0 then
-			if not self.Debounce[ v ] or currentTime - self.Debounce[ v ] > self.DebounceTime then
-				self.Triggers[ v ] = true
-				self.Debounce[ v ] = currentTime -- Reset debounce timer
+	local now = CurTime()
+	self.LastPressed = self.LastPressed or {}
+	local state = self.State > 0
+	if not state then return end
+	for _, name in ipairs( self.TriggerNames ) do
+		local val = p[ name ]
+		if val then
+			local pressed = val > 0
+			local lastPressed = self.LastPressed[ name ] or false
+			local lastTime = self.Debounce[ name ]
+			local allowed = lastTime > 0 and now - lastTime > self.DebounceTime or true
+			-- Rising edge: only count ONCE
+			if pressed and not lastPressed and allowed then
+				self.Triggers[ name ] = true
+				self.Debounce[ name ] = now
 			end
-		elseif p[ v ] and p[ v ] < 1 and self.State > 0 then
-			self.Triggers[ v ] = false
-			self.Debounce[ v ] = nil -- Reset debounce tracking properly
+
+			if not pressed then
+				self.Triggers[ name ] = false
+				self.Debounce[ name ] = 0
+			end
+
+			self.LastPressed[ name ] = pressed
+		else
+			self.Triggers[ name ] = false
+			self.LastPressed[ name ] = false
+			self.Debounce[ name ] = 0
 		end
 	end
 
 	for k in pairs( self.NumberKeys ) do
-		if self.Triggers[ k ] and string.match( k, "Number" ) then
-			self.NumberKeys[ k ] = true
-		else
-			self.NumberKeys[ k ] = false
-		end
+		self.NumberKeys[ k ] = self.Triggers[ k ]
 	end
 end
 
@@ -375,7 +397,7 @@ function TRAIN_SYSTEM:IBISScreen( Train )
 end
 
 function TRAIN_SYSTEM:UpdateState( dT )
-	local trainPower = self.Train.BatteryOn == true or self.Train.CoreSys.CircuitBreakerOn == true or self.Train:ReadTrainWire( 6 ) > 0 or false
+	local trainPower = self.Train.CoreSys.LVPowerOn
 	local ibisKey = self.Train:GetNW2Bool( "TurnIBISKey", false )
 	local ibisKeyRequired = self.Train.IBISKeyRequired
 	-- Function to reset state when device is off
@@ -435,14 +457,15 @@ function TRAIN_SYSTEM:UpdateState( dT )
 		self.AnnouncementChar2 = " "
 		self.ServiceAnnouncement = " "
 		self.CurrentStationInternal = 0
+		self.ColdBootCompleted = false
 	end
 
 	self.PowerOn = ( ibisKeyRequired and ibisKey and trainPower ) or not ibisKeyRequired and trainPower or false
 	-- The last parameters are kept in RAM for a while after the device was powered down. After that, we boot into the complete set-up.
-	if not self.PowerOn and CurTime() - self.PowerOffMoment > 240 then
-		self.ColdBoot = true
-	elseif self.PowerOn and CurTime() - self.PowerOffMoment < 240 then
-		self.ColdBoot = false
+	if not self.PowerOn then
+		self.ColdBoot = CurTime() - self.PowerOffMoment > 240
+	elseif self.PowerOn then
+		self.PowerOffMoment = 0
 	end
 
 	if self.Menu > 0 then self:ReadDataset() end
@@ -455,21 +478,23 @@ function TRAIN_SYSTEM:UpdateState( dT )
 		end
 
 		if CurTime() - self.PowerOnMoment > 5 then
-			self.Train:SetNW2Bool( "IBISBootupComplete", true ) -- register that simulated bootup wait has passed
 			self.Train:SetNW2Bool( "IBISChime", true )
-			if self.ColdBoot and not self.ColdBootCompleted then
+			self.Train:SetNW2Bool( "IBISBootupComplete", true ) -- register that simulated bootup wait has passed
+			if ( self.ColdBoot and not self.ColdBootCompleted ) or self.FirstBoot then
+				print( "IBIS: Booted from a cold boot, going to State 2 (firstboot) and Menu 1 (LK)!!" )
 				self.ColdBootCompleted = true
 				self.State = 2
 				self.Menu = 1
+				self.FirstBoot = false
 			else
-				if self.Course == "    " or self.Course == "     " then
-					self.Menu = 1
-					self.State = 1
-				else
-					if not self.BootupComplete then
+				if self.State ~= 2 then
+					if self.Course == "    " or self.Course == "     " then
+						self.Menu = 1
+						self.State = 1
+					else
 						self.BootupComplete = true
-						self.Menu = 0
-						self.State = 2
+						--self.Menu = 0
+						--self.State = 1
 					end
 				end
 			end
@@ -515,17 +540,18 @@ function TRAIN_SYSTEM:UpdateState( dT )
 	end
 end
 
-function TRAIN_SYSTEM:Think()
+function TRAIN_SYSTEM:Think( dT )
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
+	--print( "Menu:", self.Menu, "State:", self.State )
 	local Train = self.Train
 	-- if not Train.BatteryOn or not Train.CircuitBreakerOn or Train:RearainWire(7) < 1 then return end -- why run anything when the train is off? fss.
 	self.RouteTable = MPLR.IBISRoutes[ self.Train:GetNW2Int( "IBIS:Routes", 1 ) ]
 	self.DestinationTable = MPLR.IBISDestinations[ self.Train:GetNW2Int( "IBIS:Destinations", 1 ) ]
 	self.ServiceAnnouncements = MPLR.SpecialAnnouncementsIBIS[ self.Train:GetNW2Int( "IBIS:ServiceA", 1 ) ]
 	self.LineTable = MPLR.IBISLines[ self.Train:GetNW2Int( "IBIS:Lines", 1 ) ]
-	self:UpdateState()
+	self:UpdateState( dT or self.DeltaTime )
 	if self.PowerOn or Train:ReadTrainWire( 7 ) > 0 then self:CANBusRunner() end
 	if self.Train.SkinCategory == "U2h" then
 		self.KeyInserted = self.Train.CoreSys.IBISKeyATurned
@@ -643,13 +669,19 @@ function TRAIN_SYSTEM:ReadDataset()
 		self.AnnouncementChar2 = self.AnnouncementPrompt2
 	end
 
+	local function updateMenuChange()
+		self.LastMenuChange = CurTime()
+	end
+
+	local allowMenuChange = CurTime() - self.LastMenuChange > 3
 	if self.Menu == 0 then
 		self:Menu0()
 	elseif self.Menu == 1 then
 		local commit = self:Menu1()
 		--print( commit )
-		if commit then
+		if commit and allowMenuChange then
 			commitMenu1()
+			updateMenuChange()
 			if self.State == 2 then
 				self.Menu = 2
 			elseif self.State == 1 then
@@ -660,8 +692,9 @@ function TRAIN_SYSTEM:ReadDataset()
 		end
 	elseif self.Menu == 2 then
 		local commit = self:Menu2()
-		if commit then
+		if commit and allowMenuChange then
 			commitMenu2()
+			updateMenuChange()
 			self.Menu = 0
 			self.State = 1
 		elseif commit == "fail" then
@@ -669,8 +702,9 @@ function TRAIN_SYSTEM:ReadDataset()
 		end
 	elseif self.Menu == 3 then
 		local commit = self:Menu3()
-		if commit then
+		if commit and allowMenuChange then
 			commitMenu3()
+			updateMenuChange()
 			self.Menu = 0
 		elseif commit == "fail" then
 			self.State = 3
@@ -679,6 +713,7 @@ function TRAIN_SYSTEM:ReadDataset()
 		local commit = self:Menu4()
 		if commit then
 			commitMenu4()
+			updateMenuChange()
 			self:AnnQueue( self.ServiceAnnouncements[ self.AnnouncementChar1 .. self.AnnouncementChar2 ] )
 			self.AnnouncementPrompt1 = " "
 			self.AnnouncementPrompt2 = " "
@@ -723,7 +758,7 @@ function TRAIN_SYSTEM:Menu1()
 	if self.Menu ~= 1 then return end
 	local currentTime = CurTime()
 	local function returnNumber()
-		for k, v in pairs( self.NumberKeys ) do
+		for k in pairs( self.NumberKeys ) do
 			local number = string.sub( k, 7, 7 )
 			if self.NumberKeys[ k ] then return number end
 		end
@@ -732,7 +767,7 @@ function TRAIN_SYSTEM:Menu1()
 
 	local input = returnNumber()
 	if input and not tonumber( self.CoursePrompt1, 10 ) then -- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
-		if not self.Debounce[ input ] or ( currentTime - self.Debounce[ input ] > self.DebounceTime ) then
+		if self.Debounce[ "Number" .. input ] == 0 or ( currentTime - self.Debounce[ "Number" .. input ] > self.DebounceTime ) then
 			if self.LineLength == 2 then
 				self.CoursePrompt1 = self.CoursePrompt2
 				self.CoursePrompt2 = self.CoursePrompt3
@@ -749,8 +784,8 @@ function TRAIN_SYSTEM:Menu1()
 			self.Debounce[ input ] = currentTime
 		end
 	elseif self.Triggers[ "Delete" ] then
-		if not self.Debounce[ "Delete" ] or ( currentTime - self.Debounce[ "Delete" ] > self.DebounceTime ) then
-			print( "delete" )
+		if self.Debounce[ "Delete" ] == 0 or ( currentTime - self.Debounce[ "Delete" ] > self.DebounceTime ) then
+			--print( "delete" )
 			if self.LineLength == 2 then
 				self.CoursePrompt4 = self.CoursePrompt3
 				self.CoursePrompt3 = self.CoursePrompt2
@@ -782,7 +817,7 @@ function TRAIN_SYSTEM:Menu1()
 	end
 
 	self.Train:SetNW2String( "Prompt", prompt )
-	if self.State == 1 and self.Triggers[ "Enter" ] then
+	if self.State == 1 and self.Triggers[ "Enter" ] and ( self.Debounce[ "Enter" ] == 0 or self.Debounce[ "Enter" ] > self.DebounceTime ) then
 		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered == true then
 			return true
@@ -801,7 +836,7 @@ function TRAIN_SYSTEM:Menu1()
 		else
 			return "fail"
 		end
-	elseif self.State == 2 and self.Triggers[ "Enter" ] then
+	elseif self.State == 2 and self.Triggers[ "Enter" ] and ( not self.Debounce[ "Enter" ] or self.Debounce[ "Enter" ] > self.DebounceTime ) then
 		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered then
 			self.Menu = 2
@@ -827,33 +862,41 @@ function TRAIN_SYSTEM:Menu1()
 end
 
 function TRAIN_SYSTEM:Menu2()
+	self.DebounceTime = 5
+	local currentTime = CurTime()
 	if self.Menu ~= 2 then return end
 	local line = self.Course:sub( 1, self.LineLength )
-	local function returnNumber()
-		for k in pairs( self.NumberKeys ) do
-			local number = string.sub( k, 7, 7 )
-			if self.NumberKeys[ k ] then return number end
+	local function returnNumberKey()
+		for keyName, isPressed in pairs( self.NumberKeys ) do
+			if isPressed then
+				local digit = string.sub( keyName, 7, 7 )
+				return keyName, digit
+			end
 		end
-		return nil
+		return nil, nil
 	end
 
-	local input = returnNumber()
-	if input and tonumber( input, 10 ) and not tonumber( self.RoutePrompt1, 10 ) then -- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
-		if self.Debounce[ "Number" .. input ] then
-			-- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+	local inputKey, inputDigit = returnNumberKey()
+	local lastInput = self.Debounce[ inputKey ] == 0 and nil or lastInput
+	if inputKey then print( self.Debounce[ inputKey ] == 0 or currentTime - self.Debounce[ inputKey ] > self.DebounceTime ) end
+	if inputKey and tonumber( inputDigit, 10 ) and not tonumber( self.RoutePrompt1, 10 ) then
+		if lastInput ~= inputKey then
+			--if self.Debounce[ inputKey ] == 0 or currentTime - self.Debounce[ inputKey ] > ( self.DebounceTime - 0.2 ) then
 			self.RoutePrompt1 = self.RoutePrompt2
-			self.RoutePrompt2 = input
+			lastInput = inputKey
+			self.RoutePrompt2 = inputDigit
 		end
 	elseif self.Triggers[ "Delete" ] then
+		self.Debounce[ "Delete" ] = currentTime
 		self.RoutePrompt2 = self.RoutePrompt1
 		self.RoutePrompt1 = " "
-	elseif self.Triggers[ "Enter" ] then
+	elseif self.Triggers[ "Enter" ] and ( self.Debounce[ "Enter" ] == 0 or currentTime - self.Debounce[ "Enter" ] > self.DebounceTime ) then
 		if self.RoutePrompt1 == " " and tonumber( self.RoutePrompt2, 10 ) then self.RoutePrompt1 = "0" end
 		local Route = self.RoutePrompt1 .. self.RoutePrompt2
 		if self.RouteTable[ line ] then
 			local routeTable = self.RouteTable[ line ][ Route ]
 			if routeTable then
-				local destchars = tostring( routeTable[ #routeTable ] ) --get last station number
+				local destchars = tostring( routeTable[ #routeTable ] )
 				self.DestinationChar1 = destchars:sub( 1, 1 )
 				self.DestinationChar2 = destchars:sub( 2, 2 )
 				self.DestinationChar3 = destchars:sub( 3, 3 )
@@ -874,7 +917,6 @@ function TRAIN_SYSTEM:Menu2()
 	end
 
 	local prompt = self.RoutePrompt1 .. self.RoutePrompt2
-	--print( prompt )
 	self.Train:SetNW2String( "Prompt", prompt )
 	return false
 end
@@ -904,7 +946,7 @@ function TRAIN_SYSTEM:Menu3()
 	end
 
 	local prompt = self.DestinationPrompt1 .. self.DestinationPrompt2 .. self.DestinationPrompt3
-	if self.DestinationTable[ prompt ] and self.Triggers[ "Enter" ] then
+	if self.DestinationTable[ prompt ] and self.Triggers[ "Enter" ] and ( not self.Debounce[ "Enter" ] or self.Debounce[ "Enter" ] > self.DebounceTime ) then
 		return true
 	else
 		return "fail"
