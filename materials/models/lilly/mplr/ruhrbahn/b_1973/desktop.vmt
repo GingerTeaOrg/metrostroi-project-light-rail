@@ -1,5 +1,11 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "models/lilly/mplr/ruhrbahn/b_1973/desktop"
-	"$alphatest" 1
+	"$normalmap" "models/lilly/mplr/ruhrbahn/b_1973/desktop_n"
+	"$normalmapalphaenvmapmask" "1"
+	"$envmap" "env_cubemap"
+	"$envmapsaturation" "0"
+	"$envmapcontrast" "1"
+	"$envmaptint" "[1.0 1.0 1.0]"
+	"$surfaceprop" "Metal"
 }
