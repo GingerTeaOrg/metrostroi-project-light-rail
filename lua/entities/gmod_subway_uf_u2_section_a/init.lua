@@ -2,7 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.BogeyDistance = 1100
-ENT.SyncTable = { "AutomatOn", "AutomatOff", "DoorsSelectRight", "DoorsSelectLeft", "ReduceBrake", "Highbeam", "SetHoldingBrake", "DoorsLock", "DoorsUnlock", "PantographRaise", "PantographLower", "Headlights", "WarnBlink", "Microphone", "BellEngage", "Horn", "WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination", "Delete", "Route", "DateAndTime", "ServiceAnnouncements" }
+ENT.SyncTable = { "Shedrun", "AutomatOn", "AutomatOff", "DoorsSelectRight", "DoorsSelectLeft", "ReduceBrake", "Highbeam", "SetHoldingBrake", "DoorsLock", "DoorsUnlock", "PantographRaise", "PantographLower", "Headlights", "WarnBlink", "Microphone", "BellEngage", "Horn", "WarningAnnouncement", "PantoUp", "DoorsCloseConfirm", "ReleaseHoldingBrake", "PassengerOverground", "PassengerUnderground", "SetPointRight", "SetPointLeft", "ThrowCoupler", "Door1", "UnlockDoors", "DoorCloseSignal", "Number1", "Number2", "Number3", "Number4", "Number6", "Number7", "Number8", "Number9", "Number0", "Destination", "Delete", "Route", "DateAndTime", "ServiceAnnouncements" }
 ENT.Lights = {
 	[ 50 ] = {
 		-- cab light 1
@@ -943,11 +943,12 @@ end
 
 function ENT:OnButtonPress( button, ply )
 	self:HackButtonPress( button )
+	local p = self.Panel
 	local dS = self.DoorHandler
 	local sys = self.CoreSys
-	if button == "BlinkerLeftSet" then
-		self.Panel.BlinkerRight = 0
-	elseif button == "BlinkerRightSet" then
+	if button == "BlinkerLeftSet" and p.BlinkerRight > 0 then
+		p.BlinkerRight = 0
+	elseif button == "BlinkerRightSet" and p.BlinkerLeft > 0 then
 		self.PanelBlinkerLeft = 0
 	end
 

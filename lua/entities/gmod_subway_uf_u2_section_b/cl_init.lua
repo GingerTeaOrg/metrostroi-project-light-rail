@@ -1433,6 +1433,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 
 function ENT:Draw()
 	self.BaseClass.Draw( self )
+	self:UpdateWagonNumber()
 end
 
 function ENT:DrawPost()
@@ -1531,12 +1532,7 @@ function ENT:Animations()
 	self.CabWindowR = self:GetNW2Float( "CabWindowR", 0 )
 	self:Animate( "window_cab_r", self:GetNW2Float( "CabWindowR", 0 ), 0, 100, 50, 9, false )
 	self:Animate( "window_cab_l", self:GetNW2Float( "CabWindowL", 0 ), 0, 100, 50, 9, false )
-	if self.SectionA:GetNW2Bool( "Headlights", false ) == true and self:GetNW2Bool( "Headlights", false ) == true then
-		self:ShowHide( "headlights_on", true )
-	else
-		self:ShowHide( "headlights_on", false )
-	end
-
+	--self:ShowHide( "headlights_on", self:GetNW2Bool( "HeadlightsB", false ) )
 	local pBSOn = self:GetPackedBool( "FlickBatterySwitchOn", false )
 	local pBSOff = self:GetPackedBool( "FlickBatterySwitchOff", false )
 	self.BatterySwitch = pBSOn and 1 or pBSOff and 0 or 0.5
@@ -1544,14 +1540,14 @@ function ENT:Animations()
 	self:Animate( "Mirror", mirror, 0, 100, 17, 1, 0 )
 	self:Animate( "Mirror_vintage", mirror, 0, 100, 17, 1, 0 )
 	self:ShowHide( "RetroEquipment", self.SectionA:GetNW2Bool( "RetroMode", false ) )
-	self:Animate( "Door_fr2", self.SectionA:GetNWFloat( "Door12b" ), 0, 100, 50, 0, 0 )
-	self:Animate( "Door_fr1", self.SectionA:GetNWFloat( "Door12b" ), 0, 100, 50, 0, 0 )
-	self:Animate( "Door_rr2", self.SectionA:GetNWFloat( "Door34b" ), 0, 100, 50, 0, 0 )
-	self:Animate( "Door_rr1", self.SectionA:GetNWFloat( "Door34b" ), 0, 100, 50, 0, 0 )
-	self:Animate( "Door_fl2", self.SectionA:GetNWFloat( "Door78a" ), 0, 100, 50, 0, 0 )
-	self:Animate( "Door_fl1", self.SectionA:GetNWFloat( "Door78a" ), 0, 100, 50, 0, 0 )
-	self:Animate( "Door_rl2", self.SectionA:GetNWFloat( "Door56a" ), 0, 100, 50, 0, 0 )
-	self:Animate( "Door_rl1", self.SectionA:GetNWFloat( "Door56a" ), 0, 100, 50, 0, 0 )
+	self:Animate( "Door_fr2", self.SectionA:GetNWFloat( "Door12b" ), 0, 100, 45, 0, 0 )
+	self:Animate( "Door_fr1", self.SectionA:GetNWFloat( "Door12b" ), 0, 100, 45, 0, 0 )
+	self:Animate( "Door_rr2", self.SectionA:GetNWFloat( "Door34b" ), 0, 100, 45, 0, 0 )
+	self:Animate( "Door_rr1", self.SectionA:GetNWFloat( "Door34b" ), 0, 100, 45, 0, 0 )
+	self:Animate( "Door_fl2", self.SectionA:GetNWFloat( "Door78a" ), 0, 100, 45, 0, 0 )
+	self:Animate( "Door_fl1", self.SectionA:GetNWFloat( "Door78a" ), 0, 100, 45, 0, 0 )
+	self:Animate( "Door_rl2", self.SectionA:GetNWFloat( "Door56a" ), 0, 100, 45, 0, 0 )
+	self:Animate( "Door_rl1", self.SectionA:GetNWFloat( "Door56a" ), 0, 100, 45, 0, 0 )
 	if self.SectionA:GetNW2Bool( "RetroMode", false ) == false then
 		self:ShowHide( "Mirror_vintage", false )
 		self:ShowHide( "Mirror", true )

@@ -923,7 +923,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 				z = -6,
 				ang = 0,
 				var = "Shedrun",
-				speed = 1,
+				speed = 15,
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
@@ -982,7 +982,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 				ang = 45,
 				anim = true,
 				var = "AutomatOn",
-				speed = 5,
+				speed = 15,
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
@@ -1004,7 +1004,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 				ang = 45,
 				anim = true,
 				var = "AutomatOff",
-				speed = 5,
+				speed = 15,
 				vmin = 0,
 				vmax = 1,
 				sndvol = 20,
@@ -1169,7 +1169,7 @@ ENT.ButtonMapMPLR[ "Cab" ] = {
 			x = 211,
 			y = 91,
 			radius = 10,
-			tooltip = "Clear door closed alarm",
+			tooltip = "Clear door closed alarm or switch override",
 			model = {
 				model = "models/lilly/uf/u2/cab/button_indent_orange.mdl",
 				z = -2,
@@ -2076,6 +2076,7 @@ ENT.RTMaterialMPLR = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
 
 function ENT:Draw()
 	self.BaseClass.Draw( self )
+	self:UpdateWagonNumber()
 end
 
 function ENT:DrawPost()
@@ -2238,6 +2239,7 @@ function ENT:Think()
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
+	self:SoundHandler()
 	if self:GetNW2String( "Texture", "" ) == "SVB" then
 		self:ShowHide( "carnumber1", false )
 		self:ShowHide( "carnumber2", false )
@@ -2340,14 +2342,14 @@ function ENT:Think()
 	local Door2a = self:GetNW2Float( "Door2a", 1 )
 	local Door3b = self:GetNW2Float( "Door3a", 1 )
 	local Door4b = self:GetNW2Float( "Door4a", 1 )
-	self:Animate( "Door_fr2", Door1a, 0, 100, 100, 10, 0 )
-	self:Animate( "Door_fr1", Door1a, 0, 100, 100, 10, 0 )
-	self:Animate( "Door_rr2", Door2a, 0, 100, 100, 10, 0 )
-	self:Animate( "Door_rr1", Door2a, 0, 100, 100, 10, 0 )
-	self:Animate( "Door_fl2", Door4b, 0, 100, 100, 10, 0 )
-	self:Animate( "Door_fl1", Door4b, 0, 100, 100, 10, 0 )
-	self:Animate( "Door_rl2", Door3b, 0, 100, 100, 10, 0 )
-	self:Animate( "Door_rl1", Door3b, 0, 100, 100, 10, 0 )
+	self:Animate( "Door_fr2", Door1a, 0, 100, 45, 10, 0 )
+	self:Animate( "Door_fr1", Door1a, 0, 100, 45, 10, 0 )
+	self:Animate( "Door_rr2", Door2a, 0, 100, 45, 10, 0 )
+	self:Animate( "Door_rr1", Door2a, 0, 100, 45, 10, 0 )
+	self:Animate( "Door_fl2", Door4b, 0, 100, 45, 10, 0 )
+	self:Animate( "Door_fl1", Door4b, 0, 100, 45, 10, 0 )
+	self:Animate( "Door_rl2", Door3b, 0, 100, 45, 10, 0 )
+	self:Animate( "Door_rl1", Door3b, 0, 100, 45, 10, 0 )
 	----------------------------------------------------------
 	if self:GetNW2Bool( "Microphone", false ) == true and self.Microphone == false then
 		self.Microphone = true
@@ -2364,7 +2366,6 @@ function ENT:Think()
 
 	----print(self.CamshaftMadeSound)
 	self:ShowHide( "headlights_on", self:GetPackedBool( "Headlights", false ), 0 )
-	if IsValid( self.SectionB ) then self.SectionB:ShowHide( "headlights_on", self:GetPackedBool( "Headlights", false ), 0 ) end
 	if self:GetNW2Bool( "BlinkerShineLeft", false ) == true then
 		self:SetLightPower( 11, true )
 	else
@@ -2455,8 +2456,6 @@ function ENT:Think()
 			-- self:PlayOnce("Startup","cabin",0.4,1)
 			self:PlayOnce( "Battery_breaker", "cabin", 20, 1 )
 		end
-
-		if self:GetPackedBool( "WarningAnnouncement" ) == true then self:PlayOnce( "Keep Clear", Vector( 350, -30, 113 ), 0.8, 1 ) end
 	elseif self:GetNW2Bool( "BatteryOn", false ) == false then
 		-- what shall we do when the battery is off
 		self.StartupSoundPlayed = false
@@ -2501,9 +2500,26 @@ function ENT:Think()
 	end
 end
 
+local announcementPlayed = announcementPlayed or false
+function ENT:SoundHandler()
+	local pantoUp = self:GetNW2Bool( "PantoMovingUp", false )
+	local pantoDown = self:GetNW2Bool( "PantoMovingDown", false )
+	self:SetSoundState( "RaisePanto", pantoUp and 1 or 0, 1 )
+	self:SetSoundState( "LowerPanto", pantoDown and 1 or 0, 1 )
+	----------------------------------------------------------------
+	local triggerWarningAnnouncement = self:GetNW2Bool( "WarningAnnouncement" )
+	local power = self:GetNW2Bool( "IBISPowerOn", false ) and self:GetNW2Bool( "IBISBootupComplete", false )
+	if power and triggerWarningAnnouncement then
+		announcementPlayed = true
+		self:PlayOnce( "Keep Clear", Vector( 350, -30, 113 ), 0.8, 1 )
+	else
+		announcementPlayed = false
+	end
+end
+
 function ENT:U2SoundEngine()
-	self:SetSoundState( "Cruise", Lerp( self.Speed, 0, 1 ), 1, 1, 1 )
-	self:SetSoundState( "rumb1", Lerp( self.Speed, 0, 1 ), 1, 1, 1 )
+	self:SetSoundState( "Cruise", Lerp( self.Speed, 0, 1 ) )
+	self:SetSoundState( "rumb1", Lerp( self.Speed, 0, 1 ) )
 end
 
 function ENT:Animations()
