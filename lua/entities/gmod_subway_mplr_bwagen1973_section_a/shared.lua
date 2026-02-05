@@ -38,6 +38,8 @@ function ENT:InitializeSounds()
 		"lilly/uf/u2/Bell_end.mp3"
 	}
 
+	self.SoundPositions[ "RaisePanto" ] = { 400, 1e9, Vector( 20, 0, 400 ), 1 }
+	self.SoundPositions[ "LowerPanto" ] = { 400, 1e9, Vector( 20, 0, 400 ), 1 }
 	self.SoundPositions[ "bell" ] = { 1100, 1e9, Vector( 480, -20, 8 ), 0.7 }
 	self.SoundNames[ "bell_in" ] = {
 		loop = 0.01,
@@ -57,6 +59,12 @@ function ENT:InitializeSounds()
 		"lilly/mplr/b80c_firstgen/chopper.wav"
 	}
 
+	self.SoundNames[ "throttle_up" ] = { { "lilly/mplr/b80c_firstgen/throttle_notch_up1.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up2.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up3.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up4.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up5.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up6.mp3" } }
+	self.SoundPositions[ "throttle_up" ] = { 40, 1e9, Vector( 502, -20.727, 50 ), 1 }
+	self.SoundNames[ "throttle_zero" ] = { "lilly/mplr/b80c_firstgen/throttle_notch_down_tozero.mp3" }
+	self.SoundPositions[ "throttle_zero" ] = { 40, 1e9, Vector( 502, -20.727, 50 ), 1 }
+	self.SoundNames[ "reverser_up" ] = { "lilly/mplr/b80c_firstgen/reverser_up.mp3" }
+	self.SoundPositions[ "reverser_up" ] = { 40, 1e9, Vector( 502, -20.727, 50 ), 1 }
 	self.SoundPositions[ "Chopper" ] = { 800, 1e9, Vector( 440, 0, 100 ), 1 }
 	self.SoundNames[ "Cruise" ] = { "lilly/mplr/b-wagen_common/cruise.mp3" }
 	self.SoundPositions[ "Cruise" ] = { 800, 1e9, Vector( 240, 0, 50 ), 1 }
@@ -78,11 +86,14 @@ function ENT:InitializeSounds()
 	self.SoundNames[ "IBIS_bootup" ] = { "lilly/uf/IBIS/startup_chime.mp3" }
 	self.SoundPositions[ "IBIS_bootup" ] = { 1100, 1e9, Vector( 412, -12, 55 ), 1 }
 	self.SoundNames[ "IBIS_error" ] = { "lilly/uf/IBIS/error.mp3" }
-	self.SoundPositions[ "IBIS_error" ] = { 1100, 1e9, Vector( 412, -12, 55 ), 1 }
-	self.SoundNames[ "button_on" ] = { "lilly/uf/u2/insidecab/buttonclick.mp3" }
-	self.SoundPositions[ "button_on" ] = { 1100, 1e9, Vector( 405, 36, 55 ), 1 }
-	self.SoundNames[ "button_off" ] = { "lilly/uf/u2/insidecab/buttonclick.mp3" }
-	self.SoundPositions[ "button_off" ] = { 1100, 1e9, Vector( 405, 36, 55 ), 1 }
+	self.SoundPositions[ "IBIS_error" ] = { 1, 1e9, Vector( 412, -12, 55 ), 1 }
+	self.SoundNames[ "button_on" ] = { "lilly/mplr/b80c_firstgen/button_on.mp3" }
+	self.SoundPositions[ "button_on" ] = { 1, 1e9, Vector( 405, 36, 55 ), 1 }
+	self.SoundNames[ "button_off" ] = { "lilly/mplr/b80c_firstgen/button_off.mp3" }
+	self.SoundNames[ "button_toggle_on" ] = { "lilly/mplr/b80c_firstgen/button_click_in.mp3" }
+	self.SoundPositions[ "button_toggle_on" ] = { 1, 1e9, Vector( 405, 36, 55 ), 1 }
+	self.SoundNames[ "button_toggle_off" ] = { "lilly/mplr/b80c_firstgen/button_click_out.mp3" }
+	self.SoundPositions[ "button_toggle_off" ] = { 1, 1e9, Vector( 405, 36, 55 ), 1 }
 	self.SoundNames[ "key_insert" ] = { "lilly/uf/common/key-1.wav" }
 	self.SoundPositions[ "key_insert" ] = { 1100, 1e9, Vector( 480, 36, 70 ), 1 }
 end
@@ -140,7 +151,7 @@ ENT.BlinkersRight = {
 ENT.MirrorCams = { Vector( 540, 60, 100 ), Angle( 1, 180, 0 ), 50, Vector( 540, -60, 100 ), Angle( 1, 180, 0 ), 50 }
 function ENT:InitializeSystems()
 	self:LoadSystem( "DeadmanMPLR", "Duewag_Deadman" )
-	self:LoadSystem( "Duewag_Battery" )
+	self:LoadSystem( "Battery", "Duewag_Battery" )
 	self:LoadSystem( "Panel", "1973_panel", true )
 	self:LoadSystem( "Chopper" )
 	self:LoadSystem( "CoreSys", "duewag_b_1973" )
@@ -168,6 +179,16 @@ ENT.SubwayTrain = {
 	StepsLow = true,
 	StopRequest = true,
 	Bidirectional = true
+}
+
+ENT.LZBTab = {
+	TractivePower = 470,
+	BrakingPower = 1.2,
+	-- TODO: Establish an actual braking and acceleration curve
+	BrakingCurve = { 0.1, 0.4, 0.8, 1 },
+	AccelCurve = { 1, 0.8, 0.4, 0.1 },
+	LengthInMetres = 26,
+	Weight = 40
 }
 
 ENT.AnnouncerPositions = { { Vector( 293, 44, 102 ) }, { Vector( 293, -44, 102 ) } }

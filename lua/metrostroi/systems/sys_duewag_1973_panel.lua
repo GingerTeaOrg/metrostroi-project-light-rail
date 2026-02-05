@@ -248,6 +248,82 @@ function TRAIN_SYSTEM:Initialize()
 		bass = true
 	} )
 
+	self.Train:LoadSystem( "Number1", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number2", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number3", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number4", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number5", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number6", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number7", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number8", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number9", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Number0", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Enter", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Delete", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "Destination", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "SpecialAnnouncements", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.Train:LoadSystem( "DateAndTime", "Relay", "Switch", {
+		bass = true
+	} )
+
+	self.AnnouncerPlaying = 0
+	self.Number0 = 0
+	self.Number1 = 0
+	self.Number2 = 0
+	self.Number3 = 0
+	self.Number4 = 0
+	self.Number5 = 0
+	self.Number6 = 0
+	self.Number7 = 0
+	self.Number8 = 0
+	self.Number9 = 0
+	self.Enter = 0
+	self.Delete = 0
+	self.Destination = 0
+	self.DateAndTime = 0
+	self.SpecialAnnouncements = 0
 	self.CircuitBreaker = 0
 	self.CircuitBreakerUn = 0
 	self.HazardBlink = 0

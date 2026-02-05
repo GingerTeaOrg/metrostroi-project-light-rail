@@ -7,8 +7,15 @@ ENT.AutoAnimNames = {}
 ENT.ClientProps[ "int" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/int-essen.mdl",
 	pos = Vector( 0, 0, 0 ),
-	ang = Angle( 0, 180, 0 ),
-	hideseat = 0.2
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
+}
+
+ENT.ClientProps[ "dashboard" ] = {
+	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/dashboard.mdl",
+	pos = Vector( 0, 0, 0 ),
+	ang = Angle( 0, 0, 0 ),
+	nohide = true
 }
 
 ENT.ClientProps[ "door_button" ] = {
@@ -271,7 +278,7 @@ ENT.ButtonMapMPLR[ "DestinationRollsignFront" ] = {
 }
 
 ENT.ButtonMapMPLR[ "dashboard" ] = {
-	pos = Vector( -508, -17, 71.88 ),
+	pos = Vector( -508, -25, 71.88 ),
 	ang = Angle( 0, -270, 0 ),
 	width = 490,
 	height = 92,
@@ -1071,11 +1078,11 @@ function ENT:DrawPost()
 		surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier3 - 1.45, -0.015, self.ScrollModifier3 - 1.5 )
 	end )
 
-	cam.Start3D2D( self:LocalToWorld( Vector( 189, 48, 115 ) ), self:LocalToWorldAngles( Angle( 0, 0, -90 ) ), 1 )
+	--[[cam.Start3D2D( self:LocalToWorld( Vector( 189, 48, 115 ) ), self:LocalToWorldAngles( Angle( 0, 0, -90 ) ), 1 )
 	surface.SetMaterial( mat2 )
 	surface.SetDrawColor( 255, 255, 255, 255 )
 	surface.DrawTexturedRectUV( 1, 0, 26.5, 7.6, 1, self.ScrollModifier4 - 1.45, -0.015, self.ScrollModifier4 - 1.5 )
-	cam.End3D2D()
+	cam.End3D2D()]]
 	self:DrawOnPanel( "InfoRollsignR", function( ... )
 		surface.SetDrawColor( color_white )
 		surface.SetMaterial( mat3 )

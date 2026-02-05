@@ -56,6 +56,7 @@ ENT.TrainWireCrossConnections = {
 --[ KEY_0 ] = "IgnitionKeyOff"
 function ENT:Initialize()
 	self:SetModel( "models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl" )
+	self:SetPos( self:GetPos() + Vector( 0, 0, 10 ) )
 	self.BaseClass.Initialize( self )
 	self.DriverSeat = self:CreateSeat( "driver", Vector( 484, 3, 55 ), Angle( 0, 0, 0 ) )
 	self.PassengerSeat = self:CreateSeat( "passenger", Vector( 450, 3, 55 ), Angle( 0, 0, 0 ) )
@@ -65,9 +66,6 @@ function ENT:Initialize()
 	-- self.InstructorsSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
 	-- self.InstructorsSeat:SetColor(Color(0, 0, 0, 0))
 	self.Speed = 0
-	self.ThrottleState = 0
-	self.ThrottleEngaged = false
-	self.Door1 = false
 	-- Create bogeys
 	self.FrontBogey = self:CreateBogeyMPLR( Vector( 390, 0, 4 ), Angle( 0, 180, 0 ), true, "b_motor", "a" )
 	self.MiddleBogey = self:CreateBogeyMPLR( Vector( 0, 0, 4 ), Angle( 0, 180, 0 ), false, "b_joint", "a" )
@@ -334,8 +332,8 @@ function ENT:Initialize()
 		[ KEY_I ] = "DoorsForceCloseSet",
 		[ KEY_K ] = "DoorsCloseConfirmSet",
 		[ KEY_Z ] = "WarningAnnouncementSet",
-		[ KEY_J ] = "DoorsSelectLeftToggle",
-		[ KEY_L ] = "DoorsSelectRightToggle",
+		[ KEY_J ] = "DoorsSelectLeftSet",
+		[ KEY_L ] = "DoorsSelectRightSet",
 		[ KEY_B ] = "BatterySet",
 		[ KEY_V ] = "HeadlightsToggle",
 		[ KEY_M ] = "MirrorLeftToggle",
@@ -400,9 +398,6 @@ function ENT:Initialize()
 			[ KEY_0 ] = "IgnitionKeyOff"
 		}
 	}
-
-	self.BrakeHiss = false
-	self.CompressorOn = false
 end
 
 function ENT:Think( dT )
@@ -415,7 +410,6 @@ function ENT:Think( dT )
 	self:Traction()
 	self:Sounds()
 	self:GenerateJerks()
-	--print( self.CoreSys.IgnitionKeyAIn )
 end
 
 function ENT:SetButton( button )
@@ -538,7 +532,7 @@ function ENT:Traction()
 	self.FrontBogey.MotorForce = traction > 0 and 51688.07175 or 68363.606
 	self.RearBogey.MotorForce = self.FrontBogey.MotorForce
 	if traction > 0 and not emergency then
-		fb.MotorPower = math.abs( chopper )
+		fb.MotorPower = math.abs( chopper ) + P
 	elseif traction <= 0 and speed > 8 and not emergency then
 		fb.MotorPower = traction
 	elseif emergency and speed > 8 then
