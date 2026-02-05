@@ -28,7 +28,7 @@ function ENT:CreateINDUSICoil( ent, rear )
 	local pos = ent:GetPos()
 	local ang = ent:GetAngles()
 	coil:Spawn()
-	coil:SetPos( pos )
+	coil:SetPos( ent:LocalToWorld( Vector( -50, 0, 10 ) ) )
 	coil:SetAngles( rear and ang - ent:LocalToWorldAngles( Angle( 0, -90, 0 ) ) or ang )
 	coil:SetParent( ent )
 	constraint.NoCollide( coil, ent )
@@ -110,6 +110,44 @@ function ENT:CreateSection( pos, ang, ent, parentSection, sectionC, sectionA ) -
 			sectionPhys:SetMass( sectionWeight )
 			sectionA:LinkMUSystems( self )
 		end
+	end
+
+	table.insert( self.TrainEntities, sectionEnt )
+	constraint.NoCollide( self.MiddleBogey, sectionEnt, 0, 0 )
+	constraint.NoCollide( self, sectionEnt, 0, 0 )
+	return sectionEnt
+end
+
+function ENT:CreateSectionNoJacobs( pos, ang, ent, parentSection, jointPos1, jointPos2 ) --right now this only is intended for a maximum of eight axle trains. That means, A/B/C sections only.
+	ang = ang or Angle( 0, 0, 0 )
+	local sectionEnt = ents.Create( ent )
+	sectionEnt:SetPos( self:LocalToWorld( pos ) )
+	sectionEnt:SetAngles( self:GetAngles() + ang )
+	sectionEnt:Spawn()
+	sectionEnt:Activate()
+	sectionEnt:SetOwner( self:GetOwner() )
+	if IsValid( parentSection ) then --if the parent section is an A section then we're only an A/B train so no need for sectionC params
+		local index = parentSection:EntIndex()
+		local sectionB = sectionEnt
+		local sectionBIndex = sectionEnt:EntIndex()
+		sectionB.parentSection = parentSection
+		sectionB.SectionA = self
+		sectionB:SetNW2Int( "parentSectionIndex", index )
+		sectionB:SetNW2Int( "SectionAIndex", index )
+		self:SetNW2Int( "SectionBIndex", sectionBIndex )
+		--get original weights
+		local selfPhys = self:GetPhysicsObject()
+		local selfWeight = selfPhys:GetMass()
+		local sectionPhys = sectionEnt:GetPhysicsObject()
+		local sectionWeight = sectionPhys:GetMass()
+		--set weights to maximum, in order to make the joint extra mellow
+		selfPhys:SetMass( 50000 )
+		sectionPhys:SetMass( 50000 )
+		constraint.AdvBallsocket( sectionEnt, self, 0, 0, jointPos1 or Vector( 0, 0, 0 ), jointPos2 or Vector( 0, 0, 0 ), 0, 0, -0, -0, -90, 0, 0, 90, 0, 10, 0, 0, 1 ) -- bone -- bone		 -- forcelimit -- torquelimit -- xmin -- ymin -- zmin -- xmax -- ymax -- zmax -- xfric -- yfric -- zfric -- rotonly -- nocollide
+		--reset weights
+		selfPhys:SetMass( selfWeight )
+		sectionPhys:SetMass( sectionWeight )
+		sectionA:LinkMUSystems( self )
 	end
 
 	table.insert( self.TrainEntities, sectionEnt )
@@ -1415,10 +1453,10 @@ end
 --------------------------------------------------------------------------------
 function ENT:HandleJoystickInput( ply )
 	for k, v in pairs( jcon.binds ) do
-		if v:GetCategory() == "Metrostroi" then
-			local jvalue = Metrostroi.GetJoystickInput( ply, k )
+		if v:GetCategory() == "Metrostroi: Project Light Rail" then
+			local jvalue = MPLR.GetJoystickInput( ply, k )
 			if ( jvalue ~= nil ) and ( self.JoystickBuffer[ k ] ~= jvalue ) then
-				local inputname = Metrostroi.JoystickSystemMap[ k ]
+				local inputname = MPLR.JoystickSystemMap[ k ]
 				self.JoystickBuffer[ k ] = jvalue
 				if inputname then
 					if typ( jvalue ) == "boolean" then
@@ -2285,20 +2323,18 @@ end
 -- Won't get called if joystick isn't installed
 -- I've put it here for now, trains will likely share these inputs anyway
 local function JoystickRegister()
-	Metrostroi.RegisterJoystickInput( "met_controller", true, "Controller", -3, 3 )
-	Metrostroi.RegisterJoystickInput( "met_reverser", true, "Reverser", -1, 1 )
-	Metrostroi.RegisterJoystickInput( "met_pneubrake", true, "Pneumatic Brake", 1, 5 )
-	Metrostroi.RegisterJoystickInput( "met_headlight", false, "Headlight Toggle" )
-	--  Metrostroi.RegisterJoystickInput("met_reverserup",false,"Reverser Up")
-	--  Metrostroi.RegisterJoystickInput("met_reverserdown",false,"Reverser Down")
+	MPLR.RegisterJoystickInput( "mplr_throttle", true, "Controller", -3, 3 )
+	MPLR.RegisterJoystickInput( "mplr_reverser", true, "Reverser", -1, 1 )
+	MPLR.RegisterJoystickInput( "mplr_headlight", false, "Headlight Toggle" )
+	--  MPLR.RegisterJoystickInput("met_reverserup",false,"Reverser Up")
+	--  MPLR.RegisterJoystickInput("met_reverserdown",false,"Reverser Down")
 	--  Will make this somewhat better later
 	--  Uncommenting these somehow makes the joystick addon crap itself
-	Metrostroi.JoystickSystemMap[ "met_controller" ] = "KVControllerSet"
-	Metrostroi.JoystickSystemMap[ "met_reverser" ] = "KVReverserSet"
-	Metrostroi.JoystickSystemMap[ "met_pneubrake" ] = "PneumaticBrakeSet"
-	Metrostroi.JoystickSystemMap[ "met_headlight" ] = "HeadLightsToggle"
-	--  Metrostroi.JoystickSystemMap["met_reverserup"] = "KVReverserUp"
-	--  Metrostroi.JoystickSystemMap["met_reverserdown"] = "KVReverserDown"
+	MPLR.JoystickSystemMap[ "mplr_throttle" ] = "KVControllerSet"
+	MPLR.JoystickSystemMap[ "mplr_reverser" ] = "KVReverserSet"
+	MPLR.JoystickSystemMap[ "met_headlight" ] = "HeadLightsToggle"
+	--  MPLR.JoystickSystemMap["met_reverserup"] = "KVReverserUp"
+	--  MPLR.JoystickSystemMap["met_reverserdown"] = "KVReverserDown"
 end
 
 hook.Add( "JoystickInitialize", "mplr_cabin", JoystickRegister )
