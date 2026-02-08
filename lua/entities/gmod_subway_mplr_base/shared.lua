@@ -8,6 +8,7 @@ ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.CustomThinks = ENT.CustomThinks or {}
 ENT.CustomSpawnerUpdates = ENT.CustomSpawnerUpdates or {}
+ENT.PlayOnceSoundsActive = {}
 local function destroySound( snd, nogc )
 	if IsValid( snd ) then snd:Stop() end
 	if not nogc and snd and snd.__gc then snd:__gc() end
@@ -45,6 +46,7 @@ ENT.MirrorCams = { Vector( 450, 71, 24 ), Angle( 1, 180, 0 ), 15, Vector( 450, -
 function ENT:InitializeSounds()
 	self.SoundPositions = {} -- Positions (used clientside)
 	self.SoundNames = {}
+	self.SoundTimeouts = {}
 	self.SoundNames[ "Door_open" ] = {
 		loop = 0.5,
 		"lilly/mplr/common/door_open_start.mp3",
@@ -309,7 +311,7 @@ if SERVER then
 else
 	net.Receive( "metrostroi_client_sound", function( size )
 		local train = net.ReadEntity()
-		if not IsValid( train ) or not train.PlayOnce or not train:ShouldRenderClientEnts() then return end
+		if not IsValid( train ) or not train:ShouldRenderClientEnts() then return end
 		local snd = net.ReadString()
 		local pos = net.ReadString()
 		local range = net.ReadFloat()
@@ -318,9 +320,9 @@ else
 		if pos == "styk" and train.OnStyk then
 			local opsnd, oppos, oprange, oppitch = train:OnStyk( snd, pos, range, pitch )
 			if opsnd then train:PlayOnce( opsnd or snd, oppos or pos, oprange or range, oppitch or pitch ) end
-		elseif train.OnPlay then
+			--[[elseif train.OnPlay then
 			local opsnd, oppos, oprange, oppitch = train:OnPlay( snd, pos, range, pitch )
-			if opsnd then train:PlayOnce( opsnd or snd, oppos or pos, oprange or range, oppitch or pitch ) end
+			if opsnd then train:PlayOnce( opsnd or snd, oppos or pos, oprange or range, oppitch or pitch ) end]]
 		elseif snd then
 			train:PlayOnce( snd, pos, range, pitch )
 		end
@@ -356,11 +358,20 @@ else
 		end )
 	end
 
-	-- Plays a one-time sound attached to a specific entity's location
 	-- Function to play a one-time sound attached to a specific client-side entity
 	function ENT:PlayOnce( soundid, location, range, pitch, randoff )
+		local function soundToClientProp( soundname )
+			for k, v in pairs( self.ClientProps ) do
+				if v.ClientSounds and v.ClientSounds[ soundname ] then return v.ClientSounds[ soundname ], k end
+			end
+		end
+
+		local dT = RealFrameTime()
+		local timeout = self.SoundTimeouts[ soundid ] or 2
+		--assert( self.SoundTimeouts[ soundid ], "Note to developer of this train: Please define a timeout of this sound in self.Timeouts!" )
 		-- Abort if sounds are disabled or entity not ready
 		if self.StopSounds or not self.ClientPropsInitialized or self.CreatingCSEnts then return end
+		if self.PlayOnceSoundsActive[ soundid ] and RealTime() - self.PlayOnceSoundsActive[ soundid ] * dT < timeout then return end
 		-- Debug: warn if soundid is nil
 		if not soundid then
 			ErrorNoHalt( debug.Trace() )
@@ -368,9 +379,13 @@ else
 		end
 
 		-- If the sound is a registered client sound
-		print( self.ClientSounds[ soundid ] )
+		if self.ClientSounds[ soundid ] then
+			PrintTable( self.ClientSounds[ soundid ] )
+		else
+			print( "NOSOUND", soundid )
+		end
+
 		if self.ClientSounds and self.ClientSounds[ soundid ] then
-			print( soundid ) -- Debug output
 			local entsound = self.ClientSounds[ soundid ]
 			for i, esnd in ipairs( entsound ) do
 				-- Get the actual sound ID from callback function
@@ -383,7 +398,13 @@ else
 				end
 
 				-- If multiple variants exist, pick a random one
-				if type( soundname ) == "table" then soundname = table.Random( soundname ) end
+				if type( soundname ) == "table" then
+					soundname = soundname[ math.random( 1, #soundname ) ]
+					--print( "soundname is:", soundname )
+				end
+
+				--PrintTable( soundname )
+				local soundBelongsToProp, Prop = soundToClientProp( soundid )
 				-- Only proceed if the entity is valid and has no active sound
 				if IsValid( self.ClientEnts[ esnd[ 1 ] ] ) and not self.ClientEnts[ esnd[ 1 ] ].snd then
 					local ent = self.ClientEnts[ esnd[ 1 ] ]
@@ -397,6 +418,7 @@ else
 
 						-- Handle sound playback errors
 						if err then
+							--print( "ERROR PLAYONCE" )
 							self:DestroySound( snd )
 							if err == 4 or err == 37 then self.StopSounds = true end
 							if err ~= 41 then
@@ -410,11 +432,13 @@ else
 							end
 							return
 						elseif not IsValid( ent ) then
+							print( "DESTROY SOUND" )
 							-- Destroy sound if target entity is gone
 							self:DestroySound( snd )
 						else
 							-- Configure 3D sound parameters
-							snd:SetPos( ent:GetPos(), ent:LocalToWorldAngles( esnd[ 7 ] ):Forward() )
+							print( soundid )
+							snd:SetPos( self:LocalToWorld( self.SoundPositions[ soundid ][ 3 ] ), ent:LocalToWorldAngles( esnd[ 7 ] ):Forward() )
 							snd:SetPlaybackRate( esnd[ 4 ] )
 							snd:SetVolume( esnd[ 3 ] )
 							if esnd[ 5 ] then snd:Set3DFadeDistance( esnd[ 5 ], esnd[ 6 ] ) end
@@ -422,13 +446,148 @@ else
 							table.insert( ent.BASSSounds, snd )
 							-- Play the sound
 							snd:Play()
+							--print( "Sound played:", soundid )
 							-- Debug visualizations of sound fade distances
 							local siz1, siz2 = snd:Get3DFadeDistance()
-							debugoverlay.Sphere( snd:GetPos(), 4, 2, Color( 0, 255, 0 ), true )
+							debugoverlay.Sphere( snd:GetPos(), 40, 10, Color( 0, 255, 0 ), true )
 							debugoverlay.Sphere( snd:GetPos(), siz1, 2, Color( 255, 0, 0, 100 ), true )
 							debugoverlay.Sphere( snd:GetPos(), siz2, 2, Color( 0, 0, 255, 100 ), true )
 						end
 					end )
+				elseif soundBelongsToProp then
+					local entsound = self.ClientSounds[ soundid ]
+					for i, esnd in ipairs( entsound ) do
+						-- Get the actual sound ID from callback function
+						soundid = esnd[ 2 ]( self, range, location )
+						local soundname = self.SoundNames[ soundid ]
+						-- If no sound name found, skip
+						if not soundname then
+							print( "NO SOUND", soundname, soundid )
+							continue
+						end
+
+						-- If multiple variants exist, pick a random one
+						if type( soundname ) == "table" then
+							soundname = soundname[ math.random( 1, #soundname ) ]
+							--print( "soundname is:", soundname )
+						end
+
+						--PrintTable( soundname )
+						-- Only proceed if the entity is valid and has no active sound
+						if IsValid( self.ClientEnts[ Prop ] ) and not self.ClientEnts[ Prop ].snd then
+							local ent = self.ClientEnts[ Prop ]
+							-- Play sound from file asynchronously
+							sound.PlayFile( "sound/" .. soundname, "3d noplay mono", function( snd, err, errName )
+								-- Abort if entity is invalid
+								if not IsValid( self ) then
+									destroySound( snd )
+									return
+								end
+
+								-- Handle sound playback errors
+								if err then
+									--print( "ERROR PLAYONCE" )
+									self:DestroySound( snd )
+									if err == 4 or err == 37 then self.StopSounds = true end
+									if err ~= 41 then
+										-- Show error in red
+										MsgC( Color( 255, 0, 0 ), Format( "Sound:%s\n\tErrCode:%s, ErrName:%s\n", name, err, errName ) )
+									elseif GetConVar( "metrostroi_drawdebug" ):GetInt() ~= 0 then
+										-- Show yellow warning for normal "unknown" error
+										MsgC( Color( 255, 255, 0 ), Format( "Sound:%s\n\tBASS_ERROR_UNKNOWN (it's normal),ErrCode:%s, ErrName:%s\n", name, err, errName ) )
+										-- Optionally retry playback
+										-- self:PlayOnce(soundid, location, range, pitch, randoff)
+									end
+									return
+								elseif not IsValid( ent ) then
+									--print( "DESTROY SOUND" )
+									-- Destroy sound if target entity is gone
+									self:DestroySound( snd )
+								else
+									-- Configure 3D sound parameters
+									print( soundid )
+									snd:SetPos( self:LocalToWorld( self.SoundPositions[ soundid ][ 3 ] ), ent:LocalToWorldAngles( esnd[ 7 ] ):Forward() )
+									snd:SetPlaybackRate( esnd[ 4 ] )
+									snd:SetVolume( esnd[ 3 ] )
+									if esnd[ 5 ] then snd:Set3DFadeDistance( esnd[ 5 ], esnd[ 6 ] ) end
+									-- Keep reference for cleanup
+									table.insert( ent.BASSSounds, snd )
+									-- Play the sound
+									snd:Play()
+									--print( "Sound played:", soundid )
+									-- Debug visualizations of sound fade distances
+									local siz1, siz2 = snd:Get3DFadeDistance()
+									debugoverlay.Sphere( snd:GetPos(), 40, 10, Color( 0, 255, 0 ), true )
+									debugoverlay.Sphere( snd:GetPos(), siz1, 2, Color( 255, 0, 0, 100 ), true )
+									debugoverlay.Sphere( snd:GetPos(), siz2, 2, Color( 0, 0, 255, 100 ), true )
+								end
+							end )
+						end
+					end
+				else
+					local entsound = self.ClientSounds[ soundid ]
+					for i, esnd in ipairs( entsound ) do
+						-- Get the actual sound ID from callback function
+						soundid = esnd[ 2 ]( self, range, location )
+						local soundname = self.SoundNames[ soundid ]
+						-- If no sound name found, skip
+						if not soundname then
+							print( "NO SOUND", soundname, soundid )
+							continue
+						end
+
+						-- If multiple variants exist, pick a random one
+						if type( soundname ) == "table" then
+							soundname = soundname[ math.random( 1, #soundname ) ]
+							print( "soundname is:", soundname )
+						end
+
+						--PrintTable( soundname )
+						-- Only proceed if the entity is valid and has no active sound
+						local ent = self.ClientEnts[ Prop ]
+						-- Play sound from file asynchronously
+						sound.PlayFile( "sound/" .. soundname, "3d noplay mono", function( snd, err, errName )
+							-- Abort if entity is invalid
+							if not IsValid( self ) then
+								destroySound( snd )
+								return
+							end
+
+							-- Handle sound playback errors
+							if err then
+								print( "ERROR PLAYONCE" )
+								self:DestroySound( snd )
+								if err == 4 or err == 37 then self.StopSounds = true end
+								if err ~= 41 then
+									-- Show error in red
+									MsgC( Color( 255, 0, 0 ), Format( "Sound:%s\n\tErrCode:%s, ErrName:%s\n", name, err, errName ) )
+								elseif GetConVar( "metrostroi_drawdebug" ):GetInt() ~= 0 then
+									-- Show yellow warning for normal "unknown" error
+									MsgC( Color( 255, 255, 0 ), Format( "Sound:%s\n\tBASS_ERROR_UNKNOWN (it's normal),ErrCode:%s, ErrName:%s\n", name, err, errName ) )
+									-- Optionally retry playback
+									-- self:PlayOnce(soundid, location, range, pitch, randoff)
+								end
+								return
+							else
+								-- Configure 3D sound parameters
+								snd:SetPos( self:LocalToWorld( self.SoundPositions[ soundid ][ 3 ] ), self:LocalToWorldAngles( esnd[ 7 ] ):Forward() )
+								snd:SetPlaybackRate( esnd[ 4 ] )
+								snd:SetVolume( esnd[ 3 ] )
+								if esnd[ 5 ] then snd:Set3DFadeDistance( esnd[ 5 ], esnd[ 6 ] ) end
+								-- Keep reference for cleanup
+								if not self.BASSSounds then self.BASSSounds = {} end
+								table.insert( self.BASSSounds, snd )
+								-- Play the sound
+								snd:Play()
+								--print( "Sound played:", soundid )
+								-- Debug visualizations of sound fade distances
+								local siz1, siz2 = snd:Get3DFadeDistance()
+								debugoverlay.Sphere( snd:GetPos(), 40, 10, Color( 0, 255, 0 ), true )
+								debugoverlay.Sphere( snd:GetPos(), siz1, 2, Color( 255, 0, 0, 100 ), true )
+								debugoverlay.Sphere( snd:GetPos(), siz2, 2, Color( 0, 0, 255, 100 ), true )
+							end
+						end )
+					end
 				end
 			end
 			return
