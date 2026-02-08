@@ -199,7 +199,7 @@ function TRAIN_SYSTEM:Think( dT )
 	self:BlinkerHandler()
 	self:BrakesApplied()
 	self:BrakeLights()
-	self:Headlights()
+	self:HeadlightsFunc()
 	self:Coupled()
 	self:EnableTrainHead()
 	self:ChargeBattery()
@@ -215,6 +215,7 @@ function TRAIN_SYSTEM:Think( dT )
 	self:Mirrors()
 	self:IsLVPowerAvailable()
 	self.Speed = math.abs( self.Train:GetVelocity():Dot( self.Train:GetAngles():Forward() ) * 0.06858 )
+	self.Train:SetNW2Int( "Speed", math.Round( self.Speed ) )
 end
 
 -- ==============================================================================================
@@ -222,16 +223,17 @@ function TRAIN_SYSTEM:IgnitionKeyInOutA()
 	local t = self.Train
 	local function consistKey()
 		local consist = t.WagonList
-		if #consist > 1 then
+		--[[if #consist > 1 then
 			for j in ipairs( consist ) do
 				if consist[ j ] ~= t and consist[ j ].CoreSys.IgnitionKeyA or consist[ j ].CoreSys.IgnitionKeyB then
-					t:GetDriverPly():PrintMessage( HUD_PRINTTALK, "You left your ignition key in another cab. Go fetch it!" )
+					t:GetDriverPly():PrintMessage( HUD_PRINTTALK, "You left your carriage key in another cab. Go fetch it!" )
 					return false
 				end
 			end
 		else
 			return true
-		end
+		end]]
+		return true
 	end
 
 	local keyOkay = consistKey()
@@ -246,10 +248,16 @@ function TRAIN_SYSTEM:IgnitionKeyInOutA()
 	t:SetNW2Bool( "IgnitionKeyIn", self.IgnitionKeyAIn )
 end
 
-function TRAIN_SYSTEM:IgnitionKeyOnA()
+function TRAIN_SYSTEM:IgnitionKeyOnOffA()
 	local t = self.Train
-	self.IgnitionKeyA = true
-	t:SetNW2Bool( "IgnitionTurned", self.IgnitionKeyA )
+	local turnAllowed = self.ReverserA == 0
+	if self.IgnitionKeyAIn and not self.IgnitionKeyA and turnAllowed then
+		self.IgnitionKeyA = true
+		t:SetNW2Bool( "IgnitionTurned", self.IgnitionKeyA )
+	elseif self.IgnitionKeyAIn and self.IgnitionKeyA and turnAllowed then
+		self.IgnitionKeyA = false
+		t:SetNW2Bool( "IgnitionTurned", self.IgnitionKeyA )
+	end
 end
 
 function TRAIN_SYSTEM:IgnitionKeyOffA()
@@ -392,11 +400,6 @@ end
 function TRAIN_SYSTEM:MUHandler()
 	local wL = self.Train.WagonList
 	local t = self.Train
-	if #wL > 1 and t:ReadTrainWire( 7 ) > 0 then
-		self.CircuitBreakerOn = true
-	elseif #wL > 1 and self.CircuitBreakerOn then
-		t:WriteTrainWire( 7, 1 )
-	end
 end
 
 function TRAIN_SYSTEM:BlinkerHandler()
@@ -480,9 +483,33 @@ function TRAIN_SYSTEM:BrakesApplied()
 	self.BrakesAreApplied = ( self.ReverserA ~= 0 and self.ReverserA ~= 1 and self.ThrottleStateA < 0 ) or ( self.ReverserB ~= 0 and self.ReverserB ~= 1 and self.ThrottleStateB < 0 ) or false
 end
 
-function TRAIN_SYSTEM:Headlights()
-	if self.Panel.Headlights < 1 or self.PanelB.Headlights < 1 then return end
+function TRAIN_SYSTEM:HeadlightsFunc()
+	local p = self.Train.Panel
+	--local pB = self.Train.PanelB TODO: Integrate section B circuits
+	if not self.Headlights and self.HVCircuit and p.LightsOn > 0 then
+		self.Headlights = true
+	elseif self.Headlights and p.LightsOff > 0 or not self.HVCircuit then
+		self.Headlights = false
+	end
+
+	if not self.Headlights then
+		self.Train:SetLightPower( 1, false )
+		self.Train:SetLightPower( 2, false )
+		self.Train:SetLightPower( 3, false )
+		self.Train:SetLightPower( 4, false )
+		self.Train:SetLightPower( 5, false )
+		self.Train.SectionB:SetLightPower( 1, false )
+		self.Train.SectionB:SetLightPower( 2, false )
+		self.Train.SectionB:SetLightPower( 3, false )
+		self.Train.SectionB:SetLightPower( 4, false )
+		self.Train:SetLightPower( 5, false )
+		self.Train:SetLightPower( 22, false )
+		self.Train:SetLightPower( 23, false )
+		return
+	end
+
 	if self.ReverserA > 1 then
+		self.Train:SetNW2Bool( "Headlights", true )
 		self.Train:SetLightPower( 1, true )
 		self.Train:SetLightPower( 2, true )
 		self.Train:SetLightPower( 3, true )
@@ -492,8 +519,11 @@ function TRAIN_SYSTEM:Headlights()
 		self.Train.SectionB:SetLightPower( 2, false )
 		self.Train.SectionB:SetLightPower( 3, false )
 		self.Train.SectionB:SetLightPower( 4, true )
-		self.Train:SetLightPower( 5, true )
+		self.Train.SectionB:SetLightPower( 5, true )
+		self.Train:SetLightPower( 22, true )
+		self.Train:SetLightPower( 23, true )
 	else
+		self.Train:SetNW2Bool( "Headlights", false )
 		self.Train:SetLightPower( 1, false )
 		self.Train:SetLightPower( 2, false )
 		self.Train:SetLightPower( 3, false )
@@ -504,6 +534,8 @@ function TRAIN_SYSTEM:Headlights()
 		self.Train.SectionB:SetLightPower( 3, true )
 		self.Train.SectionB:SetLightPower( 4, false )
 		self.Train.SectionB:SetLightPower( 5, false )
+		self.Train:SetLightPower( 22, false )
+		self.Train:SetLightPower( 23, false )
 	end
 end
 
@@ -557,10 +589,10 @@ function TRAIN_SYSTEM:Traction()
 	local doorsOpened = self.Train.DoorHandler.DoorUnlockState > 0
 	local consistTooLong = self:MaximumConsistLength()
 	self.Train:SetNW2Bool( "TrainTooLong", consistTooLong )
-	local tractionUnlocked = ( not consistTooLong and not doorsOpened ) and ( ( self.ReverserA > 1 or self.ReverserA < 0 ) or ( self.ReverserB > 1 or self.ReverserB < 0 ) or ( t:ReadTrainWire( 3 ) > 0 or t:ReadTrainWire( 4 ) > 0 ) )
-	if self.ReverserA ~= 0 and self.ReverserA ~= 1 and not self.ConflictingHeads and self.IgnitionKeyA and tractionUnlocked then
+	self.TractionUnlocked = ( not consistTooLong and not doorsOpened ) and ( ( self.ReverserA > 1 or self.ReverserA < 0 ) or ( self.ReverserB > 1 or self.ReverserB < 0 ) or ( t:ReadTrainWire( 3 ) > 0 or t:ReadTrainWire( 4 ) > 0 ) )
+	if self.ReverserA ~= 0 and self.ReverserA ~= 1 and not self.ConflictingHeads and self.IgnitionKeyA and self.TractionUnlocked then
 		t:WriteTrainWire( 1, self.ThrottleStateA )
-	elseif self.ReverserB ~= 0 and self.ReverserB ~= 1 and not self.ConflictingHeads and self.IgnitionKeyB and tractionUnlocked then
+	elseif self.ReverserB ~= 0 and self.ReverserB ~= 1 and not self.ConflictingHeads and self.IgnitionKeyB and self.TractionUnlocked then
 		t:WriteTrainWire( 1, self.ThrottleStateB )
 	end
 end
@@ -617,6 +649,6 @@ function TRAIN_SYSTEM:MaximumConsistLength()
 end
 
 function TRAIN_SYSTEM:IsLVPowerAvailable()
-	print( self.Train.Battery.Voltage, self.BatteryActivated )
+	--print( self.Train.Battery.Voltage, self.BatteryActivated )
 	self.LVPowerOn = self.BatteryActivated --and self.Train.Battery.Voltage > 20
 end
