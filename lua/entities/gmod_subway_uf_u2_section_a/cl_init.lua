@@ -140,6 +140,7 @@ ENT.Lights = {
 	}
 }
 
+ENT.ClientSounds[ "IBIS_beep" ] = { { "IBIS_beep", function() return "IBIS_beep" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
 ENT.ClientProps[ "headlights_on" ] = {
 	model = "models/lilly/uf/u2/headlights_on.mdl",
 	pos = Vector( -0.35, 0, 0 ),
@@ -2357,7 +2358,7 @@ function ENT:Think()
 	end
 
 	if self:GetNW2Bool( "Microphone", false ) == false then self.Microphone = false end
-	if self:GetNW2Bool( "CamshaftMoved", false ) == true and self.CamshaftMadeSound == false then
+	if self:GetNW2Bool( "CamshaftMoved", false ) == true and not self.CamshaftMadeSound then
 		self.CamshaftMadeSound = true
 		self:PlayOnce( "Switchgear" .. math.random( 1, 7 ), "cabin", 0.2, 1 )
 	else

@@ -25,10 +25,17 @@ function TRAIN_SYSTEM:ComputeLoadFactor( speed, throttle )
 	local loadRange = 2
 	speed = math.min( math.max( speed, 0 ), Vmax )
 	local speedLoadFactor = 3 - ( speed / Vmax ) * loadRange
-	local pitchDeg = self.Train:GetAngles().p or 0
-	local pitchRad = math.rad( pitchDeg )
+	local forward = self.Train:GetForward()
+	-- Pitch in radians based purely on vector geometry
+	local pitchRad = math.asin( forward.z )
+	-- Convert to degrees
+	local pitchDeg = math.deg( pitchRad )
+	-- Apply deadzone threshold
+	local atAngle = math.abs( pitchDeg ) >= 2
+	local effectivePitch = atAngle and pitchDeg or 0
 	-- Gradient as sine (positive means forward uphill)
-	local slopeSin = math.sin( pitchRad )
+	local slopeSin = math.sin( effectivePitch )
+	-- print( effectivePitch, atAngle )
 	-- Get velocity sign: positive if moving forward, negative if backward
 	local velocity = self.Train.CoreSys.Speed or 0
 	local velocitySign = velocity >= 0 and 1 or -1
@@ -39,12 +46,13 @@ function TRAIN_SYSTEM:ComputeLoadFactor( speed, throttle )
 	self.g = 9.81
 	local slopeForce = self.Mass * self.g * math.abs( slopeSin ) -- abs slope for load magnitude
 	-- Base slope load factor = 1 + slopeForce / scale
-	local slopeLoadFactor = 1
+	local slopeLoadFactor = 1.5
+	--print( movingUphill )
 	if movingUphill then
 		slopeLoadFactor = slopeLoadFactor + slopeForce / 10000
 	else
-		-- downhill or flat, reduce load a bit (optional)
-		slopeLoadFactor = slopeLoadFactor * 0.9
+		-- downhill or flat, reduce load a bit
+		slopeLoadFactor = slopeLoadFactor * 0.5
 	end
 
 	local loadFactor = throttle * speedLoadFactor * slopeLoadFactor

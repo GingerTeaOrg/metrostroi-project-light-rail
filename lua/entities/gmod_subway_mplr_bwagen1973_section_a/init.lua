@@ -2,7 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 ENT.BogeyDistance = 780
-ENT.SyncTable = { "IgnitionKey", "IgnitionKeyOn", "IgnitionKeyOff", "UncouplingKey", "ParrallelMotors", "Deadman", "UnlockDoors", "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "Door1", "DoorsForceOpen", "DoorsForceClose", "MirrorLeft", "MirrorRight", "SwitchLeft", "SwitchRight", "Battery", "BatteryDisable", "PantographOn", "PantographOff", "Headlights", "HazardBlink", "DriverLight", "BlinkerRight", "BlinkerLeft", "StepsHigh", "StepsLow", "StepsLowest", "Bell", "Horn", "WiperConstantSet", "WiperIntervalSet", "WindowWasherSet", "EmergencyBrakeDisable", "CircuitBreaker", "CircuitBreakerUn" }
+ENT.SyncTable = { "LightsOn", "LightsOff", "IgnitionKey", "IgnitionKeyOn", "IgnitionKeyOff", "UncouplingKey", "ParrallelMotors", "Deadman", "UnlockDoors", "DoorsLock", "DoorsSelectRight", "DoorsSelectLeft", "Door1", "DoorsForceOpen", "DoorsForceClose", "MirrorLeft", "MirrorRight", "SwitchLeft", "SwitchRight", "Battery", "BatteryDisable", "PantographOn", "PantographOff", "Headlights", "HazardBlink", "DriverLight", "BlinkerRight", "BlinkerLeft", "StepsHigh", "StepsLow", "StepsLowest", "Bell", "Horn", "WiperConstantSet", "WiperIntervalSet", "WindowWasherSet", "EmergencyBrakeDisable", "CircuitBreaker", "CircuitBreakerUn" }
 ENT.InteractionZones = {
 	{
 		ID = "DoorButton3L",
@@ -53,6 +53,222 @@ ENT.TrainWireCrossConnections = {
 	[ 31 ] = 32
 }
 
+ENT.Lights = {
+	[ 1 ] = {
+		"light", -- headlight left
+		Vector( 530, 30, 43 ),
+		Angle( 0, 0, 0 ),
+		Color( 216, 161, 92 ),
+		brightness = 0.6,
+		scale = 1.2,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 2 ] = {
+		"light", -- headlight right
+		Vector( 530, -30, 43 ),
+		Angle( 0, 0, 0 ),
+		Color( 216, 161, 92 ),
+		brightness = 0.6,
+		scale = 1.2,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 3 ] = {
+		"light", -- headlight top
+		Vector( 515, 0, 130 ),
+		Angle( 0, 0, 0 ),
+		Color( 226, 197, 160 ),
+		brightness = 0.9,
+		scale = 0.45,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 4 ] = {
+		"light", -- tail light left
+		Vector( 525, 20.9, 41 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 0, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 5 ] = {
+		"light", -- tail light right
+		Vector( 525, -20.9, 41 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 0, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 6 ] = {
+		"light", -- brake lights
+		Vector( 525, 20.9, 46 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 102, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 7 ] = {
+		"light", -- brake lights
+		Vector( 525, -20.9, 46 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 102, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 8 ] = {
+		"light", -- indicator top left
+		Vector( 487, 46, 79 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 100, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 9 ] = {
+		"light", -- indicator top right
+		Vector( 487, -46, 79 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 102, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 10 ] = {
+		"light", -- indicator bottom left
+		Vector( 487, 46, 74 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 100, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 11 ] = {
+		"light", -- indicator bottom right
+		Vector( 487, -46, 74 ),
+		Angle( 0, 0, 0 ),
+		Color( 255, 102, 0 ),
+		brightness = 0.9,
+		scale = 0.1,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 12 ] = {
+		"light", -- door button front left 1
+		Vector( 397, 49, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 13 ] = {
+		"light", -- door button front left 2
+		Vector( 326.738, 49, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 14 ] = {
+		"light", -- door button front left 3
+		Vector( 151.5, 49, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 15 ] = {
+		"light", -- door button front left 4
+		Vector( 83.7, 49, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 16 ] = {
+		"light", -- door button front right 1
+		Vector( 396.884, -51, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 17 ] = {
+		"light", -- door button front right 2
+		Vector( 326.89, -51, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 18 ] = {
+		"light", -- door button front right 3
+		Vector( 152.116, -51, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 19 ] = {
+		"light", -- door button front right 4
+		Vector( 85, -51, 49.7 ),
+		Angle( 0, 0, 0 ),
+		Color( 9, 142, 0 ),
+		brightness = 1,
+		scale = 0.025,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 20 ] = {
+		"light", -- cab light
+		Vector( 406, 39, 98 ),
+		Angle( 90, 0, 0 ),
+		Color( 227, 197, 160 ),
+		brightness = 0.6,
+		scale = 0.5,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 21 ] = {
+		"light", -- cab light
+		Vector( 406, -39, 98 ),
+		Angle( 90, 0, 0 ),
+		Color( 227, 197, 160 ),
+		brightness = 0.6,
+		scale = 0.5,
+		texture = "sprites/light_glow02.vmt"
+	},
+	[ 22 ] = {
+		"headlight", -- headlight left
+		Vector( 530, 30, 23 ),
+		Angle( 0, 0, 0 ),
+		Color( 216, 161, 92 ),
+		fov = 60,
+		farz = 500,
+		brightness = 1.2,
+		texture = "models/metrostroi_train/equipment/headlight",
+		shadows = 1,
+		headlight = true
+	},
+	[ 23 ] = {
+		"headlight", -- headlight left
+		Vector( 530, -30, 23 ),
+		Angle( 0, 0, 0 ),
+		Color( 216, 161, 92 ),
+		fov = 60,
+		farz = 500,
+		brightness = 1.2,
+		texture = "models/metrostroi_train/equipment/headlight",
+		shadows = 1,
+		headlight = true
+	},
+}
+
 --[ KEY_0 ] = "IgnitionKeyOff"
 function ENT:Initialize()
 	self:SetModel( "models/lilly/mplr/ruhrbahn/b_1973/section_a.mdl" )
@@ -91,7 +307,7 @@ function ENT:Initialize()
 			Angle( 0, 0, 0 ),
 			Color( 216, 161, 92 ),
 			brightness = 0.6,
-			scale = 1.5,
+			scale = 1.2,
 			texture = "sprites/light_glow02.vmt"
 		},
 		[ 2 ] = {
@@ -100,7 +316,7 @@ function ENT:Initialize()
 			Angle( 0, 0, 0 ),
 			Color( 216, 161, 92 ),
 			brightness = 0.6,
-			scale = 1.5,
+			scale = 1.2,
 			texture = "sprites/light_glow02.vmt"
 		},
 		[ 3 ] = {
@@ -273,7 +489,31 @@ function ENT:Initialize()
 			brightness = 0.6,
 			scale = 0.5,
 			texture = "sprites/light_glow02.vmt"
-		}
+		},
+		[ 22 ] = {
+			"headlight", -- headlight left
+			Vector( 530, 30, 43 ),
+			Angle( 0, 0, 0 ),
+			Color( 216, 161, 92 ),
+			fov = 60,
+			farz = 600,
+			brightness = 1.2,
+			texture = "models/metrostroi_train/equipment/headlight",
+			shadows = 1,
+			headlight = true
+		},
+		[ 23 ] = {
+			"headlight", -- headlight left
+			Vector( 530, -30, 43 ),
+			Angle( 0, 0, 0 ),
+			Color( 216, 161, 92 ),
+			fov = 60,
+			farz = 600,
+			brightness = 1.2,
+			texture = "models/metrostroi_train/equipment/headlight",
+			shadows = 1,
+			headlight = true
+		},
 	}
 
 	self.InteractionZones = {
@@ -432,8 +672,8 @@ function ENT:OnButtonPress( button )
 	local sys = self.CoreSys
 	local panel = self.Panel
 	local doorHandler = self.DoorHandler
-	if button == "IgnitionKeyOn" then sys:IgnitionKeyOnA() end
-	if button == "IgnitionKeyOff" then sys:IgnitionKeyOffA() end
+	if button == "IgnitionKeyOn" then sys:IgnitionKeyOnOffA() end
+	if button == "IgnitionKeyOff" then sys:IgnitionKeyOnOffA() end
 	if button == "IgnitionKeyToggle" then sys:IgnitionKeyInOutA() end
 	if button == "ReverserUpSet" then sys:ReverserUpA() end
 	if button == "ReverserDownSet" then sys:ReverserDownA() end
@@ -556,9 +796,9 @@ function ENT:Traction()
 		fb.BrakeCylinderPressure = 0 -- or another default value if needed
 	end
 
-	fb.PneumaticBrakeForce = 10000.0
-	mb.PneumaticBrakeForce = 10000.0
-	rb.PneumaticBrakeForce = 10000.0
+	fb.PneumaticBrakeForce = 11000.0
+	mb.PneumaticBrakeForce = 12000.0
+	rb.PneumaticBrakeForce = 12000.0
 	mb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	rb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	--print(self.FrontBogey.MotorPower, traction, fb.BrakeCylinderPressure, rb.Reversed, self.FrontBogey.MotorForce)

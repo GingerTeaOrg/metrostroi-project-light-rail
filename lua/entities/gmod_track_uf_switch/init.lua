@@ -2,9 +2,10 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 function ENT:Initialize()
 	self:SetModel( "models/lilly/uf/tram/sgauge/switch_motor.mdl" )
+	self.VMF = self.VMF or {}
 	--Metrostroi.DropToFloor( self )
-	self.TrackSwitches = {}
-	self.ID = self:GetNW2Int( "ID", self.VMF and tonumber( self.VMF.SwitchID, 10 ) and tonumber( self.VMF.SwitchID, 10 ) or 000 )
+	self.TrackSwitches = self.TrackSwitches or {}
+	self.ID = self.ID or self:GetNW2Int( "ID", self.VMF and tonumber( self.VMF.SwitchID, 10 ) and tonumber( self.VMF.SwitchID, 10 ) or 000 )
 	self.Queue = {}
 	self.SecondaryQueue = {}
 	-- Initial state of the switch
@@ -13,35 +14,49 @@ function ENT:Initialize()
 	self.InhibitSwitching = false
 	self.SignalCaller = {}
 	self.LastSignalTime = 0
-	self.Left = self:GetNW2String( "PositionCorrespondence", self.VMF and self.VMF.PositionCorrespondance or "alt" )
-	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
+	self.Left = self.Left or self:GetNW2String( "PositionCorrespondence", self.VMF and self.VMF.PositionCorrespondance or "alt" )
+	self.AllowSwitchingIron = self.AllowSwitchingIron or self:GetNW2Bool( "AllowSwitchingIron", ( self.VMF and self.VMF.AllowSwitchingIron ) and tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0 or true )
 	self.IronOverride = false
 	self.IronOverrideTime = 0
 	self.Locked = true
 	self.PreviousState = self.AlternateTrack
-	for _, v in ipairs( ents.FindByName( self.VMF.Blade1 ) ) do
-		table.insert( self.TrackSwitches, v )
+	self.Forward = false
+	if self.VMF and self.VMF.Blade1 then
+		for _, v in ipairs( ents.FindByName( self.VMF.Blade1 ) ) do
+			table.insert( self.TrackSwitches, v )
+		end
+
+		for _, v in ipairs( ents.FindByName( self.VMF.Blade2 ) ) do
+			table.insert( self.TrackSwitches, v )
+		end
 	end
 
-	for _, v in ipairs( ents.FindByName( self.VMF.Blade2 ) ) do
-		table.insert( self.TrackSwitches, v )
-	end
-
-	timer.Simple( 15, function()
-		self.TrackPos = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
-		local reversePosition = self.VMF.ReverseTrackOrientationLogic and tonumber( self.VMF.ReverseTrackOrientationLogic, 10 ) > 0 or true
-		self.Forward = self.TrackPos.forward and reversePosition and false or not self.TrackPos.forward and reversePosition and true or self.TrackPos.forward and not reversePosition and true or not self.TrackPos.forward and not reversePosition and false
+	timer.Simple( 10, function()
+		local entList = ents.GetAll()
+		for i, ent in ipairs( entList ) do
+			if ent:GetClass() == "gmod_track_uf_switch" then
+				ent.TrackPos = Metrostroi.GetPositionOnTrack( ent:GetPos(), ent:GetAngles() )[ 1 ]
+				local reversePosition = ent.VMF and ( ent.VMF.ReverseTrackOrientationLogic and tonumber( ent.VMF.ReverseTrackOrientationLogic, 10 ) > 0 ) or true
+				ent.Forward = ent.TrackPos.forward and reversePosition and false or not ent.TrackPos.forward and reversePosition and false or ent.TrackPos.forward and not reversePosition and false or not ent.TrackPos.forward and not reversePosition and false
+			end
+		end
 	end )
 
 	self.PairedControllers = {}
 	self.ControllerHierarchy = {}
-	self.AllowSwitchingIron = tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0
+	self.AllowSwitchingIron = self:GetNW2Bool( "AllowSwitchingIron", self.VMF and self.VMF.AllowSwitchingIron and tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0 or false )
 	MPLR.UpdateSignalEntities()
 	hook.Add( "EntityRemoved", "Switching" .. self:EntIndex(), function( ent )
-		for i, entry in ipairs( self.Queue ) do
-			if entry[ 2 ] == ent then
-				table.remove( self.Queue, i )
-				return
+		if ent.BaseClass ~= "gmod_subway_mplr_base" then return end
+		local entList = ents.GetAll()
+		for _, entEntry in ipairs( entList ) do
+			if entEntry:GetClass() == "gmod_track_uf_switch" then
+				for i, entry in ipairs( entEntry.Queue ) do
+					if entry[ 2 ] == ent and ent.BaseClass == "gmod_subway_mplr_base" then
+						table.remove( entEntry.Queue, i )
+						return
+					end
+				end
 			end
 		end
 	end )
@@ -54,10 +69,20 @@ function ENT:Initialize()
 			MPLR.SwitchBranches[ self ] = self.Paths
 		end
 	else
-		timer.Simple( 20, function()
-			print( "Searching branching paths for switch:", self, "Switch ID: " .. self.ID )
-			self.Paths = self:GetBranchingPaths()
-			MPLR.SwitchBranches[ self ] = self.Paths
+		timer.Simple( 15, function()
+			local entList = ents.GetAll()
+			for i, ent in ipairs( entList ) do
+				if ent:GetClass() == "gmod_track_uf_switch" then
+					if not IsValid( ent ) then
+						print( "Switch Ent Not Valid" )
+						return
+					end
+
+					print( "Searching branching paths for switch:", ent, "Switch ID: " .. ent.ID )
+					ent.Paths = ent:GetBranchingPaths()
+					MPLR.SwitchBranches[ ent ] = ent.Paths
+				end
+			end
 		end )
 	end
 
@@ -76,13 +101,34 @@ function ENT:ScanSwitchOccupied()
 	end
 end
 
+function ENT:BladeNamesToEnts()
+	if not table.IsEmpty( self.TrackSwitches ) then
+		--PrintTable( ents.FindByName( self.TrackSwitches[ 1 ] ) )
+		local blade1 = ents.FindByName( self.TrackSwitches[ 1 ] )
+		local blade2 = ents.FindByName( self.TrackSwitches[ 2 ] )
+		if type( self.TrackSwitches[ 1 ] ) == "string" then self.TrackSwitches[ 1 ] = blade1[ 1 ] end
+		if type( self.TrackSwitches[ 2 ] ) == "string" then self.TrackSwitches[ 2 ] = blade2[ 1 ] end
+	end
+end
+
 function ENT:Think()
+	self:NextThink( CurTime() + 1.0 )
 	self.TrackPos = self.TrackPos or Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+	--print( self.TrackPos.forward )
 	if not self.TrackPos then
-		assert( "No track found!!" )
-		return
+		self:NextThink( CurTime() + 1.0 )
+		return true
 	end
 
+	--[[if #self.TrackSwitches < 2 then
+		for _, v in ipairs( ents.FindByName( self.VMF.Blade1 ) ) do
+			table.insert( self.TrackSwitches, v )
+		end
+
+		for _, v in ipairs( ents.FindByName( self.VMF.Blade2 ) ) do
+			table.insert( self.TrackSwitches, v )
+		end
+	end]]
 	if not MPLR.SwitchEntitiesByNode[ self.TrackPos.node1 ] then MPLR.SwitchEntitiesByNode[ self.TrackPos.node1 ] = self end
 	if not self.ID then self.ID = self.VMF.ID end
 	if not next( self.TrackSwitches ) then return end
@@ -95,8 +141,6 @@ function ENT:Think()
 	end
 
 	if #self.Queue > 0 then self:TriggerSwitch() end
-	-- Process logic
-	self:NextThink( CurTime() + 1.0 )
 	return true
 end
 
@@ -104,24 +148,31 @@ function ENT:Switching()
 	if self.PreviousState ~= self.AlternateTrack then self.Locked = false end
 	if self.Locked then
 		for _, v in ipairs( self.TrackSwitches ) do
-			v:Fire( "Lock", "", 0, self, self )
+			if IsValid( v ) then
+				v:Fire( "Lock", "", 0, self, self )
+			else
+				--PrintTable( self.TrackSwitches )
+				self:BladeNamesToEnts()
+			end
 		end
 	else
 		for _, v in ipairs( self.TrackSwitches ) do
-			v:Fire( "Unlock", "", 0, self, self )
+			if IsValid( v ) then v:Fire( "Unlock", "", 0, self, self ) end
 		end
 	end
 
 	if self.AlternateTrack and not self.Locked then
 		for _, v in ipairs( self.TrackSwitches ) do
-			v:Fire( "Open", "", 0, self, self )
+			print( "open", self.Locked )
+			if IsValid( v ) then v:Fire( "Open", "", 0, self, self ) end
 		end
 
 		self.Locked = true
 		self.PreviousState = self.AlternateTrack
 	elseif not self.AlternateTrack and not self.Locked then
 		for _, v in ipairs( self.TrackSwitches ) do
-			v:Fire( "Close", "", 0, self, self )
+			print( "close", self.Locked )
+			if IsValid( v ) then v:Fire( "Close", "", 0, self, self ) end
 		end
 
 		self.Locked = true
@@ -141,7 +192,7 @@ function ENT:TestTrackOccupation()
 	local maxs = self:OBBMaxs()
 	local startpos = self:GetPos() -- Origin point for the trace
 	local dir = self:GetUp() -- Direction for the trace, as a unit vector
-	local len = 64 -- Maximum length of the trace
+	local len = 100 -- Maximum length of the trace
 	local tr = util.TraceHull( {
 		start = startpos,
 		endpos = startpos + dir * len,
@@ -150,7 +201,8 @@ function ENT:TestTrackOccupation()
 		filter = self
 	} )
 
-	if string.find( tr.BaseClass, "gmod_subway_" ) then return true end
+	local traceClass = tr:GetClass()
+	if string.find( traceClass, "gmod_subway_" ) or string.find( traceClass, "gmod_train_uf_bogey" ) or string.find( traceClass, "gmod_train_uf_wheels" ) then return true end
 	local function iterateForward( node )
 		if node.next then
 			return iterateForward( node.next )
@@ -325,9 +377,10 @@ function ENT:SecondarySwitchingQueue( direction, ent )
 	end
 end
 
+local nodesTraversed = nodesTraversed or 0
 function ENT:GetBranchingPaths()
-	if not next( Metrostroi.Paths ) then -- if the paths table isn't populated yet, just start a timer to call this function again and exit
-		timer.Simple( 10, self:GetBranchingPaths() )
+	if table.IsEmpty( Metrostroi.Paths ) then -- if the paths table isn't populated yet, just start a timer to call this function again and exit
+		--timer.Simple( 10, self:GetBranchingPaths() )
 		return
 	end
 
@@ -336,8 +389,8 @@ function ENT:GetBranchingPaths()
 	local adjacent_paths = {} -- initialise the paths next to us
 	local paths = {}
 	local forward = self.Forward -- are we facing upward or downward on the x coordinate?
+	-- initialise how many nodes we've been through so that we don't continue on forever
 	local function traverseNodesToBranch( node, forwards, limit ) -- got forward or backward a few nodes to see if there's a branching path to be found
-		local nodesTraversed = 0 -- initialise how many nodes we've been through so that we don't continue on forever
 		while node and nodesTraversed < limit do
 			if node.branches then
 				print( "Switch entity:", self, "found branch! Exiting!" )
@@ -345,7 +398,12 @@ function ENT:GetBranchingPaths()
 			end
 
 			node = forwards and node.next or node.prev
-			print( "Found no branch. Continuing on. Next node:", node )
+			if not node then
+				print( "No more nodes. Exiting." )
+				return
+			end
+
+			print( "Found no branch. Continuing on. Next node:", node.id )
 			if not node then return end
 			for k, v in pairs( node ) do
 				print( k, v )
@@ -376,6 +434,7 @@ function ENT:GetBranchingPaths()
 			local traversedNode = traverseNodesToBranch( node, forward, 3 )
 			if traversedNode then collectBranchPaths( traversedNode ) end
 		end
+		return
 	end
 
 	-- Add current path and branches from node1 and node2

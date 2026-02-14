@@ -8,7 +8,6 @@ ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.CustomThinks = ENT.CustomThinks or {}
 ENT.CustomSpawnerUpdates = ENT.CustomSpawnerUpdates or {}
-ENT.PlayOnceSoundsActive = {}
 local function destroySound( snd, nogc )
 	if IsValid( snd ) then snd:Stop() end
 	if not nogc and snd and snd.__gc then snd:__gc() end
@@ -46,7 +45,6 @@ ENT.MirrorCams = { Vector( 450, 71, 24 ), Angle( 1, 180, 0 ), 15, Vector( 450, -
 function ENT:InitializeSounds()
 	self.SoundPositions = {} -- Positions (used clientside)
 	self.SoundNames = {}
-	self.SoundTimeouts = {}
 	self.SoundNames[ "Door_open" ] = {
 		loop = 0.5,
 		"lilly/mplr/common/door_open_start.mp3",
@@ -367,11 +365,9 @@ else
 		end
 
 		local dT = RealFrameTime()
-		local timeout = self.SoundTimeouts[ soundid ] or 2
 		--assert( self.SoundTimeouts[ soundid ], "Note to developer of this train: Please define a timeout of this sound in self.Timeouts!" )
 		-- Abort if sounds are disabled or entity not ready
 		if self.StopSounds or not self.ClientPropsInitialized or self.CreatingCSEnts then return end
-		if self.PlayOnceSoundsActive[ soundid ] and RealTime() - self.PlayOnceSoundsActive[ soundid ] * dT < timeout then return end
 		-- Debug: warn if soundid is nil
 		if not soundid then
 			ErrorNoHalt( debug.Trace() )

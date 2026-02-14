@@ -218,6 +218,83 @@ function TRAIN_SYSTEM:Think( dT )
 	self.Train:SetNW2Int( "Speed", math.Round( self.Speed ) )
 end
 
+TRAIN_SYSTEM.IsInput = {
+	[ "joy_throttle" ] = true,
+	[ "joy_reverser_up" ] = true,
+	[ "joy_reverser_down" ] = true,
+	[ "joy_HeadlightToggle" ] = true,
+	[ "joy_bell" ] = true,
+}
+
+function TRAIN_SYSTEM:TriggerInput( name, value )
+	local panelA = self.Train.Panel
+	local panelB = self.Train.SectionB.Panel
+	print( name, value, IsValid( self.Train:GetDriver() ) )
+	if name == "joy_throttle" then
+		if IsValid( self.Train:GetDriver() ) and self.IgnitionKeyA and ( self.ReverserA > 1 or self.ReverserA < 0 ) then
+			self.ThrottleStateA = value
+		elseif IsValid( self.Train.SectionB:GetDriver() ) and self.IgnitionKeyB and self.ReverserB > 1 or self.ReverserB < 0 then
+			self.ThrottleStateB = value
+		end
+	elseif name == "joy_reverser_up" then
+		if IsValid( self.Train:GetDriver() ) and self.IgnitionKeyA then
+			self:ReverserUpA()
+		elseif IsValid( self.Train.SectionB:GetDriver() ) and self.IgnitionKeyB then
+			self:ReverserUpB()
+		end
+	elseif name == "joy_reverser_down" then
+		if IsValid( self.Train:GetDriver() ) and self.IgnitionKeyA then
+			self:ReverserDownA()
+		elseif IsValid( self.Train.SectionB:GetDriver() ) and self.IgnitionKeyB then
+			self:ReverserDownB()
+		end
+	elseif name == "joy_HeadlightToggle" then
+		if IsValid( self.Train:GetDriver() ) then
+			if self.Headlights then
+				panelA.LightsOff = value
+			elseif not self.Headlights then
+				panelA.LightsOn = value
+			end
+		elseif IsValid( self.Train.SectionB:GetDriver() ) then
+			if self.Headlights then
+				panelB.LightsOff = value
+			elseif not self.Headlights then
+				panelB.LightsOn = value
+			end
+		end
+	elseif name == "joy_bell" then
+		if IsValid( self.Train:GetDriver() ) then
+			panelA.Bell = value
+			self.Train:SetNW2Bool( "Bell", value > 0 )
+		elseif IsValid( self.Train.SectionB:GetDriver() ) then
+			panelB.Bell = value
+			self.Train.SectionB:SetNW2Bool( "Bell", value > 0 )
+		end
+	elseif name == "joy_blinker_left" then
+		if IsValid( self.Train:GetDriver() ) then
+			if panelA.BlinkerLeft < 1 then
+				panelA.BlinkerLeft = 1
+				self.Train:SetPackedBool( "BlinkerLeft", true )
+			elseif panelA.BlinkerLeft > 0 then
+				panelA.BlinkerLeft = 0
+				self.Train:SetPackedBool( "BlinkerLeft", false )
+			end
+		elseif IsValid( self.Train.SectionB:GetDriver() ) then
+			panelB.BlinkerLeft = value
+		end
+	elseif name == "joy_blinker_right" then
+		if IsValid( self.Train:GetDriver() ) then
+			if panelA.BlinkerRight < 1 then
+				panelA.BlinkerRight = 1
+			elseif panelA.BlinkerRight > 0 then
+				panelA.BlinkerRight = 0
+			end
+		elseif IsValid( self.Train.SectionB:GetDriver() ) then
+			panelB.BlinkerRight = panelB.BlinkerRight == value and 1 or 0
+		end
+	end
+end
+
 -- ==============================================================================================
 function TRAIN_SYSTEM:IgnitionKeyInOutA()
 	local t = self.Train
@@ -400,15 +477,17 @@ end
 function TRAIN_SYSTEM:MUHandler()
 	local wL = self.Train.WagonList
 	local t = self.Train
+	self.MULead = ( self.ReverserA ~= 0 or self.ReverserB ~= 0 ) and #self.Train.WagonList > 1 or #self.Train.WagonList == 1 or false
 end
 
 function TRAIN_SYSTEM:BlinkerHandler()
+	if not self.LVPowerOn then return end
 	local t = self.Train
 	local MU = #self.Train.WagonList > 1
-	local MULead = ( self.ReverserA ~= 0 or self.ReverserB ~= 0 ) and #self.Train.WagonList > 1 or false
+	local MULead = self.ReverserA ~= 0 or self.ReverserB ~= 0
 	local blinkerLeft = blinkerLeft or false
 	local blinkerRight = blinkerRight or false
-	if ( MU and MULead and self.Panel.BlinkerLeft > 0 ) or ( not MU and self.Panel.BlinkerLeft > 0 ) or MU and ( t:ReadTrainWire( 20 ) > 0 or t:ReadTrainWire( 22 ) > 0 ) then
+	if ( MU and MULead and self.Panel.BlinkerLeft > 0 ) or ( not MU and self.Panel.BlinkerLeft > 0 ) or MU and ( t:ReadTrainWire( 21 ) > 0 or t:ReadTrainWire( 23 ) > 0 ) then
 		blinkerLeft = true
 	elseif blinkerRight then
 		blinkerLeft = false
@@ -416,7 +495,7 @@ function TRAIN_SYSTEM:BlinkerHandler()
 		blinkerLeft = false
 	end
 
-	if ( MU and MULead and self.Panel.BlinkerRight > 0 ) or ( not MU and self.Panel.BlinkerRight > 0 ) or MU and ( t:ReadTrainWire( 21 ) > 0 or t:ReadTrainWire( 22 ) > 0 ) then
+	if ( MU and MULead and self.Panel.BlinkerRight > 0 ) or ( not MU and self.Panel.BlinkerRight > 0 ) or MU and ( t:ReadTrainWire( 22 ) > 0 or t:ReadTrainWire( 23 ) > 0 ) then
 		blinkerRight = true
 	elseif blinkerLeft then
 		blinkerRight = false
@@ -424,14 +503,20 @@ function TRAIN_SYSTEM:BlinkerHandler()
 		blinkerRight = false
 	end
 
-	local hazard = self.Panel.HazardBlink > 0 or t:ReadTrainWire( 22 ) > 0
-	local enable = blinkerLeft or blinkerRight or hazard or t:ReadTrainWire( 20 ) > 0 or t:ReadTrainWire( 21 ) > 0
+	local hazard = MULead and self.Panel.HazardBlink > 0 or t:ReadTrainWire( 23 ) > 0
+	if MULead and self.Panel.HazardBlink > 0 then
+		t:WriteTrainWire( 23, 1 )
+	elseif MULead and self.Panel.HazardBlink < 1 then
+		t:WriteTrainWire( 23, 0 )
+	end
+
+	local enable = MULead and ( blinkerLeft or blinkerRight or hazard ) or t:ReadTrainWire( 21 ) > 0 or t:ReadTrainWire( 22 ) > 0
 	local power = self.BatteryActivated -- The blinker only requires battery power, not HV
 	self:Blink( enable and power, blinkerLeft or hazard, blinkerRight or hazard )
 	if MULead and enable and ( t:ReadTrainWire( 20 ) < 1 or t:ReadTrainWire( 22 ) < 1 ) then
 		if blinkerLeft then t:WriteTrainWire( 20, 1 ) end
 		if blinkerRight then t:WriteTrainWire( 21, 1 ) end
-	elseif MULead and not enable and ( t:ReadTrainWire( 20 ) > 0 or t:ReadTrainWire( 21 ) > 0 ) then
+	elseif MULead and not enable and ( t:ReadTrainWire( 21 ) > 0 or t:ReadTrainWire( 22 ) > 0 ) then
 		t:WriteTrainWire( 20, 0 )
 		t:WriteTrainWire( 21, 0 )
 	end
@@ -484,12 +569,21 @@ function TRAIN_SYSTEM:BrakesApplied()
 end
 
 function TRAIN_SYSTEM:HeadlightsFunc()
+	local MULead = self.MULead
 	local p = self.Train.Panel
+	local coupledFront = IsValid( self.Train.FrontCouple.CoupledEnt ) and not self.Train.FrontCouple:ElectricDisconnected()
+	local coupledRear = IsValid( self.Train.RearCouple.CoupledEnt ) and not self.Train.RearCouple:ElectricDisconnected()
 	--local pB = self.Train.PanelB TODO: Integrate section B circuits
-	if not self.Headlights and self.HVCircuit and p.LightsOn > 0 then
-		self.Headlights = true
-	elseif self.Headlights and p.LightsOff > 0 or not self.HVCircuit then
-		self.Headlights = false
+	if MULead then
+		if not self.Headlights and self.HVCircuit and p.LightsOn > 0 then
+			self.Headlights = true
+		elseif self.Headlights and p.LightsOff > 0 or not self.HVCircuit then
+			self.Headlights = false
+		end
+
+		self.Train:WriteTrainWire( 33, self.Headlights and 1 or 0 )
+	else
+		self.Headlights = self.Train:ReadTrainWire( 33 ) > 0 and self.HVCircuit
 	end
 
 	if not self.Headlights then
@@ -508,38 +602,78 @@ function TRAIN_SYSTEM:HeadlightsFunc()
 		return
 	end
 
-	if self.ReverserA > 1 then
-		self.Train:SetNW2Bool( "Headlights", true )
-		self.Train:SetLightPower( 1, true )
-		self.Train:SetLightPower( 2, true )
-		self.Train:SetLightPower( 3, true )
-		self.Train:SetLightPower( 4, false )
-		self.Train:SetLightPower( 5, false )
-		self.Train.SectionB:SetLightPower( 1, false )
-		self.Train.SectionB:SetLightPower( 2, false )
-		self.Train.SectionB:SetLightPower( 3, false )
-		self.Train.SectionB:SetLightPower( 4, true )
-		self.Train.SectionB:SetLightPower( 5, true )
-		self.Train:SetLightPower( 22, true )
-		self.Train:SetLightPower( 23, true )
+	if MULead then
+		if self.ReverserA > 1 then
+			self.Train:SetNW2Bool( "Headlights", true )
+			self.Train:SetLightPower( 1, true )
+			self.Train:SetLightPower( 2, true )
+			self.Train:SetLightPower( 3, true )
+			self.Train:SetLightPower( 4, false )
+			self.Train:SetLightPower( 5, false )
+			self.Train.SectionB:SetLightPower( 1, false )
+			self.Train.SectionB:SetLightPower( 2, false )
+			self.Train.SectionB:SetLightPower( 3, false )
+			self.Train.SectionB:SetLightPower( 4, not coupledRear )
+			self.Train.SectionB:SetLightPower( 5, not coupledRear )
+			self.Train:SetLightPower( 22, true )
+			self.Train:SetLightPower( 23, true )
+			self.Train.SectionB:SetLightPower( 22, false )
+			self.Train.SectionB:SetLightPower( 23, false )
+		elseif self.ReverserB > 1 then
+			self.Train:SetNW2Bool( "Headlights", false )
+			self.Train.SectionB:SetNW2Bool( "Headlights", true )
+			self.Train:SetLightPower( 1, false )
+			self.Train:SetLightPower( 2, false )
+			self.Train:SetLightPower( 3, false )
+			self.Train:SetLightPower( 4, not coupledFront )
+			self.Train:SetLightPower( 5, not coupledFront )
+			self.Train.SectionB:SetLightPower( 1, true )
+			self.Train.SectionB:SetLightPower( 2, true )
+			self.Train.SectionB:SetLightPower( 3, true )
+			self.Train.SectionB:SetLightPower( 4, false )
+			self.Train.SectionB:SetLightPower( 5, false )
+			self.Train:SetLightPower( 22, false )
+			self.Train:SetLightPower( 23, false )
+			self.Train.SectionB:SetLightPower( 22, true )
+			self.Train.SectionB:SetLightPower( 23, true )
+		else
+			self.Train:SetNW2Bool( "Headlights", false )
+			self.Train:SetLightPower( 1, false )
+			self.Train:SetLightPower( 2, false )
+			self.Train:SetLightPower( 3, false )
+			self.Train:SetLightPower( 4, true )
+			self.Train:SetLightPower( 5, true )
+			self.Train.SectionB:SetLightPower( 1, true )
+			self.Train.SectionB:SetLightPower( 2, true )
+			self.Train.SectionB:SetLightPower( 3, true )
+			self.Train.SectionB:SetLightPower( 4, false )
+			self.Train.SectionB:SetLightPower( 5, false )
+			self.Train:SetLightPower( 22, false )
+			self.Train:SetLightPower( 23, false )
+		end
 	else
+		local forward = self.Train:ReadTrainWire( 3 )
+		local backward = self.Train:ReadTrainWire( 4 )
 		self.Train:SetNW2Bool( "Headlights", false )
 		self.Train:SetLightPower( 1, false )
 		self.Train:SetLightPower( 2, false )
 		self.Train:SetLightPower( 3, false )
-		self.Train:SetLightPower( 4, true )
-		self.Train:SetLightPower( 5, true )
-		self.Train.SectionB:SetLightPower( 1, true )
-		self.Train.SectionB:SetLightPower( 2, true )
-		self.Train.SectionB:SetLightPower( 3, true )
-		self.Train.SectionB:SetLightPower( 4, false )
-		self.Train.SectionB:SetLightPower( 5, false )
+		self.Train:SetLightPower( 4, self.Headlights and backward and not coupledFront )
+		self.Train:SetLightPower( 5, self.Headlights and backward and not coupledFront )
+		self.Train.SectionB:SetLightPower( 1, false )
+		self.Train.SectionB:SetLightPower( 2, false )
+		self.Train.SectionB:SetLightPower( 3, false )
+		self.Train.SectionB:SetLightPower( 4, self.Headlights and forward and not coupledRear )
+		self.Train.SectionB:SetLightPower( 5, self.Headlights and forward and not coupledRear )
 		self.Train:SetLightPower( 22, false )
 		self.Train:SetLightPower( 23, false )
+		self.Train.SectionB:SetLightPower( 22, false )
+		self.Train.SectionB:SetLightPower( 23, false )
 	end
 end
 
 function TRAIN_SYSTEM:BrakeLights()
+	local isCoupled = IsValid( self.Train.RearCouple.CoupledEnt ) and not self.Train.RearCouple:ElectricDisconnected()
 	if not IsValid( self.Train.SectionB ) then return end
 	if not self.Train.Battery then return end
 	if self.Train.Battery.Voltage < 5 then
@@ -552,8 +686,13 @@ function TRAIN_SYSTEM:BrakeLights()
 
 	self.Train:SetLightPower( 6, self.CoupledSections[ "A" ] and self.BrakesAreApplied )
 	self.Train:SetLightPower( 7, self.CoupledSections[ "A" ] and self.BrakesAreApplied )
-	self.Train.SectionB:SetLightPower( 6, self.CoupledSections[ "B" ] and self.BrakesAreApplied )
-	self.Train.SectionB:SetLightPower( 7, self.CoupledSections[ "B" ] and self.BrakesAreApplied )
+	if not isCoupled then
+		self.Train.SectionB:SetLightPower( 6, self.CoupledSections[ "B" ] and self.BrakesAreApplied )
+		self.Train.SectionB:SetLightPower( 7, self.CoupledSections[ "B" ] and self.BrakesAreApplied )
+	else
+		self.Train.SectionB:SetLightPower( 6, false )
+		self.Train.SectionB:SetLightPower( 7, false )
+	end
 end
 
 function TRAIN_SYSTEM:ChargeBattery()

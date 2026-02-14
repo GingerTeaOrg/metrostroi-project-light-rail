@@ -7,7 +7,7 @@ Metrostroi.AddSkin( "train", "Def_U2SW", {
 	}
 } )
 
-Metrostroi.AddSkin( "train", "Def_U2FVV", {
+Metrostroi.AddSkin( "train", "U2FVV", {
 	name = "1968 FVV",
 	typ = "U2h",
 	textures = {

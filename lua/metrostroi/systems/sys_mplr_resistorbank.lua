@@ -29,6 +29,7 @@ function TRAIN_SYSTEM:Initialize()
 	self.PreviousResistors = 20
 	self.LastTick = 0
 	self.Amps = 0
+	self.Series = true
 end
 
 function TRAIN_SYSTEM:Think()
@@ -53,10 +54,12 @@ function TRAIN_SYSTEM:Camshaft()
 	local throttleB = self.Train.CoreSys.ThrottleStateB
 	local wire = self.Train:ReadTrainWire( 1 )
 	local throttle = cabA and ZE and throttleA * 0.01 or cabB and ZE and throttleB * 0.01 or ZV and wire or 0
+	local throttleBias
+	local finalThrottle
 	local speed = self.Train.CoreSys.Speed
 	local function ilerp( value, inMin, inMax, outMin, outMax )
 		-- Validate input range
-		if inMin == inMax then errorNoHalt( "Input range cannot have zero length." ) end
+		if inMin == inMax then return end
 		-- Clamp value to input range
 		local clampedValue = math.max( inMin, math.min( value, inMax ) )
 		-- Perform inverse linear interpolation
@@ -71,14 +74,14 @@ function TRAIN_SYSTEM:Camshaft()
 		self.EngagedResistors = 0
 	end
 
-	if speed < 20 then
+	if speed < 16 then
 		if speed < 3 then
 			if throttle > 0 then
-				self.RequestedResistors = ilerp( throttle, 0, 1, 0, 6 )
+				self.RequestedResistors = ilerp( throttle, 0, 1, 0, 7 )
 			elseif throttle <= 0 and speed > 5 then
 				self.RequestedResistors = Lerp( throttle, 15, 20 )
 			elseif throttle <= 0 and speed < 5 then
-				self.BrakingResistors = 20
+				self.BrakingResistors = 10
 				self.RequestedResistors = 0
 				self.EngagedResistors = 0
 			end
@@ -95,10 +98,10 @@ function TRAIN_SYSTEM:Camshaft()
 				self.BrakingResistors = Lerp( throttle, 16, 17 )
 			end
 		end
-	elseif speed > 20 and speed <= 40 then
-		if speed < 25 then
+	elseif speed > 16 and speed <= 40 then
+		if speed < 20 then
 			if throttle > 0 then
-				self.RequestedResistors = ilerp( throttle, 0, 1, 0, 9 )
+				self.RequestedResistors = ilerp( throttle, 0, 1, 0, 10 )
 			elseif throttle <= 0 then
 				self.BrakingResistors = Lerp( throttle, 15, 16 )
 			end
@@ -184,11 +187,12 @@ function TRAIN_SYSTEM:Engine()
 	local sys = self.Train.CoreSys
 	-- 250A per motor, 2x250A, 600V, 20 resistors, 12.5A per resistor
 	-- camshaft only moves when you're actually in gear
+	-- TODO: Set up Fahrstufen parralel vs serial
 	local prevGear = prevGear or false
-	local inGear = ( self.ReverserLeverStateA ~= 0 and self.ReverserLeverStateA ~= 1 ) or ( self.ReverserLeverStateB ~= 0 and self.ReverserLeverStateB ~= 1 ) or ( self.Train:ReadTrainWire( 3 ) > 0 or self.Train:ReadTrainWire( 4 ) > 0 )
-	local isMoving = sys.Speed > 3
+	local inGear = ( sys.ReverserA < 0 or sys.ReverserA > 1 ) or ( sys.ReverserB < 0 or sys.ReverserB > 1 ) or ( self.Train:ReadTrainWire( 3 ) > 0 or self.Train:ReadTrainWire( 4 ) > 0 )
+	local isMoving = false
 	local isTractionApplied = sys.Traction ~= 0
-	local latency = 0.4
+	local latency = 0.3
 	if ( self.PreviousResistors ~= self.EngagedResistors or self.RequestedResistors ~= self.EngagedResistors ) and inGear and CurTime() - self.SwitchingMoment > latency then
 		self.CamshaftMoved = true
 		if self.RequestedResistors > self.EngagedResistors and self.EngagedResistors < 20 then
@@ -197,12 +201,14 @@ function TRAIN_SYSTEM:Engine()
 			self.EngagedResistors = self.EngagedResistors - 1
 		end
 
+		isMoving = true
 		self.PreviousResistors = self.EngagedResistors
 		self.SwitchingMoment = CurTime()
 	elseif self.PreviousResistors == self.EngagedResistors and inGear then
 		self.CamshaftMoved = false
 	end
 
+	--PrintMessage( HUD_PRINTTALK, tostring( self.EngagedResistors ) .. tostring( inGear ) )
 	--self.Train:SetNW2Bool( "CamshaftMoved", self.CamshaftMoved )
 	self.Train:SetNW2Bool( "CamshaftMoved", self.CamshaftMoved )
 end

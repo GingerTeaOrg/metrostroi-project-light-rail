@@ -160,7 +160,16 @@ MPLR.AddIBISCommonFiles( "Hannover", {
 } )
 
 MPLR.AddIBISAnnouncementMetadata( "Hannover", {
-	-- format: {[station] = {[line] = {[route] = {[audiofile] = seconds}}}} | Sets the "station" element announcement routine for each station on a basis of line, route
+	--[[] format:  | Sets the "station" element announcement routine for each station on a basis of line, route
+	--	{
+	--	[station] = {
+	--				[line] = {
+							[route] = {
+										[audiofile] = seconds}
+									}
+							}
+		}
+			]]
 	[ 01 ] = {
 		[ "07" ] = {
 			[ "01" ] = {

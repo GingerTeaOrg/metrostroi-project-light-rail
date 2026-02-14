@@ -75,6 +75,7 @@ function ENT:Initialize()
 end
 
 function ENT:MarkPlatformPathing()
+	if table.IsEmpty( Metrostroi.Paths ) then return end
 	local startPos = self.PlatformStart
 	local startAng = Angle( 0, 0, 0 )
 	local endPos = self.PlatformEnd
@@ -236,7 +237,7 @@ function ENT:Think()
 		local pop = self:PopulationCount()
 		local doors_open = self:CheckDoors( v, left_side )
 		if not doors_open and pop > 0 and v.DoorHandler.DoorUnlockState > 0 and not self.DoorUnlockCalled then
-			v.DoorHandler:RandomUnlock( math.random( 2, doorCount ), left_side and "left" or "right" )
+			v.DoorHandler:RandomUnlock( math.random( 1, doorCount ), left_side and "left" or "right" )
 			print( "Called RandomUnlock on train" )
 			self.DoorUnlockCalled = true
 		end

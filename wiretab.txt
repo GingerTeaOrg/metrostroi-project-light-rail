@@ -18,6 +18,8 @@ Wire 17, Raise Pantograph
 Wire 18, StepStates High
 Wire 19, StepStates Low
 Wire 20, StepStates Lowest
+Wire 21, Force Open
+Wire 22, Force Close
 
 
 ***********Lighting***********************
@@ -26,9 +28,9 @@ Wire 31, Headlights
 Wire 32, Tail lights -- Cross the wires
 Wire 33, Lights On/Off
 
-Wire 20, Blinker left
-Wire 21, Blinker right
-Wire 22, Hazard Lights
+Wire 21, Blinker left
+Wire 22, Blinker right
+Wire 23, Hazard Lights
 
 
 **************Sounds*************************

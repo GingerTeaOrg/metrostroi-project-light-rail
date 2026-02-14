@@ -1,15 +1,19 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
-util.AddNetworkString"uf-signal"
-util.AddNetworkString"uf-signal-state"
+util.AddNetworkString( "uf-signal" )
+util.AddNetworkString( "uf-signal-state" )
+util.AddNetworkString( "UpdateOvergroundSignal" )
 function ENT:Initialize()
 	self:SetModel( "models/lilly/mplr/signals/trafficlight/trafficlight_pole.mdl" )
 	--self:PhysicsInit( SOLID_VPHYSICS )
-	self.BlockMode = self.VMF and self.VMF.Blockmode > 0 and self.VMF.Blockmode > 0 or self:GetNW2Bool( "BlockMode", false )
+	self.BlockMode = ( self.VMF and self.VMF.Blockmode > 0 ) or self:GetNW2Bool( "BlockMode", false )
+	self.TrafficlightMode = self.TrafficlightMode or self.VMF and self.VMF.TrafficlightMode > 0 or self:GetNW2Bool( "TrafficlightMode", false )
+	self.PriorityParameters = self.PriorityParameters or {}
+	self.PriorityGiven = false
 	self.Lenses = self.Lenses or self.DefaultLenses
 	self.Columns = self.VMF and self.VMF.Columns or self:GetNW2Int( "Columns", 1 )
-	self.TrackPosition = MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+	self.TrackPosition = MPLR.GetPositionOnTrack( self:GetPos() - Vector( 0, 0, -10 ), self:GetAngles() )[ 1 ]
 	self.Aspect = {}
 	for i = 1, self.Columns do
 		self.Aspect[ i ] = "F0"
@@ -23,9 +27,9 @@ function ENT:Initialize()
 	self.Path = self.Node.path.id
 	self.FailureIndex = 0
 	self.SimulateFailedToRegister = false
+	self.TrainRegistered = true
 	self.NextSwitch = -1
 	self.FailedToFindSwitch = false
-	util.AddNetworkString( "UpdateOvergroundSignal" )
 	self:SendLensUpdate()
 end
 
@@ -38,8 +42,8 @@ function ENT:SendLensUpdate()
 end
 
 function ENT:FailToRegisterSim()
-	self.FailureIndex = math.random( 0, 90 )
-	self.SimulateFailedToRegister = not self.SimulateFailedToRegister and self.FailureIndex > 60 or self.SimulateFailedToRegister
+	self.FailureIndex = math.random( 0, 100 )
+	self.SimulateFailedToRegister = not self.SimulateFailedToRegister and self.FailureIndex >= 90 or self.SimulateFailedToRegister
 end
 
 function ENT:ParseLenses( str )
@@ -60,13 +64,19 @@ end
 
 function ENT:Think()
 	self.LastTrainCheck = self.LastTrainCheck or CurTime()
-	self.TrackPosition = self.TrackPosition or MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
+	self.TrackPosition = self.TrackPosition or Metrostroi.GetPositionOnTrack( self:GetPos() - Vector( 0, 0, -5 ), self:GetAngles() )[ 1 ]
+	if not self.TrackPosition then
+		--PrintMessage( HUD_PRINTTALK, "No trackpos" )
+		--print( "exit" )
+		return
+	end
+
 	self.Node = self.Node or self.TrackPosition.node1
 	if self.BlockMode then
+		--print( "Running block signalling" )
 		self:BlockModeSignalling()
 	else
 		self:DetectTrainArrived()
-		self:FailToRegisterSim()
 		self:OnSightSignalling()
 	end
 
@@ -137,10 +147,10 @@ function ENT:DetectTrainArrived()
 	local scanStart, scanEnd
 	if forward then
 		scanStart = x
-		scanEnd = x - 20 -- look ahead 30m
+		scanEnd = x - 5 -- look ahead 30m
 	else
 		scanStart = x
-		scanEnd = x + 20 -- look behind 30m
+		scanEnd = x + 5 -- look behind 30m
 	end
 
 	local occupied, firstTrain, lastTrain, trainList = MPLR.IsTrackOccupied( self.TrackPosition.node1, scanStart, forward, nil, scanEnd )
@@ -161,7 +171,22 @@ function ENT:DetectTrainArrived()
 		end
 	end
 
-	self.TrainIsRegistered = IsValid( targetTrain )
+	self.TrainIsPresent = IsValid( targetTrain )
+	if self.TrainIsPresent and self.FailureIndex == 0 then
+		self:FailToRegisterSim()
+	elseif not self.TrainIsPresent then
+		self.FailureIndex = 0
+	end
+
+	if not self.SimulateFailedToRegister then
+		self.TrainIsRegistered = IsValid( targetTrain )
+		return
+	else
+		if IsValid( targetTrain ) then
+			PrintMessage( HUD_PRINTTALK, tostring( targetTrain.WagNum ) .. ":" .. " Signal ahead failed to register you, please use key to proceed manually." )
+			return
+		end
+	end
 	--print( occupied, targetTrain )
 end
 
@@ -174,7 +199,12 @@ function ENT:AdditionalAspect( column )
 	local prepareToDepartSignal = false
 	local returnLenses
 	for lens in pairs( self.Lenses[ column ] ) do
-		if additionalLenses[ lens ] and self.TrainIsRegistered then returnLenses = "So14" end
+		if additionalLenses[ lens ] and self.TrainIsRegistered then
+			returnLenses = "So14"
+		elseif additionalLenses[ lens ] and not self.TrainIsRegistered then
+			returnLenses = ""
+		end
+
 		if additionalLenses[ lens ] and lens == "A1" then
 			if not returnLenses then
 				returnLenses = "A1"

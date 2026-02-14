@@ -4,8 +4,15 @@ ENT.ClientProps = {}
 ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
-ENT.ClientSounds[ "throttle_up" ] = { { "throttle_up", function() return "throttle_up" end, 2, 1, 100, 1000, Angle( 0, 0, 0 ) } }
-ENT.ClientSounds[ "throttle_zero" ] = { { "throttle_zero", function() return "throttle_zero" end, 2, 1, 100, 1000, Angle( 0, 0, 0 ) } }
+ENT.ClientSounds[ "throttle_up" ] = { { "throttle_up", function() return "throttle_up" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "throttle_zero" ] = { { "throttle_zero", function() return "throttle_zero" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "reverser_up" ] = { { "reverser_up", function() return "reverser_up" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "reverser_down" ] = { { "reverser_down", function() return "reverser_down" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "throttle_down" ] = { { "throttle_down", function() return "throttle_down" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "brake_hiss" ] = { { "brake_hiss", function() return "brake_hiss" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "DepartureConfirmed" ] = { { "DepartureConfirmed", function() return "DepartureConfirmed" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "key_insert" ] = { { "key_insert", function() return "key_insert" end, 2, 1, 100, 100, Angle( 90, 0, 0 ) } }
+ENT.ClientSounds[ "key_turn" ] = { { "key_turn", function() return "key_turn" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
 ENT.ButtonMapMPLR[ "IBISScreen" ] = {
 	pos = Vector( 511.89, -4.360, 74.86 ),
 	ang = Angle( 0, -90, 37.4 ),
@@ -481,14 +488,23 @@ ENT.ClientProps[ "throttle" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/throttle.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	nohide = true
+	nohide = true,
+	ClientSounds = {
+		throttle_up = true,
+		throttle_down = true,
+		throttle_zero = true
+	}
 }
 
 ENT.ClientProps[ "reverser" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/reverser.mdl",
-	pos = Vector( -0.5, 0, 0 ),
+	pos = Vector( -0.9, 0, 0 ),
 	ang = Angle( 0, 0, 0 ),
-	nohide = true
+	nohide = true,
+	ClientSounds = {
+		reverser_up = true,
+		reverser_down = true,
+	}
 }
 
 ENT.ClientProps[ "foldingstep_rr" ] = {
@@ -666,7 +682,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 				z = -2.5,
 				ang = 90,
 				anim = true,
-				var = "CircuitBreakerUn",
+				var = "CircuitBreakerUnSet",
 				speed = 15,
 				vmin = 0,
 				vmax = 1,
@@ -1195,7 +1211,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			x = 320,
 			y = 25,
 			radius = 10,
-			tooltip = "Lights On",
+			tooltip = "Headlights On",
 			model = {
 				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_lights_on.mdl",
 				z = 1,
@@ -1217,7 +1233,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			x = 335,
 			y = 25,
 			radius = 10,
-			tooltip = "Lights Off",
+			tooltip = "Headlights Off",
 			model = {
 				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_lights_off.mdl",
 				z = 1,
@@ -2100,6 +2116,16 @@ ENT.ButtonMapMPLR[ "Key" ] = {
 	}
 }
 
+ENT.Reverser = {
+	[ 0 ] = 0,
+	[ 1 ] = 0.25,
+	[ 2 ] = 0.4,
+	[ 3 ] = 0.625,
+	[ 4 ] = 0.8,
+	[ 5 ] = 0.95,
+	[ 6 ] = 1.1
+}
+
 function ENT:Initialize()
 	self.BaseClass.Initialize( self )
 	self.SectionB = self:GetNWEntity( "SectionB" )
@@ -2112,16 +2138,6 @@ function ENT:Initialize()
 	self.CabWindowL = 0
 	self.CabWindowR = 0
 	self.IgnitionKeyInserted = false
-	self.Reverser = {
-		[ 0 ] = 0,
-		[ 1 ] = 0.25,
-		[ 2 ] = 0.4,
-		[ 3 ] = 0.625,
-		[ 4 ] = 0.75,
-		[ 5 ] = 0.78,
-		[ 6 ] = 1
-	}
-
 	self.HeadlightsLit = false
 	local lzb = self:GetNW2Bool( "LZBLoad", false )
 	self:ShowHide( "lzb", lzb )
@@ -2200,25 +2216,25 @@ function ENT:Animations()
 	local Door89b = self:GetNW2Float( "Door5b", 0 )
 	local Door10b = self:GetNW2Float( "Door6b", 0 )
 	---------------------------------------------------------------------------
-	self:Animate( "door1_r", Door1a, 0, 100, 100, 10, 0 )
-	self:Animate( "door_fr2", Door12a, 0, 100, 100, 10, 0 )
-	self:Animate( "door_fr1", Door12a, 0, 100, 100, 10, 0 )
-	self:Animate( "door_rr2", Door34a, 0, 100, 100, 10, 0 )
-	self:Animate( "door_rr1", Door34a, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door_rl1", Door56a, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door_rl2", Door56a, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door_fl1", Door78a, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door_fl2", Door78a, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door1_l", Door9a, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door1_r", Door1b, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door_fr1", Door23b, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door_fr2", Door23b, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door_rr1", Door45b, 0, 100, 100, 10, 0 )
-	self.SectionB:Animate( "door_rr2", Door45b, 0, 100, 100, 10, 0 )
-	self:Animate( "door_fl2", Door67b, 0, 100, 100, 10, 0 )
-	self:Animate( "door_fl1", Door67b, 0, 100, 100, 10, 0 )
-	self:Animate( "door_rl2", Door89b, 0, 100, 100, 10, 0 )
-	self:Animate( "door_rl1", Door89b, 0, 100, 100, 10, 0 )
+	self:Animate( "door1_r", Door1a, 0, 100, 50, 10, 0 )
+	self:Animate( "door_fr2", Door12a, 0, 100, 50, 10, 0 )
+	self:Animate( "door_fr1", Door12a, 0, 100, 50, 10, 0 )
+	self:Animate( "door_rr2", Door34a, 0, 100, 50, 10, 0 )
+	self:Animate( "door_rr1", Door34a, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door_rl1", Door56a, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door_rl2", Door56a, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door_fl1", Door78a, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door_fl2", Door78a, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door1_l", Door9a, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door1_r", Door1b, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door_fr1", Door23b, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door_fr2", Door23b, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door_rr1", Door45b, 0, 100, 50, 10, 0 )
+	self.SectionB:Animate( "door_rr2", Door45b, 0, 100, 50, 10, 0 )
+	self:Animate( "door_fl2", Door67b, 0, 100, 50, 10, 0 )
+	self:Animate( "door_fl1", Door67b, 0, 100, 50, 10, 0 )
+	self:Animate( "door_rl2", Door89b, 0, 100, 50, 10, 0 )
+	self:Animate( "door_rl1", Door89b, 0, 100, 50, 10, 0 )
 	local StepMediumLeft1 = self:GetNW2Float( "StepMediumLeft1", 0 )
 	local StepMediumLeft2 = self:GetNW2Float( "StepMediumLeft2", 0 )
 	local StepMediumLeft3 = self:GetNW2Float( "StepMediumLeft3", 0 )
@@ -2264,7 +2280,7 @@ function ENT:Animations()
 	self:Animate( "mirror_l", mirrorLeft, 0, 1, 30 )
 	self:Animate( "mirror_r", mirrorRight, 0, 1, 30 )
 	--self:Animate("step_tray", StepLowestRight2, 0, 100, 100, 10, 0)
-	-- self:ShowHide("headlights_on", self:GetNW2Bool("Headlights",false), 0)
+	self:ShowHide( "headlights_lit", self:GetNW2Bool( "Headlights", false ), 0 )
 	-- self.SpeedoAnim = math.Clamp(self:GetNW2Int("Speed"), 0, 100) / 100
 	-- self:Animate("Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0)
 	-- self:SetSoundState("Deadman", self:GetNW2Bool("DeadmanAlarmSound", false) == true and 1 or 0, 1)

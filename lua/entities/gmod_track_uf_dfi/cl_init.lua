@@ -32,6 +32,7 @@ function ENT:ClockFace()
 		local minutes = explode[ 2 ]
 	end
 
+	if true then return end
 	self.MinutePos = ( ( minutes / 60 ) * 100 ) + 2
 	self.HourPos = ( ( hours / 12 ) * 100 - 4 ) + ( ( ( minutes / 60 ) * 100 ) + 2 ) / 12
 	self.Hours:SetPoseParameter( "position", self.HourPos )

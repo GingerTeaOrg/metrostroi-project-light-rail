@@ -15,6 +15,7 @@ function ENT:Initialize()
 	self.Rotation = self:GetNW2Float( "Rotation", self.VMF and tonumber( self.VMF.Rotation, 10 ) or 0 )
 	self.TrackPos = MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
 	self.Forward = not self.TrackPos.forward
+	self.SignalName = self:GetNW2Float( "Name", self.VMF.SignalName )
 end
 
 local iter = 0

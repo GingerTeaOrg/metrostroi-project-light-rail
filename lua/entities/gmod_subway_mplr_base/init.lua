@@ -63,7 +63,7 @@ function ENT:CreateSection( pos, ang, ent, parentSection, sectionC, sectionA ) -
 		--reset weights
 		selfPhys:SetMass( selfWeight )
 		sectionPhys:SetMass( sectionWeight )
-		sectionA:LinkMUSystems( self )
+		sectionB:LinkMUSystems( self )
 	elseif IsValid( parentSection ) and parentSection == sectionC then
 		local index = parentSection:EntIndex()
 		if sectionA then
@@ -613,9 +613,15 @@ function ENT:TriggerInput( name, value )
 
 	-- Drivers wrench present
 	if name == "DriversWrenchPresent" then self.DriversWrenchPresent = value > 0.5 end
+	if string.find( name, "joy_" ) and self.Systems.CoreSys then
+		self.Systems.CoreSys:TriggerInput( name, value )
+		return
+	end
+
 	-- Propagate inputs to relevant systems
 	for k, v in pairs( self.Systems ) do
 		if v.IsInput[ name ] then
+			print( "found" )
 			v:TriggerInput( name, value )
 		elseif v.Name and ( string.sub( name, 1, #v.Name ) == v.Name ) then
 			local subname = string.sub( name, #v.Name + 1 )
@@ -1459,7 +1465,7 @@ function ENT:HandleJoystickInput( ply )
 				local inputname = MPLR.JoystickSystemMap[ k ]
 				self.JoystickBuffer[ k ] = jvalue
 				if inputname then
-					if typ( jvalue ) == "boolean" then
+					if type( jvalue ) == "boolean" then
 						if jvalue then
 							jvalue = 1.0
 						else
@@ -2323,16 +2329,30 @@ end
 -- Won't get called if joystick isn't installed
 -- I've put it here for now, trains will likely share these inputs anyway
 local function JoystickRegister()
-	MPLR.RegisterJoystickInput( "mplr_throttle", true, "Controller", -3, 3 )
-	MPLR.RegisterJoystickInput( "mplr_reverser", true, "Reverser", -1, 1 )
+	MPLR.RegisterJoystickInput( "mplr_throttle", true, "Controller", -100, 100 )
+	MPLR.RegisterJoystickInput( "mplr_reverser_up", false, "Reverser" )
+	MPLR.RegisterJoystickInput( "mplr_reverser_down", false, "Reverser" )
 	MPLR.RegisterJoystickInput( "mplr_headlight", false, "Headlight Toggle" )
+	MPLR.RegisterJoystickInput( "mplr_bell", false, "Bell" )
+	MPLR.RegisterJoystickInput( "mplr_horn", false, "Horn" )
+	MPLR.RegisterJoystickInput( "mplr_doors_left", false, "Select Doors Left" )
+	MPLR.RegisterJoystickInput( "mplr_doors_Right", false, "Select Doors Right" )
+	MPLR.RegisterJoystickInput( "mplr_blinker_left", false, "Blinker Left" )
+	MPLR.RegisterJoystickInput( "mplr_blinker_right", false, "Blinker Right" )
+	MPLR.RegisterJoystickInput( "mplr_deadman", false, "Deadman Switch" )
 	--  MPLR.RegisterJoystickInput("met_reverserup",false,"Reverser Up")
 	--  MPLR.RegisterJoystickInput("met_reverserdown",false,"Reverser Down")
 	--  Will make this somewhat better later
 	--  Uncommenting these somehow makes the joystick addon crap itself
-	MPLR.JoystickSystemMap[ "mplr_throttle" ] = "KVControllerSet"
-	MPLR.JoystickSystemMap[ "mplr_reverser" ] = "KVReverserSet"
-	MPLR.JoystickSystemMap[ "met_headlight" ] = "HeadLightsToggle"
+	MPLR.JoystickSystemMap[ "mplr_throttle" ] = "joy_throttle"
+	MPLR.JoystickSystemMap[ "mplr_reverser_up" ] = "joy_reverser_up"
+	MPLR.JoystickSystemMap[ "mplr_reverser_down" ] = "joy_reverser_down"
+	MPLR.JoystickSystemMap[ "mplr_headlight" ] = "joy_HeadlightToggle"
+	MPLR.JoystickSystemMap[ "mplr_bell" ] = "joy_bell"
+	MPLR.JoystickSystemMap[ "mplr_horn" ] = "joy_horn"
+	MPLR.JoystickSystemMap[ "mplr_blinker_left" ] = "joy_blinker_left"
+	MPLR.JoystickSystemMap[ "mplr_blinker_right" ] = "joy_blinker_right"
+	MPLR.JoystickSystemMap[ "mplr_deadman" ] = "joy_deadman"
 	--  MPLR.JoystickSystemMap["met_reverserup"] = "KVReverserUp"
 	--  MPLR.JoystickSystemMap["met_reverserdown"] = "KVReverserDown"
 end

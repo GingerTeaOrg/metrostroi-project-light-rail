@@ -15,6 +15,7 @@ end
 net.Receive(
 	"UpdateOvergroundSignal", 
 	function()
+		print( "update" )
 		local ent = net.ReadEntity()
 		ent.Lenses = net.ReadTable()
 	end

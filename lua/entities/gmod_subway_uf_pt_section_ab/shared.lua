@@ -16,7 +16,7 @@ function ENT:InitializeSounds()
 end
 
 function ENT:InitializeSystems()
-	self:LoadSystem( "Duewag_Deadman" )
+	--self:LoadSystem( "Duewag_Deadman" )
 end
 
 function ENT:ScrollDestinations( offset )

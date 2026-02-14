@@ -15,7 +15,14 @@ ENT.SubwayTrain = {
 	Name = "U3",
 	WagType = 0,
 	Manufacturer = "Duewag",
-	Vmax = 80
+	Section = "A",
+	Vmax = 80,
+	Voltage = 600,
+	Mass = 36000,
+	StepsMedium = true,
+	StepsLow = false,
+	StopRequest = false,
+	Bidirectional = true
 }
 
 ENT.DoorNumberRight = 4

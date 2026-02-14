@@ -212,7 +212,7 @@ function TRAIN_SYSTEM:MUHandler()
 		[ 3 ] = true,
 	}
 
-	self.VZ = self.VZ or self.Train:ReadTrainWire( 6 ) > 0 and ( self.ReverserA == 0 and self.ReverserB == 0 ) or self.Train:ReadTrainWire( 6 ) > 1
+	self.VZ = self.ReverserA == 2 or self.ReverserB == 2 or ( self.ReverserA == 0 and self.ReverserB == 0 ) and self.Train:ReadTrainWire( 6 ) > 0
 	self.VE = self.VE or not self.VZ or ( VEStates[ self.ReverserA ] or VEStates[ self.ReverserB ] )
 	---------------------------------------------------------------------------------------------------------
 	if self.ReverserB == 0 then
@@ -286,6 +286,11 @@ function TRAIN_SYSTEM:ReverserAorB()
 	elseif self.ReverserB ~= 0 then
 		self.ReverserState = self.ReverserB > 0 and -1 or self.ReverserB < 0 and 1 or 0
 	end
+end
+
+function TRAIN_SYSTEM:WhichCabActive()
+	self.CabAActive = self.ReverserA ~= 0
+	self.CabBActive = self.ReverserB ~= 0
 end
 
 function TRAIN_SYSTEM:HeadlightsFunc()

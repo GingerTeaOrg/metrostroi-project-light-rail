@@ -17,7 +17,8 @@ function ENT:InitializeSystems()
 	self:LoadSystem( "IBIS" )
 	self:LoadSystem( "Announcer", "uf_announcer" )
 	self:LoadSystem( "Duewag_Battery" )
-	self:LoadSystem( "Panel", "U2_panel" )
+	self:LoadSystem( "PanelA", "Pt_panel" )
+	self:LoadSystem( "PanelB", "Pt_panel" )
 	self:LoadSystem( "DoorHandler", "MPLR_DoorHandler" )
 end
 
@@ -27,7 +28,12 @@ ENT.SubwayTrain = {
 	Name = "Pt",
 	WagType = 1,
 	Manufacturer = "Duewag",
-	Vmax = 80
+	Vmax = 80,
+	Mass = 38500,
+	StepsMedium = true,
+	StepsLow = false,
+	StopRequest = false,
+	Bidirectional = true
 }
 
 ENT.DoorNumberRight = 4

@@ -1,3 +1,7 @@
+ENT.Author = "LillyWho"
+ENT.Contact = ""
+ENT.Purpose = ""
+ENT.Instructions = ""
 ENT.PrintName = "Project Light Rail Crossing Gates"
 ENT.Type = "anim"
 ENT.Category = "Metrostroi: Project Light Rail"

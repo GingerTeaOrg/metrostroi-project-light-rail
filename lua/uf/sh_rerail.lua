@@ -2,11 +2,11 @@
 -- Rerailing, testing whether train is on rails
 --------------------------------------------------------------------------------
 -- Z Offset for rerailing bogeys
-local bogeyOffset = 11
+local bogeyOffset = 20
 local TRACK_GAUGE = 56 --Distance between rails
 local TRACK_WIDTH = 2.26 --Width of a single rail
 local TRACK_HEIGHT = 3.24 --Height of a single rail
-local TRACK_CLEARANCE = 60 --Vertical space above the rails that will always be clear of world, also used as rough estimation of train height
+local TRACK_CLEARANCE = 100 --Vertical space above the rails that will always be clear of world, also used as rough estimation of train height
 --------------------------------------------------------------------------------
 local TRACK_SINGLERAIL = ( TRACK_GAUGE + TRACK_WIDTH ) / 2
 local function dirdebug( pos, dir, color )
@@ -15,15 +15,28 @@ local function dirdebug( pos, dir, color )
 		return
 	end
 
+	-- If a table (track-data) is passed, try to use centerpos
+	if type( pos ) == "table" and pos.centerpos then pos = pos.centerpos end
+	-- Fallback: if pos is still not a vector, abort gracefully
+	if not pos or not pos.x then
+		print( "dirdebug: invalid pos (not a Vector)." )
+		return
+	end
+
 	debugoverlay.Line( pos, pos + dir, 5, color or Color( 255, 255, 255 ), true )
 end
 
 -- Takes datatable from getTrackData
-local function debugtrackdata( data )
-	-- Assuming data has centerpos, forward, right, up
-	dirdebug( data.centerpos, data.forward * 50, Color( 0, 255, 0 ) ) -- Forward in green
-	dirdebug( data.centerpos, data.right * 50, Color( 255, 0, 0 ) ) -- Right in red
-	dirdebug( data.centerpos, data.up * 50, Color( 0, 0, 255 ) ) -- Up in blue
+function debugtrackdata( ent )
+	local data = getTrackDataBelowEnt( ent )
+	if not data then return end
+	-- Rail points
+	debugoverlay.Cross( data.leftRail, 4, 10, Color( 255, 0, 0 ), true )
+	debugoverlay.Cross( data.rightRail, 4, 10, Color( 0, 255, 0 ), true )
+	-- Center line and direction
+	debugoverlay.Line( data.leftRail, data.rightRail, 5, Color( 255, 255, 0 ), true )
+	debugoverlay.Cross( data.centerpos, 6, 10, Color( 255, 255, 255 ), true )
+	debugoverlay.Axis( data.centerpos, data.forward:Angle(), 20, 5, true )
 end
 
 -- Helper for commonly used trace
@@ -35,8 +48,8 @@ local function traceWorldOnly( pos, dir, col )
 	} )
 
 	-- Debug overlay
-	debugoverlay.Line( tr.StartPos, tr.HitPos, 10, col or Color( 0, 0, 255 ), true )
-	debugoverlay.Sphere( tr.StartPos, 2, 10, Color( 0, 255, 255 ), true )
+	--debugoverlay.Line( tr.StartPos, tr.HitPos, 10, col or Color( 0, 0, 255 ), true )
+	--debugoverlay.Sphere( tr.StartPos, 2, 10, Color( 0, 255, 255 ), true )
 	-- Print info about what we hit
 	if tr.Hit then
 		print( "[Rerail Debug] Hit entity:", tr.Entity, "Class:", tr.Entity:IsValid() and tr.Entity:GetClass() or "world" )
@@ -57,7 +70,7 @@ local function resetSolids( enttable, train )
 		end
 	end
 
-	if train ~= nil and IsValid( train ) then
+	if IsValid( train ) then
 		train.FrontBogey:GetPhysicsObject():EnableMotion( true )
 		train.MiddleBogey:GetPhysicsObject():EnableMotion( true )
 		train.RearBogey:GetPhysicsObject():EnableMotion( true )
@@ -70,76 +83,174 @@ local function resetSolids( enttable, train )
 	end
 end
 
--- Elevates a position to track level
--- Requires a position in the center of the track
 local function ElevateToTrackLevel( pos, right, up )
 	local tr1 = traceWorldOnly( pos + up * TRACK_CLEARANCE + right * TRACK_SINGLERAIL, -up * TRACK_CLEARANCE * 2 )
 	local tr2 = traceWorldOnly( pos + up * TRACK_CLEARANCE - right * TRACK_SINGLERAIL, -up * TRACK_CLEARANCE * 2 )
-	-- Visualize the rail traces
-	debugoverlay.Line( tr1.StartPos, tr1.HitPos, 10, Color( 0, 255, 0 ), true ) -- Right rail
-	debugoverlay.Line( tr2.StartPos, tr2.HitPos, 10, Color( 0, 255, 0 ), true ) -- Left rail
+	debugoverlay.Line( leftRailTop + offset, rightRailTop + offset, dbgTime, Color( 0, 0, 255 ), true )
+	-- If either trace failed, we can’t determine rail height
 	if not tr1.Hit or not tr2.Hit then return false end
+	local rightRailTop = tr1.HitPos + up * TRACK_HEIGHT
+	local leftRailTop = tr2.HitPos + up * TRACK_HEIGHT
 	local centerpos = ( tr1.HitPos + tr2.HitPos ) / 2
-	debugoverlay.Cross( centerpos, 5, 10, Color( 0, 255, 255 ), true ) -- Elevated track center
-	return centerpos
+	-- Debug overlay tweaks: longer lifetime + slight lift for visibility
+	local dbgTime = 15
+	local offset = up * 1.5
+	debugoverlay.Cross( centerpos + offset, 5, dbgTime, Color( 0, 255, 255 ), true ) -- Elevated track center
+	debugoverlay.Sphere( tr1.HitPos + offset, 2, dbgTime, Color( 0, 255, 0 ), true ) -- Right rail base
+	debugoverlay.Sphere( tr2.HitPos + offset, 2, dbgTime, Color( 255, 0, 0 ), true ) -- Left rail base
+	debugoverlay.Sphere( rightRailTop + offset, 2, dbgTime, Color( 0, 128, 0 ), true ) -- Right rail top
+	debugoverlay.Sphere( leftRailTop + offset, 2, dbgTime, Color( 128, 0, 0 ), true ) -- Left rail top
+	debugoverlay.Line( tr1.HitPos + offset, rightRailTop + offset, dbgTime, Color( 0, 255, 0 ), true )
+	debugoverlay.Line( tr2.HitPos + offset, leftRailTop + offset, dbgTime, Color( 255, 0, 0 ), true )
+	debugoverlay.Line( tr1.HitPos + offset, tr2.HitPos + offset, dbgTime, Color( 255, 255, 0 ), true )
+	return {
+		centerpos = centerpos,
+		leftRail = tr2.HitPos,
+		rightRail = tr1.HitPos,
+		leftRailTop = leftRailTop,
+		rightRailTop = rightRailTop
+	}
 end
 
 -- Takes position and initial rough forward vector, return table of track data
 -- Position needs to be between/below the tracks already, don't use a props origin
 -- Only needs a rough forward vector, ent:GetAngles():Forward() suffices
-local function getTrackData( pos, forward )
+function MPLR.RerailGetTrackData( pos, forward )
+	print( "RUNNING" )
+	debugoverlay.Text( pos + Vector( 0, 0, 50 ), "ENTER getTrackData", 5 )
 	debugoverlay.Cross( pos, 5, 10, Color( 255, 0, 255 ), true )
-	-- Trace down to find ground/rail top
+	-- ↓ 1. Downward trace: find ground
 	local tr = traceWorldOnly( pos, Vector( 0, 0, -500 ) )
-	if not tr or not tr.Hit then return false end
+	debugoverlay.Line( pos, pos - Vector( 0, 0, 500 ), 10, Color( 0, 255, 255 ), true )
+	if not tr or not tr.Hit then
+		debugoverlay.Cross( pos - Vector( 0, 0, 500 ), 5, 10, Color( 255, 0, 0 ), true )
+		debugoverlay.Text( pos - Vector( 0, 0, 495 ), "Ground Miss", 5 )
+		return false
+	end
+
 	local updir = tr.HitNormal
 	local floor = tr.HitPos + updir * ( TRACK_HEIGHT * 0.9 )
-	-- First try to estimate right and forward
 	local approxRight = forward:Cross( updir )
-	tr = traceWorldOnly( floor, approxRight * 500 )
-	if not tr or not tr.Hit then return false end
-	-- Now properly compute track orientation
-	local trackforward = tr.HitNormal:Cross( updir )
+	-- ↓ 2. Side trace: establish approximate right vector
+	local trSide = traceWorldOnly( floor, approxRight * 500 )
+	debugoverlay.Line( floor, floor + approxRight * 500, 10, Color( 0, 255, 255 ), true )
+	debugoverlay.Cross( floor, 6, 10, Color( 255, 255, 255 ), true )
+	debugoverlay.Text( floor + Vector( 0, 0, 8 ), "floor", 5 )
+	debugoverlay.Cross( centerpos, 6, 10, Color( 0, 255, 255 ), true )
+	debugoverlay.Text( centerpos + Vector( 0, 0, 8 ), "centerpos", 5 )
+	if not trSide or not trSide.Hit then
+		debugoverlay.Cross( floor + approxRight * 500, 5, 10, Color( 255, 0, 0 ), true )
+		debugoverlay.Text( floor + approxRight * 500 + Vector( 0, 0, 5 ), "Right Wall Miss", 5 )
+		print( "QUITTING" )
+		return false
+	end
+
+	local trackforward = trSide.HitNormal:Cross( updir )
 	local trackright = trackforward:Cross( updir )
-	-- Debug overlays
-	dirdebug( tr.HitPos, updir, Color( 0, 0, 255 ) ) -- Up
-	dirdebug( floor, trackright, Color( 255, 0, 0 ) ) -- Right
-	dirdebug( floor, trackforward, Color( 0, 255, 0 ) ) -- Forward
+	dirdebug( trSide.HitPos, updir * 50, Color( 0, 0, 255 ) ) -- Up
+	dirdebug( floor, trackright * 50, Color( 255, 0, 0 ) ) -- Right
+	dirdebug( floor, trackforward * 50, Color( 0, 255, 0 ) ) -- Forward
 	debugoverlay.Axis( floor, trackforward:Angle(), 10, 5, true )
-	-- Rail traces
-	local tr1 = traceWorldOnly( floor, trackright * TRACK_GAUGE )
-	local tr2 = traceWorldOnly( floor, -trackright * TRACK_GAUGE )
-	if not tr1 or not tr2 then return false end
-	debugoverlay.Line( tr1.StartPos, tr1.HitPos, 10, Color( 0, 255, 0 ), true )
-	debugoverlay.Line( tr2.StartPos, tr2.HitPos, 10, Color( 0, 255, 0 ), true )
-	local centerpos = ElevateToTrackLevel( floor, trackright, updir )
-	if not centerpos then return false end
+	debugoverlay.Text( floor + Vector( 0, 0, 15 ), "Track Axes", 5 )
+	-- ↓ 3. Forward guide
+	debugoverlay.Line( floor, floor + trackforward * 200, 10, Color( 0, 255, 255 ), true )
+	-- ↓ 4. Trace left and right rails
+	local trRight = traceWorldOnly( floor, trackright * TRACK_GAUGE )
+	local trLeft = traceWorldOnly( floor, -trackright * TRACK_GAUGE )
+	-- Right rail
+	debugoverlay.Line( floor, floor + trackright * TRACK_GAUGE, 10, Color( 0, 255, 255 ), true )
+	if trRight and trRight.Hit then
+		debugoverlay.Cross( trRight.HitPos, 4, 10, Color( 0, 255, 0 ), true )
+		debugoverlay.Text( trRight.HitPos + Vector( 0, 0, 5 ), "Right Rail", 5 )
+	else
+		debugoverlay.Cross( floor + trackright * TRACK_GAUGE, 4, 10, Color( 255, 0, 0 ), true )
+		debugoverlay.Text( floor + trackright * TRACK_GAUGE + Vector( 0, 0, 5 ), "Right Miss", 5 )
+	end
+
+	-- Left rail
+	debugoverlay.Line( floor, floor - trackright * TRACK_GAUGE, 10, Color( 0, 255, 255 ), true )
+	if trLeft and trLeft.Hit then
+		debugoverlay.Cross( trLeft.HitPos, 4, 10, Color( 0, 255, 0 ), true )
+		debugoverlay.Text( trLeft.HitPos + Vector( 0, 0, 5 ), "Left Rail", 5 )
+	else
+		debugoverlay.Cross( floor - trackright * TRACK_GAUGE, 4, 10, Color( 255, 0, 0 ), true )
+		debugoverlay.Text( floor - trackright * TRACK_GAUGE + Vector( 0, 0, 5 ), "Left Miss", 5 )
+	end
+
+	if not ( trRight and trLeft and trRight.Hit and trLeft.Hit ) then return false end
+	-- ↓ 5. Connect rails and centre
+	debugoverlay.Line( trLeft.HitPos, trRight.HitPos, 10, Color( 255, 255, 0 ), true ) -- rail gauge
+	local centerpos = ( trLeft.HitPos + trRight.HitPos ) / 2
+	debugoverlay.Cross( centerpos, 6, 10, Color( 255, 255, 255 ), true )
+	debugoverlay.Text( centerpos + Vector( 0, 0, 10 ), "Track Centre", 5 )
+	debugoverlay.Line( centerpos, trLeft.HitPos, 10, Color( 255, 255, 255 ), true )
+	debugoverlay.Line( centerpos, trRight.HitPos, 10, Color( 255, 255, 255 ), true )
+	-- ↓ 6. Elevation / top-of-rail indicators
+	local railData = ElevateToTrackLevel( floor, trackright, updir )
+	if not railData then return false end
+	local topOfRail = centerpos + updir * ( TRACK_HEIGHT or 15 )
+	debugoverlay.Line( centerpos, topOfRail, 10, Color( 0, 128, 255 ), true )
+	debugoverlay.Cross( topOfRail, 5, 10, Color( 0, 128, 255 ), true )
+	debugoverlay.Text( topOfRail + Vector( 0, 0, 5 ), "Top of Rail", 5 )
+	-- ↓ 7. Clearance offset above the track
+	local CLEARANCE_OFFSET = 150 -- cm → 1.5 m above top
+	local clearancePos = topOfRail + updir * CLEARANCE_OFFSET
+	debugoverlay.Line( topOfRail, clearancePos, 10, Color( 255, 128, 0 ), true )
+	debugoverlay.Cross( clearancePos, 6, 10, Color( 255, 128, 0 ), true )
+	debugoverlay.Text( clearancePos + Vector( 0, 0, 5 ), "Clearance", 5 )
+	debugoverlay.Text( pos + Vector( 0, 0, 80 ), "EXIT getTrackData", 5 )
+	print( "[getTrackData] floor", floor )
+	print( "[getTrackData] right", trackright )
+	print( "[getTrackData] leftRail", trLeft and trLeft.HitPos )
+	print( "[getTrackData] rightRail", trRight and trRight.HitPos )
+	print( "[getTrackData] center", centerpos )
 	return {
 		forward = trackforward,
 		right = trackright,
 		up = updir,
-		centerpos = centerpos
+		centerpos = centerpos,
+		leftRail = trLeft.HitPos,
+		rightRail = trRight.HitPos,
+		top = topOfRail,
+		clearance = clearancePos,
 	}
 end
 
-MPLR.RerailGetTrackData = getTrackData
 -- Helper function that tries to find trackdata at -z or -ent:Up()
-local function getTrackDataBelowEnt( ent )
-	local forward = ent:GetAngles():Forward()
-	dirdebug( ent:GetPos(), forward ) -- Visualize initial forward vector
-	local tr = traceWorldOnly( ent:GetPos(), Vector( 0, 0, -500 ) )
-	local td = getTrackData( tr.HitPos, forward )
-	if td then
-		debugtrackdata( td ) -- Visualize track data below entity
-		return td
-	end
+function getTrackDataBelowEnt( ent )
+	if not IsValid( ent ) then return nil end
+	local pos = ent:GetPos()
+	local down = Vector( 0, 0, -1 )
+	local traceLength = 80
+	-- Trace left and right from the bogey
+	local offsetRight = ent:GetRight() * 35
+	local tr1 = util.TraceLine( {
+		start = pos + offsetRight,
+		endpos = pos + offsetRight + down * traceLength,
+		mask = MASK_SOLID_BRUSHONLY
+	} )
 
-	local tr = traceWorldOnly( ent:GetPos(), ent:GetAngles():Up() * -500 )
-	if tr.Hit then
-		local td = getTrackData( tr.HitPos, forward )
-		if td then return td end
-	end
-	return false
+	local tr2 = util.TraceLine( {
+		start = pos - offsetRight,
+		endpos = pos - offsetRight + down * traceLength,
+		mask = MASK_SOLID_BRUSHONLY
+	} )
+
+	if not tr1.Hit or not tr2.Hit then return nil end
+	local leftRailPos = tr2.HitPos
+	local rightRailPos = tr1.HitPos
+	local centerPos = ( leftRailPos + rightRailPos ) / 2
+	local forward = ( rightRailPos - leftRailPos ):GetNormalized():Cross( Vector( 0, 0, 1 ) )
+	local right = ( rightRailPos - leftRailPos ):GetNormalized()
+	local up = forward:Cross( right ):GetNormalized()
+	return {
+		forward = forward,
+		right = right,
+		up = up,
+		centerpos = centerPos,
+		leftRail = leftRailPos,
+		rightRail = rightRailPos
+	}
 end
 
 local function PlayerCanRerail( ply, ent )
@@ -160,7 +271,6 @@ local function RerailConCMDHandler( ply, cmd, args, fullstring )
 	end
 
 	if train:GetClass() == "gmod_train_uf_bogey" then
-		print( train )
 		ply:PrintMessage( HUD_PRINTTALK, "Rerailing bogey!" )
 		MPLR.RerailBogey( train )
 	else
@@ -177,22 +287,20 @@ function MPLR.RerailBogey( bogey )
 	if timer.Exists( "mplr_rerailer_solid_reset_" .. bogey:EntIndex() ) then return false end
 	local trackData = getTrackDataBelowEnt( bogey )
 	if not trackData then return false end
-	bogey:SetPos( trackData.centerpos + trackData.up * ( bogey.BogeyOffset or bogeyOffset ) )
-	bogey:SetAngles( trackData.forward:Angle() )
-	-- Visualize bogey placement
-	debugoverlay.Cross( bogey:GetPos(), 5, 10, Color( 255, 255, 0 ), true ) -- Bogey position
-	debugoverlay.Axis( bogey:GetPos(), bogey:GetAngles(), 10, 5, true ) -- Bogey axes
 	bogey:GetPhysicsObject():EnableMotion( false )
 	local solids = {}
 	local wheels = bogey.Wheels
 	solids[ bogey ] = bogey:GetSolid()
-	bogey:SetSolid( SOLID_NONE )
 	if wheels ~= nil then
 		solids[ wheels ] = wheels:GetSolid()
 		wheels:SetSolid( SOLID_NONE )
 	end
 
-	timer.Create( "mplr_rerailer_solid_reset_" .. bogey:EntIndex(), 1, 1, function() resetSolids( solids ) end )
+	bogey:SetSolid( SOLID_NONE )
+	bogey:GetPhysicsObject():EnableMotion( true )
+	bogey:SetPos( trackData.centerpos + trackData.up * ( bogey.BogeyOffset or bogeyOffset ) )
+	bogey:SetAngles( trackData.forward:Angle() )
+	timer.Create( "mplr_rerailer_solid_reset_" .. bogey:EntIndex(), 0, 1, function() resetSolids( solids ) end )
 	return true
 end
 
@@ -227,15 +335,15 @@ function MPLR.RerailTrain( train, ply )
 		-- Get the track data at these locations
 		local tr = traceWorldOnly( frontpos, -trackdata.up * 500 )
 		if not tr or not tr.Hit then return false end
-		local frontdata = getTrackData( tr.HitPos + tr.HitNormal * 3, trackdata.forward )
+		local frontdata = MPLR.RerailGetTrackData( tr.HitPos + tr.HitNormal * 3, trackdata.forward )
 		if not frontdata then return false end
 		tr = traceWorldOnly( middlepos, -trackdata.up * 500 )
 		if not tr or not tr.Hit then return false end
-		local middledata = getTrackData( tr.HitPos + tr.HitNormal * 3, trackdata.forward )
+		local middledata = MPLR.RerailGetTrackData( tr.HitPos + tr.HitNormal * 3, trackdata.forward )
 		if not middledata then return false end
 		tr = traceWorldOnly( rearepos, -trackdata.up * 500 )
 		if not tr or not tr.Hit then return false end
-		local reardata = getTrackData( tr.HitPos + tr.HitNormal * 3, trackdata.forward )
+		local reardata = MPLR.RerailGetTrackData( tr.HitPos + tr.HitNormal * 3, trackdata.forward )
 		if not reardata then return false end
 		-- Calculate final train position and apply offsets
 		local TrainOriginToBogeyOffset = ( train:WorldToLocal( train.FrontBogey:GetPos() ) + train:WorldToLocal( train.MiddleBogey:GetPos() ) ) / 2

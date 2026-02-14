@@ -56,30 +56,38 @@ function ENT:InitializeSounds()
 	self.SoundPositions[ "BrakesSet" ] = { 800, 1, Vector( 440, 0, 100 ), 1 }
 	self.SoundNames[ "Chopper" ] = {
 		loop = 2.25,
-		"lilly/mplr/b80c_firstgen/chopper.wav"
+		"lilly/mplr/b80c_firstgen/chopper2.mp3"
 	}
 
-	self.SoundNames[ "throttle_up" ] = { { "lilly/mplr/b80c_firstgen/throttle_notch_up1.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up2.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up3.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up4.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up5.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up6.mp3" } }
-	self.SoundPositions[ "throttle_up" ] = { 40, 1e9, Vector( 502, -20.727, 50 ), 1 }
-	self.SoundNames[ "throttle_zero" ] = { "lilly/mplr/b80c_firstgen/throttle_notch_down_tozero.mp3" }
-	self.SoundPositions[ "throttle_zero" ] = { 40, 1e9, Vector( 502, -20.727, 50 ), 1 }
-	self.SoundNames[ "reverser_up" ] = { "lilly/mplr/b80c_firstgen/reverser_up.mp3" }
-	self.SoundPositions[ "reverser_up" ] = { 40, 1e9, Vector( 502, -20.727, 50 ), 1 }
+	self.SoundNames[ "throttle_up" ] = { "lilly/mplr/b80c_firstgen/throttle_notch_up1.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up2.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up3.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up4.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up5.mp3", "lilly/mplr/b80c_firstgen/throttle_notch_up6.mp3" }
+	self.SoundPositions[ "throttle_up" ] = { 40, 1e9, Vector( 502, 20.727, 50 ), 1 }
+	self.SoundNames[ "throttle_zero" ] = "lilly/mplr/b80c_firstgen/throttle_notch_down_tozero.mp3"
+	self.SoundPositions[ "throttle_zero" ] = { 40, 1e9, Vector( 502, 20.727, 50 ), 1 }
+	self.SoundNames[ "reverser_up" ] = "lilly/mplr/b80c_firstgen/reverser_up.mp3"
+	self.SoundPositions[ "reverser_up" ] = { 40, 1e9, Vector( 502, 20.727, 50 ), 1 }
+	self.SoundNames[ "reverser_down" ] = "lilly/mplr/b80c_firstgen/reverser_down.mp3"
+	self.SoundPositions[ "reverser_down" ] = { 40, 1e9, Vector( 502, 20.727, 50 ), 1 }
 	self.SoundPositions[ "Chopper" ] = { 800, 1e9, Vector( 440, 0, 100 ), 1 }
-	self.SoundNames[ "Cruise" ] = { "lilly/mplr/b-wagen_common/cruise.mp3" }
+	self.SoundNames[ "Cruise" ] = {
+		loop = 5,
+		"lilly/mplr/b-wagen_common/cruise.mp3"
+	}
+
 	self.SoundPositions[ "Cruise" ] = { 800, 1e9, Vector( 240, 0, 50 ), 1 }
-	self.SoundNames[ "DepartureConfirmed" ] = { "lilly/mplr/common/departure_ready.wav" }
+	self.SoundNames[ "DepartureConfirmed" ] = "lilly/mplr/common/departure_ready.wav"
 	self.SoundPositions[ "DepartureConfirmed" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
 	self.SoundNames[ "DepartureConfirmed2" ] = { "lilly/mplr/b80c_firstgen/departure_bell_1.wav" }
 	self.SoundPositions[ "DepartureConfirmed2" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
 	self.SoundNames[ "DepartureConfirmed3" ] = { "lilly/mplr/b80c_firstgen/departure_bell_2.wav" }
 	self.SoundPositions[ "DepartureConfirmed3" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
-	self.SoundNames[ "brake_hiss" ] = { "lilly/mplr/b80c_firstgen/brake_hiss.wav" }
+	self.SoundNames[ "brake_hiss" ] = "lilly/mplr/b80c_firstgen/brake_hiss.wav"
 	self.SoundPositions[ "brake_hiss" ] = { 800, 1e9, Vector( 350, 0, 50 ), 1 }
 	self.SoundNames[ "chopper" ] = { "lilly/mplr/b80c_firstgen/chopper.wav" }
 	self.SoundPositions[ "chopper" ] = { 800, 1e9, Vector( 350, 0, 50 ), 1 }
-	self.SoundNames[ "key_insert" ] = { "lilly/mplr/b-wagen_common/key_insert.wav" }
-	self.SoundPositions[ "key_insert" ] = { 800, 1e9, Vector( 484, 0, 50 ), 1 }
+	self.SoundNames[ "key_insert" ] = "lilly/mplr/b-wagen_common/key_insert.wav"
+	self.SoundPositions[ "key_insert" ] = { 800, 1e9, Vector( 484, 30, 50 ), 1 }
+	self.SoundNames[ "key_turn" ] = "lilly/mplr/b-wagen_common/key_turn.wav"
+	self.SoundPositions[ "key_turn" ] = { 800, 1e9, Vector( 484, 30, 50 ), 1 }
 	-----------------------------------------------------------------------------------------
 	self.SoundNames[ "IBIS_beep" ] = { "lilly/uf/IBIS/beep.mp3" }
 	self.SoundPositions[ "IBIS_beep" ] = { 1100, 1e9, Vector( 412, -12, 55 ), 5 }
@@ -90,12 +98,11 @@ function ENT:InitializeSounds()
 	self.SoundNames[ "button_on" ] = { "lilly/mplr/b80c_firstgen/button_on.mp3" }
 	self.SoundPositions[ "button_on" ] = { 1, 1e9, Vector( 405, 36, 55 ), 1 }
 	self.SoundNames[ "button_off" ] = { "lilly/mplr/b80c_firstgen/button_off.mp3" }
+	self.SoundPositions[ "button_off" ] = { 1, 1e9, Vector( 405, 36, 55 ), 1 }
 	self.SoundNames[ "button_toggle_on" ] = { "lilly/mplr/b80c_firstgen/button_click_in.mp3" }
 	self.SoundPositions[ "button_toggle_on" ] = { 1, 1e9, Vector( 405, 36, 55 ), 1 }
 	self.SoundNames[ "button_toggle_off" ] = { "lilly/mplr/b80c_firstgen/button_click_out.mp3" }
 	self.SoundPositions[ "button_toggle_off" ] = { 1, 1e9, Vector( 405, 36, 55 ), 1 }
-	self.SoundNames[ "key_insert" ] = { "lilly/uf/common/key-1.wav" }
-	self.SoundPositions[ "key_insert" ] = { 1100, 1e9, Vector( 480, 36, 70 ), 1 }
 end
 
 ENT.Cameras = { { Vector( 500, -50, 90 ), Angle( 0, -170, 0 ), "Train.MPLR.OutTheWindowRight" }, { Vector( 500, 50, 90 ), Angle( 0, 170, 0 ), "Train.MPLR_U2.OutTheWindowLeft" }, { Vector( 300, 6, 100 ), Angle( 0, 180 + 5, 0 ), "Train.MPLR_U2.PassengerStanding" }, { Vector( 70.5 + 10, 6, 100 ), Angle( 0, 0, 0 ), "Train.MPLR_U2.PassengerStanding2" }, { Vector( 490.5, 0, 100 ), Angle( 0, 180, 0 ), "Train.Common.RouteNumber" }, { Vector( 480, -5, 100 ), Angle( 0, -180, 0 ), "Train.MPLR.RouteList" }, { Vector( 530, 0, 70 ), Angle( 80, 0, 0 ), "Train.Common.CouplerCamera" }, { Vector( 350, 60, 5 ), Angle( 10, -80, 0 ), "Train.MPLR_U2.Bogey" }, { Vector( 505, -7, 80 ), Angle( 35, 0, 0 ), "Train.MPLR.IBIS" }, { Vector( 250, 6, 200 ), Angle( 0, 180, 0 ), "Train.MPLR.Panto" } }

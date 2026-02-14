@@ -22,8 +22,9 @@ end )
 
 function ENT:Think()
 	if not IsValid( self.Sign ) and self.InPVS then
-		self.Sign:Remove()
+		--self.Sign:Remove()
 		local offset = self:LocalToWorld( ( self.Left and Vector( 0, -60, 0 ) or Vector( 0, 60, 0 ) ) + Vector( 0, self.Horizontal, self.Vertical ) )
+		self.Sign = ents.CreateClientProp( self:GetNW2String( "Type", self.BasePath .. "/" .. "speed_40" .. ".mdl" ) )
 		self.Sign:SetPos( offset )
 		self.Sign:SetAngles( self:GetAngles() - Angle( 0, 90, 0 ) )
 		self.Sign:Spawn()

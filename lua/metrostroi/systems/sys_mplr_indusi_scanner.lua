@@ -1,13 +1,11 @@
 Metrostroi.DefineSystem( "mplr_INDUSI_scanner" )
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 function TRAIN_SYSTEM:Initialize()
-	--if not IsValid( self.Train.FrontBogey.INDUSICoil ) then self.Train:CreateINDUSICoil( self.Train.FrontBogey ) end
-	--if not IsValid( self.Train.RearBogey.INDUSICoil ) then self.Train:CreateINDUSICoil( self.Train.RearBogey ) end
 	self.SPAD = false
+	self.SpeedRestriction = -1
 end
 
 function TRAIN_SYSTEM:Think( dT )
-	--print( "INDUSI" )
 	local direction = self.Train.CoreSys.ReverserA >= 0 or self.Train.CoreSys.ReverserB and self.Train.CoreSys.ReverserB < 0
 	local train = self.Train
 	local deadman = self.Train.Deadman

@@ -12,6 +12,22 @@ ENT.ClientProps[ "wipers" ] = {
 	nohide = true
 }
 
+ENT.ClientProps[ "voltmeter" ] = {
+	model = "models/lilly/uf/u3/cab/speedo.mdl",
+	pos = Vector( 464.9, 23.8928, 69.75 ),
+	ang = Angle( -52, 0, 0 ),
+	scale = 1,
+	nohide = true
+}
+
+ENT.ClientProps[ "speedo" ] = {
+	model = "models/lilly/uf/u3/cab/speedo.mdl",
+	pos = Vector( 464.9, 20.3502, 69.75 ),
+	ang = Angle( -52, 0, 0 ),
+	scale = 1,
+	nohide = true
+}
+
 ENT.ClientProps[ "Door_fr1" ] = {
 	model = "models/lilly/uf/u3/door_1.mdl",
 	pos = Vector( 0, 0, 0 ),
@@ -188,7 +204,7 @@ ENT.ButtonMapMPLR[ "Dashboard1" ] = {
 			x = 48,
 			y = 36.5,
 			radius = 10,
-			tooltip = "Close Circuit Breaker",
+			tooltip = "Close HV Circuit Breaker",
 			model = {
 				model = "models/lilly/uf/u3/cab/circuit_on.mdl",
 				z = 1.8,
@@ -210,7 +226,7 @@ ENT.ButtonMapMPLR[ "Dashboard1" ] = {
 			x = 48,
 			y = 18,
 			radius = 10,
-			tooltip = "Open Circuit Breaker",
+			tooltip = "Open HV Circuit Breaker",
 			model = {
 				model = "models/lilly/uf/u3/cab/circuit_off.mdl",
 				z = 1.8,
@@ -227,6 +243,138 @@ ENT.ButtonMapMPLR[ "Dashboard1" ] = {
 				sndang = Angle( -90, 0, 0 )
 			}
 		},
+		{
+			ID = "SwitchLeftSet",
+			x = 82,
+			y = 36.5,
+			radius = 10,
+			tooltip = "Set next switch in range to left",
+			model = {
+				model = "models/lilly/uf/u3/cab/switch_left.mdl",
+				z = 1.8,
+				ang = 90,
+				anim = true,
+				var = "CircuitOff",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "SwitchClearSet",
+			x = 96.5,
+			y = 36.5,
+			radius = 10,
+			tooltip = "Clears the switch override to the next switch ahead.",
+			model = {
+				model = "models/lilly/uf/u3/cab/switch_clear.mdl",
+				z = 1.8,
+				ang = 90,
+				anim = true,
+				var = "SwitchClear",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "SwitchRightSet",
+			x = 110.5,
+			y = 36.5,
+			radius = 10,
+			tooltip = "Clears the switch override to the next switch ahead.",
+			model = {
+				model = "models/lilly/uf/u3/cab/switch_right.mdl",
+				z = 1.8,
+				ang = 90,
+				anim = true,
+				var = "SwitchRight",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "BlinkerLeftSet",
+			x = 82,
+			y = 18,
+			radius = 10,
+			tooltip = "Set indicators to right",
+			model = {
+				model = "models/lilly/uf/u3/cab/blinker_left.mdl",
+				z = 1.8,
+				ang = 90,
+				anim = true,
+				var = "CircuitOff",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "HazardLightsSet",
+			x = 96.5,
+			y = 18,
+			radius = 10,
+			tooltip = "Activate/Deactivate hazard lights",
+			model = {
+				model = "models/lilly/uf/u3/cab/hazards.mdl",
+				z = 1.8,
+				ang = 90,
+				anim = true,
+				var = "SwitchClear",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "BlinkerRightSet",
+			x = 110.5,
+			y = 18,
+			radius = 10,
+			tooltip = "Set indicators to right",
+			model = {
+				model = "models/lilly/uf/u3/cab/blinker_right.mdl",
+				z = 1.8,
+				ang = 90,
+				anim = true,
+				var = "SwitchRight",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 20,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		}
 	}
 }
 
@@ -270,7 +418,7 @@ ENT.ButtonMapMPLR[ "Dashboard2" ] = {
 				z = 1.8,
 				ang = 90,
 				anim = true,
-				var = "PantoLower",
+				var = "PantographLower",
 				speed = 15,
 				vmin = 0,
 				vmax = 1,
@@ -292,7 +440,7 @@ ENT.ButtonMapMPLR[ "Dashboard2" ] = {
 				z = 1.8,
 				ang = 90,
 				anim = true,
-				var = "PantoRaise",
+				var = "PantographRaise",
 				speed = 15,
 				vmin = 0,
 				vmax = 1,
@@ -675,8 +823,11 @@ function ENT:Animations()
 	local throttleFloat = self:GetNW2Float( "ThrottleStateA", 0.5 )
 	self.ThrottleStateAnim = lerp( throttleFloat, -100, 100, 0, 1 )
 	self:Animate( "Throttle", self.ThrottleStateAnim, -45, 45, 50, 8, false )
-	self.SpeedoAnim = math.Clamp( self:GetNW2Int( "Speed" ), 0, 80 ) / 100 * 1.5
-	self:Animate( "Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0 )
+	self.SpeedoAnim = Lerp( math.Clamp( self:GetNW2Int( "Speed" ), 0, 80 ) / 100, 0.1, 1 )
+	self:Animate( "speedo", self.SpeedoAnim, 0, 1, 32, 1, 0 )
+	print( self:GetNW2Float( "BatteryVoltage", 0 ) )
+	self.VoltAnim = Lerp( Lerp( self:GetNW2Float( "BatteryVoltage", 0 ) / 40, 0, 1 ), 0.1, 0.9 )
+	self:Animate( "voltmeter", self.VoltAnim, 0, 1, 32, 1, 0 )
 	self:ShowHide( "reverser", self:GetNW2Bool( "ReverserInsertedA", false ) )
 	self:Animate( "reverser", self:GetNW2Float( "ReverserAnimate", 0.5 ), 0, 100, 50 )
 	self.CabWindowL = self:GetNW2Float( "CabWindowL", 0 )

@@ -40,7 +40,7 @@ function ENT:Think()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
 	self:CheckVoltage( self.DeltaTime )
-	if self.Train.PantoUp == true then
+	if self.Train.PantoUp or self.Train.CoreSys.PantoUp then
 		self.Raised = true
 	else
 		self.Raised = false
@@ -65,9 +65,7 @@ function ENT:CheckContact( pos )
 		return false, nil, 135
 	end
 
-	self:SetNW2Bool( "HitWire", result.Hit )
 	local pantoheight = self:WorldToLocal( result.HitPos ) --- PhysObj:WorldToLocalVector( pos + Vector( 0, 0, math.abs( pos.z ) ) )
-	--print(pantoheight.z)
 	--print("traceorigin",PhysObj:WorldToLocalVector(pos),"hitpos",PhysObj:WorldToLocalVector(result.HitPos),"calculated height diff",pantoheight.z)
 	local traceEnt = result.Entity
 	if IsValid( traceEnt ) and traceEnt:GetClass() == "player" and MPLR.Voltage > 40 then --if the player hits the bounding box, unalive them
@@ -113,6 +111,8 @@ function ENT:CheckContact( pos )
 			sound.Play( "ambient/energy/zap" .. math.random( 1, 3 ) .. ".mp3", pPos, 75, math.random( 100, 150 ), 1.0 )
 		end
 		return result.Hit, traceEnt, pantoheight.z --yes, we are touching catenary
+	else
+		return false, nil, pantoheight.z
 	end
 end
 
@@ -140,9 +140,11 @@ function ENT:CheckVoltage( dT )
 	end
 
 	if self.Raised and not self.PreviouslyRaised and pantoheight > self.RaiseLowerAnim then
-		self:SetNW2Int( "PantoHeight", self.RaiseLowerAnim )
+		self:SetNW2Float( "PantoHeight", self.RaiseLowerAnim )
 	elseif not self.Raised and self.PreviouslyRaised or not self.Raised and not self.PreviouslyRaised then
-		self:SetNW2Int( "PantoHeight", self.RaiseLowerAnim )
+		self:SetNW2Float( "PantoHeight", self.RaiseLowerAnim )
+	elseif self.Raised and self.PreviouslyRaised then
+		self:SetNW2Float( "PantoHeight", pantoheight )
 	else
 		self:SetNW2Float( "PantoHeight", pantoheight )
 	end

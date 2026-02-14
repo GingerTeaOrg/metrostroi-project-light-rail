@@ -1412,7 +1412,7 @@ end]]
 function ENT:Traction()
 	if not IsValid( self.FrontBogey ) and not IsValid( self.MiddleBogey ) and not IsValid( self.RearBogey ) then return end
 	local resistors, brakeResistors = self.Resistorbank:Camshaft()
-	resistors = not resistors and 20 or resistors
+	resistors = not resistors and 20 or 20 - resistors
 	local throttle = self.CoreSys.Traction
 	local MU = self:MUHelper()
 	local throttleWire = self:ReadTrainWire( 1 )
@@ -1425,10 +1425,15 @@ function ENT:Traction()
 	-- are the motors set to parralel or series?
 	throttle = not parralel and throttle / 2 or throttle
 	throttleWire = not parralel and throttleWire / 2 or throttleWire
-	local motorBaseForce = 66140.28
+	local motorBaseForce = 131408.28
 	local motorForceFactor = motorBaseForce / 20
-	local brakeBaseForce = 128568.336
+	local brakeBaseForce = 122568.336
 	local brakeForceFactor = brakeBaseForce / 20
+	local A = throttle
+	local P = math.max( 0, 0.04449 + 1.06879 * math.abs( A ) - 0.465729 * A ^ 2 )
+	if math.abs( A ) > 0.4 then P = math.abs( A ) end
+	if math.abs( A ) < 0.05 then P = 0 end
+	if self.Speed < 10 then P = P * ( 1.0 + 0.5 * ( 10.0 - self.Speed ) / 10.0 ) end
 	local function motorForceCalc()
 		return motorBaseForce - ( resistors * motorForceFactor )
 	end
@@ -1445,13 +1450,13 @@ function ENT:Traction()
 				self.RearBogey.MotorForce = brakeForceCalc()
 				self.FrontBogey.MotorForce = self.RearBogey.MotorForce
 			else
-				self.FrontBogey.MotorPower = throttle > 0 and 1 or 0
+				self.FrontBogey.MotorPower = P * 0.5 * ( throttle > 0 and 2 or 0 )
 				self.RearBogey.MotorForce = motorForceCalc() / 2
 				self.FrontBogey.MotorForce = self.RearBogey.MotorForce
 			end
 		elseif MU and not deadmanTripped then
 			if not braking then
-				self.FrontBogey.MotorPower = throttleWire > 0 and 1 or 0
+				self.FrontBogey.MotorPower = P * 0.5 * ( throttleWire > 0 and 2 or 0 )
 				self.RearBogey.MotorForce = motorForceCalc() / 2
 				self.FrontBogey.MotorForce = self.RearBogey.MotorForce
 			elseif braking then

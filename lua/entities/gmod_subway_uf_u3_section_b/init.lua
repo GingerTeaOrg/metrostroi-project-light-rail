@@ -471,7 +471,7 @@ function ENT:OnButtonPress( button, ply )
 				self.ParentTrain.Duewag_U3.ReverserLeverStateB = self.ParentTrain.Duewag_U3.ReverserLeverStateB + 1
 				self.ParentTrain.Duewag_U3.ReverserLeverStateB = math.Clamp( self.ParentTrain.Duewag_U3.ReverserLeverStateB, -1, 3 )
 				--self.ParentTrain.Duewag_U3:TriggerInput("ReverserLeverState",self.ReverserLeverState)
-				PrintMessage( HUD_PRINTTALK, self.ParentTrain.Duewag_U3.ReverserLeverStateB )
+				--PrintMessage( HUD_PRINTTALK, self.ParentTrain.Duewag_U3.ReverserLeverStateB )
 			end
 		end
 	end
@@ -483,7 +483,7 @@ function ENT:OnButtonPress( button, ply )
 			--self.ParentTrain.Duewag_U3:TriggerInput("ReverserLeverState",self.ReverserLeverState)
 			self.ParentTrain.Duewag_U3.ReverserLeverStateB = self.ParentTrain.Duewag_U3.ReverserLeverStateB - 1
 			self.ParentTrain.Duewag_U3.ReverserLeverStateB = math.Clamp( self.ParentTrain.Duewag_U3.ReverserLeverStateB, -1, 3 )
-			PrintMessage( HUD_PRINTTALK, self.ParentTrain.Duewag_U3.ReverserLeverStateB )
+			--PrintMessage( HUD_PRINTTALK, self.ParentTrain.Duewag_U3.ReverserLeverStateB )
 		end
 	end
 
