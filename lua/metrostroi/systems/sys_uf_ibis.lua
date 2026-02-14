@@ -1,6 +1,24 @@
 Metrostroi.DefineSystem( "IBIS" )
 TRAIN_SYSTEM.DontAccelerateSimulation = false
 if TURBOSTROI then return end
+TRAIN_SYSTEM.TriggerNames = {
+	"Number1", -- 1
+	"Number2", -- 2
+	"Number3", -- 3
+	"Number4", -- 4
+	"Number5", -- 5
+	"Number6", -- 6
+	"Number7",
+	"Number8",
+	"Number9",
+	"Number0",
+	"Destination", -- 11
+	"Delete", -- 12
+	"Enter", -- 13
+	"ServiceAnnouncement", -- 14
+	"TimeAndDate", -- 15
+}
+
 function TRAIN_SYSTEM:Initialize()
 	self.Route = " " -- Route index number
 	self.RouteChar1 = "0"
@@ -100,7 +118,7 @@ function TRAIN_SYSTEM:Initialize()
 		"Destination", -- 11
 		"Delete", -- 12
 		"Enter", -- 13
-		"SpecialAnnouncements", -- 14
+		"ServiceAnnouncement", -- 14
 		"TimeAndDate", -- 15
 	}
 
@@ -531,7 +549,6 @@ function TRAIN_SYSTEM:UpdateState( dT )
 		end
 	end
 
-	if self.Menu > 0 then self:ReadDataset( dT ) end
 	-- print(self.State, self.Menu)
 	if self.State == 0 and not self.CANBus and self.PowerOffMomentRegistered and CurTime() - self.PowerOffMoment > 240 then completeReset() end
 	if self.State == 4 and self.Triggers[ "Enter" ] then -- We're in the defect state
@@ -578,7 +595,7 @@ function TRAIN_SYSTEM:ProcessChars()
 	self.DisplayedCourseChar3 = tonumber( self.CourseChar3, 10 ) and self.CourseChar3 ~= " " and self.CourseChar3 or " "
 	self.DisplayedCourseChar4 = tonumber( self.CourseChar4, 10 ) and self.CourseChar4 ~= " " and self.CourseChar4 or " "
 	self.Destination = tonumber( self.DestinationChar1 .. self.DestinationChar2 .. self.DestinationChar3, 10 ) or 000
-	self.ServiceAnnouncement = tonumber( self.AnnouncementChar1 .. self.AnnouncementChar2, 10 ) and self.AnnouncementChar1 .. self.AnnouncementChar2 or " "
+	self.ServiceAnnouncement = self.AnnouncementChar1 .. self.AnnouncementChar2
 	self.DestinationString = self.DestinationTable[ self.Destination ]
 	Train:SetNW2Int( "IBIS:State", self.State )
 	Train:SetNW2Int( "IBIS:Route", self.Route )
@@ -599,7 +616,8 @@ function TRAIN_SYSTEM:ProcessChars()
 	Train:SetNW2String( "IBIS:DestinationChar1", self.DestinationChar1 )
 	Train:SetNW2String( "IBIS:DestinationChar2", self.DestinationChar2 )
 	Train:SetNW2String( "IBIS:DestinationChar3", self.DestinationChar3 )
-	Train:SetNW2String( "IBIS:ServiceAnnouncement", self.ServiceAnnouncement )
+	Train:SetNW2String( "IBIS:ServiceAnnouncement", self.AnnouncementPrompt1 .. self.AnnouncementPrompt2 )
+	print( self.ServiceAnnouncement )
 	if self.LineLength == 2 then
 		self.Course = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4
 	elseif self.LineLength == 3 then
@@ -714,6 +732,12 @@ function TRAIN_SYSTEM:ReadDataset()
 		if commit then
 			commitMenu4()
 			updateMenuChange()
+			local serviceAnnouncement = self.ServiceAnnouncements[ self.AnnouncementChar1 .. self.AnnouncementChar2 ]
+			if not serviceAnnouncement then
+				self.State = 3
+				return
+			end
+
 			self:AnnQueue( self.ServiceAnnouncements[ self.AnnouncementChar1 .. self.AnnouncementChar2 ] )
 			self.AnnouncementPrompt1 = " "
 			self.AnnouncementPrompt2 = " "
@@ -726,7 +750,9 @@ function TRAIN_SYSTEM:ReadDataset()
 	end
 end
 
+local lastMainInput = lastMainInput or 0
 function TRAIN_SYSTEM:Menu0()
+	local debounce = CurTime() - lastMainInput > 1
 	if self.State == 0 then return end
 	local line = " "
 	if self.LineLength == 2 then
@@ -737,22 +763,34 @@ function TRAIN_SYSTEM:Menu0()
 
 	local route = self.Route
 	local routeTable = self.RouteTable[ line ] and self.RouteTable[ line ][ route ] or nil
-	if self.Triggers[ "Number3" ] then
+	if self.Triggers[ "Number3" ] and debounce then
+		lastMainInput = CurTime()
 		self.CurrentStationInternal = self.CurrentStationInternal + 1
 		self.CurrentStation = routeTable[ self.CurrentStationInternal ]
 		self.NextStation = self.RouteTable[ self.CurrentStationInternal + 1 ]
-	elseif self.Triggers[ "Number6" ] then
+	elseif self.Triggers[ "Number6" ] and debounce then
+		lastMainInput = CurTime()
 		self.CurrentStationInternal = self.CurrentStationInternal - 1
 		self.CurrentStation = routeTable[ self.CurrentStationInternal ]
 		self.NextStation = self.RouteTable[ self.CurrentStationInternal - 1 ]
-	elseif self.Triggers[ "Number7" ] then
+	elseif self.Triggers[ "Number7" ] and debounce then
+		lastMainInput = CurTime()
 		self.Menu = 2
-	elseif self.Triggers[ "Number9" ] then
+	elseif self.Triggers[ "Number9" ] and debounce then
+		lastMainInput = CurTime()
 		self:Play()
+	elseif self.Triggers[ "ServiceAnnouncement" ] and debounce then
+		lastMainInput = CurTime()
+		self.Menu = 4
+		self:Menu4()
 	end
+
+	print( self.Triggers[ "ServiceAnnouncement" ] and debounce )
 end
 
+local lastLineInput = lastLineInput or 0
 function TRAIN_SYSTEM:Menu1()
+	local debounce = CurTime() - lastLineInput > 1
 	--State, self.Menu )
 	--Menu 1, LinieKurs
 	if self.Menu ~= 1 then return end
@@ -767,7 +805,8 @@ function TRAIN_SYSTEM:Menu1()
 
 	local input = returnNumber()
 	if input and not tonumber( self.CoursePrompt1, 10 ) then -- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
-		if self.Debounce[ "Number" .. input ] == 0 or ( currentTime - self.Debounce[ "Number" .. input ] > self.DebounceTime ) then
+		if debounce then
+			lastLineInput = CurTime()
 			if self.LineLength == 2 then
 				self.CoursePrompt1 = self.CoursePrompt2
 				self.CoursePrompt2 = self.CoursePrompt3
@@ -780,10 +819,9 @@ function TRAIN_SYSTEM:Menu1()
 				self.CoursePrompt4 = self.CoursePrompt5
 				self.CoursePrompt5 = input
 			end
-
-			self.Debounce[ input ] = currentTime
 		end
-	elseif self.Triggers[ "Delete" ] then
+	elseif self.Triggers[ "Delete" ] and debounce then
+		lastLineInput = CurTime()
 		if self.Debounce[ "Delete" ] == 0 or ( currentTime - self.Debounce[ "Delete" ] > self.DebounceTime ) then
 			--print( "delete" )
 			if self.LineLength == 2 then
@@ -798,8 +836,6 @@ function TRAIN_SYSTEM:Menu1()
 				self.CoursePrompt2 = self.CoursePrompt1
 				self.CoursePrompt1 = " "
 			end
-
-			self.Debounce[ "Delete" ] = currentTime
 		end
 	else
 		self.CoursePrompt1 = self.CoursePrompt1
@@ -817,7 +853,8 @@ function TRAIN_SYSTEM:Menu1()
 	end
 
 	self.Train:SetNW2String( "Prompt", prompt )
-	if self.State == 1 and self.Triggers[ "Enter" ] and ( self.Debounce[ "Enter" ] == 0 or self.Debounce[ "Enter" ] > self.DebounceTime ) then
+	if self.State == 1 and self.Triggers[ "Enter" ] and debounce then
+		lastLineInput = CurTime()
 		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered == true then
 			return true
@@ -836,7 +873,8 @@ function TRAIN_SYSTEM:Menu1()
 		else
 			return "fail"
 		end
-	elseif self.State == 2 and self.Triggers[ "Enter" ] and ( not self.Debounce[ "Enter" ] or self.Debounce[ "Enter" ] > self.DebounceTime ) then
+	elseif self.State == 2 and self.Triggers[ "Enter" ] and debounce then
+		lastLineInput = CurTime()
 		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered then
 			self.Menu = 2
@@ -861,14 +899,16 @@ function TRAIN_SYSTEM:Menu1()
 	return false
 end
 
+local lastRouteInput = lastRouteInput or 0
 function TRAIN_SYSTEM:Menu2()
-	self.DebounceTime = 5
-	local currentTime = CurTime()
+	self.DebounceTime = 1
+	local debounce = CurTime() - lastRouteInput > 1
 	if self.Menu ~= 2 then return end
 	local line = self.Course:sub( 1, self.LineLength )
 	local function returnNumberKey()
 		for keyName, isPressed in pairs( self.NumberKeys ) do
-			if isPressed then
+			if isPressed and CurTime() - lastRouteInput > 1 then
+				lastRouteInput = CurTime()
 				local digit = string.sub( keyName, 7, 7 )
 				return keyName, digit
 			end
@@ -878,19 +918,16 @@ function TRAIN_SYSTEM:Menu2()
 
 	local inputKey, inputDigit = returnNumberKey()
 	local lastInput = self.Debounce[ inputKey ] == 0 and nil or lastInput
-	if inputKey then print( self.Debounce[ inputKey ] == 0 or currentTime - self.Debounce[ inputKey ] > self.DebounceTime ) end
 	if inputKey and tonumber( inputDigit, 10 ) and not tonumber( self.RoutePrompt1, 10 ) then
-		if lastInput ~= inputKey then
-			--if self.Debounce[ inputKey ] == 0 or currentTime - self.Debounce[ inputKey ] > ( self.DebounceTime - 0.2 ) then
+		if debounce then
 			self.RoutePrompt1 = self.RoutePrompt2
-			lastInput = inputKey
 			self.RoutePrompt2 = inputDigit
 		end
-	elseif self.Triggers[ "Delete" ] then
-		self.Debounce[ "Delete" ] = currentTime
+	elseif self.Triggers[ "Delete" ] and debounce then
+		lastRouteInput = CurTime()
 		self.RoutePrompt2 = self.RoutePrompt1
 		self.RoutePrompt1 = " "
-	elseif self.Triggers[ "Enter" ] and ( self.Debounce[ "Enter" ] == 0 or currentTime - self.Debounce[ "Enter" ] > self.DebounceTime ) then
+	elseif self.Triggers[ "Enter" ] and debounce then
 		if self.RoutePrompt1 == " " and tonumber( self.RoutePrompt2, 10 ) then self.RoutePrompt1 = "0" end
 		local Route = self.RoutePrompt1 .. self.RoutePrompt2
 		if self.RouteTable[ line ] then
@@ -926,7 +963,8 @@ function TRAIN_SYSTEM:Menu3()
 	local function returnNumber()
 		for k, _ in pairs( self.NumberKeys ) do
 			if self.NumberKeys[ k ] then
-				return k
+				local ret = string.TrimLeft( k, "Number" )
+				return ret
 			else
 				continue
 			end
@@ -954,12 +992,15 @@ function TRAIN_SYSTEM:Menu3()
 	return false
 end
 
+local announcementsInput = announcementsInput or 0
 function TRAIN_SYSTEM:Menu4()
 	if self.Menu ~= 4 then return end
+	local debounce = CurTime() - announcementsInput > 1
 	local function returnNumber()
 		for k, v in pairs( self.NumberKeys ) do
 			if self.NumberKeys[ k ] then
-				return k
+				local ret = string.TrimLeft( k, "Number" )
+				return ret
 			else
 				continue
 			end
@@ -969,17 +1010,17 @@ function TRAIN_SYSTEM:Menu4()
 
 	local input = returnNumber()
 	-- print(self.AnnouncementChar1,self.AnnouncementChar2)
-	if input then
+	if input and debounce then
 		self.AnnouncementPrompt1 = self.AnnouncementPrompt2
-		self.AnnouncementPrompt2 = self.KeyInput
-	elseif self.Triggers[ "Delete" ] then
+		self.AnnouncementPrompt2 = input
+	elseif self.Triggers[ "Delete" ] and debounce then
 		self.AnnouncementPrompt2 = self.AnnouncementPrompt1
 		self.AnnouncementPrompt1 = " "
 	end
 
-	if self.ServiceAnnouncements[ self.AnnouncementPrompt1 .. self.AnnouncementPrompt2 ] and self.Triggers[ "Enter" ] then
+	if self.ServiceAnnouncements[ self.AnnouncementPrompt1 .. self.AnnouncementPrompt2 ] and self.Triggers[ "Enter" ] and tonumber( self.AnnouncementPrompt1 .. self.AnnouncementPrompt2, 10 ) and debounce then
 		return true
-	elseif not self.ServiceAnnouncements[ self.AnnouncementChar1 .. self.AnnouncementChar2 ] and self.Triggers[ "Enter" ] then
+	elseif not self.ServiceAnnouncements[ self.AnnouncementChar1 .. self.AnnouncementChar2 ] and self.Triggers[ "Enter" ] and debounce then
 		return "fail"
 	end
 	return false
@@ -1011,12 +1052,14 @@ function TRAIN_SYSTEM:AnnQueue( msg )
 	local Announcer = self.Train.Announcer
 	if msg and type( msg ) ~= "table" then
 		Announcer:Queue( msg )
+		return
 	else
 		Announcer:Queue( msg )
+		return
 	end
 end
 
-TRAIN_SYSTEM.lastTrigger = 0
+local lastAnnouncement = lastAnnouncement or 0
 function TRAIN_SYSTEM:Play( time )
 	local message = {}
 	local line
@@ -1037,7 +1080,11 @@ function TRAIN_SYSTEM:Play( time )
 
 			table.insert( message, i, temp )
 		elseif announcementScript[ i ] == "station" then
-			print( line )
+			if not self.CurrentStation then
+				ErrorNoHalt( "Current Station Not Defined!" )
+				return
+			end
+
 			temp = MPLR.IBISAnnouncementMetadata[ self.Train:GetNW2Int( "IBIS:Announcements", 1 ) ][ self.CurrentStation ][ line ][ self.Route ]
 			if not temp then
 				print( "ANNOUNCEMENT CORRUPT" )
@@ -1052,6 +1099,7 @@ function TRAIN_SYSTEM:Play( time )
 
 	PrintTable( message )
 	if next( message ) then self:AnnQueue( message ) end
+	return
 end
 
 function TRAIN_SYSTEM:OverrideSwitching( dir )
