@@ -15,6 +15,7 @@ ENT.Panel1Angle = { Angle( 0, 15, 0 ) }
 ENT.Panel2 = { Vector( 100, 0, 0 ), Vector( 200, -50, 0 ) }
 ENT.Panel2Angle = { Angle( 0, 15, 0 ) }
 ENT.RenderGroup = RENDERGROUP_BOTH
+ENT.AutomaticFrameAdvance = true
 -- Function: Set parameters for sound including DSP
 function ENT:SetBassParameters( snd, pitch, volume, tbl, looping, spec, dspEffect )
 	if snd:GetState() ~= GMOD_CHANNEL_STOPPED and snd:GetState() ~= GMOD_CHANNEL_PAUSED then return end

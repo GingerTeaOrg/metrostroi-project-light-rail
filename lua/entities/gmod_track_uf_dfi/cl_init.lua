@@ -209,7 +209,7 @@ function ENT:Think()
 	self.Pos = self:GetPos()
 	self.plyPos = LocalPlayer():GetPos()
 	self.dist = self.Pos:Distance( self.plyPos )
-	-- print(self.dist)
+	-- --print(self.dist)
 end
 
 function ENT:SubstituteAbbreviation( Input )
@@ -219,17 +219,17 @@ function ENT:SubstituteAbbreviation( Input )
 	for k, v in pairs( self.Abbreviations ) do
 		if string.find( Input, k, 1, true ) then output = string.gsub( Input, k, self.Abbreviations[ k ], 1 ) end
 	end
-	-- print(output)
+	-- --print(output)
 	return output
 end
 
 function ENT:RenderDisplay( ent )
+	if not self then self = ent end
 	if not ent.Grid then
-		print( "NOGRID" )
+		--print( "NOGRID" )
 		return
 	end
 
-	print( "RENDERING!", self )
 	if not ent.RenderTimer then ent.RenderTimer = RealTime() end
 	if RealTime() - ent.RenderTimer > 2 then
 		render.PushRenderTarget( ent.DFI1, 0, 0, 4096, 912 )
@@ -374,7 +374,7 @@ function ENT:NewDisplay( msg, ent )
 		local applySpacing = font ~= "Symbols"
 		-- Loop through each character in the string
 		for i = 1, #str1 do
-			local char = str1:sub( i, i )
+			local char = utf8.sub( str1, i, i )
 			-- Determine the character matrix based on the font
 			if font == "SmallThin" then
 				charMatrix = MPLR.charMatrixSmallThin[ char ]
