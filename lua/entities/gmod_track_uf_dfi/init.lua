@@ -157,6 +157,7 @@ function ENT:TrainPresent()
 	local function trainTrackingFallback()
 		if not self.Train1 or not IsValid( self.Train1Ent ) then return false end
 		local trainPos = Metrostroi.GetPositionOnTrack( self.Train1Ent:GetPos(), self.Train1Ent:GetAngles() )[ 1 ]
+		if not trainPos then return "DestUnknown" end
 		local trainPath = trainPos.path.id
 		local myPath = self.TrackPosition.path.id
 		print( myPath )
