@@ -158,7 +158,7 @@ function TRAIN_SYSTEM:Think( dT )
 	self:ForceDoorOpen()
 	self.TrainHasDoorsClosed = self:CheckTrainDoors( self.Train.WireLeader )
 	self.CarHasDoorsClosed = self:CheckLocalDoors()
-	--print( self.UnlockLeft, self.UnlockRight, self.StepMode, self.Train, self.DoorUnlockState, self.Train:ReadTrainWire( 21 ) )
+	----print( self.UnlockLeft, self.UnlockRight, self.StepMode, self.Train, self.DoorUnlockState, self.Train:ReadTrainWire( 21 ) )
 end
 
 function TRAIN_SYSTEM:DoorHandler( dT )
@@ -184,12 +184,11 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 		self.UnlockLeft = self.Train:ReadTrainWire( 13 ) > 0
 	end
 
-	--print( self.DoorUnlockState, self.UnlockLeft, self.UnlockRight )
+	----print( self.DoorUnlockState, self.UnlockLeft, self.UnlockRight )
 	local idle = self.ReverserA == 1 or self.ReverserB == 1
 	local stepmode = self.StepMode
-	local toggle = self.Train.DoorsUnlockToggle
-	local MUUnlock = self.Train:ReadTrainWire( 15 ) > 0
-	--print( "left", right )
+	local toggle = self.Train.SubwayTrain.UnlockDoorsToggle
+	local MUUnlock = not MULeader and self.Train:ReadTrainWire( 15 ) > 0
 	if MULeader then
 		if p.UnlockDoors > 0 and self.DoorUnlockState == 0 then
 			self.DoorsPreviouslyUnlocked = true
@@ -201,8 +200,7 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 
 			self.Train:WriteTrainWire( 15, self.DoorUnlockState > 0 and 1 or 0 )
 			self.DoorsCloseTriggered = false
-		elseif ( not toggle and p.DoorsLock > 0 or toggle and p.UnlockDoors == 0 ) and self.DoorUnlockState > 0 then
-			--print( "LOCKING" )
+		elseif not toggle and p.DoorsLock > 0 or toggle and p.UnlockDoors == 0 then
 			self.DoorUnlockState = 0
 			self.DoorsCloseTriggered = true
 		end
@@ -215,7 +213,7 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 		if p.DoorsCloseConfirm > 0 then self.DoorsPreviouslyUnlocked = false end
 		self.Train:SetNW2Bool( "DepartureAlarm", self.DoorsPreviouslyUnlocked )
 	elseif ( ( self.DoorsPreviouslyUnlocked and self.DoorsPreviouslyOpened ) or ( self.DoorUnlockState == 0 and self.DoorsPreviouslyUnlocked ) ) and not self.RequireDepartureAcknowledge and self.TrainHasDoorsClosed then
-		--print( "DepartureClear!!" )
+		----print( "DepartureClear!!" )
 		self.Train:SetNW2Bool( "DepartureAlarm", true )
 		self.DoorsPreviouslyUnlocked = false
 		self.DoorsPreviouslyOpened = false
@@ -226,11 +224,11 @@ function TRAIN_SYSTEM:DoorHandler( dT )
 		self:Steps()
 	end
 
-	self:Doors( self.DoorUnlockState > 0 or MUUnlock, self.UnlockLeft, self.UnlockRight, self.Door1Unlock, self.DoorUnlockState > 0 and idle, stepmode, dT )
+	self:Doors( MULeader and self.DoorUnlockState > 0 or MUUnlock, self.UnlockLeft, self.UnlockRight, self.Door1Unlock, self.DoorUnlockState > 0 and idle, stepmode, dT )
 	self:PrevUnlock( self.UnlockLeft, self.UnlockRight, self.DoorUnlockState > 0 )
 	self:DoorNW2()
 	-------------------------
-	if p.DoorsForceClose and ( MULeader and p.DoorsForceClose > 1 ) then
+	if p.DoorsForceClose and ( MULeader and p.DoorsForceClose > 0 ) then
 		self:DoorsForceClose( self.UnlockLeft, self.UnlockRight )
 		self.Train:WriteTrainWire( 22, 1 )
 	elseif p.DoorsForceClose and ( MULeader and p.DoorsForceClose < 1 ) then
@@ -306,7 +304,21 @@ function TRAIN_SYSTEM:Steps()
 	local conflictingHeads = sys.ConflictingHeads
 	if not MULeader then
 		self.StepMode = t:ReadTrainWire( 18 ) > 0 and 1 or t:ReadTrainWire( 19 ) > 0 and 2 or t:ReadTrainWire( 20 ) > 0 and 3 or 0
-	elseif MULeader and conflictingHeads then
+	elseif MULeader and not conflictingHeads then
+		if self.StepMode == 1 then
+			t:WriteTrainWire( 19, 1 )
+			t:WriteTrainWire( 20, 0 )
+			t:WriteTrainWire( 18, 0 )
+		elseif self.StepMode == 2 then
+			t:WriteTrainWire( 20, 1 )
+			t:WriteTrainWire( 19, 0 )
+			t:WriteTrainWire( 18, 0 )
+		elseif self.StepMode == 0 then
+			t:WriteTrainWire( 20, 0 )
+			t:WriteTrainWire( 19, 0 )
+			t:WriteTrainWire( 18, 1 )
+		end
+
 		if p.StepsLow > 0 then
 			self.StepMode = 1
 			t:WriteTrainWire( 19, 1 )
@@ -322,8 +334,6 @@ function TRAIN_SYSTEM:Steps()
 			t:WriteTrainWire( 20, 0 )
 			t:WriteTrainWire( 19, 0 )
 			t:WriteTrainWire( 18, 1 )
-		else
-			self.StepMode = self.StepMode
 		end
 	end
 end
@@ -331,6 +341,31 @@ end
 function TRAIN_SYSTEM:StepHandler( side, open, dT )
 	local t = self.Train
 	local p = self.Train.Panel
+	--print( self.StepMode, self.DoorUnlockState )
+	if self.StepStatesMediumLeft then
+		for k, v in ipairs( self.StepStatesMediumLeft ) do
+			t:SetNW2Float( "StepMediumLeft" .. k, v )
+		end
+	end
+
+	if self.StepStatesLowLeft then
+		for k, v in ipairs( self.StepStatesLowLeft ) do
+			t:SetNW2Float( "StepLowestLeft" .. k, v )
+		end
+	end
+
+	if self.StepStatesMediumRight then
+		for k, v in ipairs( self.StepStatesMediumRight ) do
+			t:SetNW2Float( "StepMediumRight" .. k, v )
+		end
+	end
+
+	if self.StepStatesLowRight then
+		for k, v in ipairs( self.StepStatesLowRight ) do
+			t:SetNW2Float( "StepLowestRight" .. k, v )
+		end
+	end
+
 	if self.StepMode < 1 then
 		for k in ipairs( self.StepStatesMediumRight ) do
 			if self.StepStatesMediumRight[ k ] > 0 then self.StepStatesMediumRight[ k ] = self.StepStatesMediumRight[ k ] - 0.4 * dT end
@@ -355,7 +390,7 @@ function TRAIN_SYSTEM:StepHandler( side, open, dT )
 	local function updateStepStates( stepStates, side, open, factor )
 		local doorRandomness = side == "right" and self.DoorRandomnessRight or self.DoorRandomnessLeft
 		for i in pairs( doorRandomness ) do
-			--print( i, "random" )
+			----print( i, "random" )
 			if open then
 				if stepStates[ i ] < 1 and doorRandomness[ i ] == 3 then stepStates[ i ] = stepStates[ i ] + factor end
 			else
@@ -387,35 +422,10 @@ function TRAIN_SYSTEM:StepHandler( side, open, dT )
 			updateStepStates( self.StepStatesLowLeft, side, open, factor )
 		end
 	end
-
-	if self.StepStatesMediumLeft then
-		for k, v in ipairs( self.StepStatesMediumLeft ) do
-			t:SetNW2Float( "StepMediumLeft" .. k, v )
-		end
-	end
-
-	if self.StepStatesLowLeft then
-		for k, v in ipairs( self.StepStatesLowLeft ) do
-			t:SetNW2Float( "StepLowestLeft" .. k, v )
-		end
-	end
-
-	if self.StepStatesMediumRight then
-		for k, v in ipairs( self.StepStatesMediumRight ) do
-			t:SetNW2Float( "StepMediumRight" .. k, v )
-		end
-	end
-
-	if self.StepStatesLowRight then
-		for k, v in ipairs( self.StepStatesLowRight ) do
-			t:SetNW2Float( "StepLowestRight" .. k, v )
-		end
-	end
 end
 
 -- Are the doors unlocked, sideLeft,sideRight,door1 open, unlocked while reverser on * position,steps high/medium/low
 function TRAIN_SYSTEM:Doors( unlock, left, right, door1, idleunlock, stepmode, dT )
-	local WagonList = self.Train.WagonList
 	local t = self.Train
 	if unlock then
 		self.DoorLockMoment = 0
@@ -423,7 +433,6 @@ function TRAIN_SYSTEM:Doors( unlock, left, right, door1, idleunlock, stepmode, d
 		self.DoorLockMoment = CurTime()
 	end
 
-	--print( "TEST", unlock )
 	local IRGates = self:IRIS( true )
 	--PrintTable( IRGates )
 	-- Initialize previousUnlock outside the loop to maintain state across iterations
@@ -451,7 +460,7 @@ function TRAIN_SYSTEM:Doors( unlock, left, right, door1, idleunlock, stepmode, d
 
 		self:UnlockDoors( right, left, IRGates, dT )
 	elseif not unlock and not door1 then
-		--print( "LOCKING!!" )
+		----print( "LOCKING!!" )
 		self:LockDoors( right, left, IRGates, dT, lockSignalMoment )
 		self.DoorRandomnessCalculated = false
 	elseif idleunlock then
@@ -477,7 +486,7 @@ function TRAIN_SYSTEM:UnlockDoors( right, left, IRGates, dT )
 					self.DoorsPreviouslyOpened = true
 					if self.StepMode and self.StepMode < 1 then --no steps, open immediately
 						doorStatesRight[ i ] = math.Clamp( doorStatesRight[ i ] + 0.4 * dT, 0, 1 )
-						--print( doorStates[ i ] )
+						----print( doorStates[ i ] )
 					elseif stepStates and self.StepMode > 0 and stepStates[ i ] == 1 then
 						--first open steps, then the doors open
 						doorStatesRight[ i ] = math.Clamp( doorStatesRight[ i ] + 0.4 * dT, 0, 1 )
@@ -489,11 +498,11 @@ function TRAIN_SYSTEM:UnlockDoors( right, left, IRGates, dT )
 		--PrintTable( tabLeft )
 		if next( tabLeft ) and left then
 			for i in pairs( tabLeft ) do
-				--print( "i =", i, tabLeft[ i ], doorStatesLeft[ i ] )
+				----print( "i =", i, tabLeft[ i ], doorStatesLeft[ i ] )
 				if tabLeft[ i ] == 3 and doorStatesLeft[ i ] < 1 and not IRGates[ i ] then
 					if self.StepMode and self.StepMode < 1 then --no steps, open immediately
 						doorStatesLeft[ i ] = math.Clamp( doorStatesLeft[ i ] + 0.4 * dT, 0, 1 )
-						--print( doorStates[ i ] )
+						----print( doorStates[ i ] )
 					elseif stepStates and self.StepMode > 0 and stepStates[ i ] == 1 then
 						--first open steps, then the doors open
 						doorStatesLeft[ i ] = math.Clamp( doorStatesLeft[ i ] + 0.4 * dT, 0, 1 )
@@ -624,7 +633,7 @@ function TRAIN_SYSTEM:IRIS( enable, left, right )
 end
 
 function TRAIN_SYSTEM:RandomUnlock( num, side )
-	--print( "randomUnlock", num )
+	----print( "randomUnlock", num )
 	if side == "left" then
 		for i = 1, num do
 			local dN = #self.DoorRandomnessLeft
