@@ -11,7 +11,7 @@ local TRACK_CLEARANCE = 100 --Vertical space above the rails that will always be
 local TRACK_SINGLERAIL = ( TRACK_GAUGE + TRACK_WIDTH ) / 2
 local function dirdebug( pos, dir, color )
 	if not pos or not dir then
-		print( "No debug data received" )
+		--print( "No debug data received" )
 		return
 	end
 
@@ -19,7 +19,7 @@ local function dirdebug( pos, dir, color )
 	if type( pos ) == "table" and pos.centerpos then pos = pos.centerpos end
 	-- Fallback: if pos is still not a vector, abort gracefully
 	if not pos or not pos.x then
-		print( "dirdebug: invalid pos (not a Vector)." )
+		--print( "dirdebug: invalid pos (not a Vector)." )
 		return
 	end
 
@@ -52,11 +52,11 @@ local function traceWorldOnly( pos, dir, col )
 	--debugoverlay.Sphere( tr.StartPos, 2, 10, Color( 0, 255, 255 ), true )
 	-- Print info about what we hit
 	if tr.Hit then
-		print( "[Rerail Debug] Hit entity:", tr.Entity, "Class:", tr.Entity:IsValid() and tr.Entity:GetClass() or "world" )
-		print( "[Rerail Debug] Hit texture:", tr.HitTexture )
-		print( "[Rerail Debug] Hit normal:", tr.HitNormal )
+		--print( "[Rerail Debug] Hit entity:", tr.Entity, "Class:", tr.Entity:IsValid() and tr.Entity:GetClass() or "world" )
+		--print( "[Rerail Debug] Hit texture:", tr.HitTexture )
+		--print( "[Rerail Debug] Hit normal:", tr.HitNormal )
 	else
-		print( "[Rerail Debug] No hit" )
+		--print( "[Rerail Debug] No hit" )
 	end
 	return tr
 end
@@ -116,7 +116,7 @@ end
 -- Position needs to be between/below the tracks already, don't use a props origin
 -- Only needs a rough forward vector, ent:GetAngles():Forward() suffices
 function MPLR.RerailGetTrackData( pos, forward )
-	print( "RUNNING" )
+	--print( "RUNNING" )
 	debugoverlay.Text( pos + Vector( 0, 0, 50 ), "ENTER getTrackData", 5 )
 	debugoverlay.Cross( pos, 5, 10, Color( 255, 0, 255 ), true )
 	-- ↓ 1. Downward trace: find ground
@@ -136,12 +136,15 @@ function MPLR.RerailGetTrackData( pos, forward )
 	debugoverlay.Line( floor, floor + approxRight * 500, 10, Color( 0, 255, 255 ), true )
 	debugoverlay.Cross( floor, 6, 10, Color( 255, 255, 255 ), true )
 	debugoverlay.Text( floor + Vector( 0, 0, 8 ), "floor", 5 )
-	debugoverlay.Cross( centerpos, 6, 10, Color( 0, 255, 255 ), true )
-	debugoverlay.Text( centerpos + Vector( 0, 0, 8 ), "centerpos", 5 )
+	if centerpos then
+		debugoverlay.Cross( centerpos, 6, 10, Color( 0, 255, 255 ), true )
+		debugoverlay.Text( centerpos + Vector( 0, 0, 8 ), "centerpos", 5 )
+	end
+
 	if not trSide or not trSide.Hit then
 		debugoverlay.Cross( floor + approxRight * 500, 5, 10, Color( 255, 0, 0 ), true )
 		debugoverlay.Text( floor + approxRight * 500 + Vector( 0, 0, 5 ), "Right Wall Miss", 5 )
-		print( "QUITTING" )
+		--print( "QUITTING" )
 		return false
 	end
 
@@ -199,11 +202,11 @@ function MPLR.RerailGetTrackData( pos, forward )
 	debugoverlay.Cross( clearancePos, 6, 10, Color( 255, 128, 0 ), true )
 	debugoverlay.Text( clearancePos + Vector( 0, 0, 5 ), "Clearance", 5 )
 	debugoverlay.Text( pos + Vector( 0, 0, 80 ), "EXIT getTrackData", 5 )
-	print( "[getTrackData] floor", floor )
-	print( "[getTrackData] right", trackright )
-	print( "[getTrackData] leftRail", trLeft and trLeft.HitPos )
-	print( "[getTrackData] rightRail", trRight and trRight.HitPos )
-	print( "[getTrackData] center", centerpos )
+	--print( "[getTrackData] floor", floor )
+	--print( "[getTrackData] right", trackright )
+	--print( "[getTrackData] leftRail", trLeft and trLeft.HitPos )
+	--print( "[getTrackData] rightRail", trRight and trRight.HitPos )
+	--print( "[getTrackData] center", centerpos )
 	return {
 		forward = trackforward,
 		right = trackright,
