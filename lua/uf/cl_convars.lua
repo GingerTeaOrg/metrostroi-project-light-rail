@@ -13,5 +13,4 @@ concommand.Add( "mplr_manual", function()
 	--ply, _, args)
 	gui.OpenURL( "https://lillywho.github.io" )
 end )
-
-print( "MPLR: Set all the client convars!" )
+--print( "MPLR: Set all the client convars!" )
