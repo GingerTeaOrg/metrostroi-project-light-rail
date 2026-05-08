@@ -78,7 +78,7 @@ function TOOL:LeftClick( trace )
 	local name2 = self:GetClientInfo( "name2" ) ~= "" and self:GetClientInfo( "name2" ) or nil
 	local blockSignalling = self:GetClientNumber( "blockmode", 1 ) > 0
 	local signalColumns = self:GetClientNumber( "columns", 1 )
-	print( signalColumns )
+	--print( signalColumns )
 	local horizontalOffset = self:GetClientNumber( "HorizontalOffset", 0 )
 	local verticalOffset = self:GetClientNumber( "VerticalOffset", 0 )
 	local lateralOffset = self:GetClientNumber( "LateralOffset", 0 )
@@ -106,7 +106,7 @@ function TOOL:LeftClick( trace )
 				for _, v in ipairs( whichTab ) do
 					if v ~= "" then -- ignore empties
 						columnTab[ i ][ v ] = true
-						print( columnTab[ i ][ v ] )
+						--print( columnTab[ i ][ v ] )
 					end
 				end
 			end
@@ -145,7 +145,7 @@ function TOOL:LeftClick( trace )
 			for _, v in ipairs( whichTab ) do
 				if v ~= "" then -- ignore empties
 					columnTab[ i ][ v ] = true
-					print( v, columnTab[ i ][ v ] )
+					--print( v, columnTab[ i ][ v ] )
 				end
 			end
 		end
