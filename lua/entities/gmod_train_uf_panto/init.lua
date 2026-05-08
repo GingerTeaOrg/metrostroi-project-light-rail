@@ -66,9 +66,11 @@ function ENT:CheckContact( pos )
 	end
 
 	local pantoheight = self:WorldToLocal( result.HitPos ) --- PhysObj:WorldToLocalVector( pos + Vector( 0, 0, math.abs( pos.z ) ) )
-	--print("traceorigin",PhysObj:WorldToLocalVector(pos),"hitpos",PhysObj:WorldToLocalVector(result.HitPos),"calculated height diff",pantoheight.z)
+	----print("traceorigin",PhysObj:WorldToLocalVector(pos),"hitpos",PhysObj:WorldToLocalVector(result.HitPos),"calculated height diff",pantoheight.z)
 	local traceEnt = result.Entity
-	if IsValid( traceEnt ) and traceEnt:GetClass() == "player" and MPLR.Voltage > 40 then --if the player hits the bounding box, unalive them
+	local hitClass = traceEnt:GetClass()
+	--print( hitClass )
+	if IsValid( traceEnt ) and hitClass == "player" and MPLR.Voltage > 40 then --if the player hits the bounding box, unalive them
 		local pPos = traceEnt:GetPos()
 		util.BlastDamage( traceEnt, traceEnt, pPos, 100, 3.0 * MPLR.Voltage )
 		local effectdata = EffectData()
@@ -103,7 +105,25 @@ function ENT:CheckContact( pos )
 			if traceEnt:Health() == 0 then v:PrintMessage( HUD_PRINTTALK, string.format( msg[ rnd ], traceEnt:GetPlayerInfo().name, MPLR.Voltage ) ) end
 		end
 		return false, nil, pantoheight.z --don't return anything because... I mean, a human body is a conductor, just not a very good one
-	elseif result.Hit and traceEnt:GetClass() == "prop_static" and MPLR.Voltage > 40 then
+	elseif result.Hit and hitClass == "prop_static" or hitClass == "prop_ragdoll" and MPLR.Voltage > 40 then
+		if hitClass == "prop_ragdoll" then
+			local physCount = traceEnt:GetPhysicsObjectCount()
+			for i = 0, physCount - 1 do
+				print( i )
+				local phys = traceEnt:GetPhysicsObjectNum( i )
+				local bonePos = traceEnt:GetBonePosition( i )
+				if bonePos == traceEnt:GetPos() then bonePos = traceEnt:GetBoneMatrix( i ):GetTranslation() end
+				if IsValid( phys ) then
+					local physHeight = phys:GetPos()
+					local ownPos = self:GetPos()
+					--if ( ( ownPos.x > physHeight.x and ownPos.x - physHeight.x < 20 ) or ( ownPos.x < physHeight.x and ownPos.x - physHeight.x > -20 ) ) and ( ( ownPos.y > physHeight.y and ownPos.y - physHeight.y < 20 ) or ( ownPos.y < physHeight.y and ownPos.y - physHeight.y > -20 ) ) then
+					print( physHeight.z, bonePos.z, self:GetPos().z )
+					return result.Hit, traceEnt, self:WorldToLocal( physHeight )
+					--end
+				end
+			end
+		end
+
 		--randomly create some sparks if we're hitting catenary, with a 12% chance
 		if self.Train.Speed >= 5 and math.random( 0, 100 ) >= 80 then
 			local pPos = result.HitPos

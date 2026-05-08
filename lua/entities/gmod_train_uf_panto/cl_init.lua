@@ -17,7 +17,7 @@ function ENT:Think()
 	self.DeltaTime = RealFrameTime() --CurTime() - self.PrevTime
 	self.PantoHeight = math.Round( self.PantoHeight, 2 )
 	self:Draw()
-	--print(self.PantoHeight.z)
+	----print(self.PantoHeight.z)
 end
 
 function ENT:Draw()
@@ -73,6 +73,6 @@ function ENT:Debug()
 	if not cvar then return end
 	local mins = self:GetNWVector( "mins", Vector( -24, -24, 0 ) )
 	local maxs = self:GetNWVector( "maxs", Vector( 24, 24, 1.5 ) )
-	--print(self:GetPos())
+	----print(self:GetPos())
 	render.DrawWireframeBox( self:LocalToWorld( Vector( -10, 0, 0 ) ), self:GetAngles(), mins, Vector( maxs.x, maxs.y, self.PantoHeight ), Color( 255, 255, 255 ), true )
 end
