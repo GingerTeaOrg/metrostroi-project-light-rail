@@ -32,6 +32,7 @@ local function tableInit()
 	MPLR.SignalEntityPositions = {} --		-- Signal entity Vectors, just in case it'll be useful ¯\_(ツ)_/¯
 	MPLR.SignalStates = {} -- 				-- Signal states by either ent or name, -- TODO decide whether by ent or name
 	MPLR.SignageEntsByNode = {} --			-- Query this table by entering a given node, get a signage entity returned if present
+	MPLR.TrafficLightControllers = {}
 	--[[if not table.IsEmpty( Metrostroi.Paths ) then
 		print( "MPLR: Preparing INDUSI additions for pathing." )
 		for i = 1, #Metrostroi.Paths do
@@ -1096,7 +1097,7 @@ function MPLR.LinkSwitch()
 				print( "--", "node1.path", "node1b.path" )
 				print( "--", node.id .. "->" .. nextNode.id, "", nodeB.id .. "->" .. nextNodeB.id )
 				print( "--", node.id < nextNode.id, "", nodeB.id < nextNodeB.id )
-				--print(Metrostroi.VectorAngle(node.pos,nnode1.pos,nnode2.pos))
+				print( Metrostroi.VectorAngle( node.pos, nnode1.pos, nnode2.pos ) )
 				print( Format( "- MPLR: Path:%d nodeX:%d\tLinked to switch %s (linked from)", nodeB.path.id, nodeB.x, switch ) )
 				--Set switch in branch for easy access
 				node.switch = { switch, node.id < nextNode.id }
@@ -1276,4 +1277,13 @@ function MPLR.ScanSwitchOccupation( switch )
 		if prim_sec == 1 and firstNodesTraversed == nodeRange then return firstScanForwardsResult, scanForwards( secondPathNode, 2 ) end
 		if prim_sec == 2 and secondNodesTraversed == nodeRange then return secondScanForwardsResult end
 	end
+end
+
+function MPLR.GetTrafficLightControllerData( id )
+	local name = game.GetMap()
+	local data = getFile( "project_light_rail_data/trafficlight_" .. id .. "_", name, "trafficlight" )
+	return data and data[ id ] or nil
+end
+
+function MPLR.SaveTrafficLightControllerData( ent )
 end
