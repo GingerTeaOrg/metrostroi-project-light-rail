@@ -77,7 +77,7 @@ function TRAIN_SYSTEM:Camshaft()
 	if speed < 16 then
 		if speed < 3 then
 			if throttle > 0 then
-				self.RequestedResistors = ilerp( throttle, 0, 1, 0, 7 )
+				self.RequestedResistors = ilerp( throttle, 0, 1, 2, 7 )
 			elseif throttle <= 0 and speed > 5 then
 				self.RequestedResistors = Lerp( throttle, 15, 20 )
 			elseif throttle <= 0 and speed < 5 then
@@ -188,7 +188,6 @@ function TRAIN_SYSTEM:Engine()
 	-- 250A per motor, 2x250A, 600V, 20 resistors, 12.5A per resistor
 	-- camshaft only moves when you're actually in gear
 	-- TODO: Set up Fahrstufen parralel vs serial
-	local prevGear = prevGear or false
 	local inGear = ( sys.ReverserA < 0 or sys.ReverserA > 1 ) or ( sys.ReverserB < 0 or sys.ReverserB > 1 ) or ( self.Train:ReadTrainWire( 3 ) > 0 or self.Train:ReadTrainWire( 4 ) > 0 )
 	local isMoving = false
 	local isTractionApplied = sys.Traction ~= 0
@@ -244,6 +243,6 @@ function TRAIN_SYSTEM:EmergencyControl()
 			end
 		end
 	end
-	--print( requiredResistor, throttleSignal, self.PreviousResistors )
+	----print( requiredResistor, throttleSignal, self.PreviousResistors )
 	return resistors
 end
