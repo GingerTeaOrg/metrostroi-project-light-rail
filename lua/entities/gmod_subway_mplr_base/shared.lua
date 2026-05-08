@@ -376,9 +376,9 @@ else
 
 		-- If the sound is a registered client sound
 		if self.ClientSounds[ soundid ] then
-			PrintTable( self.ClientSounds[ soundid ] )
+			--PrintTable( self.ClientSounds[ soundid ] )
 		else
-			print( "NOSOUND", soundid )
+			--print( "NOSOUND", soundid )
 		end
 
 		if self.ClientSounds and self.ClientSounds[ soundid ] then
@@ -389,14 +389,14 @@ else
 				local soundname = self.SoundNames[ soundid ]
 				-- If no sound name found, skip
 				if not soundname then
-					print( "NO SOUND", soundname, soundid )
+					--print( "NO SOUND", soundname, soundid )
 					continue
 				end
 
 				-- If multiple variants exist, pick a random one
 				if type( soundname ) == "table" then
 					soundname = soundname[ math.random( 1, #soundname ) ]
-					--print( "soundname is:", soundname )
+					----print( "soundname is:", soundname )
 				end
 
 				--PrintTable( soundname )
@@ -414,7 +414,7 @@ else
 
 						-- Handle sound playback errors
 						if err then
-							--print( "ERROR PLAYONCE" )
+							----print( "ERROR PLAYONCE" )
 							self:DestroySound( snd )
 							if err == 4 or err == 37 then self.StopSounds = true end
 							if err ~= 41 then
@@ -428,12 +428,12 @@ else
 							end
 							return
 						elseif not IsValid( ent ) then
-							print( "DESTROY SOUND" )
+							--print( "DESTROY SOUND" )
 							-- Destroy sound if target entity is gone
 							self:DestroySound( snd )
 						else
 							-- Configure 3D sound parameters
-							print( soundid )
+							--print( soundid )
 							snd:SetPos( self:LocalToWorld( self.SoundPositions[ soundid ][ 3 ] ), ent:LocalToWorldAngles( esnd[ 7 ] ):Forward() )
 							snd:SetPlaybackRate( esnd[ 4 ] )
 							snd:SetVolume( esnd[ 3 ] )
@@ -442,7 +442,7 @@ else
 							table.insert( ent.BASSSounds, snd )
 							-- Play the sound
 							snd:Play()
-							--print( "Sound played:", soundid )
+							----print( "Sound played:", soundid )
 							-- Debug visualizations of sound fade distances
 							local siz1, siz2 = snd:Get3DFadeDistance()
 							debugoverlay.Sphere( snd:GetPos(), 40, 10, Color( 0, 255, 0 ), true )
@@ -458,14 +458,14 @@ else
 						local soundname = self.SoundNames[ soundid ]
 						-- If no sound name found, skip
 						if not soundname then
-							print( "NO SOUND", soundname, soundid )
+							--print( "NO SOUND", soundname, soundid )
 							continue
 						end
 
 						-- If multiple variants exist, pick a random one
 						if type( soundname ) == "table" then
 							soundname = soundname[ math.random( 1, #soundname ) ]
-							--print( "soundname is:", soundname )
+							----print( "soundname is:", soundname )
 						end
 
 						--PrintTable( soundname )
@@ -482,7 +482,7 @@ else
 
 								-- Handle sound playback errors
 								if err then
-									--print( "ERROR PLAYONCE" )
+									----print( "ERROR PLAYONCE" )
 									self:DestroySound( snd )
 									if err == 4 or err == 37 then self.StopSounds = true end
 									if err ~= 41 then
@@ -496,12 +496,12 @@ else
 									end
 									return
 								elseif not IsValid( ent ) then
-									--print( "DESTROY SOUND" )
+									----print( "DESTROY SOUND" )
 									-- Destroy sound if target entity is gone
 									self:DestroySound( snd )
 								else
 									-- Configure 3D sound parameters
-									print( soundid )
+									--print( soundid )
 									snd:SetPos( self:LocalToWorld( self.SoundPositions[ soundid ][ 3 ] ), ent:LocalToWorldAngles( esnd[ 7 ] ):Forward() )
 									snd:SetPlaybackRate( esnd[ 4 ] )
 									snd:SetVolume( esnd[ 3 ] )
@@ -510,7 +510,7 @@ else
 									table.insert( ent.BASSSounds, snd )
 									-- Play the sound
 									snd:Play()
-									--print( "Sound played:", soundid )
+									----print( "Sound played:", soundid )
 									-- Debug visualizations of sound fade distances
 									local siz1, siz2 = snd:Get3DFadeDistance()
 									debugoverlay.Sphere( snd:GetPos(), 40, 10, Color( 0, 255, 0 ), true )
@@ -528,14 +528,14 @@ else
 						local soundname = self.SoundNames[ soundid ]
 						-- If no sound name found, skip
 						if not soundname then
-							print( "NO SOUND", soundname, soundid )
+							--print( "NO SOUND", soundname, soundid )
 							continue
 						end
 
 						-- If multiple variants exist, pick a random one
 						if type( soundname ) == "table" then
 							soundname = soundname[ math.random( 1, #soundname ) ]
-							print( "soundname is:", soundname )
+							--print( "soundname is:", soundname )
 						end
 
 						--PrintTable( soundname )
@@ -551,7 +551,7 @@ else
 
 							-- Handle sound playback errors
 							if err then
-								print( "ERROR PLAYONCE" )
+								--print( "ERROR PLAYONCE" )
 								self:DestroySound( snd )
 								if err == 4 or err == 37 then self.StopSounds = true end
 								if err ~= 41 then
@@ -575,7 +575,7 @@ else
 								table.insert( self.BASSSounds, snd )
 								-- Play the sound
 								snd:Play()
-								--print( "Sound played:", soundid )
+								----print( "Sound played:", soundid )
 								-- Debug visualizations of sound fade distances
 								local siz1, siz2 = snd:Get3DFadeDistance()
 								debugoverlay.Sphere( snd:GetPos(), 40, 10, Color( 0, 255, 0 ), true )
@@ -724,10 +724,10 @@ function ENT:ScrollThrottle()
 	local scrollCount = 0
 	local scrollResetTime = 0
 	local cmd = ply:GetCurrentCommand()
-	--print( cmd:GetMouseWheel() )
+	----print( cmd:GetMouseWheel() )
 	-- Increment scroll count based on mouse wheel input
 	if input.IsMouseDown( MOUSE_WHEEL_UP ) then
-		print( "up" )
+		--print( "up" )
 		scrollCount = scrollCount + 1
 		lastScrollTime = currentTime + 1 * self.DeltaTime
 	elseif input.IsMouseDown( MOUSE_WHEEL_DOWN ) then

@@ -157,7 +157,9 @@ function ENT:CreateSectionNoJacobs( pos, ang, ent, parentSection, jointPos1, joi
 end
 
 function ENT:CreateCustomCoupler( pos, ang, forward, typ, a_b )
-	if a_b == "b" then print( IsValid( self.SectionB ) ) end
+	if a_b == "b" then --[[print( IsValid( self.SectionB ) )]]
+	end
+
 	-- Create bogey entity
 	local coupler = ents.Create( "gmod_train_uf_couple" )
 	if a_b == "a" then
@@ -243,7 +245,7 @@ function ENT:CreateBogeyMPLR( pos, ang, forward, typ, a_b )
 		bogey:SetPos( self:LocalToWorld( pos ) )
 		bogey:SetAngles( self:GetAngles() + ang )
 	else
-		print( "ERROR: Section Ent to mount to not defined!!" )
+		--print( "ERROR: Section Ent to mount to not defined!!" )
 		for _, v in ipairs( self.TrainEntities ) do
 			SafeRemoveEntity( v )
 		end
@@ -581,7 +583,7 @@ function ENT:Use( ply )
 	local tr = ply:GetEyeTrace()
 	if not tr.Hit then return end
 	local hitpos = self:WorldToLocal( tr.HitPos )
-	--print(hitpos)
+	----print(hitpos)
 	if self.InteractionZones and ply:GetPos():Distance( tr.HitPos ) < 100 then
 		for k, v in pairs( self.InteractionZones ) do
 			if hitpos:Distance( v.Pos ) < v.Radius then self:ButtonEvent( v.ID, nil, ply ) end
@@ -621,7 +623,7 @@ function ENT:TriggerInput( name, value )
 	-- Propagate inputs to relevant systems
 	for k, v in pairs( self.Systems ) do
 		if v.IsInput[ name ] then
-			print( "found" )
+			--print( "found" )
 			v:TriggerInput( name, value )
 		elseif v.Name and ( string.sub( name, 1, #v.Name ) == v.Name ) then
 			local subname = string.sub( name, #v.Name + 1 )
@@ -769,9 +771,9 @@ function ENT:ShouldEcho()
 		-- Calculate the dimensions
 		local dimensions = collisionMaxs - collisionMins
 		-- Print the dimensions
-		--print( "Width: ", dimensions.x )
-		--print( "Height: ", dimensions.z )
-		--print( "Length: ", dimensions.y )
+		----print( "Width: ", dimensions.x )
+		----print( "Height: ", dimensions.z )
+		----print( "Length: ", dimensions.y )
 		return dimensions
 	end
 
@@ -1072,7 +1074,7 @@ function ENT:OnCouple( bogey, isfront )
 	local train = bogey:GetNW2Entity( "TrainEntity" )
 	if not IsValid( train ) then return end
 	hook.Run( "MetrostroiCoupled", self, train )
-	--print(Format("%s(%05d) coupled with %s(%05d)",self,self:GetWagonNumber(),train,train:GetWagonNumber()))
+	----print(Format("%s(%05d) coupled with %s(%05d)",self,self:GetWagonNumber(),train,train:GetWagonNumber()))
 	--Don't update train wires when there's no parent train
 	self:OnConnectDisconnect()
 	if self.OnCoupled then self:OnCoupled() end
@@ -1088,7 +1090,7 @@ if GravHull then
         end
     end
     if IsValid(self) then
-        self:GetOwner():ChatPrint("Removed a local physics system.")
+        self:GetOwner():Chat--print("Removed a local physics system.")
         GravHull.UnHull(self)
     end
     
@@ -1100,7 +1102,7 @@ end
 end
 
 function ENT:OnDecouple( isfront )
-	--print(self,"Disconnected from front?:" ,isfront)
+	----print(self,"Disconnected from front?:" ,isfront)
 	if isfront then
 		self.FrontCoupledBogey = nil
 	else
@@ -1122,7 +1124,7 @@ function ENT:OnBogeyDisconnect( bogey, isfront )
 end
 
 function ENT:OnBogeyConnect( bogey, isfront )
-	--print(self,"Coupled with ",bogey," at ",isfront)
+	----print(self,"Coupled with ",bogey," at ",isfront)
 	if isfront then
 		self.FrontCoupledBogeyDisconnect = false
 	else
@@ -1292,7 +1294,7 @@ function ENT:CreateSeat( typ, offset, angle, model )
 
 	table.insert( self.Seats, seat_info )
 	if typ == "driver" then
-		print( offset )
+		--print( offset )
 		self:SetNW2Vector( "DriversSeatPos", offset )
 	end
 
@@ -1333,7 +1335,7 @@ function ENT:SetLightPower( index, power, brightness )
 	local prevLightData = prevLightData or {}
 	local lightData = self.Lights[ index ]
 	if not lightData then
-		--print( "ERROR! SetLightPower called on unconfigured light index: " .. index )
+		----print( "ERROR! SetLightPower called on unconfigured light index: " .. index )
 		return
 	end
 
@@ -1629,7 +1631,7 @@ function ENT:Think()
 
 	if self.FrontBogey then
 		if self.SpeedSign and self.WagonList[ 1 ] == self and ( not self.FrontTrain and self.Speed * self.SpeedSign > 0.25 or not self.RearTrain and self.Speed * self.SpeedSign < -0.25 ) then
-			--print(self.FrontBogey.Wheels,self.RearBogey)
+			----print(self.FrontBogey.Wheels,self.RearBogey)
 			--self.TargetDist
 			--self.rep = 0
 			--self.rep = nil
@@ -1836,7 +1838,7 @@ end]]
         end--]]
 			end
 		end
-		--print(1/(SysTime()-time))
+		----print(1/(SysTime()-time))
 		-- Wire outputs
 		--local triggerOutput = self.TriggerOutput
 	end
@@ -2116,7 +2118,7 @@ end
 
 function ENT:ToggleButton( button )
 	button2 = string.gsub( button, "Toggle", "" )
-	print( button2, self.Panel[ button2 ] )
+	--print( button2, self.Panel[ button2 ] )
 	if not self.Panel[ button2 ] then return end
 	if self.Panel[ button2 ] < 1 then
 		self.Panel[ button2 ] = 1
@@ -2265,12 +2267,12 @@ net.Receive( "mplr-panel-touch", function( len, ply )
 	end
 
 	if panel ~= "" and not train[ panel ] then
-		print( "Metrostroi:System not found," .. panel )
+		--print( "Metrostroi:System not found," .. panel )
 		return
 	end
 
 	if panel ~= "" and not train[ panel ].Touch then
-		print( "Metrostroi:Touch function not found in system " .. panel )
+		--print( "Metrostroi:Touch function not found in system " .. panel )
 		return
 	end
 

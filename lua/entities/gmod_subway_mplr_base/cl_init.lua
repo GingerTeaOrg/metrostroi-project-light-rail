@@ -380,7 +380,7 @@ function ENT:SpawnCSEnt( k, override )
 		cent:SetLOD( C_ScreenshotMode:GetBool() and 0 or -1 )
 		--[[
 		hook.Add("MetrostroiBigLag",cent,function(ent)
-			--print(ent:GetLocalPos())
+			----print(ent:GetLocalPos())
 			ent:SetLocalPos(ent:GetLocalPos())
 			ent:SetLocalAngles(ent:GetLocalAngles())
 			--if ent.Spawned then hook.Remove("MetrostroiBigLag",ent) end
@@ -784,7 +784,7 @@ function ENT:InitSegments( ent )
 			if index and index ~= 0 then
 				ent.SegmentCount = ent.SegmentCount + 1
 				ent[ "Section" .. letter ] = Entity( index )
-				print( "Spawning sections:", ent[ "Section" .. letter ] )
+				--print( "Spawning sections:", ent[ "Section" .. letter ] )
 			end
 		end
 	end )
@@ -1051,7 +1051,7 @@ function ENT:Think()
 
 	local seatPos = self:GetNW2Vector( "DriversSeatPos", Vector( 0, 0, 0 ) )
 	local seatBackward = seatPos.x > 0 and self:GetClass() == "gmod_subway_mplr_bwagen1973_section_a" and true or seatPos.x < 0 and true or false
-	--print(seatPos,self)
+	----print(seatPos,self)
 	if ( GetConVar( "metrostroi_disablecamaccel" ):GetInt() == 0 ) and not seatBackward then
 		self.HeadAcceleration = self:Animate( "accel", ( self:GetNW2Float( "Accel", 0 ) + 1 ) / 2, 0, 1, 4, 1 ) * C_CameraJerk:GetInt()
 	elseif ( GetConVar( "metrostroi_disablecamaccel" ):GetInt() == 0 ) and seatBackward then
@@ -1209,14 +1209,14 @@ function ENT:Think()
 		if self.SoundTraceI > 2 then self.SoundTraceI = 0 end
 		if upt > 350 then
 			local coeff = 1 - math.min( ( math.min( 130, leftt ) / 130 + math.min( 130, rightt ) / 130 ) / 2, math.Clamp( ( leftst - 10 ) / 40, 0, 1 ), math.Clamp( ( rightst - 10 ) / 40, 0, 1 ) )
-			--print(math.Clamp((leftst-10)/40,0,1))
-			--print(Format("%02d %.2f %02d %.2f",leftst,math.Clamp((leftst-30)/20,0,1),rightst,)
+			----print(math.Clamp((leftst-10)/40,0,1))
+			----print(Format("%02d %.2f %02d %.2f",leftst,math.Clamp((leftst-30)/20,0,1),rightst,)
 			--[[ if leftst < 30 or rightst < 30 then
-					LocalPlayer():ChatPrint(Format("I AM ON A STREET STATION, %.2f",coeff))
+					LocalPlayer():Chat--print(Format("I AM ON A STREET STATION, %.2f",coeff))
 				elseif coeff > 1.3 then
-					LocalPlayer():ChatPrint(Format("I AM ON A STREET, %.2f",coeff))
+					LocalPlayer():Chat--print(Format("I AM ON A STREET, %.2f",coeff))
 				else
-					LocalPlayer():ChatPrint(Format("I AM ON A STREET WITH WALLS, %.2f",coeff))
+					LocalPlayer():Chat--print(Format("I AM ON A STREET WITH WALLS, %.2f",coeff))
 				end--]]
 			self.TunnelCoeff = math.Clamp( self.TunnelCoeff + ( 0 - self.TunnelCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.StreetCoeff = math.Clamp( self.StreetCoeff + ( ( 0.8 + coeff * 0.2 ) - self.StreetCoeff ) * self.DeltaTime * 4, 0, 1 )
@@ -1226,11 +1226,11 @@ function ENT:Think()
 			--,
 			--(math.Clamp((leftst-30)/20,0,1)+math.Clamp((rightst-30)/20,0,1))*0.6
 			--[[ if (leftst < 30 or rightst < 30) and coeff > 1.2 then
-				LocalPlayer():ChatPrint(Format("I AM ON A STATION L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+				LocalPlayer():Chat--print(Format("I AM ON A STATION L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
 			elseif coeff > 1.3 then
-				LocalPlayer():ChatPrint(Format("I AM IN A BIG TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+				LocalPlayer():Chat--print(Format("I AM IN A BIG TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
 			else
-				LocalPlayer():ChatPrint(Format("I AM IN A TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
+				LocalPlayer():Chat--print(Format("I AM IN A TUNNEL L%.2f R%.2f C:%.2f",leftt/55,rightt/55,coeff))
 			end--]]
 			self.TunnelCoeff = math.Clamp( self.TunnelCoeff + ( ( 0.4 + coeff * 0.6 ) - self.TunnelCoeff ) * self.DeltaTime * 4, 0, 1 )
 			self.StreetCoeff = math.Clamp( self.StreetCoeff + ( ( 0.5 - math.max( 0, self.TunnelCoeff - 0.5 ) ) - self.StreetCoeff ) * self.DeltaTime * 4, 0, 1 )
@@ -1511,10 +1511,10 @@ hook.Add( "Think", "mplr_mouse_handle", function()
 				target_ang:RotateAroundAxis(ent:GetAngles():Up(),train.CamAng.y)
 				target_ang:RotateAroundAxis(ent:GetAngles():Right(),train.CamAng.r)
 				train.CamAnglesComp = target_ang
-				print(target_ang)]]
+				--print(target_ang)]]
 				return ent:OldCalcAbsolutePosition(...)
 			end
-			print(OldSeat.OnAngleChangeID)--]=]
+			--print(OldSeat.OnAngleChangeID)--]=]
 		elseif IsValid( OldSeat ) then
 			OldSeat.CalcAbsolutePosition = OldSeat.OldCalcAbsolutePosition or OldSeat.CalcAbsolutePosition
 			OldSeat.OldCalcAbsolutePosition = nil
@@ -2252,7 +2252,7 @@ hook.Add( "Think", "mplr-cabin-panel", function()
 		local ttdelay = GetConVar( "metrostroi_tooltip_delay" ):GetFloat()
 		if GetConVar( "metrostroi_disablehovertext" ):GetInt() == 0 and ttdelay and ttdelay >= 0 then
 			local button = findAimButton( ply, train )
-			--print(train.ClientProps[button.ID].button)
+			----print(train.ClientProps[button.ID].button)
 			if button and ( ( train.Hidden[ button.ID ] or train.Hidden[ button.PropName ] ) and ( not train.ClientProps[ button.ID ].config or not train.ClientProps[ button.ID ].config.staylabel ) or ( train.Hidden.button[ button.ID ] or train.Hidden.button[ button.PropName ] ) and ( not train.ClientProps[ button.PropName ].config or not train.ClientProps[ button.PropName ].config.staylabel ) ) then return end
 			if button ~= lastAimButton then
 				lastAimButtonChange = CurTime()
@@ -2331,10 +2331,10 @@ local lastScrollTime = 0
 local scrollCount = 0
 local scrollResetTime = 0
 local cmd = ply:GetCurrentCommand()
-print(cmd:GetMouseWheel())
+--print(cmd:GetMouseWheel())
 -- Increment scroll count based on mouse wheel input
 if input.IsMouseDown( MOUSE_WHEEL_UP ) then
-	print("up")
+	--print("up")
 	scrollCount = scrollCount + 1
 	lastScrollTime = currentTime
 elseif input.IsMouseDown( MOUSE_WHEEL_DOWN ) then
@@ -2795,7 +2795,7 @@ end )
 function ENT:MirrorRender()
 	if GetConVar( "mplr_mirrors_enable" ):GetInt() <= 0 then return end
 	--if true then return end
-	--print( "running" )
+	----print( "running" )
 	local ply = LocalPlayer()
 	if not self.ClientEnts or not istable( self.MirrorCams ) or #self.MirrorCams < 6 then return end
 	-- Prevent excessive updates
@@ -2806,7 +2806,7 @@ function ENT:MirrorRender()
 	local mirrorRight = self.ClientEnts[ "mirror_r" ]
 	-- Cache materials (prevents excessive GetMaterials calls)
 	if not IsValid( mirrorLeft ) or not IsValid( mirrorRight ) then
-		print( "no mirror ents!" )
+		--print( "no mirror ents!" )
 		return
 	end
 
@@ -2840,7 +2840,7 @@ function ENT:MirrorRender()
 
 	local function RenderMirror( mirror, camIndex, materialName, rtName, rtMat )
 		if not IsValid( mirror ) then
-			print( "mirror invalid:", mirror )
+			--print( "mirror invalid:", mirror )
 			return
 		end
 
@@ -2857,7 +2857,7 @@ function ENT:MirrorRender()
 		end
 
 		if mirrorSlot == -1 then
-			print( "mirror slot not found", materialName )
+			--print( "mirror slot not found", materialName )
 			return
 		end
 
