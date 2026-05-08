@@ -6,14 +6,14 @@ util.AddNetworkString( "mplr-signal-server" )
 util.AddNetworkString( "mplr-signal-client" )
 util.AddNetworkString( "mplr-signal-state" )
 function ENT:Initialize()
+	self:SetModel( "models/lilly/mplr/scenery/trackside/signage/block_operation.mdl" )
 	self.SignalType = self.SignalType or self.SignalTypes[ "Underground_Small_Pole" ]
-	--print( self.SignalType )
+	----print( self.SignalType )
 	self.Aspect = "Sh3d"
 	self:SetNW2String( "Type", self.SignalType )
 	self:SetNW2String( "Aspect", self.Aspect )
 	self.Angle = self.Angle or Angle( 0, 0, 0 )
 	self:SetNW2Angle( "WorldAngle", self.Angle )
-	self:SetModel( "models/props_trainstation/payphone_reciever001a.mdl" )
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
 	self:SetColor( Color( 0, 0, 0, 0 ) )
 	self.TrackPosition = Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
@@ -25,44 +25,23 @@ function ENT:Initialize()
 	--if self.Name1 and self.Name1 ~= " " then self:SetNW2String( "Name1", self.Name1 ) end
 	--if self.Name2 and self.Name2 ~= " " then self:SetNW2String( "Name2", self.Name2 ) end
 	self.LastPVSTracking = 0
+	self.Library = MPLR.SignalLib:New( self )
+	print( "SignalLib at init:", MPLR.SignalLib )
 end
 
 util.AddNetworkString( "RespawnSignal" )
 function ENT:UpdateSignalAspect()
-	for k, _ in pairs( MPLR.SignalBlocks ) do
-		local CurrentBlock = MPLR.SignalBlocks[ k ]
-		local function GetSignals()
-			for ky, val in pairs( CurrentBlock ) do
-				if type( ky ) == "string" then return ky, val end
-			end
-		end
+	local state = self.Library:ReturnSignalState()
+	local stateMap = {
+		danger = "H0",
+		doubleOccupation = "H3",
+		caution = "H2",
+		clear = "H1",
+		emergency = "Sh3d"
+	}
 
-		local CurrentSignal, DistantSignal = GetSignals()
-		if CurrentSignal ~= self.Name then continue end
-		local _, DistantSignalEnt = Metrostroi.SignalEntitiesByName[ CurrentSignal ], Metrostroi.SignalEntitiesByName[ DistantSignal ]
-		if not IsValid( DistantSignalEnt ) then
-			self.Aspect = "Sh3d"
-			return
-		end
-
-		local DistantAspect = DistantSignalEnt.Aspect
-		self.Occupied = CurrentBlock.Occupied
-		local Occupied = self.Occupied
-		--print(self.Name,self.Aspect,self.Occupied,self.TrackPosition.forward)
-		if not Occupied then
-			if DistantAspect == "H0" then --if next signal is danger, we display caution
-				self.Aspect = "H2"
-			elseif DistantAspect == "H2" then
-				--if next signal is caution, we can display clear
-				self.Aspect = "H1"
-			elseif DistantAspect == "H1" then
-				--if next signal is clear, we're also clear
-				self.Aspect = "H1"
-			end
-		elseif Occupied then
-			self.Aspect = "H0"
-		end
-	end
+	self.Aspect = stateMap[ state ]
+	self:SetNW2String( "Aspect", self.Aspect )
 end
 
 function ENT:OnRemove()
@@ -74,18 +53,14 @@ end
 
 function ENT:Think()
 	self:NextThink( CurTime() )
-	if not self.Library and IsValid( self ) then
-		self.Library = MPLR.SignalLib:New( self )
-		return true
-	elseif not self.Library and not IsValid( self ) then
+	if not self.Library then
+		--print( "nolib" )
 		return true
 	end
 
 	self.Library:Think()
-	--print( "thinking" )
-	--self:UpdateSignalAspect()
+	self:UpdateSignalAspect()
 	--self:SetNW2String( "Type", self.SignalType )
-	self:SetNW2String( "Aspect", self.Aspect )
 	return true
 end
 

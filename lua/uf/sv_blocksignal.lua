@@ -1,43 +1,51 @@
-MPLR.SignalLib = {}
+MPLR.SignalLib = MPLR.SignalLib or {}
 local LIB = MPLR.SignalLib
+LIB.__index = LIB
 function LIB:New( signalEnt )
-	local obj = {}
-	setmetatable( obj, {
-		__index = self
-	} )
-
+	local obj = setmetatable( {}, LIB )
 	obj:Initialize( signalEnt )
 	return obj
 end
 
 function LIB:Initialize( signalEnt )
-	if IsValid( signalEnt ) then
-		self.SignalEnt = signalEnt
-	else
-		timer.Simple( 2, function() self:Initialize( signalEnt ) end )
-		return
-	end
-
-	if not self.SignalEnt.TrackPos then
-		timer.Simple( 2, function() self:Initialize( signalEnt ) end )
-		return
-	end
-
-	self.TrackPos = self.SignalEnt.TrackPos or self.SignalEnt.TrackPosition
-	self.Forward = self.TrackPos.Forward
-	self.NextSwitch, self.SwitchNode = self:FindNextSwitch()
-	self.NextSignal, self.SignalNode = self:FindNextBlockSignal()
-	self.MainSignal = self.SignalEnt.MainSignal
-	self.AllowMultiOccupation = self.SignalEnt.AllowMultiOccupation
-	self.SignalState = "emergency"
-	self.Switches = {}
+	self.SignalEnt = signalEnt
+	self.Routes = self.SignalEnt.Routes or {}
+	self.MainSignal = not self.SignalEnt.MainSignal and false or true -- assume we're the actual signal and not a repeater, unless stated otherwise
+	self.AllowMultiOccupation = self.SignalEnt.AllowMultiOccupation -- We follow the NRW operational standards of BOStrab signalling, which explicitly allow for approach on sight on Signal H4 (single orange light)
+	self.SignalState = "emergency" -- Default state for when the signal spawns. Basically an operational safe fallback. If a magnetic transmitter is attached, it will SPAD any passing train.
+	self.Switches = {} -- Which switches are relevant to us.
 	self.NodeCache = {} --table that saves the paths leading up to each next signal
+	self.StartOperating = false -- Only pick up operation after running GetTrackPos()
+	self.TrackPos = {}
+	self.NoNextSignal = false -- This is set if we give up searching, either if there is no more node network, or if we have exceeded iterations
+	self.Name = self.SignalEnt.Name1 .. "/" .. self.SignalEnt.Name2 -- Store the signal's location code in case we need it.
+end
+
+function LIB:GetTrackPos()
+	if table.IsEmpty( self.TrackPos ) then
+		self.TrackPos = Metrostroi.GetPositionOnTrack( self.SignalEnt:GetPos(), self.SignalEnt:GetAngles() )[ 1 ]
+		if table.IsEmpty( self.TrackPos ) then return end
+		self.Forward = self.TrackPos.forward
+		self.NextSwitch, self.SwitchNode = self:FindNextSwitch()
+		self.NextSignal, self.SignalNode = self:FindNextBlockSignal()
+		self.StartOperating = true
+	end
 end
 
 function LIB:Think()
-	if not self.TrackPos then return end
+	if not self.StartOperating and not self.NoNextSignal then
+		timer.Simple( 2, function() self:GetTrackPos() end )
+		return true
+	end
+
+	if self.NoNextSignal or self.NextSignal then self.SignalEnt:SetNW2String( "NextSignal", self.NoNextSignal and "none" or self.NextSignal.Name1 .. "/" .. self.NextSignal.Name2 ) end
+	--print( self.TrackPos.path.id, self.SignalEnt.Name1 .. "/" .. self.SignalEnt.Name2 )
 	self.EditMode = GetConVar( "mplr_signalling_editing_mode" ):GetBool()
-	self:BlockSignal()
+	self:BlockSignalNoRoutes()
+end
+
+function LIB:ReturnSignalState()
+	return self.SignalState
 end
 
 function LIB:CollectSwitches( node, count )
@@ -71,7 +79,8 @@ function LIB:CollectSwitches( node, count )
 end
 
 function LIB:BlockSignal()
-	self.NextSignal, self.SignalNode = IsValid( self.NextSignal ) and self.NextSignal, self.SignalNode or self.EditMode and self:FindNextBlockSignal() or nil
+	if not self.NoNextSignal and not self.NextSignal then self.NextSignal, self.SignalNode = IsValid( self.NextSignal ) and self.NextSignal or self:FindNextBlockSignal( self.TrackPos.node1 ) or nil end
+	if not self.NextSignal or not self.SignalNode then return end
 	local function checkSwitchVsSignal()
 		local signalX = self.SignalNode.x
 		local switchX = self.SwitchNode.x
@@ -92,18 +101,18 @@ end
 
 function LIB:BlockSignalNoRoutes()
 	-- This is a simplified function in case there are no branching paths ahead. We just find the next signal and set our state based on it and the track occupation.
-	if not IsValid( self.NextSignal ) then self.NextSignal, self.SignalNode = self:FindNextBlockSignal() end
+	if not IsValid( self.NextSignal ) and not self.NoNextSignal then self.NextSignal, self.SignalNode = self:FindNextBlockSignal() end
 	if not IsValid( self.NextSignal ) then -- if there isn't a next signal, we're the absolute last one in the chain, so set to whatever emergency aspect there would be (actual correcponding aspect handled by individual entity)
 		self.SignalState = "emergency"
 		return -- no need to do anything if there is no next signal, so quit without further checks
 	end
 
-	local function checkBlock() -- simple block signalling helper
-		return MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.Forward, "light", self.NextSignal.TrackPos.x )
+	local function checkBlock( trackPos ) -- simple block signalling helper
+		return MPLR.IsTrackOccupied( trackPos.node1, trackPos.x, self.Forward, "light", self.NextSignal.TrackPosition.x )
 	end
 
-	local trainIsInBlockAhead = checkBlock()
-	local nextSignalState = self.NextSignal.SignalLib.SignalState -- ask the library of the next signal for its status
+	local trainIsInBlockAhead = checkBlock( self.TrackPos )
+	local nextSignalState = self.NextSignal.Library.SignalState -- ask the library of the next signal for its status
 	local nextSignalType = self.NextSignal.MainSignal and "main" or "distant"
 	if trainIsInBlockAhead then
 		if not self.AllowMultiOccupation then
@@ -113,6 +122,8 @@ function LIB:BlockSignalNoRoutes()
 			self.SignalState = "doubleOccupation"
 			return
 		end
+	else
+		self.SignalState = "clear"
 	end
 
 	if nextSignalState == "caution" then
@@ -132,7 +143,7 @@ function LIB:BlockSignalNoRoutes()
 	end
 
 	-- fallback to cover unknown or missing states
-	self.SignalState = self.SignalState or nextSignalState or "emergency"
+	self.SignalState = self.SignalState or not nextSignalState and "emergency"
 end
 
 function LIB:CacheNodePaths( start, target, scannedNodes, validNodes, originPath, encounteredSwitches )
@@ -205,25 +216,36 @@ function LIB:CacheNodePaths( start, target, scannedNodes, validNodes, originPath
 	end
 end
 
-function LIB:FindNextBlockSignal( node )
+function LIB:FindNextBlockSignal( node, block_iter )
+	if self.NoNextSignal or self.StartOperating then return nil end
+	block_iter = block_iter or 0
+	if block_iter > 8 then
+		ErrorNoHalt( "No next signal found!", self.SignalEnt.Name1 .. "/" .. self.SignalEnt.Name2 )
+		self.NoNextSignal = true
+		self.StartOperating = true
+		return nil
+	end
+
 	if not node then node = self.TrackPos.node1 end
-	local signalEnt = MPLR.SignalEntitiesByNode[ node ]
+	local signalEnt = MPLR.SignalEntitiesByNode[ node ] and MPLR.SignalEntitiesByNode[ node ][ 1 ]
 	local signal = IsValid( signalEnt ) and signalEnt
 	local forward = self.Forward
-	if not signal and forward then
-		if node.next then
-			return self:FindNextBlockSignal( node.next )
-		else
-			return nil
-		end
-	elseif not signal and not forward then
-		if node.prev then
-			return self:FindNextBlockSignal( node.prev )
-		else
-			return nil
-		end
-	elseif signal then
+	if ( forward and node.next ) and ( not signal or signal == self.SignalEnt ) and block_iter <= 8 then
+		print( self.SignalEnt.Name1 .. "/" .. self.SignalEnt.Name2, "Found no signal at node:", node.id, "Continuing search.", "Forward" )
+		block_iter = block_iter + 1
+		return self:FindNextBlockSignal( node.next, block_iter )
+	elseif ( not forward and node.prev ) and ( not signal or signal == self.SignalEnt ) and block_iter <= 8 then
+		print( self.SignalEnt.Name1 .. "/" .. self.SignalEnt.Name2, "Found no signal at node:", node.id, "Continuing search.", "reverse" )
+		block_iter = block_iter + 1
+		return self:FindNextBlockSignal( node.prev, block_iter )
+	elseif signal and signal ~= self.SignalEnt and signal.Library.Forward == self.Forward then
+		print( self.SignalEnt.Name1 .. "/" .. self.SignalEnt.Name2, "found Signal:", signal.Name1 .. "/" .. signal.Name2 )
 		return signal, node
+	elseif ( ( ( forward and not node.next ) or ( not forward and not node.prev ) ) and not signal ) or block_iter > 8 then
+		ErrorNoHalt( "No next signal found!", self.SignalEnt.Name1 .. "/" .. self.SignalEnt.Name2 )
+		self.NoNextSignal = true
+		self.StartOperating = true
+		return nil, nil
 	end
 end
 

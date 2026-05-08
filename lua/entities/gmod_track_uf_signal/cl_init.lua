@@ -50,37 +50,36 @@ end )
 net.Receive( "RespawnSignal", function()
 	local ent = net.ReadEntity()
 	if not IsValid( ent ) then return end
-	--print( "nethook" )
+	----print( "nethook" )
 	ent.InPVS = net.ReadBool()
 end )
 
 function ENT:RespawnSignal()
-	if self.InPVS and not IsValid( self.SignalModel ) then
-		print( self, "Respawning clientside model" )
+	if self.InPVS then
+		--print( self, "Respawning clientside model" )
 		self.SignalModel:Remove()
 		self:CreateSignalModel()
 	end
 end
 
 function ENT:Think()
+	self:SetNextClientThink( CurTime() )
 	self.PrevTime = self.PrevTime or RealTime()
 	self.DeltaTime = RealTime() - self.PrevTime
 	self.PrevTime = RealTime()
 	--LocalPlayer():PrintMessage( HUD_PRINTTALK, tostring( IsValid( self.SignalModel ) ) )
 	self:RespawnSignal()
-	if not next( self.Routes ) then
-		if not self.Sent then
-			net.Start( "mplr-signal-client" )
-			net.WriteEntity( self )
-			net.SendToServer()
-			self.Sent = RealTime() + 1.5
-		end
-		return true
+	if not self.Sent or RealTime() - self.Sent > 2 then
+		net.Start( "mplr-signal-client" )
+		net.WriteEntity( self )
+		net.SendToServer()
+		self.Sent = RealTime() + 1.5
 	end
 
+	self.NextSignal = self:GetNW2String( "NextSignal", "none" )
 	self.Aspect = self:GetNW2String( "Aspect", "H0" )
 	self.SignalType = self:GetNW2String( "Type" )
-	self:SetNextClientThink( RealTime() + 1 )
+	return true
 end
 
 hook.Add( "PostDrawOpaqueRenderables", "MPLR_DrawSignals", function()
@@ -91,6 +90,7 @@ hook.Add( "PostDrawOpaqueRenderables", "MPLR_DrawSignals", function()
 end )
 
 function ENT:Draw()
+	self:DrawModel()
 	if not IsValid( self.SignalModel ) or not self.Name1 then
 		self:RespawnSignal()
 		return
@@ -190,7 +190,7 @@ end
 
 function ENT:ClientSprites( position, size, color, active )
 	if not active then return end
-	--print( "Drawing sprite at position:", position, "with size:", size )
+	----print( "Drawing sprite at position:", position, "with size:", size )
 	local material = Material( "effects/yellowflare" )
 	render.SetMaterial( material )
 	render.DrawSprite( position, size, size, color )
@@ -309,6 +309,7 @@ local function enableDebug()
 					surface.DrawRect( 0, 0, 364, 100 )
 					draw.DrawText( "Signal name: " .. sig.Name1 .. "/" .. sig.Name2, "Trebuchet24", 5, 0, Color( 0, 0, 0, 255 ) )
 					draw.DrawText( "Aspect: " .. sig.Aspect, "Trebuchet24", 5, 20, Color( 0, 0, 0, 255 ) )
+					draw.DrawText( "Next Signal: " .. sig.NextSignal, "Trebuchet24", 5, 40, Color( 0, 0, 0, 255 ) )
 					cam.End3D2D()
 				end
 			end
