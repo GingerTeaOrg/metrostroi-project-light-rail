@@ -229,7 +229,7 @@ TRAIN_SYSTEM.IsInput = {
 function TRAIN_SYSTEM:TriggerInput( name, value )
 	local panelA = self.Train.Panel
 	local panelB = self.Train.SectionB.Panel
-	print( name, value, IsValid( self.Train:GetDriver() ) )
+	--print( name, value, IsValid( self.Train:GetDriver() ) )
 	if name == "joy_throttle" then
 		if IsValid( self.Train:GetDriver() ) and self.IgnitionKeyA and ( self.ReverserA > 1 or self.ReverserA < 0 ) then
 			self.ThrottleStateA = value
@@ -748,7 +748,7 @@ function TRAIN_SYSTEM:ReverserSystem()
 		forward = self.ReverserB < 0 -- Cab B (Reversed logic)
 	end
 
-	--print( forward, "forward" )
+	----print( forward, "forward" )
 	-- Write to train wires if the train is in gear and there are no conflicting heads
 	if inGear and not self.ConflictingHeads then
 		t:WriteTrainWire( 3, forward and 1 or 0 )
@@ -788,6 +788,6 @@ function TRAIN_SYSTEM:MaximumConsistLength()
 end
 
 function TRAIN_SYSTEM:IsLVPowerAvailable()
-	--print( self.Train.Battery.Voltage, self.BatteryActivated )
+	----print( self.Train.Battery.Voltage, self.BatteryActivated )
 	self.LVPowerOn = self.BatteryActivated --and self.Train.Battery.Voltage > 20
 end
