@@ -10,8 +10,13 @@ function ENT:SetupDataTablesSV()
 	end )
 end
 
+function ENT:KeyValue( key, value )
+	if not self.VMF then self.VMF = {} end
+	self.VMF[ key ] = value
+end
+
 function ENT:Initialize()
-	self.Controller = self.Controller or self:GetNW2Entity( "Controller" )
+	self.Controller = self.Controller or self:GetNW2Entity( "Controller", self.VMF and self.VMF.Controller or nil )
 	self.OtherParts = {}
 	self.Red = true
 	self.Yellow = false
@@ -24,7 +29,6 @@ function ENT:Initialize()
 
 	self:SwitchState( 0 )
 	self:AddEFlags( EFL_FORCE_CHECK_TRANSMIT )
-	Trolleybus_System.UpdateTransmit( self, "TrafficLightDrawDistance" )
 end
 
 function ENT:UpdateTransmitState()
@@ -111,14 +115,10 @@ function ENT:LoadBehaviour( data )
 end
 
 function ENT:IsStopSignal()
-	return not self:GetDisabled() and self.Data and self.Data.States[ self:GetState() ] and self.Data.States[ self:GetState() ].IsStopSignal
+	return true -- TODO FOR DEBUG PURPOSES
 end
 
 function ENT:Think()
 	self:NextTink( CurTime() + 1 )
-	Trolleybus_System.UpdateTransmit( self, "TrafficLightDrawDistance" )
-	for k, v in ipairs( self.OtherParts ) do
-		Trolleybus_System.UpdateTransmit( v, "TrafficLightDrawDistance" )
-	end
 	return true
 end

@@ -95,6 +95,7 @@ function ENT:DrawSprites()
 end
 
 function ENT:Think()
+	self:SetNextClientThink( CurTime() + 0.1 )
 	if not self:IsDormant() then
 		local data = self:LightType()
 		if data then
@@ -109,7 +110,6 @@ function ENT:Think()
 	end
 
 	self:UpdateClientEnts()
-	self:SetNextClientThink( CurTime() + 0.1 )
 	return true
 end
 
@@ -139,9 +139,9 @@ end
 
 function ENT:ClearClientEnts()
 	if self.LenseModels then
-		for k, v in pairs( self.LenseModels ) do
-			for k, v in pairs( v ) do
-				SafeRemoveEntity( v )
+		for _, v in pairs( self.LenseModels ) do
+			for _, i in pairs( v ) do
+				SafeRemoveEntity( i )
 			end
 		end
 
@@ -152,7 +152,7 @@ end
 function ENT:ClearLenseModels( num )
 	local ents = self.LenseModels and self.LenseModels[ num ]
 	if ents then
-		for k, v in pairs( ents ) do
+		for _, v in pairs( ents ) do
 			SafeRemoveEntity( v )
 		end
 

@@ -1,6 +1,7 @@
 -- Copyright © Platunov I. M., 2020 All rights reserved
 -- Modified for M:PLR based on Trolleybus GitHub Release under CC BY-NC-SA 4.0
 ENT.PrintName = "Traffic Light"
+ENT.Category = "Metrostroi: Project Light Rail"
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.Type = "anim"
@@ -8,6 +9,7 @@ ENT.Base = "base_entity"
 ENT.AutomaticFrameAdvance = true
 ENT.RenderGroup = RENDERGROUP_BOTH
 ENT.PhysgunDisabled = true
+ENT.GravGunPickupAllowed = false
 function ENT:LightType( type )
 	return Trolleybus_System.TrafficLightTypes[ type or self:GetType() ]
 end

@@ -4,6 +4,7 @@ ENT.AdminSpawnable = true
 ENT.Type = "anim"
 ENT.Base = "base_entity"
 ENT.AutomaticFrameAdvance = true
+ENT.Category = "Metrostroi: Project Light Rail"
 ENT.RenderGroup = RENDERGROUP_BOTH
 function ENT:SetupDataTables()
 	self:NetworkVar( "Float", 0, "Time" )
@@ -15,6 +16,4 @@ function ENT:SetupDataTables()
 	for i = 1, 10 do
 		self:NetworkVar( "Int", 1 + i, "Lense" .. i )
 	end
-
-	if SERVER then self:SetupDataTablesSV() end
 end
