@@ -152,6 +152,9 @@ function TRAIN_SYSTEM:Initialize()
 		self.Debounce[ v ] = 0
 	end
 
+	self.DestinationPrompt1 = " "
+	self.DestinationPrompt2 = " "
+	self.DestinationPrompt3 = " "
 	self.DebounceTime = 0.25
 	--PrintTable( self.LineTable )
 end
@@ -373,7 +376,7 @@ function TRAIN_SYSTEM:IBISScreen( Train )
 
 		if Menu == 4 then
 			self:PrintText( 0, 1.5, "Ansage      :" )
-			self:PrintText( 13.5, 1.5, prompt )
+			self:PrintText( 13.5, 1.5, ServiceAnnouncement )
 			return
 		end
 
@@ -382,7 +385,7 @@ function TRAIN_SYSTEM:IBISScreen( Train )
 			self:PrintText( 5.6, 6, Course )
 			self:PrintText( 10.5, 6, Route )
 			self:PrintText( 0, 1, CurrentStation )
-			----print(self.Train:GetNW2Int("IBIS:Route"))
+			------print(self.Train:GetNW2Int("IBIS:Route"))
 			return
 		end
 	end
@@ -420,7 +423,7 @@ function TRAIN_SYSTEM:UpdateState( dT )
 	local ibisKeyRequired = self.Train.IBISKeyRequired
 	-- Function to reset state when device is off
 	local function resetState()
-		--print( "Reset IBIS" )
+		----print( "Reset IBIS" )
 		self.PowerOn = 0
 		self.State = 0
 		self.Menu = 0
@@ -549,7 +552,7 @@ function TRAIN_SYSTEM:UpdateState( dT )
 		end
 	end
 
-	-- print(self.State, self.Menu)
+	-- --print(self.State, self.Menu)
 	if self.State == 0 and not self.CANBus and self.PowerOffMomentRegistered and CurTime() - self.PowerOffMoment > 240 then completeReset() end
 	if self.State == 4 and self.Triggers[ "Enter" ] then -- We're in the defect state
 		-- just confirm. Some IBIS devices just thought stuff was broken while it wasn't. we don't model failure states
@@ -617,7 +620,7 @@ function TRAIN_SYSTEM:ProcessChars()
 	Train:SetNW2String( "IBIS:DestinationChar2", self.DestinationChar2 )
 	Train:SetNW2String( "IBIS:DestinationChar3", self.DestinationChar3 )
 	Train:SetNW2String( "IBIS:ServiceAnnouncement", self.AnnouncementPrompt1 .. self.AnnouncementPrompt2 )
-	print( self.ServiceAnnouncement )
+	--print( self.ServiceAnnouncement )
 	if self.LineLength == 2 then
 		self.Course = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3 .. self.CourseChar4
 	elseif self.LineLength == 3 then
@@ -696,7 +699,7 @@ function TRAIN_SYSTEM:ReadDataset()
 		self:Menu0()
 	elseif self.Menu == 1 then
 		local commit = self:Menu1()
-		--print( commit )
+		----print( commit )
 		if commit and allowMenuChange then
 			commitMenu1()
 			updateMenuChange()
@@ -747,11 +750,15 @@ function TRAIN_SYSTEM:ReadDataset()
 		elseif commit == "fail" then
 			self.State = 3
 		end
+
+		if self.State == 3 and ( self.Triggers[ "Delete" ] or self.Triggers[ "Enter" ] ) then self.State = 1 end
 	end
 end
 
 local lastMainInput = lastMainInput or 0
+local lastMenuChange = lastMenuChange or 0
 function TRAIN_SYSTEM:Menu0()
+	if self.Menu == 0 and self.State == 3 then self.State = 0 end
 	local debounce = CurTime() - lastMainInput > 1
 	if self.State == 0 then return end
 	local line = " "
@@ -784,8 +791,6 @@ function TRAIN_SYSTEM:Menu0()
 		self.Menu = 4
 		self:Menu4()
 	end
-
-	print( self.Triggers[ "ServiceAnnouncement" ] and debounce )
 end
 
 local lastLineInput = lastLineInput or 0
@@ -823,7 +828,7 @@ function TRAIN_SYSTEM:Menu1()
 	elseif self.Triggers[ "Delete" ] and debounce then
 		lastLineInput = CurTime()
 		if self.Debounce[ "Delete" ] == 0 or ( currentTime - self.Debounce[ "Delete" ] > self.DebounceTime ) then
-			--print( "delete" )
+			----print( "delete" )
 			if self.LineLength == 2 then
 				self.CoursePrompt4 = self.CoursePrompt3
 				self.CoursePrompt3 = self.CoursePrompt2
@@ -855,6 +860,7 @@ function TRAIN_SYSTEM:Menu1()
 	self.Train:SetNW2String( "Prompt", prompt )
 	if self.State == 1 and self.Triggers[ "Enter" ] and debounce then
 		lastLineInput = CurTime()
+		lastMenuChange = CurTime()
 		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered == true then
 			return true
@@ -875,6 +881,7 @@ function TRAIN_SYSTEM:Menu1()
 		end
 	elseif self.State == 2 and self.Triggers[ "Enter" ] and debounce then
 		lastLineInput = CurTime()
+		lastMenuChange = CurTime()
 		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered then
 			self.Menu = 2
@@ -903,6 +910,7 @@ local lastRouteInput = lastRouteInput or 0
 function TRAIN_SYSTEM:Menu2()
 	self.DebounceTime = 1
 	local debounce = CurTime() - lastRouteInput > 1
+	local allowMenuChange = CurTime() - lastMenuChange > 1.5
 	if self.Menu ~= 2 then return end
 	local line = self.Course:sub( 1, self.LineLength )
 	local function returnNumberKey()
@@ -927,7 +935,8 @@ function TRAIN_SYSTEM:Menu2()
 		lastRouteInput = CurTime()
 		self.RoutePrompt2 = self.RoutePrompt1
 		self.RoutePrompt1 = " "
-	elseif self.Triggers[ "Enter" ] and debounce then
+	elseif self.Triggers[ "Enter" ] and debounce and allowMenuChange then
+		lastMenuChange = CurTime()
 		if self.RoutePrompt1 == " " and tonumber( self.RoutePrompt2, 10 ) then self.RoutePrompt1 = "0" end
 		local Route = self.RoutePrompt1 .. self.RoutePrompt2
 		if self.RouteTable[ line ] then
@@ -958,11 +967,13 @@ function TRAIN_SYSTEM:Menu2()
 	return false
 end
 
+local destinationPrompt = destinationPrompt or 0
 function TRAIN_SYSTEM:Menu3()
 	if self.Menu ~= 3 then return end
 	local function returnNumber()
 		for k, _ in pairs( self.NumberKeys ) do
-			if self.NumberKeys[ k ] then
+			if self.NumberKeys[ k ] and CurTime() - destinationPrompt > 1 then
+				destinationPrompt = CurTime()
 				local ret = string.TrimLeft( k, "Number" )
 				return ret
 			else
@@ -995,7 +1006,7 @@ end
 local announcementsInput = announcementsInput or 0
 function TRAIN_SYSTEM:Menu4()
 	if self.Menu ~= 4 then return end
-	local debounce = CurTime() - announcementsInput > 1
+	local debounce = CurTime() - announcementsInput > 2
 	local function returnNumber()
 		for k, v in pairs( self.NumberKeys ) do
 			if self.NumberKeys[ k ] then
@@ -1008,12 +1019,16 @@ function TRAIN_SYSTEM:Menu4()
 		return nil
 	end
 
+	print( self.Triggers[ "Delete" ] )
+	if self.State == 3 and debounce and ( self.Triggers[ "Delete" ] or self.Triggers[ "Enter" ] ) then self.State = 1 end
 	local input = returnNumber()
-	-- print(self.AnnouncementChar1,self.AnnouncementChar2)
+	-- --print(self.AnnouncementChar1,self.AnnouncementChar2)
 	if input and debounce then
+		announcementsInput = CurTime()
 		self.AnnouncementPrompt1 = self.AnnouncementPrompt2
 		self.AnnouncementPrompt2 = input
 	elseif self.Triggers[ "Delete" ] and debounce then
+		announcementsInput = CurTime()
 		self.AnnouncementPrompt2 = self.AnnouncementPrompt1
 		self.AnnouncementPrompt1 = " "
 	end
@@ -1071,9 +1086,10 @@ function TRAIN_SYSTEM:Play( time )
 
 	local commonFiles = MPLR.IBISCommonFiles[ self.Train:GetNW2Int( "IBIS:CommonFiles", 1 ) ]
 	local announcementScript = MPLR.IBISAnnouncementScript[ self.Train:GetNW2Int( "IBIS:AnnouncementScript", 1 ) ]
+	print( announcementScript )
 	local temp = {}
 	for i = 1, #announcementScript do
-		if announcementScript[ i ] ~= "station" and type( commonFiles[ announcementScript[ i ] ][ 1 ] ) == "string" then
+		if announcementScript[ i ] and announcementScript[ i ] ~= "station" and type( commonFiles[ announcementScript[ i ] ][ 1 ] ) == "string" then
 			temp = {
 				[ commonFiles[ announcementScript[ i ] ][ 1 ] ] = commonFiles[ announcementScript[ i ] ][ 2 ]
 			}
@@ -1087,7 +1103,7 @@ function TRAIN_SYSTEM:Play( time )
 
 			temp = MPLR.IBISAnnouncementMetadata[ self.Train:GetNW2Int( "IBIS:Announcements", 1 ) ][ self.CurrentStation ][ line ][ self.Route ]
 			if not temp then
-				print( "ANNOUNCEMENT CORRUPT" )
+				--print( "ANNOUNCEMENT CORRUPT" )
 				return
 			end
 
@@ -1097,8 +1113,8 @@ function TRAIN_SYSTEM:Play( time )
 		end
 	end
 
-	PrintTable( message )
-	if next( message ) then self:AnnQueue( message ) end
+	--PrintTable( message )
+	if not table.IsEmpty( message ) then self:AnnQueue( message ) end
 	return
 end
 
