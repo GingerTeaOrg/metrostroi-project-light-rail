@@ -329,7 +329,7 @@ function MPLR.GenerateClientProps()
 							end )
 						else
 							local i = table.insert( self.AutoAnims, function( ent )
-								--print(lname,ent.SmoothHide[lname])
+								----print(lname,ent.SmoothHide[lname])
 								local val = ent:Animate( animvar, ent:GetPackedBool( var ) and max or min, 0, 1, speed, false )
 								ent:ShowHideSmooth( lname, val )
 								if light then ent:SetLightPower( lname, val > 0, val ) end
@@ -371,7 +371,7 @@ function MPLR.GenerateClientProps()
 								end )
 							else
 								table.insert( self.AutoAnims, function( ent )
-									--print(lname,ent.SmoothHide[lname])
+									----print(lname,ent.SmoothHide[lname])
 									local val = ent:Animate( animvar, ent:GetPackedBool( var ) and max or min, 0, 1, speed, false )
 									ent:ShowHideSmooth( lname, val )
 								end )
@@ -510,6 +510,15 @@ function MPLR.PrintValuesToChat( t, ply )
 	for _, v in pairs( t ) do
 		ply:PrintMessage( HUD_PRINTTALK, v )
 	end
+end
+
+function MPLR.CreatePassenger()
+	local ent = ClientsideModel( table.Random( MPLR.PassModels ), RENDERGROUP_BOTH )
+	ent:SetSequence( ent:LookupSequence( table.Random( MPLR.PassStaySequences ) ) or 0 )
+	--ent.RenderOverride = function( self ) if EyePos():DistToSqr( self:GetPos() ) < Trolleybus_System.GetPlayerSetting( "PassengersDrawDistance" ) ^ 2 then self:DrawModel() end end
+	local col = VectorRand( 0, 1 )
+	ent.GetPlayerColor = function( self ) return col end
+	return ent
 end
 
 -- format: multiline
@@ -870,7 +879,7 @@ MPLR.charMatrixSmallThin = {
 	},
 	[ "Ü" ] = {
 		"10001",
-		"10001",
+		"00000",
 		"10001",
 		"10001",
 		"01110"
@@ -1055,13 +1064,13 @@ MPLR.charMatrixSmallThin = {
 		"1110",
 	},
 	[ "t" ] = {
-		"01000",
-		"01000",
-		"11100",
-		"01000",
-		"01000",
-		"01000",
-		"00110"
+		"0100",
+		"0100",
+		"1110",
+		"0100",
+		"0100",
+		"0100",
+		"0011"
 	},
 	[ "u" ] = {
 		"00000",
@@ -1135,7 +1144,7 @@ MPLR.charMatrixSmallThin = {
 	},
 	[ "ü" ] = {
 		"10001",
-		"10001",
+		"00000",
 		"10001",
 		"10001",
 		"01110"
@@ -1365,6 +1374,7 @@ MPLR.charMatrixSmallBold = {
 		"1110000",
 		"1111100",
 		"1100110",
+		"1100011",
 		"1100011",
 	},
 	[ "L" ] = {
@@ -2888,8 +2898,8 @@ MPLR.charMatrixHeadline = {
 		"110011",
 		"110011",
 		"110011",
-		"011011",
-		"001111",
+		"110011",
+		"011110",
 	},
 	[ "/" ] = {
 		"0000011",
