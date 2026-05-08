@@ -14,13 +14,17 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 function ENT:Initialize()
 	util.AddNetworkString( "PlayerTrackerDFI" .. self:EntIndex() )
-	self:DropToFloor()
+	--self:DropToFloor()
 	if self.VMF and self.VMF.Type == "nopole" then
 		self:SetModel( "models/lilly/uf/stations/dfi_nopole.mdl" )
 	else
 		self:SetModel( "models/lilly/uf/stations/dfi.mdl" )
 	end
 
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_NONE )
+	local physObj = self:GetPhysicsObject()
+	physObj:EnableMotion( false )
 	self.PairedPlatform = self:GetNW2Entity( "PairedPlatform", self.VMF and self.VMF.PairedPlatform )
 	self:DropToFloor()
 	self.ValidLines = {
@@ -92,22 +96,22 @@ end
 function ENT:Think()
 	self:NextThink( CurTime() + 0.25 )
 	local trainPresent = self:TrainPresent()
-	local stationIndex = tonumber( self.VMF.StationIndex, 10 )
-	local platformIndex = tonumber( self.VMF.PlatformIndex, 10 )
-	if not next( MPLR.StationEntsByIndex ) then
-		print( "quit" )
+	self.StationIndex = self.StationIndex or tonumber( self.VMF.StationIndex, 10 )
+	self.PlatformIndex = self.PlatformIndex or tonumber( self.VMF.PlatformIndex, 10 )
+	if table.IsEmpty( MPLR.StationEntsByIndex ) then
+		--print( "quit" )
 		self:NextThink( CurTime() + 0.25 )
 		return true
 	end
 
-	self.PairedPlatform = self.PairedPlatform or MPLR.StationEntsByIndex[ stationIndex ][ platformIndex ]
-	self.Time = os.date( "%I%M", os.time() )
+	self.PairedPlatform = self.PairedPlatform or MPLR.StationEntsByIndex[ self.StationIndex ][ self.PlatformIndex ]
+	self.Time = os.date( "%I:%M", os.time() )
 	self:SetNW2String( "Time", self.Time )
 	self.TrackPosition = self.TrackPosition or Metrostroi.GetPositionOnTrack( self.Position, self:GetAngles() )[ 1 ]
 	self:SetNW2String( "Theme", self.CurrentTheme )
-	if not next( MPLR.IBISRegisteredTrains ) or not Metrostroi.Paths then -- either fall back to idle, train list, or current train display
+	if table.IsEmpty( MPLR.IBISRegisteredTrains ) or not Metrostroi.Paths then -- either fall back to idle, train list, or current train display
 		self.Mode = 0
-	elseif next( MPLR.IBISRegisteredTrains ) and Metrostroi.Paths then
+	elseif not table.IsEmpty( MPLR.IBISRegisteredTrains ) and Metrostroi.Paths then
 		if CurTime() - self.LastRefresh > 10 then
 			self.LastRefresh = CurTime()
 			--print( "Refreshing DFI" )
@@ -140,7 +144,7 @@ function ENT:Think()
 		self.Mode = 1
 	elseif self.Train1ETA and tonumber( self.Train1ETA ) == 0 then
 		if trainPresent then
-			print( "present" )
+			--print( "present" )
 			self.Mode = 2
 			local CourseRoute = self.Train1Ent.IBIS.Course .. "/" .. self.Train1Ent.IBIS.Route
 			if not valueExists( self.IgnoredTrains, CourseRoute ) then table.insert( self.IgnoredTrains, CourseRoute ) end
