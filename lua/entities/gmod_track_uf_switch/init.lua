@@ -62,30 +62,7 @@ function ENT:Initialize()
 	end )
 
 	self.Paths = {}
-	if next( Metrostroi.Paths ) then
-		self.Paths = self:GetBranchingPaths()
-		if next( self.Paths ) then
-			if not MPLR.SwitchBranches then MPLR.SwitchBranches = {} end
-			MPLR.SwitchBranches[ self ] = self.Paths
-		end
-	else
-		timer.Simple( 15, function()
-			local entList = ents.GetAll()
-			for i, ent in ipairs( entList ) do
-				if ent:GetClass() == "gmod_track_uf_switch" then
-					if not IsValid( ent ) then
-						print( "Switch Ent Not Valid" )
-						return
-					end
-
-					print( "Searching branching paths for switch:", ent, "Switch ID: " .. ent.ID )
-					ent.Paths = ent:GetBranchingPaths()
-					MPLR.SwitchBranches[ ent ] = ent.Paths
-				end
-			end
-		end )
-	end
-
+	self.Paths = self:GetBranchingPaths()
 	self.DirectionsToPaths = {
 		[ "left" ] = -1,
 		[ "right" ] = -1
@@ -114,7 +91,7 @@ end
 function ENT:Think()
 	self:NextThink( CurTime() + 1.0 )
 	self.TrackPos = self.TrackPos or Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
-	--print( self.TrackPos.forward )
+	----print( self.TrackPos.forward )
 	if not self.TrackPos then
 		self:NextThink( CurTime() + 1.0 )
 		return true
@@ -163,7 +140,7 @@ function ENT:Switching()
 
 	if self.AlternateTrack and not self.Locked then
 		for _, v in ipairs( self.TrackSwitches ) do
-			print( "open", self.Locked )
+			--print( "open", self.Locked )
 			if IsValid( v ) then v:Fire( "Open", "", 0, self, self ) end
 		end
 
@@ -171,7 +148,7 @@ function ENT:Switching()
 		self.PreviousState = self.AlternateTrack
 	elseif not self.AlternateTrack and not self.Locked then
 		for _, v in ipairs( self.TrackSwitches ) do
-			print( "close", self.Locked )
+			--print( "close", self.Locked )
 			if IsValid( v ) then v:Fire( "Close", "", 0, self, self ) end
 		end
 
@@ -249,7 +226,7 @@ function ENT:TriggerSwitch()
 	-- Check if there's a command in the queue
 	if #self.Queue == 0 then
 		if not self.IronOverride then self.AlternateTrack = false end
-		--print( "Empty queue. Bailing to default." )
+		----print( "Empty queue. Bailing to default." )
 		return
 	end
 
@@ -266,13 +243,13 @@ function ENT:TriggerSwitch()
 	end
 
 	if ent.IBIS and not ent.IBIS.Override then
-		print( Format( "Switching to direction %s by service %s %s", direction, ent.IBIS.Course, ent.IBIS.Route ) )
+		--print( Format( "Switching to direction %s by service %s %s", direction, ent.IBIS.Course, ent.IBIS.Route ) )
 	elseif IsValid( ent ) then
-		print( Format( "Switching to direction %s", direction ) )
+		--print( Format( "Switching to direction %s", direction ) )
 	end
 
 	if self.InhibitSwitching then
-		print( "switching blocked" )
+		--print( "switching blocked" )
 		return false
 	end
 
@@ -377,10 +354,21 @@ function ENT:SecondarySwitchingQueue( direction, ent )
 	end
 end
 
+function ENT:traverseNodesToBranch( node, forwards, iter ) -- got forward or backward a few nodes to see if there's a branching path to be found
+	if not iter then iter = 1 end
+	if node and node.branches then
+		return node
+	elseif node and not node.branches and iter <= 3 then
+		return self:traverseNodesToBranch( forwards and node.next or node.prev, forwards, iter )
+	elseif not node or iter > 3 then
+		ErrorNoHalt( "No branches found along three nodes of this switch. Please check placement. Switch ID:", self.ID )
+	end
+end
+
 local nodesTraversed = nodesTraversed or 0
 function ENT:GetBranchingPaths()
-	if table.IsEmpty( Metrostroi.Paths ) then -- if the paths table isn't populated yet, just start a timer to call this function again and exit
-		--timer.Simple( 10, self:GetBranchingPaths() )
+	if not Metrostroi.Paths[ 1 ] then -- if the paths table isn't populated yet, just start a timer to call this function again and exit
+		timer.Simple( 50, self:GetBranchingPaths() )
 		return
 	end
 
@@ -390,38 +378,15 @@ function ENT:GetBranchingPaths()
 	local paths = {}
 	local forward = self.Forward -- are we facing upward or downward on the x coordinate?
 	-- initialise how many nodes we've been through so that we don't continue on forever
-	local function traverseNodesToBranch( node, forwards, limit ) -- got forward or backward a few nodes to see if there's a branching path to be found
-		while node and nodesTraversed < limit do
-			if node.branches then
-				print( "Switch entity:", self, "found branch! Exiting!" )
-				return node
-			end
-
-			node = forwards and node.next or node.prev
-			if not node then
-				print( "No more nodes. Exiting." )
-				return
-			end
-
-			print( "Found no branch. Continuing on. Next node:", node.id )
-			if not node then return end
-			for k, v in pairs( node ) do
-				print( k, v )
-			end
-
-			nodesTraversed = nodesTraversed + 1
-		end
-		return node
-	end
-
 	-- pos.node1.branches[1][2].path
-	local function collectBranchPaths( node ) --
+	local function collectBranchPaths( node, iter ) --
+		if not iter then iter = 1 end
 		if not node then return end
 		local branchingPath = node.branches and node.branches[ 1 ][ 2 ].path.id
 		local branchingNode = node.branches and node.branches[ 1 ][ 2 ]
 		--[[if node.branches then
 			for k, v in pairs( node.branches[ 1 ][ 2 ] ) do
-				print( k, v )
+				--print( k, v )
 			end
 		end]]
 		local myPath = pos.path.id
@@ -431,7 +396,7 @@ function ENT:GetBranchingPaths()
 				[ branchingPath ] = branchingNode
 			}
 		else
-			local traversedNode = traverseNodesToBranch( node, forward, 3 )
+			local traversedNode = self:traverseNodesToBranch( node, forward )
 			if traversedNode then collectBranchPaths( traversedNode ) end
 		end
 		return
@@ -441,10 +406,10 @@ function ENT:GetBranchingPaths()
 	collectBranchPaths( pos.node1 )
 	-- collectBranchPaths(pos.node2)
 	-- Output results
-	print( "Current Path:", current_path )
-	print( "Adjacent Paths:" )
+	--print( "Current Path:", current_path )
+	--print( "Adjacent Paths:" )
 	for id, node in pairs( adjacent_paths ) do
-		print( id, node.id )
+		--print( id, node.id )
 	end
 	return adjacent_paths
 end
