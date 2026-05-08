@@ -2187,7 +2187,7 @@ end
 
 function ENT:Animations()
 	if not IsValid( self.SectionB ) then
-		print( "sectionB invalid" )
+		--print( "sectionB invalid" )
 		return
 	end
 

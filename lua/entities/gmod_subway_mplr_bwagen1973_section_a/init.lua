@@ -766,9 +766,11 @@ function ENT:Traction()
 	local traction = self:ReadTrainWire( 1 ) * 0.01
 	local chopper = self.Chopper.ChopperOutput > 0 and self.Chopper.ChopperOutput / 750 and self.Chopper.ChopperOutput / 750 or 0
 	local emergency = self:ReadTrainWire( 10 ) > 0
-	--print( chopper, traction )
+	local blockDeparture = not self.DoorHandler.TrainHasDoorsClosed
+	----print( chopper, traction )
 	local P = math.max( 0, 0.04449 + 1.06879 * math.abs( chopper ) - 0.465729 * chopper ^ 2 )
 	if speed < 10 then P = P * ( 1.0 + 0.5 * ( 10.0 - speed ) / 10.0 ) end
+	if blockDeparture then return end
 	self.FrontBogey.MotorForce = traction > 0 and 51688.07175 or 68363.606
 	self.RearBogey.MotorForce = self.FrontBogey.MotorForce
 	if traction > 0 and not emergency then
@@ -787,21 +789,21 @@ function ENT:Traction()
 	if speed > 8 and traction < 0 then
 		fb.BrakeCylinderPressure = math.abs( traction * 2.5 )
 	elseif speed < 8 and traction <= 0 then
-		fb.BrakeCylinderPressure = 6
+		fb.BrakeCylinderPressure = 12
 	elseif speed < 8 and self.DoorHandler.DoorUnlockState > 0 then
-		fb.BrakeCylinderPressure = 6
+		fb.BrakeCylinderPressure = 12
 	elseif traction > 0 then
 		fb.BrakeCylinderPressure = 0
 	else
 		fb.BrakeCylinderPressure = 0 -- or another default value if needed
 	end
 
-	fb.PneumaticBrakeForce = 11000.0
+	fb.PneumaticBrakeForce = 12000.0
 	mb.PneumaticBrakeForce = 12000.0
 	rb.PneumaticBrakeForce = 12000.0
 	mb.BrakeCylinderPressure = fb.BrakeCylinderPressure
 	rb.BrakeCylinderPressure = fb.BrakeCylinderPressure
-	--print(self.FrontBogey.MotorPower, traction, fb.BrakeCylinderPressure, rb.Reversed, self.FrontBogey.MotorForce)
+	----print(self.FrontBogey.MotorPower, traction, fb.BrakeCylinderPressure, rb.Reversed, self.FrontBogey.MotorForce)
 end
 
 function ENT:Sounds()

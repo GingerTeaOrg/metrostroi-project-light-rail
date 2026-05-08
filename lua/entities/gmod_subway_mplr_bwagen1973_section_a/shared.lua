@@ -182,6 +182,7 @@ ENT.SubwayTrain = {
 	Vmax = 100,
 	Voltage = 750,
 	Mass = 38500,
+	UnlockDoorsToggle = true,
 	StepsMedium = true,
 	StepsLow = true,
 	StopRequest = true,
@@ -336,8 +337,7 @@ ENT.Spawner = {
 			for k, v in pairs( MPLR.Rollsigns or {} ) do
 				if "B-Wagen Series 1973" == MPLR.Rollsigns[ k ].train then Rollsign[ k ] = v.name end
 			end
-
-			PrintTable( Rollsign )
+			--PrintTable( Rollsign )
 			return Rollsign
 		end,
 		nil,
