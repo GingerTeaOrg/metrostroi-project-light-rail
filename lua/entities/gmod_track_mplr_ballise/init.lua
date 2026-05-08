@@ -26,7 +26,7 @@ function ENT:Think()
 	end
 
 	self:SelectImpulseToTransfer()
-	--print( IsValid( self.PairedSignal ) )
+	----print( IsValid( self.PairedSignal ) )
 	return true
 end
 
@@ -36,7 +36,7 @@ function ENT:SelectImpulseToTransfer()
 	if aspect == "H1" then
 		self.TransferImpulse = "clear"
 	elseif aspect == "H2" then
-		self.TransferImpulse = "caution_" .. speedRestriction
+		self.TransferImpulse = speedrestriction and "caution_" .. speedRestriction or "caution_30"
 	elseif aspect == "H0" or aspect == "Sh3d" then
 		self.TransferImpulse = "SPAD"
 	elseif aspect == "H3" then
