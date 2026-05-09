@@ -650,6 +650,7 @@ end
 
 function TRAIN_SYSTEM:GetLineLength()
 	local longest = 0
+	if not self.LineTable or table.IsEmpty( self.LineTable ) then return 4 end
 	for k, v in pairs( self.LineTable ) do
 		if tonumber( k, 10 ) then if #k > longest then longest = #k end end
 	end
