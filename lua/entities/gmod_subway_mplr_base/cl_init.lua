@@ -2800,7 +2800,7 @@ function ENT:MirrorRender()
 	if not self.ClientEnts or not istable( self.MirrorCams ) or #self.MirrorCams < 6 then return end
 	-- Prevent excessive updates
 	self.LastRenderTime = self.LastRenderTime or 0
-	if RealTime() - self.LastRenderTime < 0.05 then return end
+	if RealTime() - self.LastRenderTime < 0.01 then return end
 	self.LastRenderTime = RealTime()
 	local mirrorLeft = self.ClientEnts[ "mirror_l" ]
 	local mirrorRight = self.ClientEnts[ "mirror_r" ]
@@ -2872,7 +2872,7 @@ function ENT:MirrorRender()
 		cam.Start3D()
 		render.PushRenderTarget( self[ rtName ] )
 		render.Clear( 255, 255, 255, 255, true, true )
-		local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ camIndex ] - Vector( 10, 0, 0 ) or Vector( 10, 10, 10 ) )
+		local mirrorOrigin = self:LocalToWorld( self.MirrorCams[ camIndex ] - Vector( 30, 5, 0 ) or Vector( 10, 10, 10 ) )
 		local mirrorAng = self:LocalToWorldAngles( self.MirrorCams[ camIndex + 1 ] or Angle( 0, 180, 0 ) )
 		local mirrorNormal = mirrorAng:Up() * -1
 		local reflectedPos, reflectedAng = GetReflectedView( mirrorOrigin, mirrorNormal )
@@ -2892,7 +2892,7 @@ function ENT:MirrorRender()
 			w = 256,
 			h = 512,
 			origin = mirrorOrigin,
-			angles = ( ply:GetPos() - mirrorOrigin ):Angle() + Angle( 0, 65, 90 ),
+			angles = ( ply:GetPos() - mirrorOrigin ):Angle() - Angle( 22, 65, 0 ),
 			fov = self.MirrorCams[ camIndex + 2 ] or 15,
 			znear = 1,
 			zfar = 1000,
