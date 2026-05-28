@@ -381,7 +381,8 @@ function TRAIN_SYSTEM:IBISScreen( Train )
 		end
 
 		if Menu == 0 then
-			self:PrintText( 1.5, 6, Destination )
+			local nullDest = #Destination == 2
+			self:PrintText( 1.5, 6, not nullDest and Destination or "0" .. Destination )
 			self:PrintText( 5.6, 6, Course )
 			self:PrintText( 10.5, 6, Route )
 			self:PrintText( 0, 1, CurrentStation )
@@ -650,7 +651,11 @@ end
 
 function TRAIN_SYSTEM:GetLineLength()
 	local longest = 0
-	if not self.LineTable or table.IsEmpty( self.LineTable ) then return 4 end
+	if not self.LineTable or table.IsEmpty( self.LineTable ) then
+		self.IFISERROR = true
+		return 4
+	end
+
 	for k, v in pairs( self.LineTable ) do
 		if tonumber( k, 10 ) then if #k > longest then longest = #k end end
 	end
