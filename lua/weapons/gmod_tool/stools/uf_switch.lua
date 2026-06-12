@@ -2,7 +2,11 @@ TOOL.Category = "Metrostroi: Project Light Rail"
 TOOL.Name = "Switch Tool"
 TOOL.Command = nil
 TOOL.ConfigName = ""
-if SERVER then util.AddNetworkString"metrostroi-lightrail-stool-switch" end
+if SERVER then
+	util.AddNetworkString( "metrostroi-lightrail-stool-switch" )
+	util.AddNetworkString( "metrostroi-lightrail-stool-switch-routes" )
+end
+
 TOOL.ClientConVar[ "ID" ] = ""
 TOOL.ClientConVar[ "left_path" ] = -1
 TOOL.ClientConVar[ "right_path" ] = -1
@@ -13,7 +17,43 @@ if CLIENT then
 	language.Add( "Tool.uf_switch.0", "Primary: Set settings\nSecondary: Copy settings" )
 end
 
+if CLIENT then
+	function TOOL:DrawHUD()
+	end
+
+	function TOOL:Deploy()
+		local Paths = {}
+		net.Receive( "metrostroi-lightrail-stool-switch-routes", function() Paths = net.ReadTable() end )
+		hook.Add( "PostDrawTranslucentRenderables", "mplr_switcheditor_draw", function()
+			local SelectedColor = Color( 255, 0, 0 )
+			local DeSelectedColor = color_white
+			for k, path in pairs( Paths ) do
+				local lastnode = nil
+				local col = Either( k == SelectedPath, SelectedColor, DeSelectedColor )
+				for k2, node in pairs( path ) do
+					if lastnode then render.DrawLine( node, lastnode, col, true ) end
+					render.DrawWireframeSphere( node, 10, 2, 2, col, true )
+					lastnode = node
+				end
+			end
+		end )
+	end
+
+	function TOOL:Holster()
+		hook.Remove( "PostDrawTranslucentRenderables", "mplr_switcheditor_draw" )
+	end
+end
+
+if SERVER then
+	function TOOL:Deploy()
+		net.Start( "metrostroi-lightrail-stool-switch-routes" )
+		net.WriteTable( Metrostroi.Paths )
+		net.Send( self:GetOwner() )
+	end
+end
+
 function TOOL:LeftClick( trace )
+	local mode = self:GetClientNumber( "mode", 1 )
 	if CLIENT then return true end
 	local ply = self:GetOwner()
 	if ply:IsValid() and ( not ply:IsAdmin() ) then return false end
@@ -51,13 +91,13 @@ function TOOL:RightClick( trace )
 	for k,v in pairs(entlist) do
 		if v:GetClass() == "gmod_track_switch" then
 			v:SetChannel(2)
-			print("Set channel 2")
+			--print("Set channel 2")
 		end
 	end]]
 	return false
 end
 
---[[function TOOL:Reload( trace )
+function TOOL:Reload( trace )
 	if CLIENT then return true end
 	local ply = self:GetOwner()
 	if ply:IsValid() and ( not ply:IsAdmin() ) then return false end
@@ -74,15 +114,16 @@ end
 			net.Send( ply )
 			--if self:GetClientNumber("lock") == 1 then
 			--if v.LockedSignal then v.LockedSignal = nil else v.LockedSignal = v.LastSignal end
-			--print("Locked switch signal",v.LockedSignal)
+			----print("Locked switch signal",v.LockedSignal)
 			--else
 			--not v.NotChangePos
-			--print(v.NotChangePos and "Disabled" or "Enabled")
+			----print(v.NotChangePos and "Disabled" or "Enabled")
 			--end
 		end
 	end
 	return true
-end]]
+end
+
 function TOOL.BuildCPanel( panel )
 	panel = panel or controlpanel.Get( "uf_switch" )
 	panel:SetName( "#Tool.switch.name" )
