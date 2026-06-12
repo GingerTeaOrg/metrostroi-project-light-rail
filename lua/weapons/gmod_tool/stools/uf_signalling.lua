@@ -37,27 +37,63 @@ if CLIENT then
 	TOOL.ClientConVar[ "signal_name1" ] = "Iex"
 	TOOL.ClientConVar[ "signal_name2" ] = "A1"
 	TOOL.ClientConVar[ "multioccupation" ] = "0"
+	TOOL.ClientConVar[ "mode" ] = 1
+	TOOL.ClientConVar[ "selected_path" ] = -1
+	TOOL.ClientConVar[ "start_node" ] = -1
+	TOOL.ClientConVar[ "end_node" ] = -1
 end
 
 if SERVER then
 	util.AddNetworkString( "uf_signal_settings" )
 	util.AddNetworkString( "uf_signal_settings_client" )
+	util.AddNetworkString( "metrostroi-lightrail-stool-signal-routes" )
+	util.AddNetworkString( "metrostroi-lightrail-stool-signal-routes-clientToServer" )
+	util.AddNetworkString( "metrostroi-lightrail-stool-signal-pathing-serverToClient" )
+	util.AddNetworkString( "metrostroi-lightrail-stool-signal-pathing-clientToServer" )
 end
 
+local mode = mode or 1
+TOOL.Paths = TOOL.Paths or {}
+function TOOL:sendPathsToClient()
+	if ( not self.SpatialLookup or table.IsEmpty( self.SpatialLookup ) ) and self.GetOwner and self:GetOwner() then
+		net.Start( "metrostroi-lightrail-stool-signal-pathing-clientToServer" )
+		net.WritePlayer( self:GetOwner() )
+		net.SendToServer()
+	else
+		return TOOL.SpatialLookup
+	end
+end
+
+if SERVER then --format: multiline
+	net.Receive( "metrostroi-lightrail-stool-signal-pathing-clientToServer", function()
+		local ply = net.ReadPlayer()
+		net.Start( "metrostroi-lightrail-stool-signal-pathing-serverToClient" )
+		net.WriteTable( Metrostroi.SpatialLookup )
+		net.Send( ply )
+	end )
+end
+
+--format: multiline
+if CLIENT then
+	net.Receive( "metrostroi-lightrail-stool-signal-pathing-serverToClient", function() TOOL.SpatialLookup = net.ReadTable() end )
+end
+
+TOOL.SpatialLookup = SERVER and Metrostroi.SpatialLookup or CLIENT and {}
 function TOOL:Initialize()
 	if CLIENT then RunConsoleCommand( "uf_signalling_signal_rotation", "0" ) end
 end
 
 function TOOL:DrawHUD()
-	local player = LocalPlayer()
+	local ply = LocalPlayer()
+	local playerAim = ply:EyeAngles():Forward()
 	local targetClass = "gmod_track_uf_signal"
 	local maxDistance = 1000 -- Set an appropriate max distance
 	for _, ent in ipairs( ents.FindByClass( targetClass ) ) do
-		if ent:IsValid() and player:GetPos():DistToSqr( ent:GetPos() ) < maxDistance ^ 2 then
-			local direction = ( ent:GetPos() - player:GetPos() ):GetNormalized()
-			if direction:Dot( player:EyeAngles():Forward() ) > 0.98 then -- Adjust threshold as needed
-				render.DrawWireframeBox( ent:GetPos(), ent:GetAngles(), Vector( 0, 40, 0 ), Vector( 40, 40, 40 ), Color( 255, 255, 255, 255 ), true )
-			end
+		if ent:IsValid() and ply:GetPos():DistToSqr( ent:GetPos() ) < maxDistance ^ 2 then
+			local pos = ent:GetPos()
+			local ang = ent:GetAngles()
+			local direction = ( ent:GetPos() - ply:GetPos() ):GetNormalized()
+			if direction:Dot( playerAim ) > 0.98 then render.DrawWireframeBox( pos, ang, Vector( 0, 40, 0 ), Vector( 40, 40, 40 ), Color( 255, 255, 255, 255 ), true ) end
 		end
 	end
 end
@@ -70,12 +106,115 @@ local signalBlocklist = {
 }
 
 local basePath = "models/lilly/uf/signals/"
--- Add more signal types as needed
 -- Precaching signal models
 if CLIENT then
 	for _, modelPath in pairs( signalTypes ) do
 		util.PrecacheModel( "models/lilly/uf/signals/" .. modelPath )
 	end
+end
+
+local SPATIAL_CELL_WIDTH = 1024
+local SPATIAL_CELL_HEIGHT = 256
+-- Return spatial cell indexes for given XYZ
+local function spatialPosition( pos )
+	return math.floor( pos.x / SPATIAL_CELL_WIDTH ), math.floor( pos.y / SPATIAL_CELL_WIDTH ), math.floor( pos.z / SPATIAL_CELL_HEIGHT )
+end
+
+local function addLookup( node )
+	local kx, ky, kz = spatialPosition( node.pos )
+	TOOL.SpatialLookup[ kz ] = TOOL.SpatialLookup[ kz ] or {}
+	TOOL.SpatialLookup[ kz ][ kx ] = TOOL.SpatialLookup[ kz ][ kx ] or {}
+	TOOL.SpatialLookup[ kz ][ kx ][ ky ] = TOOL.SpatialLookup[ kz ][ kx ][ ky ] or {}
+	table.insert( TOOL.SpatialLookup[ kz ][ kx ][ ky ], node )
+end
+
+-- Return list of nodes in spatial cell kx,ky,kz
+local empty_table = {}
+function TOOL:spatialNodes( kx, ky, kz )
+	if self.SpatialLookup and self.SpatialLookup[ kz ] then
+		if self.SpatialLookup[ kz ][ kx ] then
+			return self.SpatialLookup[ kz ][ kx ][ ky ] or empty_table
+		else
+			return empty_table
+		end
+	else
+		return empty_table
+	end
+end
+
+function TOOL:NearestNodes( pos )
+	local kx, ky, kz = spatialPosition( pos )
+	local t = {}
+	for x = -1, 1 do
+		for y = -1, 1 do
+			for z = -1, 1 do
+				table.insert( t, self:spatialNodes( kx + x, ky + y, kz + z ) )
+			end
+		end
+	end
+
+	local i, j = 0, 1
+	return function()
+		-- Find next set of nodes that's not empty
+		while ( j <= #t ) and ( i >= #t[ j ] ) do
+			j = j + 1
+			i = 0
+		end
+
+		-- Should iterator end
+		if j > #t then return nil end
+		-- Iterate table like normal
+		i = i + 1
+		if i <= #t[ j ] then return t[ j ][ i ].id, t[ j ][ i ] end
+	end
+end
+
+function TOOL:GetPositionOnTrack( pos, ang, opts )
+	if not opts then opts = empty_table end
+	-- Angle can be specified to determine if facing forward or backward
+	ang = ang or Angle( 0, 0, 0 )
+	-- Size of box which envelopes region of space that counts as being on track
+	local X_PAD = 0
+	local Y_PAD = opts and opts.y_pad or opts and opts.radius or 384 / 2
+	local Z_PAD = opts and opts.z_pad or 256 / 2
+	-- Find position on any track
+	local results = {}
+	for nodeID, node in self:NearestNodes( pos ) do
+		-- Get local coordinate system of a section
+		local forward = node.dir
+		local up = Vector( 0, 0, 1 )
+		local right = forward:Cross( up )
+		-- Transform position into local coordinates
+		local local_pos = pos - node.pos
+		local local_x = local_pos:Dot( forward )
+		local local_y = local_pos:Dot( right )
+		local local_z = local_pos:Dot( up )
+		local yz_delta = math.sqrt( local_y ^ 2 + local_z ^ 2 )
+		-- Determine if facing forward or backward
+		local local_dir = ang:Forward()
+		local dir_delta = local_dir:Dot( forward )
+		local dir_forward = dir_delta > 0
+		local dir_angle = 90 - math.deg( math.acos( dir_delta ) )
+		-- If this position resides on track, add it to results
+		if ( ( local_x > -X_PAD ) and ( local_x < node.vec:Length() + X_PAD ) and ( local_y > -Y_PAD ) and ( local_y < Y_PAD ) and ( local_z > -Z_PAD ) and ( local_z < Z_PAD ) ) and ( opts and node.path ~= opts.ignore_path or true ) then
+			table.insert( results, {
+				node1 = node,
+				node2 = node.next,
+				path = node.path,
+				angle = dir_angle, -- Angle between forward vector and axis of track
+				forward = dir_forward, -- Is facing forward relative to track
+				x = local_x * 0.01905 + node.x, -- Local coordinates in track curvilinear coordinates
+				y = local_y * 0.01905, --
+				z = local_z * 0.01905, --
+				distance = yz_delta, -- Distance to path axis
+			} )
+		end
+	end
+
+	-- Sort results by distance
+	table.sort( results, function( a, b ) return a.distance < b.distance end )
+	-- Return list of positions
+	return results
 end
 
 -- Function to build the settings pane
@@ -178,8 +317,8 @@ function TOOL.BuildCPanel( panel )
 	horizontalSlider:SetValue( rotation ) -- Initial rotation value
 	horizontalSlider.OnValueChanged = function( value )
 		local valString = tostring( value:GetValue() )
-		print( valString )
-		RunConsoleCommand( "uf_signalling_horizontal_offset ", valString )
+		print( value:GetValue() )
+		RunConsoleCommand( "uf_signalling_horizontal_offset", valString )
 	end
 
 	panel:AddPanel( horizontalSlider )
@@ -192,7 +331,7 @@ function TOOL.BuildCPanel( panel )
 	verticalSlider:SetValue( rotation ) -- Initial rotation value
 	verticalSlider.OnValueChanged = function( value )
 		local valString = tostring( value:GetValue() )
-		RunConsoleCommand( "uf_signalling_vertical_offset ", valString )
+		RunConsoleCommand( "uf_signalling_vertical_offset", valString )
 	end
 
 	panel:AddPanel( verticalSlider )
@@ -243,70 +382,6 @@ function TOOL.BuildCPanel( panel )
 		end
 	end
 
-	-- Set up routes button
-	local submitButton = vgui.Create( "DButton", panel )
-	submitButton:SetText( "Set up Routes" )
-	submitButton.DoClick = function()
-		local inputFrame = vgui.Create( "DFrame" )
-		inputFrame:SetSize( 440, 300 )
-		inputFrame:SetTitle( "Input Route Data" )
-		inputFrame:Center()
-		inputFrame:MakePopup()
-		-- Number of routes slider
-		local slider = vgui.Create( "DNumSlider", inputFrame )
-		slider:SetText( "Number of Routes" )
-		slider:SetPos( 10, 30 )
-		slider:SetWide( 380 )
-		slider:SetMin( 1 )
-		slider:SetMax( 4 )
-		slider:SetDecimals( 0 )
-		slider:SetValue( 1 )
-		local labels = { "Next Signal" }
-		local yOffset = 70
-		local textEntries = {}
-		local switchButtons = {}
-		-- Function to dynamically create fields for each route
-		local function createFields( numFields )
-			-- Clear previous fields
-			for _, entry in ipairs( textEntries ) do
-				if IsValid( entry ) then entry:Remove() end
-			end
-
-			for i = 1, numFields do
-				textEntries[ i ] = {} -- Initialize row for text entries
-				local label = vgui.Create( "DLabel", inputFrame )
-				label:SetPos( 10 + 100, yOffset + 5 )
-				label:SetText( labels[ 1 ] .. " " .. i )
-				label:SizeToContents()
-				local textEntry = vgui.Create( "DTextEntry", inputFrame )
-				textEntry:SetPos( 5 + 100, yOffset )
-				textEntry:SetSize( 100, 25 )
-				-- Handle route data input
-				textEntry.OnValueChange = function( self )
-					local value = textEntry:GetValue()
-					tool.Settings.Routes[ i ] = tool.Settings.Routes[ i ] or {}
-					tool.Settings.Routes[ i ][ "NextSignal" ] = value
-				end
-
-				-- Switch input button for each route
-				local switchButton = vgui.Create( "DButton", inputFrame )
-				switchButton:SetPos( 205, yOffset + 2.4 )
-				switchButton:SetText( "Switching Data for Route" )
-				switchButton.DoClick = function() InputSwitchingData() end
-				textEntries[ i ] = textEntry
-				yOffset = yOffset + 30
-			end
-		end
-
-		-- Slider value changed
-		slider.OnValueChanged = function( self, value )
-			yOffset = 70
-			createFields( value )
-		end
-
-		createFields( slider:GetValue() )
-	end
-
 	panel:AddPanel( submitButton )
 	-- Apply settings button
 	local ApplySettings = vgui.Create( "DButton", panel )
@@ -330,46 +405,72 @@ function TOOL.BuildCPanel( panel )
 end
 
 -- Function to create the signal entity
+local targetEnt = targetEnt or "nullEnt"
 function TOOL:LeftClick( trace )
 	if SERVER then
-		self.Settings = ServerSettings
-		--PrintTable( self.Settings, 1 )
-		local ply = self:GetOwner()
-		local trace = util.TraceLine( {
-			start = ply:GetShootPos(),
-			endpos = ply:GetShootPos() + ply:GetAimVector() * 1000, -- Adjust the length based on how far you want to trace
-			filter = { ply }
-		} )
+		if mode == 1 then
+			self.Settings = ServerSettings
+			--PrintTable( self.Settings, 1 )
+			local ply = self:GetOwner()
+			local trace = util.TraceLine( {
+				start = ply:GetShootPos(),
+				endpos = ply:GetShootPos() + ply:GetAimVector() * 1000, -- Adjust the length based on how far you want to trace
+				filter = { ply }
+			} )
 
-		local signalType = self:GetClientInfo( "signal_type" )
-		local signalName1 = self:GetClientInfo( "signal_name1" )
-		local signalName2 = self:GetClientInfo( "signal_name2" )
-		local rotation = self:GetClientNumber( "signal_rotation" )
-		local left = self:GetClientBool( "signal_left" )
-		local horizontal = self:GetClientNumber( "horizontal_offset" )
-		local vertical = self:GetClientNumber( "vertical_offset" )
-		local ent = ents.Create( "gmod_track_uf_signal" )
-		if not IsValid( ent ) then return false end
-		ent.SignalType = signalTypes[ signalType ]
-		-- Set the signal names before spawning the entity
-		ent.Left = left
-		PrintMessage( HUD_PRINTTALK, signalName1 )
-		PrintMessage( HUD_PRINTTALK, signalName2 )
-		ent.Name1 = signalName1
-		ent.Name2 = signalName2
-		ent:SetNW2String( "Name1", signalName1 )
-		ent:SetNW2String( "Name2", signalName2 )
-		ent.Routes = Routes
-		local angleToPlayer = ( ply:GetShootPos() - trace.HitPos ):Angle()
-		angleToPlayer.p = 0 -- Keep it upright by setting pitch to 0
-		ent:SetAngles( angleToPlayer )
-		ent:SetPos( trace.HitPos )
-		ent:Spawn()
-		undo.Create( "Signal" .. " " .. signalName1 .. "/" .. signalName2 )
-		undo.AddEntity( ent )
-		undo.SetPlayer( self:GetOwner() )
-		undo.Finish()
-		return true
+			local signalType = self:GetClientInfo( "signal_type" )
+			local signalName1 = self:GetClientInfo( "signal_name1" )
+			local signalName2 = self:GetClientInfo( "signal_name2" )
+			local rotation = self:GetClientNumber( "signal_rotation" )
+			local left = self:GetClientBool( "signal_left" )
+			local horizontal = self:GetClientNumber( "horizontal_offset" )
+			local vertical = self:GetClientNumber( "vertical_offset" )
+			local ent = ents.Create( "gmod_track_uf_signal" )
+			if not IsValid( ent ) then return false end
+			ent.SignalType = signalTypes[ signalType ]
+			-- Set the signal names before spawning the entity
+			ent.Left = left
+			PrintMessage( HUD_PRINTTALK, signalName1 )
+			PrintMessage( HUD_PRINTTALK, signalName2 )
+			ent.Name1 = signalName1
+			ent.Name2 = signalName2
+			ent:SetNW2String( "Name1", signalName1 )
+			ent:SetNW2String( "Name2", signalName2 )
+			ent.Routes = Routes
+			local angleToPlayer = ( ply:GetShootPos() - trace.HitPos ):Angle()
+			angleToPlayer.p = 0 -- Keep it upright by setting pitch to 0
+			ent:SetAngles( angleToPlayer )
+			ent:SetPos( trace.HitPos )
+			ent:Spawn()
+			undo.Create( "Signal" .. " " .. signalName1 .. "/" .. signalName2 )
+			undo.AddEntity( ent )
+			undo.SetPlayer( self:GetOwner() )
+			undo.Finish()
+			return true
+		elseif mode == 2 then
+			local ply = self:GetOwner()
+			local playerPos = ply:GetPos()
+			local targetClass = "gmod_track_uf_signal"
+			local maxDistance = 1000
+			if targetEnt == "nullEnt" then
+				local targetList = ents.FindByClass( targetClass )
+				for _, ent in ipairs( targetList ) do
+					local entIsValid = ent:IsValid()
+					local entPos = ent:GetPos()
+					local entInRange = playerPos:DistToSqr( entPos ) < maxDistance ^ 2
+					if entIsValid and entInRange then
+						local direction = ( entPos - playerPos ):GetNormalized()
+						if direction:Dot( playerAim ) > 0.98 then
+							targetEnt = ent
+						else
+							ply:PrintMessage( HUD_PRINTTALK, "No signal entity found at aim vector!" )
+						end
+					end
+				end
+			end
+		end
+	elseif CLIENT then
+		if mode == 2 then if not self.SpatialLookup then self:sendPathsToClient() end end
 	end
 end
 
@@ -398,71 +499,168 @@ function TOOL:RightClick( trace )
 	return false
 end
 
--- Function to create the model preview
-function TOOL:Think()
-	if CLIENT then
-		local ply = self:GetOwner()
-		if not ply:IsAdmin() then
-			ply:PrintMessage( HUD_PRINTTALK, "You're not a server admin. Bailing." )
-			return false
-		end
-
-		local ClientSettings = ClientSettings or {}
-		net.Receive( "uf_signal_settings_client", function() ClientSettings = net.ReadTable() end )
-		self.Settings = ClientSettings
-		if not self.Settings then
-			print( "NO SETTINGS" )
-			return
-		end
-
-		if not IsValid( ply ) then
-			print( "No player" )
-			return
-		end
-
-		local trace = util.TraceLine( {
-			start = ply:GetShootPos(),
-			endpos = ply:GetShootPos() + ply:GetAimVector() * 1000, -- Adjust the length based on how far you want to trace
-			filter = { ply }
-		} )
-
-		if not trace.Hit then -- If the trace doesn't hit anything, return
-			return
-		end
-
-		local signalType = GetConVar( "uf_signalling_signal_type" ):GetString()
-		local modelName = signalTypes[ signalType ] or "models/lilly/uf/signals/underground_small_pole.mdl"
-		if not modelName then
-			print( "No model sent, bailing out of preview function" )
-			return
-		end
-
-		local rotation = self:GetClientNumber( "signal_rotation" )
-		-- Spawn preview model if it doesn't exist
-		if not IsValid( self.PreviewModel ) then
-			self.PreviewModel = ClientsideModel( modelName, RENDERGROUP_OPAQUE )
-			self.PreviewModel:Spawn()
-			self.PreviewModel:SetModel( modelName )
-		end
-
-		local left = self:GetClientBool( "signal_left" )
-		local horizontal = self:GetClientNumber( "horizontal_offset" )
-		local vertical = self:GetClientNumber( "vertical_offset" )
-		local offset = left and -60 or 60 -- Y-axis offset
-		local horizontalOffset = offset + horizontal
-		local delta = Vector( 0, horizontalOffset, vertical )
-		-- Calculate the aim direction and set the position of the preview model
-		local aimDirection = ply:GetAimVector()
-		local offsetPosition = trace.HitPos + aimDirection:Angle():Right() * delta.y -- Apply right vector for the offset
-		-- Set position and rotation of the preview model
-		self.PreviewModel:SetPos( offsetPosition + Vector( 0, 0, vertical ) )
-		-- Make the preview model face the player
-		local angleToPlayer = ( ply:GetShootPos() - trace.HitPos ):Angle()
-		angleToPlayer.p = 0 -- Keep it upright by setting pitch to 0
-		self.PreviewModel:SetAngles( angleToPlayer + Angle( 0, rotation, 0 ) )
-		self.PreviewModel:SetModel( modelName )
-		self.PreviewModel:SetNoDraw( false )
+local lastSwitch = lastSwitch or 0
+function TOOL:Reload()
+	mode = self:GetClientNumber( "mode" )
+	if mode == 1 and CurTime() - lastSwitch > 2 then
+		lastSwitch = CurTime()
+		RunConsoleCommand( "uf_signalling_mode", "2" )
+		self:GetOwner():PrintMessage( HUD_PRINTTALK, "Switching to route editing mode." )
+		return true
+	elseif mode == 2 and CurTime() - lastSwitch > 2 then
+		lastSwitch = CurTime()
+		RunConsoleCommand( "uf_signalling_mode", "1" )
+		self:GetOwner():PrintMessage( HUD_PRINTTALK, "Switching to signal spawning mode." )
+		return true
 	end
+end
+
+function TOOL:Think()
+	mode = self:GetClientNumber( "mode", 1 )
+	if CLIENT then
+		print( self.Paths[ 1 ] )
+		if mode == 1 then
+			local ply = self:GetOwner()
+			if not ply:IsAdmin() then
+				ply:PrintMessage( HUD_PRINTTALK, "You're not a server admin. Bailing." )
+				return false
+			end
+
+			local ClientSettings = ClientSettings or {}
+			net.Receive( "uf_signal_settings_client", function() ClientSettings = net.ReadTable() end )
+			self.Settings = ClientSettings
+			if not self.Settings then
+				--print( "NO SETTINGS" )
+				return
+			end
+
+			if not IsValid( ply ) then
+				--print( "No player" )
+				return
+			end
+
+			local trace = util.TraceLine( {
+				start = ply:GetShootPos(),
+				endpos = ply:GetShootPos() + ply:GetAimVector() * 1000, -- Adjust the length based on how far you want to trace
+				filter = { ply }
+			} )
+
+			if not trace.Hit then -- If the trace doesn't hit anything, return
+				return
+			end
+
+			local signalType = GetConVar( "uf_signalling_signal_type" ):GetString()
+			local modelName = signalTypes[ signalType ] or "models/lilly/uf/signals/underground_small_pole.mdl"
+			if not modelName then
+				--print( "No model sent, bailing out of preview function" )
+				return
+			end
+
+			local rotation = self:GetClientNumber( "signal_rotation" )
+			-- Spawn preview model if it doesn't exist
+			if not IsValid( self.PreviewModel ) and mode == 1 then
+				self.PreviewModel = ClientsideModel( modelName, RENDERGROUP_OPAQUE )
+				self.PreviewModel:Spawn()
+				self.PreviewModel:SetModel( modelName )
+			end
+
+			local left = self:GetClientBool( "signal_left" )
+			local horizontal = self:GetClientNumber( "horizontal_offset" )
+			local vertical = self:GetClientNumber( "vertical_offset" )
+			local offset = left and -60 or 60 -- Y-axis offset
+			local horizontalOffset = offset + horizontal
+			local delta = Vector( 0, horizontalOffset, vertical )
+			-- Calculate the aim direction and set the position of the preview model
+			local aimDirection = ply:GetAimVector()
+			local offsetPosition = trace.HitPos + aimDirection:Angle():Right() * delta.y -- Apply right vector for the offset
+			-- Set position and rotation of the preview model
+			self.PreviewModel:SetPos( offsetPosition + Vector( 0, 0, vertical ) )
+			-- Make the preview model face the player
+			local angleToPlayer = ( ply:GetShootPos() - trace.HitPos ):Angle()
+			angleToPlayer.p = 0 -- Keep it upright by setting pitch to 0
+			self.PreviewModel:SetAngles( angleToPlayer + Angle( 0, rotation, 0 ) )
+			self.PreviewModel:SetModel( modelName )
+			self.PreviewModel:SetNoDraw( false )
+		elseif mode == 2 then
+			if IsValid( self.PreviewModel ) then self.PreviewModel:Remove() end
+		elseif mode == 3 then
+			if IsValid( self.PreviewModel ) then self.PreviewModel:Remove() end
+		end
+	end
+end
+
+local last_request = last_request or 0
+if CLIENT then
+	function TOOL:DrawHUD()
+		local owner = self:GetOwner()
+		local tr = owner:GetEyeTrace()
+		local traceLocal = ents.FindInSphere( tr.HitPos, 8 )
+		local dist = owner:GetPos():Distance( tr.HitPos )
+		cam.Start3D()
+		for _, v in ipairs( traceLocal ) do
+			if v:GetClass() == "gmod_track_uf_signal" and dist < 30 then render.DrawWireframeBox( v:GetPos(), Angle( 0, 0, 0 ), Vector( -10, 0, 0 ), Vector( 10, 10, 10 ), Color( 255, 0, 0 ), true ) end
+		end
+
+		if self.Paths and not table.IsEmpty( self.Paths ) then
+			local hit = tr.Hit and tr.HitWorld
+			print( tr.StartPos )
+			local normal = tr.StartPos - tr.HitPos
+			local trackPos = self:GetPositionOnTrack( tr.HitPos, normal:Angle() )
+			local SelectedColor = Color( 255, 0, 0 )
+			local DeSelectedColor = color_white
+			for k, path in pairs( self.Paths ) do
+				local lastnode = nil
+				local colour = Either( k == trackPos.path, SelectedColor, DeSelectedColor )
+				for _, node in pairs( path ) do
+					-- draw a box if the hit position correlates with a track node
+					if hit and trackPos.id == node.id and trackPos.path.id == node.path.id then render.DrawQuadEasy( trackPos.pos, trackpos.pos:Up(), 50, 50, SelectedColor, 0 ) end
+					if lastnode then render.DrawLine( node, lastnode, colour, true ) end
+					render.DrawWireframeSphere( node, 10, 2, 2, colour, true )
+					lastnode = node
+				end
+			end
+		end
+
+		cam.End3D()
+	end
+
+	function TOOL:Deploy()
+		if table.IsEmpty( self.Paths ) then
+			net.Start( "metrostroi-lightrail-stool-signal-routes-clientToServer" )
+			print( "Requesting pathing info" )
+			net.WritePlayer( LocalPlayer() )
+			net.SendToServer()
+		end
+	end
+end
+
+if SERVER then
+	local sent = sent or {}
+	local function sendPaths( index, ply )
+		net.Start( "metrostroi-lightrail-stool-signal-routes" )
+		net.WriteInt( index, 16 )
+		net.WriteTable( Metrostroi.Paths[ index ] )
+		net.Send( ply )
+		return index
+	end
+
+	--FIXME: USE THIS AS REFERENCE: https://github.com/metrostroi-repo/MetrostroiAddon/blob/dev/lua/metrostroi/sv_trackeditor.lua https://github.com/metrostroi-repo/MetrostroiAddon/blob/dev/lua/metrostroi/cl_trackeditor.lua
+	net.Receive( "metrostroi-lightrail-stool-signal-routes-clientToServer", function()
+		local ply = net.ReadPlayer()
+		print( "Sending pathing data to:", ply )
+		local length = table.Count( Metrostroi.Paths )
+		for i = 1, length do
+			timer.Simple( 1, function() sendPaths( i, ply ) end )
+		end
+	end )
+end
+
+if CLIENT then
+	net.Receive( "metrostroi-lightrail-stool-signal-routes", function()
+		print( "reading pathing data" )
+		index = net.ReadInt( 16 )
+		TOOL.Paths[ index ] = net.ReadTable()
+	end )
 end
 
 -- Function to remove the model preview
@@ -475,7 +673,7 @@ if SERVER then
 	net.Receive( "uf_signal_settings", function()
 		ServerSettings = net.ReadTable()
 		if ServerSettings then
-			print( "Relaying settings" )
+			--print( "Relaying settings" )
 			net.Start( "uf_signal_settings_client" )
 			net.WriteTable( ServerSettings, true )
 			net.Broadcast()
@@ -487,8 +685,9 @@ local function DrawWireframeBox( entity )
 	if IsValid( entity ) then
 		local mins, maxs = entity:GetRenderBounds()
 		local position = entity:GetPos()
+		local angles = entity:GetAngles()
 		-- Set the wireframe color
 		render.SetColorMaterial()
-		render.DrawWireframeBox( position, entity:GetAngles(), mins, maxs, Color( 255, 0, 0, 255 ), true )
+		render.DrawWireframeBox( position, angles, mins, maxs, Color( 255, 0, 0, 255 ), true )
 	end
 end
