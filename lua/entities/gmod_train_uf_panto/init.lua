@@ -144,11 +144,11 @@ function ENT:CheckVoltage( dT )
 	local hit, hitEnt, pantoheight = self:CheckContact()
 	if ( not IsValid( hitEnt ) or not hit ) and supported then self.Voltage = 0 end
 	if self.Raised and not self.PreviouslyRaised and self.RaiseLowerAnim < pantoheight then
-		self.RaiseLowerAnim = self.RaiseLowerAnim + ( 8 * self.DeltaTime )
+		self.RaiseLowerAnim = self.RaiseLowerAnim + ( 10 * self.DeltaTime )
 		self.RaiseLowerAnim = math.min( pantoheight, self.RaiseLowerAnim )
 		self.Train:SetNW2Bool( "PantoMovingUp", true )
 	elseif not self.Raised and self.PreviouslyRaised and self.RaiseLowerAnim > 0 then
-		self.RaiseLowerAnim = self.RaiseLowerAnim - ( 8 * self.DeltaTime )
+		self.RaiseLowerAnim = self.RaiseLowerAnim - ( 12 * self.DeltaTime )
 		self.RaiseLowerAnim = math.max( 0, self.RaiseLowerAnim )
 		self.Train:SetNW2Bool( "PantoMovingDown", true )
 	elseif self.Raised and not self.PreviouslyRaised and self.RaiseLowerAnim >= pantoheight then
