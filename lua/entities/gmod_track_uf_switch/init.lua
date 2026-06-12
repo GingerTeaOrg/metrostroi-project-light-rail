@@ -367,6 +367,7 @@ end
 
 local nodesTraversed = nodesTraversed or 0
 function ENT:GetBranchingPaths()
+	if true then return end
 	if not Metrostroi.Paths[ 1 ] then -- if the paths table isn't populated yet, just start a timer to call this function again and exit
 		timer.Simple( 50, self:GetBranchingPaths() )
 		return
