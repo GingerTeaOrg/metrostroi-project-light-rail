@@ -46,7 +46,8 @@ function TRAIN_SYSTEM:ComputeLoadFactor( speed, throttle )
 	self.g = 9.81
 	local slopeForce = self.Mass * self.g * math.abs( slopeSin ) -- abs slope for load magnitude
 	-- Base slope load factor = 1 + slopeForce / scale
-	local slopeLoadFactor = 1.5
+	local slopeLoadFactor = self.Train.CoreSys.ReverserA ~= 0 and ( self.Train.CoreSys.ThrottleStateA / 100 * 3 ) + 1 or 0
+	--print( slopeLoadFactor, movingUphill )
 	--print( movingUphill )
 	if movingUphill then
 		slopeLoadFactor = slopeLoadFactor + slopeForce / 10000
@@ -66,7 +67,7 @@ function TRAIN_SYSTEM:Think( dT )
 	self:SetLoadFactor( loadFactor )
 	self.TickCounter = self.TickCounter + 1
 	local currentTime = CurTime()
-	self.ChopperOutput = self:simulateChopperThyristor( dutyCycle, dT, currentTime )
+	self.ChopperOutput = self:simulateChopperThyristor( dutyCycle + loadFactor, dT, currentTime )
 end
 
 function TRAIN_SYSTEM:SetLoadFactor( factor )
