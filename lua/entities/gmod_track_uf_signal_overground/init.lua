@@ -63,8 +63,10 @@ function ENT:ParseLenses( str )
 end
 
 function ENT:Think()
+	local pos = pos or self:GetPos()
+	local angle = angle or self:GetAngles()
 	self.LastTrainCheck = self.LastTrainCheck or CurTime()
-	self.TrackPosition = self.TrackPosition or Metrostroi.GetPositionOnTrack( self:GetPos() - Vector( 0, 0, -5 ), self:GetAngles() )[ 1 ]
+	self.TrackPosition = self.TrackPosition or Metrostroi.GetPositionOnTrack( pos - Vector( 0, 0, -5 ), angle )[ 1 ]
 	if not self.TrackPosition then
 		--PrintMessage( HUD_PRINTTALK, "No trackpos" )
 		--print( "exit" )
@@ -140,6 +142,7 @@ function ENT:FindNextSwitch( node )
 	end
 end
 
+local defectNotified = defectNotified or {}
 function ENT:DetectTrainArrived()
 	local forward = self.TrackPosition.forward
 	local x = self.TrackPosition.x
@@ -147,15 +150,28 @@ function ENT:DetectTrainArrived()
 	local scanStart, scanEnd
 	if forward then
 		scanStart = x
-		scanEnd = x - 5 -- look ahead 30m
+		scanEnd = x - 0.1 -- look ahead 30m
 	else
 		scanStart = x
-		scanEnd = x + 5 -- look behind 30m
+		scanEnd = x + 0.1 -- look behind 30m
 	end
 
 	local occupied, firstTrain, lastTrain, trainList = MPLR.IsTrackOccupied( self.TrackPosition.node1, scanStart, forward, nil, scanEnd )
 	local targetTrain
 	--print( lastTrain )
+	local defectTableEmpty = table.IsEmpty( defectNotified )
+	if not defectTableEmpty then
+		for train in pairs( defectNotified ) do
+			for k, v in ipairs( trainList ) do
+				if train == v and defectNotified[ v ] then
+					break
+				else
+					defectNotified[ v ] = nil
+				end
+			end
+		end
+	end
+
 	if lastTrain and not lastTrain.IBIS then
 		for _, train in ipairs( trainList ) do
 			if train.IBIS then
@@ -182,8 +198,10 @@ function ENT:DetectTrainArrived()
 		self.TrainIsRegistered = IsValid( targetTrain )
 		return
 	else
-		if IsValid( targetTrain ) then
-			PrintMessage( HUD_PRINTTALK, tostring( targetTrain.WagNum ) .. ":" .. " Signal ahead failed to register you, please use key to proceed manually." )
+		if IsValid( targetTrain ) and not defectNotified[ targetTrain ] then
+			defectNotified[ targetTrain ] = true
+			local wagonNumber = targetTrain.WagonNumber or targetTrain.SectionA.WagonNumber
+			PrintMessage( HUD_PRINTTALK, "Car number " .. tostring( wagonNumber ) .. ":" .. " Signal ahead failed to register you, please use key to proceed manually." )
 			return
 		end
 	end
