@@ -19,6 +19,7 @@ TRAIN_SYSTEM.TriggerNames = {
 	"TimeAndDate", -- 15
 }
 
+local toNumber = tonumber
 function TRAIN_SYSTEM:Initialize()
 	self.Route = " " -- Route index number
 	self.RouteChar1 = "0"
@@ -93,7 +94,6 @@ function TRAIN_SYSTEM:Initialize()
 	self.IndexValid = false
 	self.PhonedHome = false
 	self.DefectChance = math.random( 0, 100 )
-	self.LastRoll = CurTime()
 	self.TrainID = math.random( 9999, 1 )
 	self.KeyInput = nil
 	self.KeyRegistered = false
@@ -257,23 +257,24 @@ if CLIENT then
 	} )
 end
 
+local drawTimer = drawTimer or 0
 function TRAIN_SYSTEM:ClientThink()
-	if not self.DrawTimer then
+	if not drawTimer then
 		render.PushRenderTarget( self.Train.IBIS, 0, 0, 512, 128 )
 		-- render.Clear(0, 0, 0, 0)
 		render.PopRenderTarget()
 	end
 
-	if self.DrawTimer and CurTime() - self.DrawTimer < 0.1 then return end
-	self.DrawTimer = CurTime()
+	if drawTimer and CurTime() - drawTimer < 0.1 then return end
+	drawTimer = CurTime()
 	render.PushRenderTarget( self.Train.IBIS, 0, 0, 512, 128 )
 	-- render.Clear(0, 0, 0, 0)
 	cam.Start2D()
 	self:IBISScreen( self.Train )
 	cam.End2D()
 	render.PopRenderTarget()
-	if self.DrawTimer and CurTime() - self.DrawTimer < 0.2 then return end
-	self.DrawTimer = CurTime()
+	if drawTimer and CurTime() - drawTimer < 0.2 then return end
+	drawTimer = CurTime()
 	render.PushRenderTarget( self.Train.IBIS, 0, 0, 512, 128 )
 	-- render.Clear(0, 0, 0, 0)
 	cam.Start2D()
@@ -287,10 +288,10 @@ function TRAIN_SYSTEM:PrintText( x, y, text, inverse )
 	for i = 1, #str do
 		local char = utf8.char( str[ i ] )
 		if inverse then
-			draw.SimpleText( string.char( 0x7f ), "IBIS", ( x + i ) * 20.5 + 5, y * 40 + 40, Color( 0, 0, 0 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			draw.SimpleText( char, "IBIS", ( x + i ) * 20.5 + 5, y * 40 + 40, Color( 140, 190, 0, 150 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			draw.SimpleText( string.char( 0x7f ), "IBIS", ( x + i ) * 25.5, y * 40 + 40, Color( 0, 0, 0 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			draw.SimpleText( char, "IBIS", ( x + i ) * 20.5 + 5, y * 80, Color( 140, 190, 0, 150 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 		else
-			draw.SimpleText( char, "IBIS", ( x + i ) * 32, y * 15 + 20, Color( 0, 0, 0 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			draw.SimpleText( char, "IBIS", ( x + i ) * 32, y * 35, Color( 0, 0, 0 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 		end
 	end
 end
@@ -413,8 +414,8 @@ function TRAIN_SYSTEM:IBISScreen( Train )
 		end
 	end
 
-	if State == 4 then self:BlinkText( true, self.DefectString[ self.Train:GetNW2Int( "Defect", 1 ) ] ) end
-	if State == 5 and Menu == 4 or State == 5 and Menu == 1 then self:BlinkText( true, "Kurs besetzt" ) end
+	if State == 5 then self:BlinkText( true, self.DefectString[ self.Train:GetNW2Int( "Defect", 1 ) ] ) end
+	if State == 4 and Menu == 1 then self:BlinkText( true, "ERROR: Kurs besetzt" ) end
 	return
 end
 
@@ -562,9 +563,9 @@ function TRAIN_SYSTEM:UpdateState( dT )
 end
 
 function TRAIN_SYSTEM:Think( dT )
-	self.PrevTime = self.PrevTime or CurTime()
-	self.DeltaTime = CurTime() - self.PrevTime
-	self.PrevTime = CurTime()
+	if not dT then self.PrevTime = self.PrevTime or CurTime() end
+	self.DeltaTime = dT or CurTime() - self.PrevTime
+	if not dT then self.PrevTime = CurTime() end
 	--print( "Menu:", self.Menu, "State:", self.State )
 	local Train = self.Train
 	-- if not Train.BatteryOn or not Train.CircuitBreakerOn or Train:RearainWire(7) < 1 then return end -- why run anything when the train is off? fss.
@@ -573,7 +574,7 @@ function TRAIN_SYSTEM:Think( dT )
 	self.ServiceAnnouncements = MPLR.SpecialAnnouncementsIBIS[ self.Train:GetNW2Int( "IBIS:ServiceA", 1 ) ]
 	self.LineTable = MPLR.IBISLines[ self.Train:GetNW2Int( "IBIS:Lines", 1 ) ]
 	self:UpdateState( dT or self.DeltaTime )
-	if self.PowerOn or Train:ReadTrainWire( 7 ) > 0 then self:CANBusRunner() end
+	--if self.PowerOn or Train:ReadTrainWire( 7 ) > 0 then self:CANBusRunner() end
 	if self.Train.SkinCategory == "U2h" then
 		self.KeyInserted = self.Train.CoreSys.IBISKeyATurned
 	else
@@ -588,17 +589,17 @@ end
 function TRAIN_SYSTEM:ProcessChars()
 	local Train = self.Train
 	self.Route = self.RouteChar1 .. self.RouteChar2
-	self.DisplayedRouteChar1 = tonumber( self.RouteChar1, 10 ) and self.RouteChar1 ~= " " and self.RouteChar1 or " "
-	self.DisplayedRouteChar2 = tonumber( self.RouteChar2, 10 ) and self.RouteChar2 ~= " " and self.RouteChar2 or " "
-	self.DisplayedDestinationChar1 = tonumber( self.DestinationChar1, 10 ) and self.DestinationChar1 ~= " " and self.DestinationChar1 or " "
-	self.DisplayedDestinationChar2 = tonumber( self.DestinationChar2, 10 ) and self.DestinationChar2 ~= " " and self.DestinationChar2 or " "
-	self.DisplayedDestinationChar3 = tonumber( self.DestinationChar3, 10 ) and self.DestinationChar3 ~= " " and self.DestinationChar3 or " "
+	self.DisplayedRouteChar1 = toNumber( self.RouteChar1, 10 ) and self.RouteChar1 ~= " " and self.RouteChar1 or " "
+	self.DisplayedRouteChar2 = toNumber( self.RouteChar2, 10 ) and self.RouteChar2 ~= " " and self.RouteChar2 or " "
+	self.DisplayedDestinationChar1 = toNumber( self.DestinationChar1, 10 ) and self.DestinationChar1 ~= " " and self.DestinationChar1 or " "
+	self.DisplayedDestinationChar2 = toNumber( self.DestinationChar2, 10 ) and self.DestinationChar2 ~= " " and self.DestinationChar2 or " "
+	self.DisplayedDestinationChar3 = toNumber( self.DestinationChar3, 10 ) and self.DestinationChar3 ~= " " and self.DestinationChar3 or " "
 	-- Apply the same principle as before to ensure that the CourseChar variables are valid.
-	self.DisplayedCourseChar1 = tonumber( self.CourseChar1, 10 ) and self.CourseChar1 ~= " " and self.CourseChar1 or " "
-	self.DisplayedCourseChar2 = tonumber( self.CourseChar2, 10 ) and self.CourseChar2 ~= " " and self.CourseChar2 or " "
-	self.DisplayedCourseChar3 = tonumber( self.CourseChar3, 10 ) and self.CourseChar3 ~= " " and self.CourseChar3 or " "
-	self.DisplayedCourseChar4 = tonumber( self.CourseChar4, 10 ) and self.CourseChar4 ~= " " and self.CourseChar4 or " "
-	self.Destination = tonumber( self.DestinationChar1 .. self.DestinationChar2 .. self.DestinationChar3, 10 ) or 000
+	self.DisplayedCourseChar1 = toNumber( self.CourseChar1, 10 ) and self.CourseChar1 ~= " " and self.CourseChar1 or " "
+	self.DisplayedCourseChar2 = toNumber( self.CourseChar2, 10 ) and self.CourseChar2 ~= " " and self.CourseChar2 or " "
+	self.DisplayedCourseChar3 = toNumber( self.CourseChar3, 10 ) and self.CourseChar3 ~= " " and self.CourseChar3 or " "
+	self.DisplayedCourseChar4 = toNumber( self.CourseChar4, 10 ) and self.CourseChar4 ~= " " and self.CourseChar4 or " "
+	self.Destination = toNumber( self.DestinationChar1 .. self.DestinationChar2 .. self.DestinationChar3, 10 ) or 000
 	self.ServiceAnnouncement = self.AnnouncementChar1 .. self.AnnouncementChar2
 	self.DestinationString = self.DestinationTable[ self.Destination ]
 	Train:SetNW2Int( "IBIS:State", self.State )
@@ -657,7 +658,7 @@ function TRAIN_SYSTEM:GetLineLength()
 	end
 
 	for k, v in pairs( self.LineTable ) do
-		if tonumber( k, 10 ) then if #k > longest then longest = #k end end
+		if toNumber( k, 10 ) then if #k > longest then longest = #k end end
 	end
 	return longest
 end
@@ -716,6 +717,8 @@ function TRAIN_SYSTEM:ReadDataset()
 			end
 		elseif commit == "fail" then
 			self.State = 3
+		elseif commit == "invalidLine" then
+			self.State = 4
 		end
 	elseif self.Menu == 2 then
 		local commit = self:Menu2()
@@ -800,10 +803,9 @@ function TRAIN_SYSTEM:Menu0()
 end
 
 local lastLineInput = lastLineInput or 0
+local lastState = lastState or 0
 function TRAIN_SYSTEM:Menu1()
 	local debounce = CurTime() - lastLineInput > 1
-	--State, self.Menu )
-	--Menu 1, LinieKurs
 	if self.Menu ~= 1 then return end
 	local currentTime = CurTime()
 	local function returnNumber()
@@ -815,7 +817,7 @@ function TRAIN_SYSTEM:Menu1()
 	end
 
 	local input = returnNumber()
-	if input and not tonumber( self.CoursePrompt1, 10 ) then -- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
+	if input and not toNumber( self.CoursePrompt1, 10 ) then -- Input starts at the last digit and gets shifted around at every turn, until the whole prompt is full
 		if debounce then
 			lastLineInput = CurTime()
 			if self.LineLength == 2 then
@@ -867,8 +869,14 @@ function TRAIN_SYSTEM:Menu1()
 	if self.State == 1 and self.Triggers[ "Enter" ] and debounce then
 		lastLineInput = CurTime()
 		lastMenuChange = CurTime()
+		local lineValid = self.LineTable[ prompt ]
+		if not lineValid then
+			lastState = self.State
+			return "invalidLine"
+		end
+
 		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
-		if registered == true then
+		if registered then
 			return true
 		elseif registered == "logout" then
 			for i = 1, 5 do
@@ -888,6 +896,12 @@ function TRAIN_SYSTEM:Menu1()
 	elseif self.State == 2 and self.Triggers[ "Enter" ] and debounce then
 		lastLineInput = CurTime()
 		lastMenuChange = CurTime()
+		local lineValid = self.LineTable[ prompt ]
+		if not lineValid then
+			lastState = self.State
+			return "invalidLine"
+		end
+
 		local registered = registered or MPLR.RegisterTrain( prompt, self.Train )
 		if registered then
 			self.Menu = 2
@@ -908,21 +922,24 @@ function TRAIN_SYSTEM:Menu1()
 		else
 			return "fail"
 		end
+	elseif self.State == 4 and self.Triggers[ "Enter" ] and debounce then
+		self.State = lastState
 	end
 	return false
 end
 
 local lastRouteInput = lastRouteInput or 0
 function TRAIN_SYSTEM:Menu2()
+	local curTime = CurTime()
 	self.DebounceTime = 1
-	local debounce = CurTime() - lastRouteInput > 1
+	local debounce = curTime - lastRouteInput > 1
 	local allowMenuChange = CurTime() - lastMenuChange > 1.5
 	if self.Menu ~= 2 then return end
 	local line = self.Course:sub( 1, self.LineLength )
 	local function returnNumberKey()
 		for keyName, isPressed in pairs( self.NumberKeys ) do
-			if isPressed and CurTime() - lastRouteInput > 1 then
-				lastRouteInput = CurTime()
+			if isPressed and curTime - lastRouteInput > 1 then
+				lastRouteInput = curTime
 				local digit = string.sub( keyName, 7, 7 )
 				return keyName, digit
 			end
@@ -932,18 +949,25 @@ function TRAIN_SYSTEM:Menu2()
 
 	local inputKey, inputDigit = returnNumberKey()
 	local lastInput = self.Debounce[ inputKey ] == 0 and nil or lastInput
-	if inputKey and tonumber( inputDigit, 10 ) and not tonumber( self.RoutePrompt1, 10 ) then
+	local inputIsNumber = toNumber( inputDigit, 10 )
+	local routePromptIsFull = toNumber( self.RoutePrompt1, 10 )
+	local deleteKeyDetected = self.Triggers[ "Delete" ]
+	local enterKeyDetected = self.Triggers[ "Enter" ]
+	if inputKey and inputIsNumber and not routePromptIsFull then
 		if debounce then
 			self.RoutePrompt1 = self.RoutePrompt2
 			self.RoutePrompt2 = inputDigit
 		end
-	elseif self.Triggers[ "Delete" ] and debounce then
-		lastRouteInput = CurTime()
+	elseif deleteKeyDetected and debounce then
+		lastRouteInput = curTime
 		self.RoutePrompt2 = self.RoutePrompt1
 		self.RoutePrompt1 = " "
-	elseif self.Triggers[ "Enter" ] and debounce and allowMenuChange then
-		lastMenuChange = CurTime()
-		if self.RoutePrompt1 == " " and tonumber( self.RoutePrompt2, 10 ) then self.RoutePrompt1 = "0" end
+	elseif enterKeyDetected and debounce and allowMenuChange then
+		lastMenuChange = curTime
+		local firstRoutePromptDigitEmpty = self.RoutePrompt1 == " "
+		local secondRoutePromptDigitIsNumber = toNumber( self.RoutePrompt2, 10 )
+		local routeNumberConfirmedSingleDigit = firstRoutePromptDigitEmpty and secondRoutePromptDigitIsNumber
+		if routeNumberConfirmedSingleDigit then self.RoutePrompt1 = "0" end
 		local Route = self.RoutePrompt1 .. self.RoutePrompt2
 		if self.RouteTable[ line ] then
 			local routeTable = self.RouteTable[ line ][ Route ]
@@ -1011,10 +1035,11 @@ end
 
 local announcementsInput = announcementsInput or 0
 function TRAIN_SYSTEM:Menu4()
+	local serviceAnnouncements = self.ServiceAnnouncements
 	if self.Menu ~= 4 then return end
 	local debounce = CurTime() - announcementsInput > 2
 	local function returnNumber()
-		for k, v in pairs( self.NumberKeys ) do
+		for k in pairs( self.NumberKeys ) do
 			if self.NumberKeys[ k ] then
 				local ret = string.TrimLeft( k, "Number" )
 				return ret
@@ -1025,7 +1050,6 @@ function TRAIN_SYSTEM:Menu4()
 		return nil
 	end
 
-	print( self.Triggers[ "Delete" ] )
 	if self.State == 3 and debounce and ( self.Triggers[ "Delete" ] or self.Triggers[ "Enter" ] ) then self.State = 1 end
 	local input = returnNumber()
 	-- --print(self.AnnouncementChar1,self.AnnouncementChar2)
@@ -1039,9 +1063,12 @@ function TRAIN_SYSTEM:Menu4()
 		self.AnnouncementPrompt1 = " "
 	end
 
-	if self.ServiceAnnouncements[ self.AnnouncementPrompt1 .. self.AnnouncementPrompt2 ] and self.Triggers[ "Enter" ] and tonumber( self.AnnouncementPrompt1 .. self.AnnouncementPrompt2, 10 ) and debounce then
+	local fullPrompt = self.AnnouncementPrompt1 .. self.AnnouncementPrompt2
+	local fullCharacters = self.AnnouncementChar1 .. self.AnnouncementChar2
+	local isValidNumber = toNumber( fullPrompt, 10 )
+	if serviceAnnouncements[ fullPrompt ] and self.Triggers[ "Enter" ] and isValidNumber and debounce then
 		return true
-	elseif not self.ServiceAnnouncements[ self.AnnouncementChar1 .. self.AnnouncementChar2 ] and self.Triggers[ "Enter" ] and debounce then
+	elseif not serviceAnnouncements[ fullCharacters ] and self.Triggers[ "Enter" ] and debounce then
 		return "fail"
 	end
 	return false
@@ -1049,7 +1076,6 @@ end
 
 if CLIENT then
 	function TRAIN_SYSTEM:ClientInitialize()
-		self.LastBlinkTime = 0
 		self.BlinkingText = false
 		self.DefectStrings = {
 			[ 1 ] = "IFIS FEHLER",
@@ -1059,12 +1085,14 @@ if CLIENT then
 		}
 	end
 
+	local lastBlinkTime = lastBlinkTime or 0
 	function TRAIN_SYSTEM:BlinkText( enable, Text )
+		local curTime = CurTime()
 		if not enable then
 			self.BlinkingText = false
-		elseif CurTime() - self.LastBlinkTime > 1.5 then
+		elseif curTime - lastBlinkTime > 1.5 then
 			self:PrintText( 0, 1.5, Text )
-			if CurTime() - self.LastBlinkTime > 3 then self.LastBlinkTime = CurTime() end
+			if curTime - lastBlinkTime > 3 then lastBlinkTime = curTime end
 		end
 	end
 end
@@ -1081,7 +1109,12 @@ function TRAIN_SYSTEM:AnnQueue( msg )
 end
 
 local lastAnnouncement = lastAnnouncement or 0
+local commonFileIndex = TRAIN_SYSTEM.Train:GetNW2Int( "IBIS:CommonFiles", 1 )
+local announcementScriptIndex = TRAIN_SYSTEM.Train:GetNW2Int( "IBIS:AnnouncementScript", 1 )
+local announcementTableIndex = TRAIN_SYSTEM.Train:GetNW2Int( "IBIS:Announcements", 1 )
 function TRAIN_SYSTEM:Play( time )
+	local currentStation = self.CurrentStation
+	local routeNumber = self.Route
 	local message = {}
 	local line
 	if self.LineLength == 2 then
@@ -1090,8 +1123,8 @@ function TRAIN_SYSTEM:Play( time )
 		line = self.CourseChar1 .. self.CourseChar2 .. self.CourseChar3
 	end
 
-	local commonFiles = MPLR.IBISCommonFiles[ self.Train:GetNW2Int( "IBIS:CommonFiles", 1 ) ]
-	local announcementScript = MPLR.IBISAnnouncementScript[ self.Train:GetNW2Int( "IBIS:AnnouncementScript", 1 ) ]
+	local commonFiles = MPLR.IBISCommonFiles[ commonFileIndex ]
+	local announcementScript = MPLR.IBISAnnouncementScript[ announcementScriptIndex ]
 	print( announcementScript )
 	local temp = {}
 	for i = 1, #announcementScript do
@@ -1102,12 +1135,12 @@ function TRAIN_SYSTEM:Play( time )
 
 			table.insert( message, i, temp )
 		elseif announcementScript[ i ] == "station" then
-			if not self.CurrentStation then
+			if not currentStation then
 				ErrorNoHalt( "Current Station Not Defined!" )
 				return
 			end
 
-			temp = MPLR.IBISAnnouncementMetadata[ self.Train:GetNW2Int( "IBIS:Announcements", 1 ) ][ self.CurrentStation ][ line ][ self.Route ]
+			temp = MPLR.IBISAnnouncementMetadata[ announcementTableIndex ][ currentStation ][ line ][ routeNumber ]
 			if not temp then
 				--print( "ANNOUNCEMENT CORRUPT" )
 				return
@@ -1130,22 +1163,24 @@ function TRAIN_SYSTEM:OverrideSwitching( dir )
 	self.Override = dir
 end
 
+local lastRoll = lastRoll or 0
+local math_random = math.random
 function TRAIN_SYSTEM:DisasterTicker() -- Generate a random chance for defect simulation
-	if CurTime() - self.LastRoll > 10 and self.State ~= 4 then
+	local curTime = CurTime()
+	if curTime - lastRoll > 10 and self.State ~= 4 then
 		local randomNumber = math.random( 1, 100 )
 		if randomNumber == 1 then
-			self.State = 4
-			self.Train:SetNW2Int( "Defect", math.random( 1, 4 ) )
+			self.Train:SetNW2Int( "Defect", math_random( 1, 4 ) )
+			self.State = 5
 		end
 
-		self.LastRoll = CurTime()
+		lastRoll = curTime
 	end
 end
 
 function TRAIN_SYSTEM:CANBusRunner()
 	local t = self.Train
 	if not self.PoweredOn then return end
-	if t:ReadTrainWire( 6 ) < 1 then return end
 	tabledata = {
 		[ "Course" ] = self.Course,
 		[ "Route" ] = self.Route,
@@ -1173,19 +1208,23 @@ function TRAIN_SYSTEM:AnnouncementProcessor()
 	end
 end
 
+local getPositionOnTrack = Metrostroi.GetPositionOnTrack
 function TRAIN_SYSTEM:AutomaticAnnouncement()
+	local trainPosWorld = self.Train:GetPos()
+	local trainAngleWorld = self.Train:GetAngle()
 	local platform = Metrostroi.Stations[ self.CurrentStation ] -- target the platform data for the current station by Index
+	local platformStartPosWorld = platform.PlatformStart
 	local forward = platform.forward -- does the platform point up or down on the X coordinate?
 	-- get platform start and end
-	local pos1 = Metrostroi.GetPositionOnTrack( platform.PlatformStart, platform.ent.PlatformStart:GetAngles() )[ 1 ]
-	local pos2 = Metrostroi.GetPositionOnTrack( platform.PlatformEnd, platform.ent.PlatformEnd:GetAngles() )[ 1 ]
+	local pos1 = getPositionOnTrack( platformStartPosWorld, platform.ent.PlatformStart:GetAngles() )[ 1 ]
+	local pos2 = getPositionOnTrack( platform.PlatformEnd, platform.ent.PlatformEnd:GetAngles() )[ 1 ]
 	-- we're only interested in the X values of the platform
 	pos1 = pos1.x
 	pos2 = pos2.x
 	-- calculate a mid point so we don't have to complicate things by detecting entries and exits
 	local mediumPos = forward and pos2 - pos1 or pos1 - pos2
 	-- get the train's position and filter for X coordinate
-	local trainPos = Metrostroi.GetPositionOnTrack( self.Train:GetPos(), self.Train:GetAngles() )[ 1 ]
+	local trainPos = getPositionOnTrack( trainPosWorld, trainAngleWorld )[ 1 ]
 	trainPos = trainPos.x
 	-- are we in the station or not?
 	local inStation = ( forward and ( trainPos < pos2 and trainPos > pos1 ) ) or ( trainPos < pos1 and trainPos > pos2 )
