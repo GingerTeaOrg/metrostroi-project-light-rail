@@ -12,6 +12,27 @@
 		2 : "Street Level"
 	]
 ]
+@PointClass base(Targetname, Origin) = gmod_track_mplr_platform : "Train And Bus Platform"
+[
+	StationIndex(integer) : "Station index" : 100 : "Index of station (three-digit number: IBIS table index number)"
+	PlatformIndex(integer) : "Platform index" : 1 : "Index of platform (1: left, 2: right, 3: ...)"
+	PlatformStart(target_destination) : "Start of the platform"
+	PlatformEnd(target_destination) : "End of the platform"
+	PopularityIndex(float) : "Station popularity index" : "1.0" : "Total number of people who use station per day, normalized to average number of people using stations per day"
+	ValidRoutes(string): "Accepted Routes" : "-" : "Which Lines will serve this stop..."
+	StepsType(choices) : "Are steps required on this station" : 0 : "Some stations have not received any platform upgrades and may require trains that support folding steps. Passengers will not board if steps aren't available or extended." =
+	[
+    		0 : "Completely High Floor"
+    		1 : "Medium"
+		2 : "Street Level"
+	]
+	VehicleTypes(choices) : "Which vehicles to allow" : 1 : "Will this stop serve both light rail and busses?" =
+	[
+		0 : "Only trains"
+		1 : "Trains and Busses"
+		2 : "Only busses"
+	]
+]
 @PointClass base(Targetname, Origin) studioprop("models/lilly/uf/stations/dfi.mdl") = gmod_track_uf_dfi : "Lumino Station Display (Frankfurt Version)"
 [
 	StationIndex(integer) : "Station index" : 100 : "Index of station (three-digit number: IBIS table index number)"
