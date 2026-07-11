@@ -564,7 +564,7 @@ function ENT:Initialize()
 		[ KEY_D ] = "ThrottleDown",
 		[ KEY_F ] = "ReduceBrake",
 		[ KEY_H ] = "BellSet",
-		[ KEY_SPACE ] = "DeadmanSet",
+		[ KEY_SPACE ] = "DeadmanPedalSet",
 		[ KEY_W ] = "ReverserUpSet",
 		[ KEY_S ] = "ReverserDownSet",
 		[ KEY_P ] = "PantographOnSet",

@@ -162,7 +162,7 @@ function TRAIN_SYSTEM:ClientThink()
 	if brakeSetHiss then self.Train:PlayOnceFromPos( "BrakesSet", self.Train.SoundNames[ "BrakesSet" ][ 1 ], 1, 1, 1, 1, Vector( 400, 0, 100 ) ) end
 	--------
 	local chopper = self.Train:GetNW2Bool( "Chopper", false )
-	local vol = math.Remap( bellCurve( self.Speed ), 0.0005, 1, self.Speed > 1 and 0.01 or 0, 3 )
+	local vol = math.Remap( bellCurve( self.Speed ), 0.0005, 1, self.Speed > 1 and 0.01 or 0, 1.2 )
 	--LocalPlayer():PrintMessage( HUD_PRINTTALK, tostring( vol ) )
 	local pitch = ( self.Speed > 0 and self.Speed < 3 ) and 1.01 or 1 + math.sin( CurTime() * 1.8 ) * 0.00099
 	local throttlePositive = self.Train:GetNW2Bool( "ThrottlePositive", false )

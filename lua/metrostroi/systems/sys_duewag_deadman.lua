@@ -48,7 +48,7 @@ function TRAIN_SYSTEM:IsPressedAcrossTrain()
 		if sys.ReverserA ~= 0 then
 			pressed = p.DeadmanPedal > 0
 		elseif sys.ReverserB ~= 0 then
-			pressed = pB.Deadman > 0
+			pressed = pB.DeadmanPedal > 0
 		end
 	else
 		pressed = p.DeadmanPedal > 0
@@ -111,7 +111,8 @@ function TRAIN_SYSTEM:EmergencyBrake()
 	if indusi and indusi.SPAD then
 		self.SPAD = indusi.SPAD
 		self.DeadmanTripped = true
-		PrintMessage( HUD_PRINTTALK, "SPAD TRIPPED" )
+		local owner = self.Train:GetOwner()
+		PrintMessage( HUD_PRINTTALK, "SPAD TRIPPED BY: " .. tostring( owner ) )
 	end
 
 	if self.OverSpeed then self.DeadmanTripped = true end

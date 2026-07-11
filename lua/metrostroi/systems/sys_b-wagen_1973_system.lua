@@ -337,6 +337,18 @@ function TRAIN_SYSTEM:IgnitionKeyOnOffA()
 	end
 end
 
+function TRAIN_SYSTEM:IgnitionKeyOnOffB()
+	local t = self.Train
+	local turnAllowed = self.ReverserB == 0
+	if self.IgnitionKeyBIn and not self.IgnitionKeyB and turnAllowed then
+		self.IgnitionKeyB = true
+		t.SectionB:SetNW2Bool( "IgnitionTurned", self.IgnitionKeyB )
+	elseif self.IgnitionKeyBIn and self.IgnitionKeyB and turnAllowed then
+		self.IgnitionKeyB = false
+		t.SectionB:SetNW2Bool( "IgnitionTurned", self.IgnitionKeyB )
+	end
+end
+
 function TRAIN_SYSTEM:IgnitionKeyOffA()
 	local t = self.Train
 	self.IgnitionKeyA = false
@@ -345,27 +357,36 @@ end
 
 function TRAIN_SYSTEM:IgnitionKeyInOutB()
 	local t = self.Train
-	local consist = t.WagonList
-	for j = 1, #consist do
-		if j == t then continue end
-		if consist[ j ].CoreSys.IgnitionKeyA or consist[ j ].CoreSys.IgnitionKeyB then
-			local driver = t:GetDriver()
-			driver:PrintMessage( HUD_PRINTTALK, "You left your ignition key in another cab. Go fetch it!" )
-			return
+	local function consistKey()
+		local consist = t.WagonList
+		--[[if #consist > 1 then
+			for j in ipairs( consist ) do
+				if consist[ j ] ~= t and consist[ j ].CoreSys.IgnitionKeyA or consist[ j ].CoreSys.IgnitionKeyB then
+					t:GetDriverPly():PrintMessage( HUD_PRINTTALK, "You left your carriage key in another cab. Go fetch it!" )
+					return false
+				end
+			end
 		else
-			consist[ j ].CoreSys.IgnitionKeyAIn = false
-			consist[ j ].CoreSys.IgnitionKeyBIn = false
+			return true
+		end]]
+		return true
+	end
+
+	local keyOkay = consistKey()
+	if keyOkay then
+		if self.IgnitionKeyBIn and not self.IgnitionKeyA then
+			self.IgnitionKeyBIn = false
+		elseif not self.IgnitionKeyBIn then
+			self.IgnitionKeyBIn = true
 		end
 	end
 
-	if self.IgnitionKeyBIn and not self.IgnitionKeyB then
-		self.IgnitionKeyBIn = false
-	elseif not self.IgnitionKeyBIn then
-		self.IgnitionKeyBIn = true
-	end
+	t.SectionB:SetNW2Bool( "IgnitionKeyIn", self.IgnitionKeyBIn )
+end
 
-	self:SetSectionBNW2Bool( "IgnitionKeyIn", self.IgnitionKeyBIn )
-	self.PanelB.IgnitionKeyInserted = self.IgnitionKeyBIn and 1 or 0
+function TRAIN_SYSTEM:SetSectionBNW2Bool( name, val )
+	if not IsValid( self.Train.SectionB ) then return end
+	self.Train.SectionB:SetNW2Bool( name, val )
 end
 
 function TRAIN_SYSTEM:Coupled()
@@ -736,6 +757,12 @@ function TRAIN_SYSTEM:Traction()
 	end
 end
 
+function TRAIN_SYSTEM:WhichCabActive()
+	self.Train:SetNW2Bool( "CabActive", self.IgnitionKeyA )
+	self.Train.SectionB:SetNW2Bool( "CabActive", self.IgnitionKeyB )
+	return self.IgnitionKeyA and "a" or self.IgnitionKeyB and "b" or false
+end
+
 function TRAIN_SYSTEM:ReverserSystem()
 	local t = self.Train
 	-- Determine if the train is in gear
@@ -758,12 +785,16 @@ end
 
 function TRAIN_SYSTEM:PantoFunction()
 	local p = self.Train.Panel
+	local pB = self.Train.SectionB.Panel
 	local b = self.Train.Battery
 	if not b then return end
-	if p.PantographOn > 0 and not self.PantographRaised then
+	--if b.Voltage < 10 then return end
+	local cabA = self.ReverserA == 1
+	local cabB = self.ReverserB == 1
+	if ( cabA and p.PantographOn > 0 or cabB and pB.PantographOn > 0 ) and not self.PantographRaised then
 		self.Train.PantoUp = true
 		self.PantographRaised = true
-	elseif p.PantographOff > 0 and self.PantographRaised then
+	elseif ( cabA and p.PantographOff > 0 or cabB and pB.PantographOff > 0 ) and self.PantographRaised then
 		self.Train.PantoUp = false
 		self.PantographRaised = false
 	end

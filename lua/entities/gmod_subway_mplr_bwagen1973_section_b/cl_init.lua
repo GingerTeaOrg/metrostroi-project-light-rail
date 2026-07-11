@@ -4,6 +4,285 @@ ENT.ClientProps = {}
 ENT.ButtonMapMPLR = {}
 ENT.AutoAnims = {}
 ENT.AutoAnimNames = {}
+ENT.ClientSounds[ "throttle_up" ] = { { "throttle_up", function() return "throttle_up" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "throttle_zero" ] = { { "throttle_zero", function() return "throttle_zero" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "reverser_up" ] = { { "reverser_up", function() return "reverser_up" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "reverser_down" ] = { { "reverser_down", function() return "reverser_down" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "throttle_down" ] = { { "throttle_down", function() return "throttle_down" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "brake_hiss" ] = { { "brake_hiss", function() return "brake_hiss" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "DepartureConfirmed" ] = { { "DepartureConfirmed", function() return "DepartureConfirmed" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ClientSounds[ "key_insert" ] = { { "key_insert", function() return "key_insert" end, 2, 1, 100, 100, Angle( 90, 0, 0 ) } }
+ENT.ClientSounds[ "key_turn" ] = { { "key_turn", function() return "key_turn" end, 2, 1, 100, 100, Angle( -90, 0, 0 ) } }
+ENT.ButtonMapMPLR[ "IBISScreen" ] = {
+	pos = Vector( -511.89, 4.360, 74.86 ),
+	ang = Angle( 0, 90, 37.4 ),
+	width = 128,
+	height = 29.9,
+	scale = 0.0315
+}
+
+ENT.ButtonMapMPLR[ "IBISButtons" ] = {
+	pos = Vector( -512.1, 3.9, 75.2 ),
+	ang = Angle( 0, 90, 37.4 ),
+	width = 230,
+	height = 117,
+	scale = 0.0315,
+	buttons = {
+		{
+			ID = "Number1Set",
+			x = 155,
+			y = 20,
+			radius = 10,
+			tooltip = "1",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number1Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number2Set",
+			x = 182,
+			y = 20,
+			radius = 10,
+			tooltip = "2",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number2Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number3Set",
+			x = 208,
+			y = 20,
+			radius = 10,
+			tooltip = "3",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number3Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number4Set",
+			x = 155,
+			y = 46,
+			radius = 10,
+			tooltip = "4",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number4Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number5Set",
+			x = 182,
+			y = 46,
+			radius = 10,
+			tooltip = "5",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number5Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number6Set",
+			x = 208,
+			y = 46,
+			radius = 10,
+			tooltip = "6",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number6Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number7Set",
+			x = 155,
+			y = 72,
+			radius = 10,
+			tooltip = "7",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number7Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number8Set",
+			x = 182,
+			y = 72,
+			radius = 10,
+			tooltip = "8",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number8Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number9Set",
+			x = 208,
+			y = 72,
+			radius = 10,
+			tooltip = "9",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number9Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "DeleteSet",
+			x = 155,
+			y = 100,
+			radius = 10,
+			tooltip = "Delete",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "DeleteSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "Number0Set",
+			x = 182,
+			y = 100,
+			radius = 10,
+			tooltip = "0",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "Number0Set",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+		{
+			ID = "EnterSet",
+			x = 208,
+			y = 100,
+			radius = 10,
+			tooltip = "Enter",
+			model = {
+				z = 0,
+				ang = 90,
+				anim = true,
+				var = "EnterSet",
+				speed = 15,
+				vmin = 0,
+				vmax = 1,
+				sndvol = 1,
+				snd = function( val ) return val and "button_on" or "button_off" end,
+				sndmin = 80,
+				sndmax = 1e3 / 3,
+				sndang = Angle( -90, 0, 0 )
+			}
+		},
+	}
+}
+
 ENT.ClientProps[ "int" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/int-essen.mdl",
 	pos = Vector( 0, 0, 0 ),
@@ -49,12 +328,24 @@ ENT.ClientProps[ "throttle" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/throttle.mdl",
 	pos = Vector( 0, 0, 0 ),
 	ang = Angle( 0, 180, 0 ),
+	nohide = true,
+	ClientSounds = {
+		throttle_up = true,
+		throttle_down = true,
+		throttle_zero = true
+	}
+}
+
+ENT.ClientProps[ "lzb" ] = {
+	model = "models/lilly/mplr/common/cab/lzb.mdl",
+	pos = Vector( -510.92, -13.54, 73 ),
+	ang = Angle( 0, 0, 0 ),
 	nohide = true
 }
 
 ENT.ClientProps[ "reverser" ] = {
 	model = "models/lilly/mplr/ruhrbahn/b_1973/cab/reverser.mdl",
-	pos = Vector( 0, 0, 0 ),
+	pos = Vector( 1, 0, 0 ),
 	ang = Angle( 0, 180, 0 ),
 	nohide = true
 }
@@ -278,7 +569,7 @@ ENT.ButtonMapMPLR[ "DestinationRollsignFront" ] = {
 }
 
 ENT.ButtonMapMPLR[ "dashboard" ] = {
-	pos = Vector( -508, -25, 71.88 ),
+	pos = Vector( -508, -18, 71.88 ),
 	ang = Angle( 0, -270, 0 ),
 	width = 490,
 	height = 92,
@@ -329,7 +620,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "CircuitOnSet",
+			ID = "CircuitBreakerSet",
 			x = 85,
 			y = 62,
 			radius = 10,
@@ -339,7 +630,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 				z = -2,
 				ang = 90,
 				anim = true,
-				var = "CircuitOn",
+				var = "CircuitBreaker",
 				speed = 15,
 				vmin = 0,
 				vmax = 1,
@@ -351,7 +642,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "CircuitOffSet",
+			ID = "CircuitBreakerUnSet",
 			x = 100,
 			y = 62,
 			radius = 10,
@@ -361,7 +652,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 				z = -2,
 				ang = 90,
 				anim = true,
-				var = "CircuitOff",
+				var = "CircuitBreakerUn",
 				speed = 15,
 				vmin = 0,
 				vmax = 100,
@@ -395,20 +686,20 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "DoorUnblockSet",
+			ID = "UnlockDoorsToggle",
 			x = 130,
 			y = 62,
 			radius = 10,
-			tooltip = "Unblock Doors",
+			tooltip = "Unlock Doors",
 			model = {
 				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_door_unlock.mdl",
 				z = -2,
 				ang = 90,
 				anim = true,
-				var = "UnblockDoors",
+				var = "UnlockDoors",
 				speed = 15,
 				vmin = 0,
-				vmax = 100,
+				vmax = 1,
 				sndvol = 20,
 				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
@@ -425,7 +716,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			tooltip = "Wipers to full service",
 			model = {
 				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_wiper_constant.mdl",
-				z = -1.8,
+				z = 2,
 				ang = 90,
 				anim = true,
 				var = "WiperConstant",
@@ -447,7 +738,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			tooltip = "Wipers to interval",
 			model = {
 				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_wiper_interval.mdl",
-				z = -1.8,
+				z = 2,
 				ang = 90,
 				anim = true,
 				var = "WiperInterval",
@@ -573,7 +864,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "Door1Toggle",
+			ID = "Door1Set",
 			x = 187.5,
 			y = 24.5,
 			radius = 10,
@@ -684,7 +975,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 		},
 		-----------------------------------------------------------------------
 		{
-			ID = "DoorLeftToggle",
+			ID = "DoorsSelectLeftSet",
 			x = 173,
 			y = 62,
 			radius = 10,
@@ -706,7 +997,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "DoorRightToggle",
+			ID = "DoorsSelectRightSet",
 			x = 187.5,
 			y = 62,
 			radius = 10,
@@ -729,7 +1020,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 		},
 		-----empty gap
 		{
-			ID = "StepsLowestToggle",
+			ID = "StepsLowestSet",
 			x = 216.5,
 			y = 62,
 			radius = 10,
@@ -751,7 +1042,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "StepsLowToggle",
+			ID = "StepsLowSet",
 			x = 231,
 			y = 62,
 			radius = 10,
@@ -773,7 +1064,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			}
 		},
 		{
-			ID = "StepsHighToggle",
+			ID = "StepsHighSet",
 			x = 245.5,
 			y = 62,
 			radius = 10,
@@ -787,6 +1078,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 				speed = 15,
 				vmin = 0,
 				vmax = 100,
+				getfunc = function( ent ) return ent:GetNW2Bool( "StepsHigh" ) and 1 or 0 end,
 				sndvol = 20,
 				snd = function( val ) return val and "button_on" or "button_off" end,
 				sndmin = 80,
@@ -824,7 +1116,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 			tooltip = "Override next point to right",
 			model = {
 				model = "models/lilly/mplr/ruhrbahn/b_1973/cab/button_switching_right.mdl",
-				z = -4,
+				z = 0,
 				ang = 90,
 				anim = true,
 				var = "SwitchRight",
@@ -977,7 +1269,7 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 function ENT:Initialize()
 	self.BaseClass.Initialize( self )
 	self.SectionA = self:GetNWEntity( "SectionA" )
-	self.IBIS = self:CreateRT( "IBIS", 512, 128 )
+	self.IBIS = self:CreateRT( "IBIS" .. self:EntIndex(), 512, 128 )
 	self.SpeedoAnim = 0
 	self.VoltAnim = 0
 	self.AmpAnim = 0
@@ -995,35 +1287,49 @@ end
 
 function ENT:Think()
 	self.BaseClass.Think( self )
-	-- self:Animations()
+	self:Animations()
 	self.PrevTime = self.PrevTime or CurTime()
 	self.DeltaTime = CurTime() - self.PrevTime
 	self.PrevTime = CurTime()
 	self.BatteryOn = self:GetNW2Bool( "BatteryOn", false )
 end
 
+ENT.Reverser = {
+	[ 0 ] = 0,
+	[ 1 ] = 0.25,
+	[ 2 ] = 0.4,
+	[ 3 ] = 0.625,
+	[ 4 ] = 0.8,
+	[ 5 ] = 0.95,
+	[ 6 ] = 1.1
+}
+
 function ENT:Animations()
+	local lzb
+	if IsValid( self.SectionA ) then lzb = self.SectionA:GetNW2Bool( "LZBLoad", false ) end
+	self:ShowHide( "lzb", lzb )
 	self.Speed = self:GetNW2Int( "Speed" )
-	self.KeyInserted = self:GetNW2Bool( "MainKeyInserted", false )
-	self.KeyTurned = self:GetNW2Bool( "MainKeyTurned", false )
 	self:Animate( "Mirror_L", self:GetNW2Float( "Mirror_L", 0 ), 0, 100, 17, 1, 0 )
 	self:Animate( "Mirror_R", self:GetNW2Float( "Mirror_R", 0 ), 0, 100, 17, 1, 0 )
 	self:Animate( "drivers_door", self:GetNW2Float( "DriversDoorState", 0 ), 0, 100, 1, 1, 0 )
-	self:Animate( "reverser", self:GetNW2Float( "ReverserAnimate" ), 0, 100, 50, 9, false )
+	self:Animate( "reverser", self.Reverser[ self:GetNW2Int( "ReverserLever", 1 ) ], 0, 100, 50, 9, false )
+	self:Animate( "throttle", self:GetNW2Int( "ThrottleLever", 0.5 ) * 0.01, 0, 100, 50, 9, false )
+	self.IgnitionKeyInserted = self:GetNW2Bool( "IgnitionKeyIn", false )
+	self:ShowHide( "key_ignition", self.IgnitionKeyInserted )
+	self.KeyTurned = self:GetNW2Bool( "IgnitionTurned", false )
+	self:Animate( "key_ignition", self.KeyTurned and 0 or 1, 0, 100, 800, 0, 0 )
 	self.CabWindowL = self:GetNW2Float( "CabWindowL", 0 )
 	self.CabWindowR = self:GetNW2Float( "CabWindowR", 0 )
 	self:Animate( "window_cab_r", self:GetNW2Float( "CabWindowR", 0 ), 0, 100, 50, 9, false )
 	self:Animate( "window_cab_l", self:GetNW2Float( "CabWindowL", 0 ), 0, 100, 50, 9, false )
-	self:ShowHide( "Mainkey", self.KeyInserted )
-	self:Animate( "MainKey", self.KeyTurned == true and 0 or 1, 0, 100, 800, 0, 0 )
-	self:Animate( "door1_r", .5, 0, 100, 100, 10, 0 )
+	--[[self:Animate( "door1_r", .5, 0, 100, 100, 10, 0 )
 	self:Animate( "Door_fr1", Door12a, 0, 100, 100, 10, 0 )
 	self:Animate( "Door_rr2", Door34a, 0, 100, 100, 10, 0 )
 	self:Animate( "Door_rr1", Door34a, 0, 100, 100, 10, 0 )
 	self:Animate( "Door_fl2", Door78b, 0, 100, 100, 10, 0 )
 	self:Animate( "Door_fl1", Door78b, 0, 100, 100, 10, 0 )
 	self:Animate( "Door_rl2", Door56b, 0, 100, 100, 10, 0 )
-	self:Animate( "Door_rl1", Door56b, 0, 100, 100, 10, 0 )
+	self:Animate( "Door_rl1", Door56b, 0, 100, 100, 10, 0 )]]
 	self:ShowHide( "headlights_on", self:GetNW2Bool( "Headlights", false ), 0 )
 	self.SpeedoAnim = math.Clamp( self:GetNW2Int( "Speed" ), 0, 100 ) / 100
 	self:Animate( "Speedo", self.SpeedoAnim, 0, 100, 32, 1, 0 )
@@ -1043,12 +1349,13 @@ ENT.RTMaterialMPLR = CreateMaterial( "MetrostroiRT1", "VertexLitGeneric", {
 } )
 
 function ENT:DrawPost()
-	--[[self.RTMaterialMPLR:SetTexture("$basetexture", self.IBIS)
-	self:DrawOnPanel("IBISScreen", function(...)
-		surface.SetMaterial(self.RTMaterial)
-		surface.SetDrawColor(0, 65, 11)
-		surface.DrawTexturedRectRotated(59, 16, 116, 25, 0)
-	end)]]
+	self.RTMaterialMPLR:SetTexture( "$basetexture", self.IBIS )
+	self:DrawOnPanel( "IBISScreen", function( ... )
+		surface.SetMaterial( self.RTMaterialMPLR )
+		surface.SetDrawColor( 45, 75, 50 )
+		surface.DrawTexturedRectRotated( 59, 16, 116, 25, 0 )
+	end )
+
 	local rollsignIndex = self:GetNW2Int( "RollsignTexture", 1 )
 	local rollsignTab = MPLR.Rollsigns[ rollsignIndex ]
 	local mat = Material( rollsignTab.line, "noclamp" )

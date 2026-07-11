@@ -1024,7 +1024,9 @@ ENT.ButtonMapMPLR[ "dashboard" ] = {
 				sndmin = 80,
 				sndmax = 1e3 / 3,
 				sndang = Angle( -90, 0, 0 ),
-				modelcallback = function( ent ) return ent.HasGoldenReverser and "models/metrostroi_train/reversor/reversor_gold.mdl" or "models/metrostroi_train/reversor/reversor_classic.mdl" end,
+				modelcallback = function( ent )
+					return ent.HasGoldenReverser and "models/metrostroi_train/reversor/reversor_gold.mdl" or "models/metrostroi_train/reversor/reversor_classic.mdl" -- TODO: USE THIS TO REPLACE THE MODEL WITH A LIT VERSION
+				end,
 			}
 		},
 		{
@@ -2129,7 +2131,7 @@ ENT.Reverser = {
 function ENT:Initialize()
 	self.BaseClass.Initialize( self )
 	self.SectionB = self:GetNWEntity( "SectionB" )
-	self.IBIS = self:CreateRT( "IBIS", 515, 131 )
+	self.IBIS = self:CreateRT( "IBIS" .. self:EntIndex(), 515, 131 )
 	self.SpeedoAnim = 0
 	self.VoltAnim = 0
 	self.AmpAnim = 0
@@ -2152,30 +2154,69 @@ function ENT:Initialize()
 	self.ScrollModifier6 = 0
 end
 
+function ENT:NextDestination()
+	local index = self:GetNW2Int( "DestinationIndex", 2 )
+	local rollsignIndex = self:GetNW2Int( "RollsignTexture", 1 )
+	local rollsignTab = MPLR.Rollsigns[ rollsignIndex ]
+	local targetUV = rollsignTab[ "positions_front" ][ index ]
+	local currentUV = self.ScrollModifier3
+	if currentUV ~= targetUV and currentUV < targetUV then
+		if targetUV - currentUV < 0.001 then
+			self.ScrollModifier3 = self.ScrollModifier3 + ( ( targetUV - currentUV ) * RealFrameTime() )
+			self.ScrollModifier3 = math.max( currentUV, targetUV )
+			return
+		end
+
+		self.ScrollModifier3 = self.ScrollModifier3 + ( 0.02 * RealFrameTime() )
+	elseif currentUV ~= targetUV and currentUV > targetUV then
+		if currentUV - targetUV < 0.0001 then
+			self.ScrollModifier3 = self.ScrollModifier3 - ( ( currentUV - targetUV ) * RealFrameTime() )
+			self.ScrollModifier3 = math.min( currentUV, targetUV )
+			return
+		end
+
+		self.ScrollModifier3 = self.ScrollModifier3 - ( 0.02 * RealFrameTime() )
+	elseif currentUV == targetUV then
+		return
+	end
+end
+
+function ENT:NextLine()
+	local index = self:GetNW2Int( "LineRollIndex", 25 )
+	local rollsignIndex = self:GetNW2Int( "RollsignTexture", 1 )
+	local rollsignTab = MPLR.Rollsigns[ rollsignIndex ]
+	local targetUV = rollsignTab[ "positions_line" ][ index ]
+	local currentUV = self.ScrollModifier1
+	if currentUV ~= targetUV and currentUV < targetUV then
+		if targetUV - currentUV < 0.00015 then
+			self.ScrollModifier1 = self.ScrollModifier1 + ( ( targetUV - currentUV ) * RealFrameTime() )
+			self.ScrollModifier1 = math.max( currentUV, targetUV )
+			return
+		end
+
+		self.ScrollModifier1 = self.ScrollModifier1 + ( 0.015 * RealFrameTime() )
+	elseif currentUV ~= targetUV and currentUV > targetUV then
+		if currentUV - targetUV < 0.00015 then
+			self.ScrollModifier1 = self.ScrollModifier1 - ( ( currentUV - targetUV ) * RealFrameTime() )
+			self.ScrollModifier1 = math.min( currentUV, targetUV )
+			return
+		end
+
+		self.ScrollModifier1 = self.ScrollModifier1 - ( 0.015 * RealFrameTime() )
+	elseif currentUV == targetUV then
+		return
+	end
+end
+
 function ENT:Think()
 	self.BaseClass.Think( self )
-	self.ScrollModifier1 = 0.4
 	--self.ScrollModifier2 = 0
 	--self.ScrollModifier3 = 0.25
 	self.ScrollModifier4 = 0
 	self.ScrollModifier5 = 0
 	self.ScrollModifier6 = 0
-	if self.ScrollModifier2 < 1 then
-		self.ScrollModifier2 = self.ScrollModifier2 + 0.01 * RealFrameTime()
-	elseif self.ScrollModifier2 > 1 then
-		self.ScrollModifier2 = 0
-	elseif not self.ScrollModifier2 then
-		self.ScrollModifier2 = 0
-	end
-
-	if self.ScrollModifier3 < 1 then
-		self.ScrollModifier3 = self.ScrollModifier3 + 0.01 * RealFrameTime()
-	elseif self.ScrollModifier3 > 1 then
-		self.ScrollModifier3 = 0
-	elseif not self.ScrollModifier3 then
-		self.ScrollModifier3 = 0
-	end
-
+	self:NextDestination()
+	self:NextLine()
 	self:Animations()
 	self:SoundsFunc()
 	self.PrevTime = self.PrevTime or CurTime()
