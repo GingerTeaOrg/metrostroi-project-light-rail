@@ -34,3 +34,6 @@
 - Archival documentation support for electrical schematics, Bernd Rodmann Historische Straßenbahn Frankfurt
 
 - Lumino Krefeld for basic info on their station displays
+
+- Any driver whom has kindly allowed me to monkey around their cab or even the entire carriage for capturing detail footage
+
