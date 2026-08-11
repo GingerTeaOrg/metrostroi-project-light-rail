@@ -12,7 +12,6 @@ function ENT:Initialize()
 	self.AlternateTrack = false
 	self.AlreadyLocked = false
 	self.InhibitSwitching = false
-	self.SignalCaller = {}
 	self.LastSignalTime = 0
 	self.Left = self.Left or self:GetNW2String( "PositionCorrespondence", self.VMF and self.VMF.PositionCorrespondance or "alt" )
 	self.AllowSwitchingIron = self.AllowSwitchingIron or self:GetNW2Bool( "AllowSwitchingIron", ( self.VMF and self.VMF.AllowSwitchingIron ) and tonumber( self.VMF.AllowSwitchingIron, 10 ) > 0 or true )
@@ -20,17 +19,8 @@ function ENT:Initialize()
 	self.IronOverrideTime = 0
 	self.Locked = true
 	self.PreviousState = self.AlternateTrack
+	self.DefaultState = self.AlternateTrack
 	self.Forward = false
-	if self.VMF and self.VMF.Blade1 then
-		for _, v in ipairs( ents.FindByName( self.VMF.Blade1 ) ) do
-			table.insert( self.TrackSwitches, v )
-		end
-
-		for _, v in ipairs( ents.FindByName( self.VMF.Blade2 ) ) do
-			table.insert( self.TrackSwitches, v )
-		end
-	end
-
 	timer.Simple( 10, function()
 		local entList = ents.GetAll()
 		for i, ent in ipairs( entList ) do
@@ -62,7 +52,6 @@ function ENT:Initialize()
 	end )
 
 	self.Paths = {}
-	self.Paths = self:GetBranchingPaths()
 	self.DirectionsToPaths = {
 		[ "left" ] = -1,
 		[ "right" ] = -1
@@ -73,87 +62,58 @@ function ENT:OnRemove()
 	MPLR.UpdateSignalEntities()
 end
 
-function ENT:ScanSwitchOccupied()
-	local function physicalScan()
-	end
-end
-
 function ENT:BladeNamesToEnts()
-	if not table.IsEmpty( self.TrackSwitches ) then
-		--PrintTable( ents.FindByName( self.TrackSwitches[ 1 ] ) )
-		local blade1 = ents.FindByName( self.TrackSwitches[ 1 ] )
-		local blade2 = ents.FindByName( self.TrackSwitches[ 2 ] )
-		if type( self.TrackSwitches[ 1 ] ) == "string" then self.TrackSwitches[ 1 ] = blade1[ 1 ] end
-		if type( self.TrackSwitches[ 2 ] ) == "string" then self.TrackSwitches[ 2 ] = blade2[ 1 ] end
-	end
+	local blade1 = ents.FindByName( self.VMF.Blade1 )
+	local blade2 = ents.FindByName( self.VMF.Blade2 )
+	self.TrackSwitches[ 1 ] = blade1[ 1 ]
+	self.TrackSwitches[ 2 ] = blade2[ 1 ]
 end
 
 function ENT:Think()
 	self:NextThink( CurTime() + 1.0 )
 	self.TrackPos = self.TrackPos or Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
-	----print( self.TrackPos.forward )
+	if table.IsEmpty( self.TrackSwitches ) then
+		self:BladeNamesToEnts()
+		return true
+	end
+
 	if not self.TrackPos then
 		self:NextThink( CurTime() + 1.0 )
 		return true
 	end
 
-	--[[if #self.TrackSwitches < 2 then
-		for _, v in ipairs( ents.FindByName( self.VMF.Blade1 ) ) do
-			table.insert( self.TrackSwitches, v )
-		end
-
-		for _, v in ipairs( ents.FindByName( self.VMF.Blade2 ) ) do
-			table.insert( self.TrackSwitches, v )
-		end
-	end]]
+	--print( self.AlternateTrack, self.PreviousState )
 	if not MPLR.SwitchEntitiesByNode[ self.TrackPos.node1 ] then MPLR.SwitchEntitiesByNode[ self.TrackPos.node1 ] = self end
 	if not self.ID then self.ID = self.VMF.ID end
-	if not next( self.TrackSwitches ) then return end
+	if #self.Queue > 0 then self:TriggerSwitch() end
+	self:SwitchingQueue()
+	self:LockUnlockBlades()
 	self:Switching()
 	if self.IronOverride and CurTime() - self.IronOverrideTime < 60 then
-		return
+		return true
 	else
 		self.IronOverride = false
 		self.IronOverrideTime = 0
 	end
-
-	if #self.Queue > 0 then self:TriggerSwitch() end
 	return true
 end
 
 function ENT:Switching()
-	if self.PreviousState ~= self.AlternateTrack then self.Locked = false end
-	if self.Locked then
-		for _, v in ipairs( self.TrackSwitches ) do
-			if IsValid( v ) then
-				v:Fire( "Lock", "", 0, self, self )
-			else
-				--PrintTable( self.TrackSwitches )
-				self:BladeNamesToEnts()
-			end
-		end
-	else
-		for _, v in ipairs( self.TrackSwitches ) do
-			if IsValid( v ) then v:Fire( "Unlock", "", 0, self, self ) end
-		end
+	if self.Locked then return end
+	for _, v in ipairs( self.TrackSwitches ) do
+		--print( "open", self.Locked )
+		if IsValid( v ) then v:Fire( self.AlternateTrack and "Open" or "Close", "", 0, self, self ) end
 	end
 
-	if self.AlternateTrack and not self.Locked then
-		for _, v in ipairs( self.TrackSwitches ) do
-			--print( "open", self.Locked )
-			if IsValid( v ) then v:Fire( "Open", "", 0, self, self ) end
-		end
+	self.Locked = true
+	self.PreviousState = self.AlternateTrack
+end
 
-		self.Locked = true
-		self.PreviousState = self.AlternateTrack
-	elseif not self.AlternateTrack and not self.Locked then
-		for _, v in ipairs( self.TrackSwitches ) do
-			--print( "close", self.Locked )
-			if IsValid( v ) then v:Fire( "Close", "", 0, self, self ) end
-		end
-
-		self.Locked = true
-		self.PreviousState = self.AlternateTrack
+function ENT:LockUnlockBlades()
+	if self.PreviousState ~= self.AlternateTrack then self.Locked = false end
+	--print( self.Locked and "locked" or "unlocked" )
+	for _, v in ipairs( self.TrackSwitches ) do
+		if IsValid( v ) then v:Fire( self.Locked and "Lock" or "Unlock", "", 0, self, self ) end
 	end
 end
 
@@ -164,10 +124,10 @@ function ENT:ManualSwitching( dir, ply )
 	ply:PrintMessage( HUD_PRINTTALK, "Selected switch now manually switched and locked for 60 seconds. Switching back manually is also possible." )
 end
 
-function ENT:TestTrackOccupation()
+function ENT:TestTrackOccupation( train )
 	local mins = self:OBBMins()
 	local maxs = self:OBBMaxs()
-	local startpos = self:GetPos() -- Origin point for the trace
+	local startpos = self:GetPos() + Vector( 0, 0, 5 ) -- Origin point for the trace
 	local dir = self:GetUp() -- Direction for the trace, as a unit vector
 	local len = 100 -- Maximum length of the trace
 	local tr = util.TraceHull( {
@@ -178,55 +138,31 @@ function ENT:TestTrackOccupation()
 		filter = self
 	} )
 
-	local traceClass = tr:GetClass()
-	if string.find( traceClass, "gmod_subway_" ) or string.find( traceClass, "gmod_train_uf_bogey" ) or string.find( traceClass, "gmod_train_uf_wheels" ) then return true end
-	local function iterateForward( node )
-		if node.next then
-			return iterateForward( node.next )
-		else
-			return node
-		end
-	end
-
-	local function iterateBackward( node )
-		if node.prev then
-			return iterateBackward( node.prev )
-		else
-			return node
-		end
+	local traceClass = ( tr.Hit and not tr.HitWorld ) and tr:GetClass() or nil
+	local occupied
+	--format: multiline
+	if traceClass and tr.Hit and not tr.HitWorld then
+		if string.find( traceClass, "gmod_subway_" ) or string.find( traceClass, "gmod_train_uf_bogey" ) or string.find( traceClass, "gmod_train_uf_wheels" ) then occupied = true end
 	end
 
 	local function checkInRange()
 		local inRange
 		for k in pairs( self.PairedControllers ) do
-			local targetPos = Metrostroi.GetPositionOnTrack( k:GetPos(), k:GetAngles() )[ 1 ]
-			local TargetX = targetPos.x
-			local targetNode = targetPos.node1
-			local dir = targetPos.forward
-			local path = targetPos.path
-			if self.TrackPos.path == path then
-				inRange = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < TargetX, "light", TargetX )
-			else
-				if dir then
-					local lastNode = iterateForward( self.TrackPos.node1 )
-					inRange = MPLR.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
-				else
-					local lastNode = iterateBackward( self.TrackPos.node1 )
-					inRange = MPLR.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
-				end
-			end
-
-			if inRange then return true end
+			inRange, _, whichTrain = k:checkInRange()
+			if inRange then return inRange end
 		end
 		return false
 	end
+
+	local inTrackRange = checkInRange()
+	return occupied or inTrackRange
 end
 
 function ENT:TriggerSwitch()
 	-- Check if there's a command in the queue
 	if #self.Queue == 0 then
 		if not self.IronOverride then self.AlternateTrack = false end
-		----print( "Empty queue. Bailing to default." )
+		--print( "Empty queue. Bailing to default." )
 		return
 	end
 
@@ -234,18 +170,12 @@ function ENT:TriggerSwitch()
 	if not IsValid( ent ) then
 		self.AlternateTrack = false
 		for i, entry in ipairs( self.Queue ) do
-			if entry[ 2 ] == ent then
+			if entry[ 1 ] == ent then
 				table.remove( self.Queue, i )
 				return
 			end
 		end
 		return
-	end
-
-	if ent.IBIS and not ent.IBIS.Override then
-		--print( Format( "Switching to direction %s by service %s %s", direction, ent.IBIS.Course, ent.IBIS.Route ) )
-	elseif IsValid( ent ) then
-		--print( Format( "Switching to direction %s", direction ) )
 	end
 
 	if self.InhibitSwitching then
@@ -264,8 +194,6 @@ function ENT:TriggerSwitch()
 	elseif direction == "right" then
 		self.AlternateTrack = self.Left == "main"
 	end
-
-	self:SwitchingQueue( nil, ent )
 end
 
 function ENT:KeyValue( key, value )
@@ -274,143 +202,20 @@ function ENT:KeyValue( key, value )
 end
 
 function ENT:SwitchingQueue( direction, ent )
-	local function iterateForward( node )
-		if node.next then
-			return iterateForward( node.next )
-		else
-			return node
-		end
-	end
-
-	local function iterateBackward( node )
-		if node.prev then
-			return iterateBackward( node.prev )
-		else
-			return node
-		end
-	end
-
-	local function checkInRange()
-		local inRange
-		for k in pairs( self.PairedControllers ) do
-			local targetPos = Metrostroi.GetPositionOnTrack( k:GetPos() )[ 1 ]
-			local TargetX = targetPos.x
-			local targetNode = targetPos.node1
-			local dir = targetPos.forward
-			local path = targetPos.path
-			if self.TrackPos.path == path then
-				inRange = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.TrackPos.x < TargetX, "light", TargetX )
-			else
-				if dir then
-					local lastNode = iterateForward( self.TrackPos.node1 )
-					inRange = MPLR.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
-				else
-					local lastNode = iterateBackward( self.TrackPos.node1 )
-					inRange = MPLR.IsTrackOccupied( targetNode, TargetX, dir, "light", lastNode.x )
-				end
-			end
-
-			if inRange then return true end
-		end
-		return false
-	end
-
 	-- Check if the entity is already in the queue
 	if not self.Queue then self.Queue = {} end
-	if next( self.Queue ) then
+	if self.Queue[ 1 ] then
 		for i, entry in ipairs( self.Queue ) do
 			if entry[ 1 ] == ent then
 				-- Entity is in the queue, check if it's still on track
-				local trainStillHere = checkInRange()
+				local trainStillHere = self:TestTrackOccupation()
 				-- If train is no longer here, remove it from the queue
 				if not trainStillHere then table.remove( self.Queue, i ) end
-				return
-			end
-		end
-	elseif not next( self.Queue ) and next( self.SecondaryQueue ) then
-		for i, entry in ipairs( self.SecondaryQueue ) do
-			if entry[ 1 ] == ent then
-				-- Entity is in the queue, check if it's still on track
-				local trainStillHere = checkInRange()
-				-- If train is no longer here, remove it from the queue
-				if not trainStillHere then table.remove( self.Queue, i ) end
-				return
+				continue
 			end
 		end
 	else
 		-- If the entity wasn't found in the queue, add it
 		if IsValid( ent ) and direction then table.insert( self.Queue, { ent, direction } ) end
 	end
-end
-
-function ENT:SecondarySwitchingQueue( direction, ent )
-	local tempEnt
-	if IsValid( ent ) then
-		for i in ipairs( self.SecondaryQueue ) do
-			tempEnt = self.SecondaryQueue[ i ][ 1 ]
-		end
-
-		if IsValid( tempEnt ) and tempEnt ~= ent then table.insert( self.SecondaryQueue, { ent, direction } ) end
-	end
-end
-
-function ENT:traverseNodesToBranch( node, forwards, iter ) -- got forward or backward a few nodes to see if there's a branching path to be found
-	if not iter then iter = 1 end
-	if node and node.branches then
-		return node
-	elseif node and not node.branches and iter <= 3 then
-		return self:traverseNodesToBranch( forwards and node.next or node.prev, forwards, iter )
-	elseif not node or iter > 3 then
-		ErrorNoHalt( "No branches found along three nodes of this switch. Please check placement. Switch ID:", self.ID )
-	end
-end
-
-local nodesTraversed = nodesTraversed or 0
-function ENT:GetBranchingPaths()
-	if true then return end
-	if not Metrostroi.Paths[ 1 ] then -- if the paths table isn't populated yet, just start a timer to call this function again and exit
-		timer.Simple( 50, self:GetBranchingPaths() )
-		return
-	end
-
-	local pos = MPLR.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ] -- query our position on the pathing system
-	local current_path = pos.path.id --this is our main path
-	local adjacent_paths = {} -- initialise the paths next to us
-	local paths = {}
-	local forward = self.Forward -- are we facing upward or downward on the x coordinate?
-	-- initialise how many nodes we've been through so that we don't continue on forever
-	-- pos.node1.branches[1][2].path
-	local function collectBranchPaths( node, iter ) --
-		if not iter then iter = 1 end
-		if not node then return end
-		local branchingPath = node.branches and node.branches[ 1 ][ 2 ].path.id
-		local branchingNode = node.branches and node.branches[ 1 ][ 2 ]
-		--[[if node.branches then
-			for k, v in pairs( node.branches[ 1 ][ 2 ] ) do
-				--print( k, v )
-			end
-		end]]
-		local myPath = pos.path.id
-		if branchingPath then
-			adjacent_paths = {
-				[ myPath ] = pos.node1,
-				[ branchingPath ] = branchingNode
-			}
-		else
-			local traversedNode = self:traverseNodesToBranch( node, forward )
-			if traversedNode then collectBranchPaths( traversedNode ) end
-		end
-		return
-	end
-
-	-- Add current path and branches from node1 and node2
-	collectBranchPaths( pos.node1 )
-	-- collectBranchPaths(pos.node2)
-	-- Output results
-	--print( "Current Path:", current_path )
-	--print( "Adjacent Paths:" )
-	for id, node in pairs( adjacent_paths ) do
-		--print( id, node.id )
-	end
-	return adjacent_paths
 end
