@@ -2,12 +2,10 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 function ENT:Initialize()
 	self:SetModel( "models/lilly/uf/tram/sgauge/switch_motor.mdl" )
-	self.VMF = self.VMF or {}
 	--Metrostroi.DropToFloor( self )
 	self.TrackSwitches = self.TrackSwitches or {}
 	self.ID = self.ID or self:GetNW2Int( "ID", self.VMF and tonumber( self.VMF.SwitchID, 10 ) and tonumber( self.VMF.SwitchID, 10 ) or 000 )
 	self.Queue = {}
-	self.SecondaryQueue = {}
 	-- Initial state of the switch
 	self.AlternateTrack = false
 	self.AlreadyLocked = false
@@ -63,6 +61,12 @@ function ENT:OnRemove()
 end
 
 function ENT:BladeNamesToEnts()
+	if not self.VMF then
+		if type( self.TrackSwitches[ 1 ] ) == "string" then self.TrackSwitches[ 1 ] = ents.FindByName( self.TrackSwitches[ 1 ] )[ 1 ] end
+		if type( self.TrackSwitches[ 2 ] ) == "string" then self.TrackSwitches[ 2 ] = ents.FindByName( self.TrackSwitches[ 2 ] )[ 1 ] end
+		return
+	end
+
 	local blade1 = ents.FindByName( self.VMF.Blade1 )
 	local blade2 = ents.FindByName( self.VMF.Blade2 )
 	self.TrackSwitches[ 1 ] = blade1[ 1 ]
@@ -72,7 +76,7 @@ end
 function ENT:Think()
 	self:NextThink( CurTime() + 1.0 )
 	self.TrackPos = self.TrackPos or Metrostroi.GetPositionOnTrack( self:GetPos(), self:GetAngles() )[ 1 ]
-	if table.IsEmpty( self.TrackSwitches ) then
+	if table.IsEmpty( self.TrackSwitches ) or type( self.TrackSwitches[ 1 ] ) ~= "Entity" then
 		self:BladeNamesToEnts()
 		return true
 	end
@@ -84,14 +88,11 @@ function ENT:Think()
 
 	--print( self.AlternateTrack, self.PreviousState )
 	if not MPLR.SwitchEntitiesByNode[ self.TrackPos.node1 ] then MPLR.SwitchEntitiesByNode[ self.TrackPos.node1 ] = self end
-	if not self.ID then self.ID = self.VMF.ID end
+	if not self.ID then self.ID = self.VMF.SwitchID end
+	self:Switching()
 	if #self.Queue > 0 then self:TriggerSwitch() end
 	self:SwitchingQueue()
-	self:LockUnlockBlades()
-	self:Switching()
-	if self.IronOverride and CurTime() - self.IronOverrideTime < 60 then
-		return true
-	else
+	if self.IronOverride and CurTime() - self.IronOverrideTime > 60 then
 		self.IronOverride = false
 		self.IronOverrideTime = 0
 	end
@@ -99,21 +100,27 @@ function ENT:Think()
 end
 
 function ENT:Switching()
-	if self.Locked then return end
+	if self.PreviousState == self.AlternateTrack then return end
+	if self.Locked then --and self.PreviousState ~= self.AlternateTrack then
+		print( "unlocking before switching" )
+		self.Locked = false
+		self:LockUnlockBlades( false )
+	end
+
 	for _, v in ipairs( self.TrackSwitches ) do
-		--print( "open", self.Locked )
+		print( self.AlternateTrack and "Open" or "Close" )
 		if IsValid( v ) then v:Fire( self.AlternateTrack and "Open" or "Close", "", 0, self, self ) end
 	end
 
+	self:LockUnlockBlades( true )
 	self.Locked = true
 	self.PreviousState = self.AlternateTrack
 end
 
-function ENT:LockUnlockBlades()
-	if self.PreviousState ~= self.AlternateTrack then self.Locked = false end
+function ENT:LockUnlockBlades( lock )
 	--print( self.Locked and "locked" or "unlocked" )
 	for _, v in ipairs( self.TrackSwitches ) do
-		if IsValid( v ) then v:Fire( self.Locked and "Lock" or "Unlock", "", 0, self, self ) end
+		if IsValid( v ) then v:Fire( lock and "Lock" or "Unlock", "", 0, self, self ) end
 	end
 end
 
@@ -138,7 +145,7 @@ function ENT:TestTrackOccupation( train )
 		filter = self
 	} )
 
-	local traceClass = ( tr.Hit and not tr.HitWorld ) and tr:GetClass() or nil
+	local traceClass = ( tr.Hit and not tr.HitWorld ) and tr.GetClass and tr:GetClass() or nil
 	local occupied
 	--format: multiline
 	if traceClass and tr.Hit and not tr.HitWorld then
@@ -168,7 +175,7 @@ function ENT:TriggerSwitch()
 
 	local ent, direction = unpack( self.Queue[ 1 ] )
 	if not IsValid( ent ) then
-		self.AlternateTrack = false
+		--self.AlternateTrack = false
 		for i, entry in ipairs( self.Queue ) do
 			if entry[ 1 ] == ent then
 				table.remove( self.Queue, i )
@@ -178,8 +185,8 @@ function ENT:TriggerSwitch()
 		return
 	end
 
-	if self.InhibitSwitching then
-		--print( "switching blocked" )
+	if self.InhibitSwitching or self.Locked then
+		print( "switching blocked" )
 		return false
 	end
 
@@ -199,6 +206,7 @@ end
 function ENT:KeyValue( key, value )
 	self.VMF = self.VMF or {}
 	self.VMF[ key ] = value
+	PrintTable( self.VMF )
 end
 
 function ENT:SwitchingQueue( direction, ent )
@@ -206,9 +214,11 @@ function ENT:SwitchingQueue( direction, ent )
 	if not self.Queue then self.Queue = {} end
 	if self.Queue[ 1 ] then
 		for i, entry in ipairs( self.Queue ) do
-			if entry[ 1 ] == ent then
+			--PrintTable( entry )
+			if type( entry[ 1 ] ) == "Entity" then
 				-- Entity is in the queue, check if it's still on track
 				local trainStillHere = self:TestTrackOccupation()
+				print( trainStillHere )
 				-- If train is no longer here, remove it from the queue
 				if not trainStillHere then table.remove( self.Queue, i ) end
 				continue
@@ -216,6 +226,17 @@ function ENT:SwitchingQueue( direction, ent )
 		end
 	else
 		-- If the entity wasn't found in the queue, add it
-		if IsValid( ent ) and direction then table.insert( self.Queue, { ent, direction } ) end
+		if ( type( ent ) == "entity" and IsValid( ent ) and direction ) or ( type( ent ) == "table" and direction ) then
+			--
+			table.insert( self.Queue, { ent, direction } )
+		end
 	end
+
+	if #self.Queue == 0 and not self.IronOverride then self.AlternateTrack = false end
+end
+
+function ENT:TriggerRouteSwitching( direction, route )
+	if not self.Queue then self.Queue = {} end
+	print( "Responding to route command", route, direction )
+	self:SwitchingQueue( direction, route )
 end
