@@ -64,13 +64,16 @@ function LIB:ScanForTrain()
 	if self.Forward then
 		inRange, train, trainDetected, trainList = MPLR.IsTrackOccupied( self.ScanNode, self.ScanNode.x, self.Forward, self.TrackPos.x, self.TrackPos.node1 )
 	else
-		inRange, train, trainDetected, trainList = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, self.Forward, self.ScanNode.x, self.ScanNode )
+		inRange, train, trainDetected, trainList = MPLR.IsTrackOccupied( self.TrackPos.node1, self.TrackPos.x, not self.Forward, self.ScanNode.x, self.ScanNode )
 	end
 
+	--if self.Name == "Dbs/A1" then print( inRange ) end
+	--if self.Name == "Dbs/E1" then print( self.Forward ) end
+	--if self.Name == "Dbs/A1" then print( trainList[ 1 ] ) end
 	if inRange and not train.IBIS then
 		for _, v in ipairs( trainList ) do
+			--print( v )
 			if v.IBIS then
-				--print( "IBIS" )
 				trainDetected = v
 				break
 			end
@@ -103,7 +106,11 @@ function LIB:GenerateImpromptuFahrstrasse()
 	local fahrstrasseName = name .. "_to_" .. nextSignalName
 	local signals = {}
 	signals[ name ] = nextSignalName
-	if not MPLR.AvailableFahrstrassen[ 1 ] then MPLR.AvailableFahrstrassen[ 1 ] = {} end
+	if not MPLR.AvailableFahrstrassen[ 1 ] then
+		MPLR.AvailableFahrstrassen[ 1 ] = {}
+		MPLR.LoadFahrstrassenDefinitions()
+	end
+
 	MPLR.AvailableFahrstrassen[ 1 ][ fahrstrasseName ] = {}
 	MPLR.AvailableFahrstrassen[ 1 ][ fahrstrasseName ].Signals = signals
 	local myNode = self.TrackPos.node1
@@ -149,10 +156,11 @@ function LIB:BlockSignal()
 	end
 
 	self:TrackOccupation()
-	self.TrainDetected, _, self.Train = self:ScanForTrain()
+	self.TrainDetected, self.Train = self:ScanForTrain()
 	local ibis
 	local line
 	local ibisRoute
+	--if self.Name == "Dbs/A2" then print( self.TrainDetected, self.Train ) end
 	if self.TrainDetected and self.Train.IBIS then
 		ibis = self.Train.IBIS
 		line = ibis.Course
@@ -188,7 +196,6 @@ function LIB:BlockSignal()
 					for signal in pairs( v.Signals ) do
 						if signal == self.Name then MPLR.ActiveFahrstrassen[ k ] = nil end
 						self.ActiveFahrstrasse = "none"
-						self:TrackOccupation()
 						--self.SignalState = "danger"
 					end
 				end
@@ -201,6 +208,7 @@ function LIB:BlockSignal()
 		end
 
 		if table.IsEmpty( MPLR.LineRoutingInfo ) then -- if the map has none configured, just quit
+			print( "Line routing info is empty" )
 			return
 		end
 
@@ -243,6 +251,37 @@ local templateLineRouting = {
 	}
 }
 
+local function returnFirstLastPath( paths )
+	local result1
+	for k in pairs( paths ) do
+		if not result1 then
+			result1 = k
+		elseif result1 and k < result1 then
+			result1 = k
+		end
+	end
+
+	local result2
+	for k in pairs( paths ) do
+		if not result2 then
+			result2 = k
+		elseif result2 and k > result2 then
+			retult2 = k
+		end
+	end
+	return result1, result2
+end
+
+local function returnNodeIds( path )
+	local result = {}
+	for k in pairs( path ) do
+		table.insert( result, k )
+	end
+
+	table.sort( result )
+	return result
+end
+
 function LIB:TrackOccupation()
 	local route = self.ActiveFahrstrasse
 	if not route or route == "none" then
@@ -252,13 +291,12 @@ function LIB:TrackOccupation()
 	end
 
 	local nodes = route.nodes
-	local paths = table.GetKeys( nodes )
-	local firstPath = paths[ 1 ]
-	local lastPath = paths[ #paths ]
+	local firstPath, lastPath = returnFirstLastPath( nodes )
 	local occupied
 	for i = firstPath, lastPath do
 		local pathNodes = nodes[ i ]
-		local nodeNumbers = table.GetKeys( pathNodes )
+		if self.Name == "Dbs/E2" then end
+		local nodeNumbers = returnNodeIds( pathNodes )
 		local firstNode = Metrostroi.Paths[ i ][ nodeNumbers[ 1 ] ]
 		local lastNode = Metrostroi.Paths[ i ][ nodeNumbers[ #nodeNumbers ] ]
 		occupied, _, _, self.TrainsInBlock = MPLR.IsTrackOccupied( firstNode, firstNode.x, true, lastNode.x, lastNode )
